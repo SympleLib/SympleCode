@@ -1,0 +1,17 @@
+# Create a Varieble
+var myVar int 42
+
+# Print the Varieble
+call print $myVar
+# Incorrect Usage: use '$' before varieble to get the value of the varieble!
+call print myVar
+
+call read myVar
+call print $myVar
+
+# Clean up after yourself Delete your Varieble
+delete myVar int
+
+# Error Called when accessing 'myVar'
+# Un-Comment the code for error
+# call print $myVar
