@@ -15,49 +15,25 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="src\Application.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="src\sparser.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="src\svm.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="src\sstdlib\sio.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="src\sstdlib\scasting.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="src\scompiler\scompiler.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-  </ItemGroup>
-  <ItemGroup>
-    <ClInclude Include="src\sparser.h">
+    <ClInclude Include="src\svar_system.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="src\svm.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="src\sstdlib\sstdlib.h">
+    <ClInclude Include="src\sdebug.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="src\sstdlib\sio.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="src\sstdlib\scasting.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="src\sstdlib\sdebug.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="src\scompiler\scompiler.h">
+    <ClInclude Include="src\sliterals.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <None Include="res\tutorial.smpl" />
+    <ClCompile Include="src\svar_system.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\test.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
 </Project>
