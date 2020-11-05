@@ -37,8 +37,9 @@ namespace scp
 	{
 		ss = serializer();
 
+		std::vector<std::string> lines;
+
 		{
-			lines.clear();
 			sstring s = source;
 			size_t pos = 0;
 			sstring tok;
@@ -84,12 +85,15 @@ namespace scp
 		{
 			for (const auto& item : scm::GetClassNames())
 			{
+				printf("%s", item.first);
+
 				if (words[0] == item.first)
 				{
 					sclassid id = item.second;
 					stypeid type = scm::GetClassType(id);
 					
 					svm::CreateVarieble(words[1], type, id);
+					printf("%s\n", words[1]);
 				}
 			}
 		}
