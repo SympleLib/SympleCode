@@ -2,7 +2,7 @@
 
 #include <unordered_map>
 
-#include "sdebug.h"
+#include <sdebug.h>
 
 namespace svm
 {
@@ -121,7 +121,7 @@ namespace svm
 		svarid id = std::hash<sstring>()(name);
 		variebleNames.insert({ name, id });
 		variebleTypes.insert({ id, BYTE_TYPE });
-		variebleClasses.insert({ id, BYTE_CLASS });
+		variebleClasses.insert({ id, BYTE_TYPE });
 		byteVariebles.insert({ id, value });
 
 		return id;
@@ -135,7 +135,7 @@ namespace svm
 		svarid id = std::hash<sstring>()(name);
 		variebleNames.insert({ name, id });
 		variebleTypes.insert({ id, SHORT_TYPE });
-		variebleClasses.insert({ id, SHORT_CLASS });
+		variebleClasses.insert({ id, SHORT_TYPE });
 		shortVariebles.insert({ id, value });
 
 		return id;
@@ -149,7 +149,7 @@ namespace svm
 		svarid id = std::hash<sstring>()(name);
 		variebleNames.insert({ name, id });
 		variebleTypes.insert({ id, INT_TYPE });
-		variebleClasses.insert({ id, INT_CLASS });
+		variebleClasses.insert({ id, INT_TYPE });
 		intVariebles.insert({ id, value });
 
 		return id;
@@ -163,7 +163,7 @@ namespace svm
 		svarid id = std::hash<sstring>()(name);
 		variebleNames.insert({ name, id });
 		variebleTypes.insert({ id, LONG_TYPE });
-		variebleClasses.insert({ id, LONG_CLASS });
+		variebleClasses.insert({ id, LONG_TYPE });
 		longVariebles.insert({ id, value });
 
 		return id;
@@ -177,7 +177,7 @@ namespace svm
 		svarid id = std::hash<sstring>()(name);
 		variebleNames.insert({ name, id });
 		variebleTypes.insert({ id, CHAR_TYPE });
-		variebleClasses.insert({ id, CHAR_CLASS });
+		variebleClasses.insert({ id, CHAR_TYPE });
 		charVariebles.insert({ id, value });
 
 		return id;
@@ -191,7 +191,7 @@ namespace svm
 		svarid id = std::hash<sstring>()(name);
 		variebleNames.insert({ name, id });
 		variebleTypes.insert({ id, BOOL_TYPE });
-		variebleClasses.insert({ id, BOOL_CLASS });
+		variebleClasses.insert({ id, BOOL_TYPE });
 		boolVariebles.insert({ id, value });
 
 		return id;

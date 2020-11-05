@@ -15,24 +15,45 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="src\svar_system.h">
+    <ClInclude Include="src\VirtualMachine\svar_system.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="src\svm.h">
+    <ClInclude Include="src\VirtualMachine\svm.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="src\sdebug.h">
+    <ClInclude Include="src\Compiler\sparser.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="src\sliterals.h">
+    <ClInclude Include="src\Compiler\sserializer.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Common\sdebug.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Common\sliterals.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Common\sclass_system.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Compiler\scp.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Common\scm.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="src\svar_system.cpp">
+    <ClCompile Include="src\test.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="src\test.cpp">
+    <ClCompile Include="src\VirtualMachine\svar_system.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Compiler\sparser.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Common\sclass_system.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

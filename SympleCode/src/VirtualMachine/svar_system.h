@@ -1,6 +1,6 @@
 #pragma once
 
-#include "sliterals.h"
+#include <sliterals.h>
 
 namespace svm
 {
