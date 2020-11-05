@@ -18,6 +18,16 @@
       <Platform>x64</Platform>
     </ProjectConfiguration>
   </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="src\Application.cpp" />
+    <ClCompile Include="src\scompiler.cpp" />
+    <ClCompile Include="src\sparser.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="src\scompiler.h" />
+    <ClInclude Include="src\sparser.h" />
+    <ClInclude Include="src\sserializer.hpp" />
+  </ItemGroup>
   <PropertyGroup Label="Globals">
     <VCProjectVersion>16.0</VCProjectVersion>
     <Keyword>Win32Proj</Keyword>
@@ -142,23 +152,6 @@
       <GenerateDebugInformation>true</GenerateDebugInformation>
     </Link>
   </ItemDefinitionGroup>
-  <ItemGroup>
-    <ClInclude Include="src\Common\sclass_system.h" />
-    <ClInclude Include="src\Common\scm.h" />
-    <ClInclude Include="src\Compiler\scp.h" />
-    <ClInclude Include="src\Compiler\sparser.h" />
-    <ClInclude Include="src\Compiler\sserializer.h" />
-    <ClInclude Include="src\Common\sdebug.h" />
-    <ClInclude Include="src\Common\sliterals.h" />
-    <ClInclude Include="src\VirtualMachine\svar_system.h" />
-    <ClInclude Include="src\VirtualMachine\svm.h" />
-  </ItemGroup>
-  <ItemGroup>
-    <ClCompile Include="src\Common\sclass_system.cpp" />
-    <ClCompile Include="src\Compiler\sparser.cpp" />
-    <ClCompile Include="src\VirtualMachine\svar_system.cpp" />
-    <ClCompile Include="src\test.cpp" />
-  </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
   </ImportGroup>

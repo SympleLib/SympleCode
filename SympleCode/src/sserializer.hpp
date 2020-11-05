@@ -4,7 +4,7 @@
 
 #include <ostream>
 
-namespace scp
+namespace symple
 {
 	class serializer
 	{
@@ -33,7 +33,7 @@ namespace scp
 		template<typename T>
 		inline serializer& operator <<(const T& data)
 		{
-			for (unsigned int i = 0; i < sizeof(data); i++)
+			for (unsigned int i = sizeof(data) - 1; i >= 0; i--)
 			{
 				mBuffer.push_back(((const char*)&data)[i]);
 
@@ -50,7 +50,7 @@ namespace scp
 				return *this;
 
 			unsigned char* ptr = (unsigned char*)&data;
-			for (unsigned int i = 0; i < sizeof(data); i++)
+			for (unsigned int i = sizeof(data) - 1; i >= 0; i--)
 			{
 				ptr[sizeof(data) - 1 - i] = mBuffer[mUnreadSize - 1];
 
