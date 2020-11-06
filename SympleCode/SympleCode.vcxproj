@@ -22,11 +22,13 @@
     <ClCompile Include="src\Application.cpp" />
     <ClCompile Include="src\scompiler.cpp" />
     <ClCompile Include="src\sparser.cpp" />
+    <ClCompile Include="src\ssyntax_tree.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\scompiler.h" />
     <ClInclude Include="src\sparser.h" />
     <ClInclude Include="src\sserializer.hpp" />
+    <ClInclude Include="src\ssyntax_tree.h" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <VCProjectVersion>16.0</VCProjectVersion>
