@@ -13,10 +13,6 @@ project "SympleCompiler"
 		"src/**.cpp"
 	}
 	
-	defines {
-		"_CRT_SECURE_NO_WARNINGS"
-	}
-	
 	includedirs {
 		"src"
 	}
