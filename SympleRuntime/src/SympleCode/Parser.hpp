@@ -13,4 +13,6 @@ namespace Parser
 #endif
 
 	int powi(int, int);
+
+	void Write(const std::string&);
 }

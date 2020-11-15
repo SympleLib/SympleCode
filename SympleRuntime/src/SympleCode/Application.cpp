@@ -8,7 +8,7 @@ int main() {
 int a = 22;
 int b = 44;
 while b != 0
-{
+{;
     if a > b
     {
         a = a - b;
@@ -23,5 +23,5 @@ print(a);
 
     Parser::Parse(source);
 
-    std::cin.get();
+    //std::cin.get();
 }

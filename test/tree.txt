@@ -1,0 +1,46 @@
+\__
+    Var Dec
+  \__
+      Name: b
+  \__
+      Type: int
+\__
+    While Loop
+  \__
+      Condition
+    \__
+        Op. Not Equals
+      \__
+          LVal
+        \__
+            Name: b
+        \__
+            Type: int
+      \__
+          RVal
+        \__
+            Type: int
+        \__
+            Value: 0
+  \__
+      Body
+    \__
+        If
+      \__
+          Condition
+        \__
+            Op. Greater Than
+          \__
+              LVal
+            \__
+                Name: a
+            \__
+                Type: int
+          \__
+              RVal
+            \__
+                Name: b
+            \__
+                Type: int
+      \__
+          Body
