@@ -17,7 +17,7 @@ namespace Symple
 		return out;
 	}
 
-	void Write(const char* path, const char* data)
+	void Write(const char* path, const char* text)
 	{
 		FILE* fs;
 		if (fopen_s(&fs, path, "w") || fs == nullptr)
@@ -25,10 +25,13 @@ namespace Symple
 			Err("Cannot Open File!");
 			return;
 		}
-		fprintf(fs, data);
+		fprintf(fs, text);
 		fflush(fs);
 		fclose(fs);
 	}
+
+	void Write(const std::string& path, const char* text) { Write(path.c_str(), text); }
+	void Write(const std::string& path, const std::string& text) { Write(path.c_str(), text.c_str()); }
 
 	int powi(int v, int t)
 	{

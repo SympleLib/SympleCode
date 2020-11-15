@@ -2,6 +2,7 @@
 
 #include <vector>
 #include <string>
+#include <ostream>
 #include <any>
 
 typedef struct Branch
@@ -36,8 +37,7 @@ typedef struct Branch
 
 	inline friend std::ostream& operator <<(std::ostream& os, const Branch& br)
 	{
-		os << br.ToString();
-		return os;
+		return os << br.ToString();
 	}
 private:
 	string ThisString(unsigned int tabs) const;

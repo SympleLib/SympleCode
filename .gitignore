@@ -343,3 +343,5 @@ MigrationBackup/
 SympleCompiler/SympleCompiler.vcxproj
 *.vcxproj
 *.vcxproj
+*.vcxproj
+SympleCompiler/SympleCompiler.vcxproj

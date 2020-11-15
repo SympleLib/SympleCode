@@ -130,15 +130,20 @@
     <ClInclude Include="src\SympleCode\Lexer.hpp" />
     <ClInclude Include="src\SympleCode\Parser.hpp" />
     <ClInclude Include="src\SympleCode\Token.hpp" />
+    <ClInclude Include="src\SympleCode\Tree\AST.hpp" />
+    <ClInclude Include="src\SympleCode\Tree\BinaryTree.hpp" />
     <ClInclude Include="src\SympleCode\Tree\Tree.hpp" />
-    <ClInclude Include="src\SympleCode\Util.hpp" />
+    <ClInclude Include="src\SympleCode\Tree\WhileTree.hpp" />
+    <ClInclude Include="src\SympleCode\Util\Util.hpp" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\SympleCode\Application.cpp" />
     <ClCompile Include="src\SympleCode\Lexer.cpp" />
     <ClCompile Include="src\SympleCode\Parser.cpp" />
+    <ClCompile Include="src\SympleCode\Tree\BinaryTree.cpp" />
     <ClCompile Include="src\SympleCode\Tree\Tree.cpp" />
-    <ClCompile Include="src\SympleCode\Util.cpp" />
+    <ClCompile Include="src\SympleCode\Tree\WhileTree.cpp" />
+    <ClCompile Include="src\SympleCode\Util\Util.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

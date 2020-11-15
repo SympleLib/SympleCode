@@ -1,6 +1,6 @@
 #pragma once
 
-#include <sstream>
+#include <string_view>
 
 namespace Symple::Parser
 {
@@ -11,6 +11,4 @@ namespace Symple::Parser
 #else
 	int64_t ParseInt(const std::string_view& view);
 #endif
-
-	int powi(int, int);
 }
