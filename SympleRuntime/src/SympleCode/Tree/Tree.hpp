@@ -1,6 +1,6 @@
 #pragma once
 
-#include <unordered_map>
+#include <vector>
 #include <string>
 #include <any>
 
@@ -14,8 +14,10 @@ struct Branch
 	typedef int64_t integer;
 #endif
 	typedef std::string string;
+	typedef std::string_view string_view;
+	typedef const char* cstring;
 
-	std::unordered_map<std::string, Branch> SubBranches;
+	std::vector<Branch> SubBranches;
 	std::string Label;
 	std::any Data;
 
@@ -24,7 +26,11 @@ struct Branch
 	Branch(const std::string& label)
 		: Label(label) {}
 
+	Branch(const std::string& label, const std::any& data)
+		: Label(label), Data(data) {}
+
 	Branch& PushBranch(const std::string& label);
+	Branch& PushBranch(const std::string& label, const std::any& data);
 
 	string ToString() const;
 

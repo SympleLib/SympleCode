@@ -3,8 +3,7 @@
 #include <string>
 #include <unordered_map>
 
-using Token = size_t;
-using KeyWord = size_t;
+using Token = int8_t;
 
 namespace Tokens
 {
@@ -36,6 +35,10 @@ namespace Tokens
 		Pipe,
 		End,
 		Unexpected,
+
+		Dollar,
+		At,
+		Exclimation,
 	};
 
 	inline const char* ToString(Token token)
@@ -46,7 +49,7 @@ namespace Tokens
 		"Equal",       "Plus",        "Minus",      "Asterisk",   "Slash",
 		"Hash",        "Dot",         "Comma",      "Colon",      "Semicolon",
 		"SingleQuote", "DoubleQuote", "Comment",    "Pipe",       "End",
-		"Unexpected",
+		"Unexpected", "Dollar", "At", "Exclimation",
 		};
 		return names[static_cast<int>(token)];
 	}

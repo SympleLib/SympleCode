@@ -1,64 +1,84 @@
 #pragma once
 
 #include <string>
+#include <functional>
 
 #include "SympleCode/Token.hpp"
 
-bool IsDigit(char);
-bool IsIdentifier(char);
-bool IsSpace(char);
-
-char Peek();
-char Get();
-
-class TokenInfo
+namespace Lexer
 {
-public:
-	TokenInfo(Token token)
-		: mToken{ token }
-	{}
+	bool IsDigit(char);
+	bool IsIdentifier(char);
+	bool IsSpace(char);
 
-	TokenInfo(Token token, const char* beg, const char* end)
-		: mToken{ token }, mLex(beg, std::distance(beg, end))
-	{}
+	char Peek();
+	char Get();
 
-	TokenInfo(Token token, const char* beg, size_t len)
-		: mToken{ token }, mLex(beg, len)
-	{}
+	class TokenInfo
+	{
+	public:
+		TokenInfo(Token token)
+			: mToken{ token }
+		{}
 
-	inline bool Is(Token token) const
-	{ return mToken == token; }
+		TokenInfo(Token token, const char* beg, const char* end)
+			: mToken{ token }, mLex(beg, std::distance(beg, end))
+		{}
 
-	inline bool IsNot(Token token) const
-	{ return mToken == token; }
+		TokenInfo(Token token, const char* beg, size_t len)
+			: mToken{ token }, mLex(beg, len)
+		{}
 
-	inline bool IsEither(Token t1, Token t2) const
-	{ return Is(t1) || Is(t2); }
+		inline bool Is(Token token) const
+		{
+			return mToken == token;
+		}
 
-	template<typename... T>
-	inline bool IsEither(Token t1, Token t2, Token t) const
-	{ return Is(t1) || IsEither(t1, t...); }
+		inline bool IsNot(Token token) const
+		{
+			return mToken == token;
+		}
 
-	inline Token GetToken() const
-	{ return mToken; }
+		inline bool IsEither(Token t1, Token t2) const
+		{
+			return Is(t1) || Is(t2);
+		}
 
-	inline void SetToken(Token token)
-	{ mToken = token; }
+		template<typename... T>
+		inline bool IsEither(Token t1, Token t2, Token t) const
+		{
+			return Is(t1) || IsEither(t1, t...);
+		}
 
-	inline std::string_view GetLex() const
-	{ return mLex; }
+		inline Token GetToken() const
+		{
+			return mToken;
+		}
 
-	inline void SetLex(std::string_view lex)
-	{ mLex = std::move(lex); }
-private:
-	Token mToken;
-	std::string_view mLex;
-};
+		inline void SetToken(Token token)
+		{
+			mToken = token;
+		}
 
-void Lex(const char*);
-TokenInfo Next();
+		inline std::string_view GetLex() const
+		{
+			return mLex;
+		}
 
-TokenInfo Atom(Token);
-TokenInfo Identifier();
-TokenInfo Number();
-TokenInfo Comment();
+		inline void SetLex(std::string_view lex)
+		{
+			mLex = std::move(lex);
+		}
+	private:
+		Token mToken;
+		std::string_view mLex;
+	};
+
+	void Lex(const char*, std::function<bool(const TokenInfo&)>);
+	TokenInfo Next();
+
+	TokenInfo Atom(Token);
+	TokenInfo Identifier();
+	TokenInfo Number();
+	TokenInfo Comment();
+}

@@ -1,20 +1,27 @@
 #include <iomanip>
 #include <iostream>
 
-#include "SympleCode/Lexer.hpp"
+#include "SympleCode/Parser.hpp"
 
 int main() {
     const char* source = R"(
-var myVar = 69;
-var myOtherVar = 64;
+int a = 22;
+int b = 44;
+while b != 0
+{
+    if a > b
+    {
+        a = a - b;
+    }
+    else
+    {
+        b = b - a;
+    }
+}
+print(a);
     )";
 
-    Lex(source);
-    for (auto token = Next();
-        !token.IsEither(Tokens::End, Tokens::Unexpected);
-        token = Next())
-        std::cout << std::setw(12) << Tokens::ToString(token.GetToken()) << " |" << token.GetLex()
-        << "|\n";
+    Parser::Parse(source);
 
     std::cin.get();
 }
