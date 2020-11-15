@@ -340,3 +340,6 @@ MigrationBackup/
 
 # Ionide (cross platform F# VS Code tools) working folder
 .ionide/
+SympleCompiler/SympleCompiler.vcxproj
+*.vcxproj
+*.vcxproj

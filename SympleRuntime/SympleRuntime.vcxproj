@@ -14,20 +14,6 @@
       <Platform>x64</Platform>
     </ProjectConfiguration>
   </ItemGroup>
-  <ItemGroup>
-    <ClInclude Include="src\SympleCode\Lexer.hpp" />
-    <ClInclude Include="src\SympleCode\Parser.hpp" />
-    <ClInclude Include="src\SympleCode\Token.hpp" />
-    <ClInclude Include="src\SympleCode\Tree\Tree.hpp" />
-    <ClInclude Include="src\SympleCode\Util.hpp" />
-  </ItemGroup>
-  <ItemGroup>
-    <ClCompile Include="src\SympleCode\Application.cpp" />
-    <ClCompile Include="src\SympleCode\Lexer.cpp" />
-    <ClCompile Include="src\SympleCode\Parser.cpp" />
-    <ClCompile Include="src\SympleCode\Tree\Tree.cpp" />
-    <ClCompile Include="src\SympleCode\Util.cpp" />
-  </ItemGroup>
   <PropertyGroup Label="Globals">
     <ProjectGuid>{03D97EF4-6F99-FA2A-38D4-43A8A4533F07}</ProjectGuid>
     <IgnoreWarnCompileDuplicatedFilename>true</IgnoreWarnCompileDuplicatedFilename>
