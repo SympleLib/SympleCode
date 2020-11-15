@@ -2,6 +2,14 @@
 
 #include <sstream>
 
+Branch::Branch() {}
+
+Branch::Branch(const std::string& label)
+	: Label(label) {}
+
+Branch::Branch(const std::string& label, const std::any& data)
+	: Label(label), Data(data) {}
+
 Branch& Branch::PushBranch(const std::string& label)
 {
 	SubBranches.push_back({ label });

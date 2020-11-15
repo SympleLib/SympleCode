@@ -2,7 +2,7 @@
 
 #include <sstream>
 
-namespace Parser
+namespace Symple::Parser
 {
 	void Parse(const char*);
 
@@ -13,6 +13,4 @@ namespace Parser
 #endif
 
 	int powi(int, int);
-
-	void Write(const std::string&);
 }

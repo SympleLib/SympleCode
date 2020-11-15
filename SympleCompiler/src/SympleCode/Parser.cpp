@@ -3,21 +3,17 @@
 #include <vector>
 #include <iostream>
 
+#include "SympleCode/Util/Util.hpp"
+
 #include "SympleCode/Tree/Tree.hpp"
 
 #include "SympleCode/Lexer.hpp"
 
-#define Out(...) fprintf(stdout, __VA_ARGS__)
-#define Err(...) fprintf(stderr, __VA_ARGS__)
-
-#define COut(msg) std::cout << msg;
-#define CErr(msg) std::cerr << msg;
-
-namespace Parser
+namespace Symple::Parser
 {
 	static std::vector<Lexer::TokenInfo> sTokens;
 	static std::vector<size_t> sStatements;
-	static Branch sTree;
+	static Tree sTree;
 	static Branch* sCurrentTree;
 
 	static bool myLex(const Lexer::TokenInfo& tokenInfo)
@@ -124,26 +120,5 @@ namespace Parser
 			val += (view[i] - '0') * powi(10, view.size() - 1 - i);
 		}
 		return val;
-	}
-
-	int powi(int v, int t)
-	{
-		int val = 1;
-		for (size_t i = 0; i < t; i++)
-			val *= v;
-		return val;
-	}
-
-	void Write(const std::string& str)
-	{
-		FILE* fs;
-		if (fopen_s(&fs, "../test/tree.txt", "w") || fs == nullptr)
-		{
-			Err("Cannot Open File!");
-			return;
-		}
-		fprintf(fs, str.c_str());
-		fflush(fs);
-		fclose(fs);
 	}
 }

@@ -4,7 +4,7 @@
 #include <string>
 #include <any>
 
-struct Branch
+typedef struct Branch
 {
 	typedef int8_t byte;
 	typedef size_t size;
@@ -21,13 +21,11 @@ struct Branch
 	std::string Label;
 	std::any Data;
 
-	Branch() {}
+	Branch();
 
-	Branch(const std::string& label)
-		: Label(label) {}
+	Branch(const std::string& label);
 
-	Branch(const std::string& label, const std::any& data)
-		: Label(label), Data(data) {}
+	Branch(const std::string& label, const std::any& data);
 
 	Branch& PushBranch(const std::string& label);
 	Branch& PushBranch(const std::string& label, const std::any& data);
@@ -43,4 +41,4 @@ struct Branch
 	}
 private:
 	string ThisString(unsigned int tabs) const;
-};
+} Tree;
