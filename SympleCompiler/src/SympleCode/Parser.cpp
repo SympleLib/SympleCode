@@ -19,37 +19,66 @@ namespace Symple::Parser
 	{
 		if (tokenInfo.IsEither(Tokens::End, Tokens::Unexpected))
 		{
-			if (tokenInfo.Is(Tokens::Unexpected));
+			if (tokenInfo.Is(Tokens::Unexpected))
 				CErr("Unexpected Token: '" << tokenInfo.GetLex() << "'\n");
 
 			return false;
 		}
 
 		sTokens.push_back(tokenInfo);
-		COut(Tokens::ToString(tokenInfo.GetToken()) << " '" << "'\n");
+		COut(Tokens::ToString(tokenInfo.GetToken()) << " '" << tokenInfo.GetLex() << "'\n");
 		return true;
 	}
 
-	void Parse(const char* beg)
+	void Parse(const char* source)
 	{
-		Lexer::Lex(beg, myLex);
+		Lexer::Lex(source, myLex);
 		sCurrentTree = &(sTree = {});
 
-		if (sTokens[0].Is(Tokens::Identifier))
+		size_t beg = 0;
+
+	ParseNext:
+		if (sTokens.size() - beg > 3)
 		{
-			//if (sTokens[0].GetLex() == "int")
+			if (sTokens[beg].Is(Tokens::Identifier))
 			{
+				if (sTokens[beg].GetLex() == "int")
+				{
+					Branch& varBranch = sCurrentTree->PushBranch("Var");
+					varBranch.PushBranch("Name", sTokens[beg + 1].GetLex());
+					varBranch.PushBranch("Type", "int");
+
+					if (sTokens.size() + beg <= 2 || !sTokens[beg + 2].Is(Tokens::Semicolon))
+						CErr("Syntax Error: 'Semicolon Expected'\n");
+					beg += 3;
+					goto ParseNext;
+				}
+			}
+
+			if (sTokens[beg + 1].Is(Tokens::Equal))
+			{
+				Branch& setBranch = sCurrentTree->PushBranch("Op. =");
+				Branch& lvalBranch = setBranch.PushBranch("L Value");
+				lvalBranch.PushBranch("Name", sTokens[beg].GetLex());
+				lvalBranch.PushBranch("Type", "int");
+				Branch& rvalBranch = setBranch.PushBranch("R Value");
+				rvalBranch.PushBranch("Value", ParseInt(sTokens[beg + 2].GetLex()));
+
+				if (sTokens.size() + beg <= 3 || !sTokens[beg + 3].Is(Tokens::Semicolon))
+					CErr("Syntax Error: 'Semicolon Expected'\n");
+				beg += 4;
+				goto ParseNext;
 			}
 		}
 
-		//COut(sTree);
-		Write("../tree/test.tree", sTree);
+		COut(sTree);
+		Write("../test/test.tree", sTree);
 	}
 
 #ifdef WIN32
-	int32_t ParseInt(const std::string_view& view)
+	int32_t ParseInt(std::string_view view)
 #else
-	int64_t ParseInt(const std::string& view)
+	int64_t ParseInt(std::string_view view)
 #endif
 	{
 		int val = 0;

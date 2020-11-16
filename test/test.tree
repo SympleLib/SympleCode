@@ -1,0 +1,18 @@
+\__
+    Var
+  \__
+      Name: a
+  \__
+      Type: int
+\__
+    Op. =
+  \__
+      L Value
+    \__
+        Name: a
+    \__
+        Type: int
+  \__
+      R Value
+    \__
+        Value: 69

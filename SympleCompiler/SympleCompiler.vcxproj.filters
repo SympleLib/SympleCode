@@ -4,28 +4,47 @@
     <Filter Include="Tree">
       <UniqueIdentifier>{B5118D7C-A148-8E0D-4A35-7410364B0A0F}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Util">
+      <UniqueIdentifier>{23A78D7C-0FDE-8E0D-B8CA-7410A4E00A0F}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\SympleCode\Lexer.hpp" />
     <ClInclude Include="src\SympleCode\Parser.hpp" />
     <ClInclude Include="src\SympleCode\Token.hpp" />
+    <ClInclude Include="src\SympleCode\Tree\AST.hpp">
+      <Filter>Tree</Filter>
+    </ClInclude>
+    <ClInclude Include="src\SympleCode\Tree\BinaryTree.hpp">
+      <Filter>Tree</Filter>
+    </ClInclude>
     <ClInclude Include="src\SympleCode\Tree\Tree.hpp">
       <Filter>Tree</Filter>
     </ClInclude>
-    <ClInclude Include="src\SympleCode\Tree\AST.hpp" />
-    <ClInclude Include="src\SympleCode\Tree\BinaryTree.hpp" />
-    <ClInclude Include="src\SympleCode\Util\Util.hpp" />
-    <ClInclude Include="src\SympleCode\Tree\WhileTree.hpp" />
+    <ClInclude Include="src\SympleCode\Tree\WhileTree.hpp">
+      <Filter>Tree</Filter>
+    </ClInclude>
+    <ClInclude Include="src\SympleCode\Util\Util.hpp">
+      <Filter>Util</Filter>
+    </ClInclude>
+    <ClInclude Include="src\SympleCode\Tree\ExpresionTree.hpp" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\SympleCode\Application.cpp" />
     <ClCompile Include="src\SympleCode\Lexer.cpp" />
     <ClCompile Include="src\SympleCode\Parser.cpp" />
+    <ClCompile Include="src\SympleCode\Tree\BinaryTree.cpp">
+      <Filter>Tree</Filter>
+    </ClCompile>
     <ClCompile Include="src\SympleCode\Tree\Tree.cpp">
       <Filter>Tree</Filter>
     </ClCompile>
-    <ClCompile Include="src\SympleCode\Tree\BinaryTree.cpp" />
-    <ClCompile Include="src\SympleCode\Util\Util.cpp" />
-    <ClCompile Include="src\SympleCode\Tree\WhileTree.cpp" />
+    <ClCompile Include="src\SympleCode\Tree\WhileTree.cpp">
+      <Filter>Tree</Filter>
+    </ClCompile>
+    <ClCompile Include="src\SympleCode\Util\Util.cpp">
+      <Filter>Util</Filter>
+    </ClCompile>
+    <ClCompile Include="src\SympleCode\Tree\ExpresionTree.cpp" />
   </ItemGroup>
 </Project>

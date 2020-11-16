@@ -40,5 +40,5 @@ typedef struct Branch
 		return os << br.ToString();
 	}
 private:
-	string ThisString(unsigned int tabs) const;
+	virtual string ThisString(unsigned int tabs) const;
 } Tree;

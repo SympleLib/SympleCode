@@ -5,10 +5,11 @@
 
 int main() {
     const char* source = R"(
-int a = 22;
+int a;
+a = 69;
     )";
 
     Symple::Parser::Parse(source);
 
-    //std::cin.get();
+    std::cin.get();
 }

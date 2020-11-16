@@ -132,6 +132,7 @@
     <ClInclude Include="src\SympleCode\Token.hpp" />
     <ClInclude Include="src\SympleCode\Tree\AST.hpp" />
     <ClInclude Include="src\SympleCode\Tree\BinaryTree.hpp" />
+    <ClInclude Include="src\SympleCode\Tree\ExpresionTree.hpp" />
     <ClInclude Include="src\SympleCode\Tree\Tree.hpp" />
     <ClInclude Include="src\SympleCode\Tree\WhileTree.hpp" />
     <ClInclude Include="src\SympleCode\Util\Util.hpp" />
@@ -141,6 +142,7 @@
     <ClCompile Include="src\SympleCode\Lexer.cpp" />
     <ClCompile Include="src\SympleCode\Parser.cpp" />
     <ClCompile Include="src\SympleCode\Tree\BinaryTree.cpp" />
+    <ClCompile Include="src\SympleCode\Tree\ExpresionTree.cpp" />
     <ClCompile Include="src\SympleCode\Tree\Tree.cpp" />
     <ClCompile Include="src\SympleCode\Tree\WhileTree.cpp" />
     <ClCompile Include="src\SympleCode\Util\Util.cpp" />

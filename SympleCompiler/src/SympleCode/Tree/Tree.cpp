@@ -26,12 +26,16 @@ Branch& Branch::PushBranch(const std::string& label, const std::any& data)
 
 Branch::string Branch::ToString() const
 {
-	std::stringstream ss;
-	for (size_t i = 1; i < SubBranches.size(); i++)
+	if (SubBranches.size() > 0)
 	{
-		ss << SubBranches[i].ThisString(0);
+		std::stringstream ss;
+		for (size_t i = 0; i < SubBranches.size(); i++)
+		{
+			ss << SubBranches[i].ThisString(0);
+		}
+		return ss.str().substr(1);
 	}
-	return ss.str().substr(1);
+	return "";
 }
 
 Branch::operator string() const
@@ -95,7 +99,14 @@ Branch::string Branch::ThisString(unsigned int tabs) const
 								}
 								catch (const std::bad_any_cast&)
 								{
-									ss << Data.type().name();
+									try
+									{
+										ss << *std::any_cast<Branch*>(Data);
+									}
+									catch (const std::bad_any_cast&)
+									{
+										ss << Data.type().name();
+									}
 								}
 							}
 						}
