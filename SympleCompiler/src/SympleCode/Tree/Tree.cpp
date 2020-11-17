@@ -10,6 +10,12 @@ Branch::Branch(const std::string& label)
 Branch::Branch(const std::string& label, const std::any& data)
 	: Label(label), Data(data) {}
 
+Branch& Branch::PushBranch(const Branch& branch)
+{
+	SubBranches.push_back({ branch });
+	return SubBranches.at(SubBranches.size() - 1);
+}
+
 Branch& Branch::PushBranch(const std::string& label)
 {
 	SubBranches.push_back({ label });
@@ -22,6 +28,26 @@ Branch& Branch::PushBranch(const std::string& label, const std::any& data)
 	Branch& branch = SubBranches.at(SubBranches.size() - 1);
 	branch.Data = data;
 	return branch;
+}
+
+Branch& Branch::FindBranch(const std::string& label)
+{
+	for (auto& Branch : SubBranches)
+		if (Branch.Label == label)
+			return Branch;
+	fprintf(stderr, "Branch '%s' Doesn't Exist!", label.c_str());
+	abort();
+	//return *(Branch*)nullptr;
+}
+
+const Branch& Branch::FindBranch(const std::string& label) const const
+{
+	for (const auto& Branch : SubBranches)
+		if (Branch.Label == label)
+			return Branch;
+	fprintf(stderr, "Branch '%s' Doesn't Exist!", label.c_str());
+	abort();
+	//return *(Branch*)nullptr;
 }
 
 Branch::string Branch::ToString() const
@@ -101,7 +127,7 @@ Branch::string Branch::ThisString(unsigned int tabs) const
 								{
 									try
 									{
-										ss << *std::any_cast<Branch*>(Data);
+										ss << std::any_cast<Branch>(Data);
 									}
 									catch (const std::bad_any_cast&)
 									{

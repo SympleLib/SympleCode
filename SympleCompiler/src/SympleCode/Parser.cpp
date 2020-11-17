@@ -6,6 +6,7 @@
 #include "SympleCode/Util/Util.hpp"
 
 #include "SympleCode/Tree/Tree.hpp"
+#include "SympleCode/Tree/AST.hpp"
 
 #include "SympleCode/Lexer.hpp"
 
@@ -35,41 +36,7 @@ namespace Symple::Parser
 		Lexer::Lex(source, myLex);
 		sCurrentTree = &(sTree = {});
 
-		size_t beg = 0;
 
-	ParseNext:
-		if (sTokens.size() - beg > 3)
-		{
-			if (sTokens[beg].Is(Tokens::Identifier))
-			{
-				if (sTokens[beg].GetLex() == "int")
-				{
-					Branch& varBranch = sCurrentTree->PushBranch("Var");
-					varBranch.PushBranch("Name", sTokens[beg + 1].GetLex());
-					varBranch.PushBranch("Type", "int");
-
-					if (sTokens.size() + beg <= 2 || !sTokens[beg + 2].Is(Tokens::Semicolon))
-						CErr("Syntax Error: 'Semicolon Expected'\n");
-					beg += 3;
-					goto ParseNext;
-				}
-			}
-
-			if (sTokens[beg + 1].Is(Tokens::Equal))
-			{
-				Branch& setBranch = sCurrentTree->PushBranch("Op. =");
-				Branch& lvalBranch = setBranch.PushBranch("L Value");
-				lvalBranch.PushBranch("Name", sTokens[beg].GetLex());
-				lvalBranch.PushBranch("Type", "int");
-				Branch& rvalBranch = setBranch.PushBranch("R Value");
-				rvalBranch.PushBranch("Value", ParseInt(sTokens[beg + 2].GetLex()));
-
-				if (sTokens.size() + beg <= 3 || !sTokens[beg + 3].Is(Tokens::Semicolon))
-					CErr("Syntax Error: 'Semicolon Expected'\n");
-				beg += 4;
-				goto ParseNext;
-			}
-		}
 
 		COut(sTree);
 		Write("../test/test.tree", sTree);

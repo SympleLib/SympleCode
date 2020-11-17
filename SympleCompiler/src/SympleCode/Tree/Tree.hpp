@@ -28,8 +28,12 @@ typedef struct Branch
 
 	Branch(const std::string& label, const std::any& data);
 
+	Branch& PushBranch(const Branch& branch);
 	Branch& PushBranch(const std::string& label);
 	Branch& PushBranch(const std::string& label, const std::any& data);
+
+	Branch& FindBranch(const std::string& label);
+	const Branch& FindBranch(const std::string& label) const;
 
 	string ToString() const;
 
@@ -40,5 +44,5 @@ typedef struct Branch
 		return os << br.ToString();
 	}
 private:
-	virtual string ThisString(unsigned int tabs) const;
+	string ThisString(unsigned int tabs) const;
 } Tree;
