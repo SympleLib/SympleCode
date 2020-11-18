@@ -1,18 +1,14 @@
 \__
-    Var
-  \__
-      Name: a
-  \__
-      Type: int
+    Unknown Symbol: print
 \__
-    Op. =
-  \__
-      L Value
-    \__
-        Name: a
-    \__
-        Type: int
-  \__
-      R Value
-    \__
-        Value: 69
+    Unknown Symbol: (
+\__
+    Number Constant: 1
+\__
+    Addition: +
+\__
+    Number Constant: 1
+\__
+    Unknown Symbol: )
+\__
+    Unknown Symbol: ;

@@ -21,8 +21,7 @@
     <ClInclude Include="src\SympleCode\Util\Util.hpp">
       <Filter>Util</Filter>
     </ClInclude>
-    <ClInclude Include="src\SympleCode\Tree\BinaryOperators.hpp" />
-    <ClInclude Include="src\SympleCode\CodeGen.hpp" />
+    <ClInclude Include="src\SympleCode\Util\Type.hpp" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\SympleCode\Application.cpp" />
@@ -34,7 +33,5 @@
     <ClCompile Include="src\SympleCode\Util\Util.cpp">
       <Filter>Util</Filter>
     </ClCompile>
-    <ClCompile Include="src\SympleCode\Tree\BinaryOperators.cpp" />
-    <ClCompile Include="src\SympleCode\CodeGen.cpp" />
   </ItemGroup>
 </Project>

@@ -1,5 +1,7 @@
 #include "SympleCode/Parser.hpp"
 
+#include <cvt/wstring>
+
 #include <vector>
 #include <sstream>
 
@@ -12,11 +14,12 @@
 
 namespace Symple::Parser
 {
-	static std::vector<Lexer::TokenInfo> sTokens;
+	static std::vector<TokenInfo> sTokens;
 	static Tree sTree;
 	static Branch* sCurrentTree;
+	static size_t sCurrentTok;
 
-	static bool myLex(const Lexer::TokenInfo& tokenInfo)
+	static bool myLex(const TokenInfo& tokenInfo)
 	{
 		if (tokenInfo.IsEither(Tokens::End, Tokens::Unexpected))
 		{
@@ -34,12 +37,37 @@ namespace Symple::Parser
 	void Parse(const char* source)
 	{
 		Lexer::Lex(source, myLex);
-		sCurrentTree = &(sTree = {});
 
+		sCurrentTok = 0;
+		sTree = { "Program" };
 
+		while (sCurrentTok < sTokens.size())
+			sTree.PushBranch(Walk());
 
 		COut(sTree);
 		Write("../test/test.tree", sTree);
+	}
+
+	Branch Walk()
+	{
+		const TokenInfo* tokInfo = &sTokens[sCurrentTok];
+
+		if (tokInfo->Is(Tokens::Number))
+		{
+			sCurrentTok++;
+
+			return { "Number Constant", ParseInt(*tokInfo) };
+		}
+		else if (tokInfo->Is(Tokens::Plus))
+		{
+			sCurrentTok++;
+
+			return { "Addition", tokInfo->GetLex() };
+		}
+
+		sCurrentTok++;
+
+		return { "Unknown Symbol", tokInfo->GetLex() };
 	}
 
 #ifdef WIN32

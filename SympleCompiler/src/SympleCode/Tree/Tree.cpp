@@ -2,6 +2,8 @@
 
 #include <sstream>
 
+#include "SympleCode/Util/Type.hpp"
+
 Branch::Branch() {}
 
 Branch::Branch(const std::string& label)
@@ -37,7 +39,6 @@ Branch& Branch::FindBranch(const std::string& label)
 			return Branch;
 	fprintf(stderr, "Branch '%s' Doesn't Exist!", label.c_str());
 	abort();
-	//return *(Branch*)nullptr;
 }
 
 const Branch& Branch::FindBranch(const std::string& label) const const
@@ -47,7 +48,6 @@ const Branch& Branch::FindBranch(const std::string& label) const const
 			return Branch;
 	fprintf(stderr, "Branch '%s' Doesn't Exist!", label.c_str());
 	abort();
-	//return *(Branch*)nullptr;
 }
 
 Branch::string Branch::ToString() const
@@ -131,7 +131,14 @@ Branch::string Branch::ThisString(unsigned int tabs) const
 									}
 									catch (const std::bad_any_cast&)
 									{
-										ss << Data.type().name();
+										try
+										{
+											ss << std::any_cast<Type>(Data).Name << " (" << std::any_cast<Type>(Data).Size << " bytes)";
+										}
+										catch (const std::bad_any_cast&)
+										{
+											ss << Data.type().name();
+										}
 									}
 								}
 							}

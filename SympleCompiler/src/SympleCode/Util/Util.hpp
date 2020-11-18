@@ -17,5 +17,7 @@ namespace Symple
 	void Write(const std::string& path, const char* text);
 	void Write(const std::string& path, const std::string& text);
 
+	
+
 	int powi(int v, int t);
 }

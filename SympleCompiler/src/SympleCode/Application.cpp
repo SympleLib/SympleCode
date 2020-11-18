@@ -5,7 +5,7 @@
 
 int main() {
     const char* source = R"(
-5 - 5;
+print(1 + 1);
     )";
 
     Symple::Parser::Parse(source);
