@@ -39,9 +39,7 @@ namespace Symple::Parser
 		Lexer::Lex(source, myLex);
 
 		sCurrentTok = 0;
-		sCurrentTree = &(sTree = { "Program" });
-
-		
+		Walk();
 
 		COut(sTree);
 		Write("../test/test.tree", sTree);
@@ -49,24 +47,22 @@ namespace Symple::Parser
 
 	Branch Walk()
 	{
-		const TokenInfo* tokInfo = &sTokens[sCurrentTok];
+		sCurrentTree = &(sTree = ParsePrimaryExpr());
 
-		if (tokInfo->Is(Tokens::Number))
+		while (Peek(0).Is(Tokens::Plus) || Peek(0).Is(Tokens::Minus))
 		{
-			sCurrentTok++;
-
-			return { "Number Constant", ParseInt(*tokInfo) };
-		}
-		else if (tokInfo->Is(Tokens::Plus))
-		{
-			sCurrentTok++;
-
-			return { "Addition", tokInfo->GetLex() };
+			TokenInfo opTok = PNext();
+			Branch right = ParsePrimaryExpr();
+			sCurrentTree = &sCurrentTree->PushBranch(AST::BinExpr(IntType, opTok, *sCurrentTree, right));
 		}
 
-		sCurrentTok++;
+		return *sCurrentTree;
+	}
 
-		return { "Unknown Symbol", tokInfo->GetLex() };
+	Branch ParsePrimaryExpr()
+	{
+		TokenInfo numTok = Match(Tokens::Number);
+		return AST::Constant(IntType, ParseInt(numTok));
 	}
 
 	TokenInfo Peek(size_t offset)
@@ -77,6 +73,25 @@ namespace Symple::Parser
 		if (index < 0)
 			throw std::exception("Expected Token!");
 		return sTokens[index];
+	}
+
+	TokenInfo Next()
+	{
+		sCurrentTok++;
+		return Peek(0);
+	}
+
+	TokenInfo PNext()
+	{
+		sCurrentTok++;
+		return Peek(-1);
+	}
+
+	TokenInfo Match(Token tok)
+	{
+		if (Peek(0).Is(tok))
+			return PNext();
+		return tok;
 	}
 
 #ifdef WIN32

@@ -1,14 +1,39 @@
-\__
-    Unknown Symbol: print
-\__
-    Unknown Symbol: (
-\__
-    Number Constant: 1
-\__
-    Addition: +
-\__
-    Number Constant: 1
-\__
-    Unknown Symbol: )
-\__
-    Unknown Symbol: ;
+L-- Binary Expression
+   |-- Type: int (4 bytes)
+   |-- Operator: Plus [+]
+   |-- LValue: 
+   |  L-- Constant: 
+   |-- RValue: 
+   |  L-- Constant: 
+   L-- Binary Expression
+      |-- Type: int (4 bytes)
+      |-- Operator: Plus [+]
+      |-- LValue: 
+      |  L-- Binary Expression
+      |     |-- Type: int (4 bytes)
+      |     |-- Operator: Plus [+]
+      |     |-- LValue: 
+      |     |  L-- Constant: 
+      |     L-- RValue: 
+      |        L-- Constant: 
+      |-- RValue: 
+      |  L-- Constant: 
+      L-- Binary Expression
+         |-- Type: int (4 bytes)
+         |-- Operator: Minus [-]
+         |-- LValue: 
+         |  L-- Binary Expression
+         |     |-- Type: int (4 bytes)
+         |     |-- Operator: Plus [+]
+         |     |-- LValue: 
+         |     |  L-- Binary Expression
+         |     |     |-- Type: int (4 bytes)
+         |     |     |-- Operator: Plus [+]
+         |     |     |-- LValue: 
+         |     |     |  L-- Constant: 
+         |     |     L-- RValue: 
+         |     |        L-- Constant: 
+         |     L-- RValue: 
+         |        L-- Constant: 
+         L-- RValue: 
+            L-- Constant: 

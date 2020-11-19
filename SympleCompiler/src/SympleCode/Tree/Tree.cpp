@@ -3,6 +3,7 @@
 #include <sstream>
 
 #include "SympleCode/Util/Type.hpp"
+#include "SympleCode/Token.hpp"
 
 Branch::Branch() {}
 
@@ -125,17 +126,34 @@ Branch::string Branch::ThisString(std::string indent, bool last) const
 								{
 									try
 									{
-										ss << std::any_cast<Branch>(Data);
+										ss << Tokens::ToString(std::any_cast<TokenInfo>(Data).GetToken()) << " [" << std::any_cast<TokenInfo>(Data).GetLex() << ']';
 									}
 									catch (const std::bad_any_cast&)
 									{
 										try
 										{
-											ss << std::any_cast<Type>(Data).Name << " (" << std::any_cast<Type>(Data).Size << " bytes)";
+											ss << Tokens::ToString(std::any_cast<Token>(Data));
 										}
 										catch (const std::bad_any_cast&)
 										{
-											ss << Data.type().name();
+											try
+											{
+												if (last)
+													indent += "   ";
+												else
+													indent += "|  ";
+												ss << std::any_cast<Branch>(Data).ThisString(indent);
+											}
+											catch (const std::bad_any_cast&)
+											{
+												try
+												{
+													ss << std::any_cast<Type>(Data).Name << " (" << std::any_cast<Type>(Data).Size << " bytes)";
+												}
+												catch (const std::bad_any_cast&)
+												{
+												}
+											}
 										}
 									}
 								}
