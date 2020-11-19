@@ -57,11 +57,11 @@ Branch::string Branch::ToString() const
 		std::stringstream ss;
 		for (size_t i = 0; i < SubBranches.size(); i++)
 		{
-			ss << SubBranches[i].ThisString(0);
+			ss << SubBranches[i].ThisString({}, i == SubBranches.size() - 1);
 		}
 		return ss.str().substr(1);
 	}
-	return "";
+	return {};
 }
 
 Branch::operator string() const
@@ -69,17 +69,15 @@ Branch::operator string() const
 	return ToString();
 }
 
-Branch::string Branch::ThisString(unsigned int tabs) const
+Branch::string Branch::ThisString(std::string indent, bool last) const
 {
 	std::stringstream ss;
-	ss << '\n';
-	for (unsigned int i = 0; i < tabs; i++)
-		ss << "  ";
-	if (tabs >= 0)
-		ss << "\\__\n";
-	for (unsigned int i = 0; i < tabs; i++)
-		ss << "  ";
-	ss << "    " << Label;
+	ss << '\n' << indent;
+	if (last)
+		ss << "L-- ";
+	else
+		ss << "|-- ";
+	ss << Label;
 	if (Data.has_value())
 	{
 		ss << ": ";
@@ -150,9 +148,13 @@ Branch::string Branch::ThisString(unsigned int tabs) const
 	}
 	else
 	{
-		for (const auto& branch : SubBranches)
+		if (last)
+			indent += "   ";
+		else
+			indent += "|  ";
+		for (size_t i = 0; i < SubBranches.size(); i++)
 		{
-			ss << branch.ThisString(tabs + 1);
+			ss << SubBranches[i].ThisString(indent, i == SubBranches.size() - 1);
 		}
 	}
 

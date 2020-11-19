@@ -44,5 +44,5 @@ typedef struct Branch
 		return os << br.ToString();
 	}
 private:
-	string ThisString(unsigned int tabs) const;
+	string ThisString(std::string indent = {}, bool last = true) const;
 } Tree;

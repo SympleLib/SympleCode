@@ -39,10 +39,9 @@ namespace Symple::Parser
 		Lexer::Lex(source, myLex);
 
 		sCurrentTok = 0;
-		sTree = { "Program" };
+		sCurrentTree = &(sTree = { "Program" });
 
-		while (sCurrentTok < sTokens.size())
-			sTree.PushBranch(Walk());
+		
 
 		COut(sTree);
 		Write("../test/test.tree", sTree);
@@ -68,6 +67,16 @@ namespace Symple::Parser
 		sCurrentTok++;
 
 		return { "Unknown Symbol", tokInfo->GetLex() };
+	}
+
+	TokenInfo Peek(size_t offset)
+	{
+		size_t index = sCurrentTok + offset;
+		if (index >= sTokens.size())
+			return sTokens[sTokens.size() - 1];
+		if (index < 0)
+			throw std::exception("Expected Token!");
+		return sTokens[index];
 	}
 
 #ifdef WIN32
