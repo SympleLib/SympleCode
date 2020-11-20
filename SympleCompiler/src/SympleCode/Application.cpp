@@ -4,11 +4,14 @@
 #include "SympleCode/Parser.hpp"
 
 int main() {
-    const char* source = R"(
-1 * 2 + 3
-    )";
+    std::string source;
+    while (true)
+    {
+        std::getline(std::cin, source);
 
-    Symple::Parser::Parse(source);
+        Symple::Parser::Parse(source);
+        source.clear();
+    }
     //Tree mTree;
     //    mTree.PushBranch("Sup", 69i64);
     //    Tree& mSup2 = mTree.PushBranch("Sup2");

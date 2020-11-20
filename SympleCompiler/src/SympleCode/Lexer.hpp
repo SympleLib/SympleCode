@@ -7,14 +7,14 @@
 
 namespace Lexer
 {
-	bool IsDigit(char);
-	bool IsIdentifier(char);
-	bool IsSpace(char);
+	bool IsDigit(char c);
+	bool IsIdentifier(char c);
+	bool IsSpace(char c);
 
 	char Peek();
 	char Get();
 
-	void Lex(const char*, std::function<bool(const TokenInfo&)>);
+	void Lex(const char* beg, std::function<bool(const TokenInfo&)> func);
 	TokenInfo Next();
 
 	TokenInfo Atom(Token);

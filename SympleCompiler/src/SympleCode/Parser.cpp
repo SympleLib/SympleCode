@@ -33,12 +33,14 @@ namespace Symple::Parser
 		return true;
 	}
 
-	void Parse(const char* source)
+	void Parse(std::string& source)
 	{
-		Lexer::Lex(source, myLex);
+		sTokens.clear();
+		Lexer::Lex(source.c_str(), myLex);
 		
 		sCurrentTree = &(sTree = { "Program" });
 		sCurrentTok = 0;
+		sErrorList.clear();
 
 		sCurrentTree->PushBranch(ParseExpr());
 
@@ -51,25 +53,41 @@ namespace Symple::Parser
 		{
 			Err("Parsing Failed with %zu errors!\n", sErrorList.size());
 			for (const auto& err : sErrorList)
-				Err("ERROR: %s\n", err.c_str());
+				Err("ERROR: %s!\n", err.c_str());
 			std::cin.get();
 		}
 	}
 
 	Branch ParsePrimaryExpr()
 	{
+		if (Peek(0).Is(Tokens::LeftParen))
+		{
+			TokenInfo left = PNext();
+			Branch expr = ParseExpr();
+			TokenInfo right = Match(Tokens::RightParen);
+			return AST::ParenExpr(IntType, left, expr, right);
+		}
 		TokenInfo numTok = Match(Tokens::Number);
 		return AST::Constant(IntType, ParseInt(numTok));
 	}
 
 	Branch ParseExpr(int8_t parentOOO)
 	{
-		Branch left = ParsePrimaryExpr();
+		Branch left;
+		int8_t uooo = GetUnOpOOO(Peek(0).GetToken());
+		if (uooo >= 0 && uooo >= parentOOO)
+		{
+			TokenInfo opTok = PNext();
+			Branch value = ParseExpr(uooo);
+			left = AST::UnExpr(IntType, opTok, value);
+		}
+		else
+			left = ParsePrimaryExpr();
 
 		while (true)
 		{
 			int8_t ooo = GetBinOpOOO(Peek(0).GetToken());
-			if (ooo <= -1 || ooo <= parentOOO)
+			if (ooo < 0 || ooo <= parentOOO)
 				break;
 			TokenInfo opTok = PNext();
 			Branch right = ParseExpr(ooo);
@@ -90,6 +108,19 @@ namespace Symple::Parser
 		case Asterisk:
 		case Slash:
 			return 1;
+		}
+
+		return -1;
+	}
+
+	int8_t GetUnOpOOO(Token tok)
+	{
+		switch (tok)
+		{
+			using namespace Tokens;
+		case Plus:
+		case Minus:
+			return 2;
 		}
 
 		return -1;
