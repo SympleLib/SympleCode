@@ -5,7 +5,7 @@
 
 int main() {
     const char* source = R"(
-1 + 1 + 69 - 42
+lol + 1
     )";
 
     Symple::Parser::Parse(source);

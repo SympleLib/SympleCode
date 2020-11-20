@@ -1,7 +1,5 @@
 #include "SympleCode/Parser.hpp"
 
-#include <cvt/wstring>
-
 #include <vector>
 #include <sstream>
 
@@ -14,6 +12,7 @@
 
 namespace Symple::Parser
 {
+	static std::vector<std::string> sErrorList;
 	static std::vector<TokenInfo> sTokens;
 	static Tree sTree;
 	static Branch* sCurrentTree;
@@ -41,15 +40,23 @@ namespace Symple::Parser
 		sCurrentTok = 0;
 		Walk();
 
-		COut(sTree);
-		Write("../test/test.tree", sTree);
+		if (sErrorList.size() <= 0)
+		{
+			Write("../test/test.tree", sTree);
+		}
+		else
+		{
+			Err("Parsing Failed with %zu errors!\n", sErrorList.size());
+			for (const auto& err : sErrorList)
+				Out("ERROR: %s\n", err.c_str());
+		}
 	}
 
 	Branch Walk()
 	{
 		sCurrentTree = &(sTree = ParsePrimaryExpr());
 
-		while (Peek(0).Is(Tokens::Plus) || Peek(0).Is(Tokens::Minus))
+		while (Peek(0).Is(Tokens::Plus) || Peek(0).Is(Tokens::Minus) || Peek(0).Is(Tokens::Asterisk) || Peek(0).Is(Tokens::Slash))
 		{
 			TokenInfo opTok = PNext();
 			Branch right = ParsePrimaryExpr();
@@ -91,18 +98,31 @@ namespace Symple::Parser
 	{
 		if (Peek(0).Is(tok))
 			return PNext();
+
+		std::stringstream ss;
+		ss << "Expected type " << Tokens::ToString(tok) << ", got '" << Peek(0).GetLex() << '\'';
+
+		sErrorList.push_back(ss.str());
 		return tok;
 	}
 
-#ifdef WIN32
-	int32_t ParseInt(std::string_view view)
-#else
+#if _WIN64
 	int64_t ParseInt(std::string_view view)
+#else
+	int32_t ParseInt(std::string_view view)
 #endif
 	{
 		int val = 0;
 		for (size_t i = 0; i < view.size(); i++)
 		{
+			if (view[i] < '0' || view[i] > '9')
+			{
+				std::stringstream ss;
+				ss << "Expected int, got '" << view << '\'';
+
+				sErrorList.push_back(ss.str());
+				return -1;
+			}
 			val += (view[i] - '0') * powi(10, view.size() - 1 - i);
 		}
 		return val;

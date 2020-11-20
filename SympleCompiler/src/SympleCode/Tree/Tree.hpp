@@ -9,10 +9,10 @@ typedef struct Branch
 {
 	typedef int8_t byte;
 	typedef size_t size;
-#if WIN32
-	typedef int32_t integer;
-#else
+#if _WIN64
 	typedef int64_t integer;
+#else
+	typedef int32_t integer;
 #endif
 	typedef std::string string;
 	typedef std::string_view string_view;

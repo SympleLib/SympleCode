@@ -102,7 +102,7 @@ Branch::string Branch::ThisString(std::string indent, bool last) const
 				{
 					try
 					{
-						ss << std::any_cast<string>(Data);
+						ss << std::any_cast<int>(Data);
 					}
 					catch (const std::bad_any_cast&)
 					{
@@ -114,44 +114,51 @@ Branch::string Branch::ThisString(std::string indent, bool last) const
 						{
 							try
 							{
-								ss << std::any_cast<string_view>(Data);
+								ss << std::any_cast<string>(Data);
 							}
 							catch (const std::bad_any_cast&)
 							{
 								try
 								{
-									ss << std::any_cast<cstring>(Data);
+									ss << std::any_cast<string_view>(Data);
 								}
 								catch (const std::bad_any_cast&)
 								{
 									try
 									{
-										ss << Tokens::ToString(std::any_cast<TokenInfo>(Data).GetToken()) << " [" << std::any_cast<TokenInfo>(Data).GetLex() << ']';
+										ss << std::any_cast<cstring>(Data);
 									}
 									catch (const std::bad_any_cast&)
 									{
 										try
 										{
-											ss << Tokens::ToString(std::any_cast<Token>(Data));
+											ss << Tokens::ToString(std::any_cast<TokenInfo>(Data).GetToken()) << " [" << std::any_cast<TokenInfo>(Data).GetLex() << ']';
 										}
 										catch (const std::bad_any_cast&)
 										{
 											try
 											{
-												if (last)
-													indent += "   ";
-												else
-													indent += "|  ";
-												ss << std::any_cast<Branch>(Data).ThisString(indent);
+												ss << Tokens::ToString(std::any_cast<Token>(Data));
 											}
 											catch (const std::bad_any_cast&)
 											{
 												try
 												{
-													ss << std::any_cast<Type>(Data).Name << " (" << std::any_cast<Type>(Data).Size << " bytes)";
+													if (last)
+														indent += "   ";
+													else
+														indent += "|  ";
+													ss << std::any_cast<Branch>(Data).ThisString(indent);
 												}
 												catch (const std::bad_any_cast&)
 												{
+													try
+													{
+														ss << std::any_cast<Type>(Data).Name << " (" << std::any_cast<Type>(Data).Size << " bytes)";
+													}
+													catch (const std::bad_any_cast&)
+													{
+													}
 												}
 											}
 										}

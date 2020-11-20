@@ -6,6 +6,8 @@
 
 using ASTToken = const std::string&;
 
+#define AST_UNKNOWN   "???"
+
 #define AST_TYPE      "Type"
 #define AST_RETURN    "Return"
 #define AST_VALUE     "Value"
@@ -28,7 +30,9 @@ using ASTToken = const std::string&;
 #define AST_BIN       "Binary Expression"
 #define AST_OP        "Operator"
 #define AST_ADD       "Add"
-#define AST_SUBTRACT  "Subtract"
+#define AST_SUB       "Subtract"
+#define AST_MULT      "Multiply"
+#define AST_DIV       "Divide"
 
 namespace Symple::AST
 {
@@ -58,7 +62,7 @@ namespace Symple::AST
 	{
 		Branch branch(AST_BIN);
 		branch.PushBranch(AST_TYPE, type);
-		branch.PushBranch(AST_OP, op);
+		branch.PushBranch(AST_OP, op.Is(Tokens::Plus) ? AST_ADD : op.Is(Tokens::Minus) ? AST_SUB : op.Is(Tokens::Asterisk) ? AST_MULT : op.Is(Tokens::Slash) ? AST_DIV : AST_UNKNOWN);
 		branch.PushBranch(AST_LVALUE, lvalue);
 		branch.PushBranch(AST_RVALUE, rvalue);
 		return branch;
