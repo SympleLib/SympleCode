@@ -2,7 +2,7 @@
 
 #include <cstdint>
 
-#include "SympleCode/Util/Type.hpp"
+#include "SympleCode/Type.hpp"
 
 using ASTToken = const std::string&;
 
@@ -18,6 +18,11 @@ using ASTToken = const std::string&;
 #define AST_LVALUE    "LValue"
 #define AST_RVALUE    "RValue"
 #define AST_CONSTANT  "Constant"
+
+#define AST_FUNC      "Function"
+#define AST_PARAM     "Parameter"
+#define AST_PARAMS    "Parameters"
+#define AST_BODY      "Body"
 
 #define AST_VAR       "Var"
 #define AST_NAME      "Name"
@@ -49,10 +54,33 @@ using ASTToken = const std::string&;
 
 namespace Symple::AST
 {
+	inline Branch Null()
+	{
+		return { "Null" };
+	}
+
 	inline Branch Id(const TokenInfo& tok)
 	{
 		Branch branch(AST_ID);
 		branch.PushBranch(AST_NAME, tok.GetLex());
+		return branch;
+	}
+
+	inline Branch Func(const Type& ret, const std::string& name, const Branch& params, const Branch& body)
+	{
+		Branch branch(AST_FUNC);
+		branch.PushBranch(AST_NAME, name);
+		branch.PushBranch(AST_TYPE, ret);
+		branch.PushBranch(AST_PARAMS, params);
+		branch.PushBranch(AST_BODY, body);
+		return branch;
+	}
+
+	inline Branch Param(const Type& type, const std::string& name)
+	{
+		Branch branch(AST_FUNC);
+		branch.PushBranch(AST_NAME, name);
+		branch.PushBranch(AST_TYPE, type);
 		return branch;
 	}
 

@@ -1,5 +1,7 @@
-L--	Unary Expression
- 	|--	Type: int (4 bytes)
- 	|--	Operator: Negative
- 	L--	Value: 
- 	 	L--	Constant: 1
+L--	Function
+ 	|--	Name: main
+ 	|--	Type: void (0 bytes)
+ 	|--	Parameters: 
+ 	|	L--	
+ 	L--	Body: 
+ 	 	L--	

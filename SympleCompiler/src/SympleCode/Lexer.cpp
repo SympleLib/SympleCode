@@ -210,7 +210,7 @@ namespace Symple::Lexer
         case '>':
             return Atom(Tokens::GreaterThan);
         case '=':
-            return EqualsEqual();
+            return Equals();
         case '+':
             return Atom(Tokens::Plus);
         case '-':
@@ -297,12 +297,23 @@ namespace Symple::Lexer
         }
     }
 
-    TokenInfo EqualsEqual()
+    TokenInfo Equals()
     {
         const char* start = sBeg;
-        Get();
-        if (Get() == '=')
-            return { Tokens::EqualsEqual, start, sBeg };
-        return Tokens::Equal;
+        if (Peek() == '=')
+        {
+            Get();
+            if (Get() == '=')
+                return { Tokens::EqualsEqual, start, sBeg };
+            return Tokens::Equal;
+        }
+        else if (Peek() == '!')
+        {
+
+            Get();
+            if (Get() == '=')
+                return { Tokens::NotEqual, start, sBeg };
+            return Tokens::Exclimation;
+        }
     }
 }

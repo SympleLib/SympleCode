@@ -14,12 +14,16 @@ namespace Symple::Parser
 {
 	static std::vector<std::string> sErrorList;
 	static std::vector<TokenInfo> sTokens;
+	static std::vector<Type> sTypes = {
+		VoidType,
+		IntType
+	};
 	static Tree sTree;
-	static Branch* sCurrentTree;
 	static size_t sCurrentTok;
 
 	static bool myLex(const TokenInfo& tokenInfo)
 	{
+		sTokens.push_back(tokenInfo);
 		if (tokenInfo.IsEither(Tokens::End, Tokens::Unexpected))
 		{
 			if (tokenInfo.Is(Tokens::Unexpected))
@@ -27,9 +31,7 @@ namespace Symple::Parser
 
 			return false;
 		}
-
-		sTokens.push_back(tokenInfo);
-		COut(Tokens::ToString(tokenInfo.GetToken()) << " '" << tokenInfo.GetLex() << "'\n");
+		//COut(Tokens::ToString(tokenInfo.GetToken()) << " '" << tokenInfo.GetLex() << "'\n");
 		return true;
 	}
 
@@ -38,11 +40,11 @@ namespace Symple::Parser
 		sTokens.clear();
 		Lexer::Lex(source.c_str(), myLex);
 		
-		sCurrentTree = &(sTree = { "Program" });
 		sCurrentTok = 0;
+		sTypes.clear();
 		sErrorList.clear();
 
-		sCurrentTree->PushBranch(ParseExpr());
+		ParseMembers();
 
 		if (sErrorList.size() <= 0)
 		{
@@ -58,9 +60,99 @@ namespace Symple::Parser
 		}
 	}
 
+	Branch ParseMembers()
+	{
+		sTree = {};
+
+		while (Peek().IsNot(Tokens::End))
+		{
+			TokenInfo start = Peek();
+
+			sTree.PushBranch(ParseMember());
+
+			if (Peek() == start)
+				Next();
+		}
+
+		return sTree;
+	}
+
+	Branch ParseMember()
+	{
+		if (Peek().IsKeyWord(KeyWords::Function))
+			return ParseFuncDecl();
+		return ParseStatement();
+	}
+
+	Branch ParseFuncDecl()
+	{
+		Next();
+		Type type = ParseType();
+		std::string name(Match(Tokens::Identifier));
+		Branch params = ParseParams();
+		COut(params);
+		Branch body = ParseBlock();
+		
+		return AST::Func(type, name, params, body);
+	}
+
+	Branch ParseParams()
+	{
+		Match(Tokens::LeftParen);
+
+		Branch list;
+		bool parseNext = true;
+		while (parseNext && Peek().IsNot(Tokens::RightParen) && Peek().IsNot(Tokens::End))
+		{
+			Branch param = ParseParam();
+			list.PushBranch(param);
+
+			if (parseNext = Peek().Is(Tokens::Comma))
+				Next();
+		}
+		Next();
+
+		return list;
+	}
+
+	Branch ParseParam()
+	{
+		Type type = ParseType();
+		std::string name(Match(Tokens::Identifier).GetLex());
+		return AST::Param(type, name);
+	}
+	
+	Branch ParseStatement()
+	{
+		switch (Peek().GetToken())
+		{
+		default:
+			return ParseExpr();
+		}
+	}
+
+	Branch ParseBlock()
+	{
+		Branch block;
+		Match(Tokens::LeftCurly);
+		while (Peek().IsNot(Tokens::End) && Peek().IsNot(Tokens::RightCurly))
+		{
+			TokenInfo start = Peek();
+
+			Branch statement = ParseStatement();
+			block.PushBranch(statement);
+
+			if (Peek() == start)
+				Next();
+		}
+		Match(Tokens::RightCurly);
+
+		return block;
+	}
+
 	Branch ParseExpr()
 	{
-		return ParseSetExpr();
+		return ParseBinExpr();
 	}
 
 	Branch ParseSetExpr()
@@ -103,19 +195,33 @@ namespace Symple::Parser
 
 	Branch ParsePrimaryExpr()
 	{
-		if (Peek(0).Is(Tokens::LeftParen))
+		switch (Peek(0).GetToken())
 		{
-			TokenInfo left = PNext();
+		case Tokens::LeftParen:
+		{
+			Next();
 			Branch expr = ParseExpr();
-			TokenInfo right = Match(Tokens::RightParen);
-			return AST::ParenExpr(IntType, left, expr, right);
+			Match(Tokens::RightParen);
+			return expr;
 		}
-		if (Peek(0).Is(Tokens::Comment))
+		case Tokens::Comment:
 		{
 			return AST::Comment(Peek(0));
 		}
+		}
 		TokenInfo numTok = Match(Tokens::Number);
 		return AST::Constant(IntType, ParseInt(numTok));
+	}
+
+	Type ParseType()
+	{
+		TokenInfo tok = PNext();
+		for (const auto& ty : sTypes)
+			if (ty.Name == tok.GetLex())
+				return ty;
+			else
+				COut(ty.Name << ", " << tok.GetLex());
+		return VoidType;
 	}
 
 	int8_t GetBinOpOOO(Token tok)
@@ -145,6 +251,17 @@ namespace Symple::Parser
 		}
 
 		return -1;
+	}
+
+	int8_t GetLogOpOOO(Token tok)
+	{
+		switch (tok)
+		{
+			using namespace Tokens;
+		case EqualsEqual:
+		case NotEqual:
+			return 0;
+		}
 	}
 
 	TokenInfo Peek(size_t offset)

@@ -8,4 +8,5 @@ struct Type
 	long Size;
 };
 
+const Type VoidType = { "void", 0 };
 const Type IntType = { "int", sizeof(int) };

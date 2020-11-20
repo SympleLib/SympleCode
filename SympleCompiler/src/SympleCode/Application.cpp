@@ -10,13 +10,13 @@ int main() {
 	{
 		std::getline(std::cin, source);
 
-		Symple::Lexer::Lex(source.c_str(), [](const TokenInfo& tok)
-			{
-				std::cout << Tokens::ToString(tok.GetToken()) << " |" << tok.GetLex() << "|\n";
+		//Symple::Lexer::Lex(source.c_str(), [](const Symple::TokenInfo& tok)
+		//	{
+		//		std::cout << Symple::Tokens::ToString(tok.GetToken()) << " |" << tok.GetLex() << "|\n";
 
-				return !tok.IsEither(Tokens::End, Tokens::Unexpected);
-			});
-		//Symple::Parser::Parse(source);
+		//		return !tok.IsEither(Symple::Tokens::End, Symple::Tokens::Unexpected);
+		//	});
+		Symple::Parser::Parse(source);
 		source.clear();
 	}
 
