@@ -58,6 +58,49 @@ namespace Symple::Parser
 		}
 	}
 
+	Branch ParseExpr()
+	{
+		return ParseSetExpr();
+	}
+
+	Branch ParseSetExpr()
+	{
+		if (Peek(0).Is(Tokens::Identifier) && Peek(1).Is(Tokens::EqualsEqual))
+		{
+			TokenInfo idTok = PNext();
+			Next();
+			Branch right = ParseSetExpr();
+			return AST::Set(IntType, idTok, right);
+		}
+		return ParseBinExpr();
+	}
+
+	Branch ParseBinExpr(int8_t parentOOO)
+	{
+		Branch left;
+		int8_t uooo = GetUnOpOOO(Peek(0).GetToken());
+		if (uooo >= 0 && uooo >= parentOOO)
+		{
+			TokenInfo opTok = PNext();
+			Branch value = ParseBinExpr(uooo);
+			left = AST::UnExpr(IntType, opTok, value);
+		}
+		else
+			left = ParsePrimaryExpr();
+
+		while (true)
+		{
+			int8_t ooo = GetBinOpOOO(Peek(0).GetToken());
+			if (ooo < 0 || ooo <= parentOOO)
+				break;
+			TokenInfo opTok = PNext();
+			Branch right = ParseBinExpr(ooo);
+			left = AST::BinExpr(IntType, opTok, left, right);
+		}
+
+		return left;
+	}
+
 	Branch ParsePrimaryExpr()
 	{
 		if (Peek(0).Is(Tokens::LeftParen))
@@ -73,32 +116,6 @@ namespace Symple::Parser
 		}
 		TokenInfo numTok = Match(Tokens::Number);
 		return AST::Constant(IntType, ParseInt(numTok));
-	}
-
-	Branch ParseExpr(int8_t parentOOO)
-	{
-		Branch left;
-		int8_t uooo = GetUnOpOOO(Peek(0).GetToken());
-		if (uooo >= 0 && uooo >= parentOOO)
-		{
-			TokenInfo opTok = PNext();
-			Branch value = ParseExpr(uooo);
-			left = AST::UnExpr(IntType, opTok, value);
-		}
-		else
-			left = ParsePrimaryExpr();
-
-		while (true)
-		{
-			int8_t ooo = GetBinOpOOO(Peek(0).GetToken());
-			if (ooo < 0 || ooo <= parentOOO)
-				break;
-			TokenInfo opTok = PNext();
-			Branch right = ParseExpr(ooo);
-			left = AST::BinExpr(IntType, opTok, left, right);
-		}
-
-		return left;
 	}
 
 	int8_t GetBinOpOOO(Token tok)

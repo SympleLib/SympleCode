@@ -9,7 +9,10 @@ namespace Symple::Parser
 {
 	void Parse(std::string& source);
 
-	Branch ParseExpr(int8_t parentOOO = -1);
+	Branch ParseExpr();
+
+	Branch ParseSetExpr();
+	Branch ParseBinExpr(int8_t parentOOO = -1);
 	Branch ParsePrimaryExpr();
 
 	int8_t GetUnOpOOO(Token tok);

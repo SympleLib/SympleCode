@@ -83,6 +83,15 @@ namespace Symple::AST
 		return { AST_COMMENT, comment };
 	}
 
+	inline Branch Set(const Type& type, const TokenInfo& lvalue, const Branch& rvalue)
+	{
+		Branch branch(AST_BIN);
+		branch.PushBranch(AST_TYPE, type);
+		branch.PushBranch(AST_LVALUE, lvalue);
+		branch.PushBranch(AST_RVALUE, rvalue);
+		return branch;
+	}
+
 	inline Branch BinExpr(const Type& type, const TokenInfo& op, const Branch& lvalue, const Branch& rvalue)
 	{
 		Branch branch(AST_BIN);

@@ -21,4 +21,5 @@ namespace Symple::Lexer
 	TokenInfo Identifier();
 	TokenInfo Number();
 	TokenInfo Comment();
+	TokenInfo EqualsEqual();
 }

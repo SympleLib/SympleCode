@@ -38,6 +38,7 @@ namespace Tokens
 		Dollar,
 		At,
 		Exclimation,
+		EqualsEqual
 	};
 
 	inline const char* ToString(Token token)
@@ -48,7 +49,7 @@ namespace Tokens
 		"Equal",       "Plus",        "Minus",      "Asterisk",   "Slash",
 		"Hash",        "Dot",         "Comma",      "Colon",      "Semicolon",
 		"SingleQuote", "DoubleQuote", "Comment",    "Pipe",       "End",
-		"Unexpected", "Dollar", "At", "Exclimation",
+		"Unexpected", "Dollar", "At", "Exclimation", "Equals Equal",
 		};
 		return names[static_cast<int>(token)];
 	}
