@@ -36,40 +36,63 @@ namespace Symple::Parser
 	void Parse(const char* source)
 	{
 		Lexer::Lex(source, myLex);
-
+		
+		sCurrentTree = &(sTree = { "Program" });
 		sCurrentTok = 0;
-		Walk();
+
+		sCurrentTree->PushBranch(ParseExpr());
 
 		if (sErrorList.size() <= 0)
 		{
+			//COut(sTree);
 			Write("../test/test.tree", sTree);
 		}
 		else
 		{
 			Err("Parsing Failed with %zu errors!\n", sErrorList.size());
 			for (const auto& err : sErrorList)
-				Out("ERROR: %s\n", err.c_str());
+				Err("ERROR: %s\n", err.c_str());
+			std::cin.get();
 		}
-	}
-
-	Branch Walk()
-	{
-		sCurrentTree = &(sTree = ParsePrimaryExpr());
-
-		while (Peek(0).Is(Tokens::Plus) || Peek(0).Is(Tokens::Minus) || Peek(0).Is(Tokens::Asterisk) || Peek(0).Is(Tokens::Slash))
-		{
-			TokenInfo opTok = PNext();
-			Branch right = ParsePrimaryExpr();
-			sCurrentTree = &sCurrentTree->PushBranch(AST::BinExpr(IntType, opTok, *sCurrentTree, right));
-		}
-
-		return *sCurrentTree;
 	}
 
 	Branch ParsePrimaryExpr()
 	{
 		TokenInfo numTok = Match(Tokens::Number);
 		return AST::Constant(IntType, ParseInt(numTok));
+	}
+
+	Branch ParseExpr(int8_t parentOOO)
+	{
+		Branch left = ParsePrimaryExpr();
+
+		while (true)
+		{
+			int8_t ooo = GetBinOpOOO(Peek(0).GetToken());
+			if (ooo <= -1 || ooo <= parentOOO)
+				break;
+			TokenInfo opTok = PNext();
+			Branch right = ParseExpr(ooo);
+			left = AST::BinExpr(IntType, opTok, left, right);
+		}
+
+		return left;
+	}
+
+	int8_t GetBinOpOOO(Token tok)
+	{
+		switch (tok)
+		{
+			using namespace Tokens;
+		case Plus:
+		case Minus:
+			return 0;
+		case Asterisk:
+		case Slash:
+			return 1;
+		}
+
+		return -1;
 	}
 
 	TokenInfo Peek(size_t offset)
@@ -100,7 +123,7 @@ namespace Symple::Parser
 			return PNext();
 
 		std::stringstream ss;
-		ss << "Expected type " << Tokens::ToString(tok) << ", got '" << Peek(0).GetLex() << '\'';
+		ss << "Unexpected token <" << Tokens::ToString(Peek(0).GetToken()) << ">, expected <" << Tokens::ToString(tok) << '>';
 
 		sErrorList.push_back(ss.str());
 		return tok;

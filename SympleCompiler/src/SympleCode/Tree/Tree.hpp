@@ -32,8 +32,14 @@ typedef struct Branch
 	Branch& PushBranch(const std::string& label);
 	Branch& PushBranch(const std::string& label, const std::any& data);
 
+	void PopBranch();
+	void PopBranch(size_t index);
+	void PopBranch(const std::string& label);
+
 	Branch& FindBranch(const std::string& label);
 	const Branch& FindBranch(const std::string& label) const;
+
+	size_t FindBranchIndex(const std::string& label) const;
 
 	string ToString() const;
 

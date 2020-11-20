@@ -9,8 +9,10 @@ namespace Symple::Parser
 {
 	void Parse(const char* source);
 
-	Branch Walk();
+	Branch ParseExpr(int8_t parentOOO = -1);
 	Branch ParsePrimaryExpr();
+
+	int8_t GetBinOpOOO(Token tok);
 
 	TokenInfo Peek(size_t offset);
 	TokenInfo Next();

@@ -2,6 +2,7 @@
 
 #include <sstream>
 
+#include "SympleCode/Util/Util.hpp"
 #include "SympleCode/Util/Type.hpp"
 #include "SympleCode/Token.hpp"
 
@@ -33,21 +34,50 @@ Branch& Branch::PushBranch(const std::string& label, const std::any& data)
 	return branch;
 }
 
+void Branch::PopBranch()
+{
+	if (SubBranches.size() <= 0)
+	{
+		Err("Branch has no elements!");
+		abort();
+	}
+	SubBranches.erase(SubBranches.end() - 1);
+}
+
+void Branch::PopBranch(size_t index)
+{
+	SubBranches.erase(SubBranches.begin() + index);
+}
+
+void Branch::PopBranch(const std::string& label)
+{
+	PopBranch(FindBranchIndex(label));
+}
+
 Branch& Branch::FindBranch(const std::string& label)
 {
 	for (auto& Branch : SubBranches)
 		if (Branch.Label == label)
 			return Branch;
-	fprintf(stderr, "Branch '%s' Doesn't Exist!", label.c_str());
+	Err("Branch '%s' Doesn't Exist!", label.c_str());
 	abort();
 }
 
-const Branch& Branch::FindBranch(const std::string& label) const const
+const Branch& Branch::FindBranch(const std::string& label) const
 {
 	for (const auto& Branch : SubBranches)
 		if (Branch.Label == label)
 			return Branch;
-	fprintf(stderr, "Branch '%s' Doesn't Exist!", label.c_str());
+	Err("Branch '%s' Doesn't Exist!", label.c_str());
+	abort();
+}
+
+size_t Branch::FindBranchIndex(const std::string& label) const
+{
+	for (size_t i = 0; i < SubBranches.size(); i++)
+		if (SubBranches[i].Label == label)
+			return i;
+	Err("Branch '%s' Doesn't Exist!", label.c_str());
 	abort();
 }
 
@@ -75,9 +105,9 @@ Branch::string Branch::ThisString(std::string indent, bool last) const
 	std::stringstream ss;
 	ss << '\n' << indent;
 	if (last)
-		ss << "L-- ";
+		ss << "L--\t";
 	else
-		ss << "|-- ";
+		ss << "|--\t";
 	ss << Label;
 	if (Data.has_value())
 	{
@@ -144,11 +174,12 @@ Branch::string Branch::ThisString(std::string indent, bool last) const
 											{
 												try
 												{
+													Branch branch = std::any_cast<Branch>(Data);
 													if (last)
-														indent += "   ";
+														indent += " \t";
 													else
-														indent += "|  ";
-													ss << std::any_cast<Branch>(Data).ThisString(indent);
+														indent += "|\t";
+													ss << branch.ThisString(indent);
 												}
 												catch (const std::bad_any_cast&)
 												{
@@ -174,9 +205,9 @@ Branch::string Branch::ThisString(std::string indent, bool last) const
 	else
 	{
 		if (last)
-			indent += "   ";
+			indent += " \t";
 		else
-			indent += "|  ";
+			indent += "|\t";
 		for (size_t i = 0; i < SubBranches.size(); i++)
 		{
 			ss << SubBranches[i].ThisString(indent, i == SubBranches.size() - 1);

@@ -5,7 +5,7 @@
 
 int main() {
     const char* source = R"(
-lol + 1
+1 * 2 + 3
     )";
 
     Symple::Parser::Parse(source);
@@ -21,5 +21,5 @@ lol + 1
     //    mTree.PushBranch("Sup-1", -69i64);
     //std::cout << mTree;
 
-    std::cin.get();
+    //std::cin.get();
 }

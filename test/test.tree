@@ -1,0 +1,13 @@
+L--	Binary Expression
+ 	|--	Type: int (4 bytes)
+ 	|--	Operator: Add
+ 	|--	LValue: 
+ 	|	L--	Binary Expression
+ 	|	 	|--	Type: int (4 bytes)
+ 	|	 	|--	Operator: Multiply
+ 	|	 	|--	LValue: 
+ 	|	 	|	L--	Constant: 1
+ 	|	 	L--	RValue: 
+ 	|	 	 	L--	Constant: 2
+ 	L--	RValue: 
+ 	 	L--	Constant: 3
