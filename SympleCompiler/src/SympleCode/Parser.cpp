@@ -67,6 +67,11 @@ namespace Symple::Parser
 			TokenInfo right = Match(Tokens::RightParen);
 			return AST::ParenExpr(IntType, left, expr, right);
 		}
+		else if (Peek(0).Is(Tokens::Identifier))
+		{
+			TokenInfo id = Peek(0);
+			return AST::Id(id);
+		}
 		TokenInfo numTok = Match(Tokens::Number);
 		return AST::Constant(IntType, ParseInt(numTok));
 	}

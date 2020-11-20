@@ -9,6 +9,7 @@ using ASTToken = const std::string&;
 #define AST_UNKNOWN   "???"
 
 #define AST_EXPR      "Expression"
+#define AST_ID        "Identifier"
 
 #define AST_TYPE      "Type"
 #define AST_RETURN    "Return"
@@ -46,6 +47,13 @@ using ASTToken = const std::string&;
 
 namespace Symple::AST
 {
+	inline Branch Id(const TokenInfo& tok)
+	{
+		Branch branch(AST_ID);
+		branch.PushBranch(AST_NAME, tok.GetLex());
+		return branch;
+	}
+
 	inline Branch Var(Type type, const std::string& name)
 	{
 		Branch branch(AST_VAR);

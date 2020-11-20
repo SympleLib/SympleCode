@@ -1,9 +1,2 @@
-L--	Unary Expression
- 	|--	Type: int (4 bytes)
- 	|--	Operator: Negative
- 	L--	Value: 
- 	 	L--	Unary Expression
- 	 	 	|--	Type: int (4 bytes)
- 	 	 	|--	Operator: Negative
- 	 	 	L--	Value: 
- 	 	 	 	L--	Constant: 1
+L--	Identifier
+ 	L--	Name: var
