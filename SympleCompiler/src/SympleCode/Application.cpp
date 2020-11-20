@@ -5,10 +5,10 @@
 #include "SympleCode/Parser.hpp"
 
 int main() {
-	std::string source;
-	while (true)
-	{
-		std::getline(std::cin, source);
+	std::string source = "function int main(int arcv, int arcc) {  }";
+	//while (true)
+	//{
+	//	std::getline(std::cin, source);
 
 		//Symple::Lexer::Lex(source.c_str(), [](const Symple::TokenInfo& tok)
 		//	{
@@ -17,8 +17,8 @@ int main() {
 		//		return !tok.IsEither(Symple::Tokens::End, Symple::Tokens::Unexpected);
 		//	});
 		Symple::Parser::Parse(source);
-		source.clear();
-	}
+		//source.clear();
+	//}
 
 	//std::cin.get();
 }

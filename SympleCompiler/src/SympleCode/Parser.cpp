@@ -14,10 +14,7 @@ namespace Symple::Parser
 {
 	static std::vector<std::string> sErrorList;
 	static std::vector<TokenInfo> sTokens;
-	static std::vector<Type> sTypes = {
-		VoidType,
-		IntType
-	};
+	static std::vector<Type> sTypes;
 	static Tree sTree;
 	static size_t sCurrentTok;
 
@@ -41,7 +38,10 @@ namespace Symple::Parser
 		Lexer::Lex(source.c_str(), myLex);
 		
 		sCurrentTok = 0;
-		sTypes.clear();
+		sTypes = {
+			VoidType,
+			IntType
+		};
 		sErrorList.clear();
 
 		ParseMembers();
@@ -219,8 +219,6 @@ namespace Symple::Parser
 		for (const auto& ty : sTypes)
 			if (ty.Name == tok.GetLex())
 				return ty;
-			else
-				COut(ty.Name << ", " << tok.GetLex());
 		return VoidType;
 	}
 

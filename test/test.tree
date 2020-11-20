@@ -1,7 +1,13 @@
 L--	Function
  	|--	Name: main
- 	|--	Type: void (0 bytes)
+ 	|--	Type: int (4 bytes)
  	|--	Parameters: 
  	|	L--	
+ 	|	 	|--	Function
+ 	|	 	|	|--	Name: arcv
+ 	|	 	|	L--	Type: int (4 bytes)
+ 	|	 	L--	Function
+ 	|	 	 	|--	Name: arcc
+ 	|	 	 	L--	Type: int (4 bytes)
  	L--	Body: 
  	 	L--	
