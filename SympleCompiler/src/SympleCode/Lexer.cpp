@@ -2,7 +2,7 @@
 
 #include "SympleCode/Token.hpp"
 
-namespace Lexer
+namespace Symple::Lexer
 {
     static const char* sBeg = nullptr;
     static std::string_view sLex;
@@ -276,7 +276,20 @@ namespace Lexer
                     return { Tokens::Comment, start, std::distance(start, sBeg) - (size_t)1 };
                 }
             }
-            return { Tokens::Unexpected, sBeg, 1 };
+            return { Tokens::Comment, start, std::distance(start, sBeg) - (size_t)1 };
+        }
+        else if (Peek() == '*')
+        {
+            Get();
+            start = sBeg;
+            while (Peek() != '\0')
+            {
+                if (Get() == '*' && Get() == '/')
+                {
+                    return { Tokens::Comment, start, std::distance(start, sBeg) - (size_t)4 };
+                }
+            }
+            return { Tokens::Unexpected, start, 1 };
         }
         else
         {

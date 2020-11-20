@@ -1,2 +1,5 @@
-L--	Identifier
- 	L--	Name: var
+L--	Unary Expression
+ 	|--	Type: int (4 bytes)
+ 	|--	Operator: Negative
+ 	L--	Value: 
+ 	 	L--	Constant: 1

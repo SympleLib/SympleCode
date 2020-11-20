@@ -5,7 +5,7 @@
 
 #include "SympleCode/Token.hpp"
 
-namespace Lexer
+namespace Symple::Lexer
 {
 	bool IsDigit(char c);
 	bool IsIdentifier(char c);

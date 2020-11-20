@@ -10,12 +10,14 @@ using ASTToken = const std::string&;
 
 #define AST_EXPR      "Expression"
 #define AST_ID        "Identifier"
+#define AST_COMMENT   "Comment"
 
 #define AST_TYPE      "Type"
 #define AST_RETURN    "Return"
 #define AST_VALUE     "Value"
 #define AST_LVALUE    "LValue"
 #define AST_RVALUE    "RValue"
+#define AST_CONSTANT  "Constant"
 
 #define AST_VAR       "Var"
 #define AST_NAME      "Name"
@@ -73,7 +75,12 @@ namespace Symple::AST
 
 	inline Branch Constant(const Type& type, int value)
 	{
-		return { "Constant", value };
+		return { AST_CONSTANT, value };
+	}
+
+	inline Branch Comment(const TokenInfo& comment)
+	{
+		return { AST_COMMENT, comment };
 	}
 
 	inline Branch BinExpr(const Type& type, const TokenInfo& op, const Branch& lvalue, const Branch& rvalue)
