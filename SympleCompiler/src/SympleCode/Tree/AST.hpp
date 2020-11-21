@@ -2,6 +2,10 @@
 
 #include <cstdint>
 
+#include <string>
+
+#include "SympleCode/Tree/Tree.hpp"
+#include "SympleCode/Token.hpp"
 #include "SympleCode/Type.hpp"
 
 using ASTToken = const std::string&;

@@ -36,7 +36,7 @@ namespace Symple::Parser
 		return true;
 	}
 
-	void Parse(std::string& source)
+	Branch Parse(std::string& source)
 	{
 		sTokens.clear();
 		Lexer::Lex(source.c_str(), myLex);
@@ -63,6 +63,8 @@ namespace Symple::Parser
 				Err("ERROR: %s!\n", err.c_str());
 			std::cin.get();
 		}
+
+		return sTree;
 	}
 
 	Branch ParseMembers()
@@ -96,20 +98,12 @@ namespace Symple::Parser
 		std::string name(Match(Tokens::Identifier));
 		Branch params = ParseParams();
 		Branch body = ParseBlock();
-		
-		for (const auto& func : sFuncs)
-			if (func.Name == name)
-			{
-				std::stringstream ss;
-				ss << "Function '" << name << "' already exists";
-				sErrorList.push_back(ss.str());
-			}
 
 		std::vector<Param> funcParams;
-		//for (size_t i = 0; i < params.SubBranches.size(); i++)
-		//{
-		//	funcParams.push_back({ params.SubBranches[i].FindBranch(AST_NAME) });
-		//}
+		for (size_t i = 0; i < params.SubBranches.size(); i++)
+		{
+			funcParams.push_back({ params.SubBranches[i].FindBranch(AST_NAME) });
+		}
 		sFuncs.push_back({ name, funcParams, type });
 
 		return AST::FuncDecl(type, name, params, body);
@@ -177,6 +171,7 @@ namespace Symple::Parser
 		case KeyWords::Varieble:
 			return ParseVarDecl();
 		default:
+			// return {}; // Tiny optimization for file size, but I'm not going to do it when I'm testing
 			return ParseExpr();
 		}
 	}
@@ -213,13 +208,6 @@ namespace Symple::Parser
 		std::string name(Match(Tokens::Identifier).GetLex());
 		Match(Tokens::Equal);
 		Branch init = ParseExpr();
-		for (const auto& var : sVars)
-			if (var.Name == name)
-			{
-				std::stringstream ss;
-				ss << "Varieble '" << name << "' already exists";
-				sErrorList.push_back(ss.str());
-			}
 		sVars.push_back({ type, name });
 		return AST::VarDecl(type, name, init);
 	}

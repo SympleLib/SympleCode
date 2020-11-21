@@ -1,24 +1,13 @@
-#include <iomanip>
 #include <iostream>
+#include <windows.h>
 
 #include "SympleCode/Lexer.hpp"
 #include "SympleCode/Parser.hpp"
+#include "SympleCode/CodeGenerator.hpp"
 
-int main() {
-	std::string source = "function int testFunc() {} function int testFunc() {}";
-	//while (true)
-	//{
-	//	std::getline(std::cin, source);
+int main()
+{
+	Symple::CodeGenerator::GenerateCode("D:/Projects/C++/SympleCode/SympleCompiler/sy/test.sy", "D:/Projects/C++/SympleCode/SympleCompiler/sy/test.syc");
 
-		//Symple::Lexer::Lex(source.c_str(), [](const Symple::TokenInfo& tok)
-		//	{
-		//		std::cout << Symple::Tokens::ToString(tok.GetToken()) << " |" << tok.GetLex() << "|\n";
-
-		//		return !tok.IsEither(Symple::Tokens::End, Symple::Tokens::Unexpected);
-		//	});
-		Symple::Parser::Parse(source);
-		//source.clear();
-	//}
-
-	//std::cin.get();
+	std::cin.get();
 }

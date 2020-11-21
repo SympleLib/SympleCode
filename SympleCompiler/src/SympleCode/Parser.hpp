@@ -9,7 +9,7 @@
 
 namespace Symple::Parser
 {
-	void Parse(std::string& source);
+	Branch Parse(std::string& source);
 
 	Branch ParseMembers();
 	Branch ParseMember();

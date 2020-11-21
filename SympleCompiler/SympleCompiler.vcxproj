@@ -127,6 +127,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="src\SympleCode\CodeGenerator.hpp" />
     <ClInclude Include="src\SympleCode\Function.hpp" />
     <ClInclude Include="src\SympleCode\Lexer.hpp" />
     <ClInclude Include="src\SympleCode\Parser.hpp" />
@@ -139,10 +140,14 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\SympleCode\Application.cpp" />
+    <ClCompile Include="src\SympleCode\CodeGenerator.cpp" />
     <ClCompile Include="src\SympleCode\Lexer.cpp" />
     <ClCompile Include="src\SympleCode\Parser.cpp" />
     <ClCompile Include="src\SympleCode\Tree\Tree.cpp" />
     <ClCompile Include="src\SympleCode\Util\Util.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="sy\test.sy" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
