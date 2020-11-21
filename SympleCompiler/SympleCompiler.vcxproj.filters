@@ -22,6 +22,8 @@
       <Filter>Util</Filter>
     </ClInclude>
     <ClInclude Include="src\SympleCode\Type.hpp" />
+    <ClInclude Include="src\SympleCode\Function.hpp" />
+    <ClInclude Include="src\SympleCode\Variable.hpp" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\SympleCode\Application.cpp" />

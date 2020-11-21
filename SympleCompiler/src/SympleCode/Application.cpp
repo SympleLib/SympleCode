@@ -5,7 +5,7 @@
 #include "SympleCode/Parser.hpp"
 
 int main() {
-	std::string source = "function int main(int arcv, int arcc) {  }";
+	std::string source = "function int testFunc() {} function int testFunc() {}";
 	//while (true)
 	//{
 	//	std::getline(std::cin, source);

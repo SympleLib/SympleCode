@@ -47,6 +47,9 @@ namespace Symple
 
 		operator string() const;
 
+		bool operator ==(const Branch& other) const;
+		bool operator !=(const Branch& other) const;
+
 		inline friend std::ostream& operator <<(std::ostream& os, const Branch& br)
 		{
 			return os << br.ToString();

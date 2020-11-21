@@ -6,51 +6,53 @@
 
 using ASTToken = const std::string&;
 
-#define AST_UNKNOWN   "???"
+#define AST_UNKNOWN    "???"
 
-#define AST_EXPR      "Expression"
-#define AST_ID        "Identifier"
-#define AST_COMMENT   "Comment"
+#define AST_EXPR       "Expression"
+#define AST_ID         "Identifier"
+#define AST_COMMENT    "Comment"
 
-#define AST_TYPE      "Type"
-#define AST_RETURN    "Return"
-#define AST_VALUE     "Value"
-#define AST_LVALUE    "LValue"
-#define AST_RVALUE    "RValue"
-#define AST_CONSTANT  "Constant"
+#define AST_TYPE       "Type"
+#define AST_RETURN     "Return"
+#define AST_VALUE      "Value"
+#define AST_LVALUE     "LValue"
+#define AST_RVALUE     "RValue"
+#define AST_CONSTANT   "Constant"
 
-#define AST_FUNC      "Function"
-#define AST_PARAM     "Parameter"
-#define AST_PARAMS    "Parameters"
-#define AST_BODY      "Body"
+#define AST_FUNC_DECL  "Function Decleration"
+#define AST_FUNC_CALL  "Function Call"
+#define AST_PARAM      "Parameter"
+#define AST_PARAMS     "Parameters"
+#define AST_BODY       "Body"
 
-#define AST_VAR       "Var"
-#define AST_NAME      "Name"
+#define AST_VAR_DECL   "Varieble Declaration"
+#define AST_VAR_VAL    "Varieble Value"
+#define AST_NAME       "Name"
 
-#define AST_GOTO      "Goto"
-#define AST_LABEL     "Label"
+#define AST_GOTO       "Goto"
+#define AST_LABEL      "Label"
 
-#define AST_IF        "If"
-#define AST_ELSE      "Else"
-#define AST_WHILE     "While"
-#define AST_TERNARY   "Ternary"
-#define AST_COND      "Condition"
-#define AST_THEN      "Then"
+#define AST_IF         "If"
+#define AST_ELSE       "Else"
+#define AST_WHILE      "While"
+#define AST_TERNARY    "Ternary"
+#define AST_COND       "Condition"
+#define AST_THEN       "Then"
 
-#define AST_BIN       "Binary Expression"
-#define AST_OP        "Operator"
-#define AST_ADD       "Add"
-#define AST_SUB       "Subtract"
-#define AST_MULT      "Multiply"
-#define AST_DIV       "Divide"
+#define AST_BIN        "Binary Expression"
+#define AST_OP         "Operator"
+#define AST_ADD        "Add"
+#define AST_SUB        "Subtract"
+#define AST_MULT       "Multiply"
+#define AST_DIV        "Divide"
 
-#define AST_UN        "Unary Expression"
-#define AST_POS       "Positive"
-#define AST_NEG       "Negative"
+#define AST_UN         "Unary Expression"
+#define AST_POS        "Positive"
+#define AST_NEG        "Negative"
 
-#define AST_PAREN     "Parentasis Expression"
-#define AST_LPAREN    "Left Parentasis"
-#define AST_RPAREN    "Right Parentasis"
+#define AST_PAREN      "Parentasis Expression"
+#define AST_LPAREN     "Left Parentasis"
+#define AST_RPAREN     "Right Parentasis"
 
 namespace Symple::AST
 {
@@ -66,9 +68,9 @@ namespace Symple::AST
 		return branch;
 	}
 
-	inline Branch Func(const Type& ret, const std::string& name, const Branch& params, const Branch& body)
+	inline Branch FuncDecl(const Type& ret, const std::string& name, const Branch& params, const Branch& body)
 	{
-		Branch branch(AST_FUNC);
+		Branch branch(AST_FUNC_DECL);
 		branch.PushBranch(AST_NAME, name);
 		branch.PushBranch(AST_TYPE, ret);
 		branch.PushBranch(AST_PARAMS, params);
@@ -76,17 +78,41 @@ namespace Symple::AST
 		return branch;
 	}
 
+	inline Branch FuncCall(const std::string& name, const Branch& params)
+	{
+		Branch branch(AST_FUNC_CALL);
+		branch.PushBranch(AST_NAME, name);
+		branch.PushBranch(AST_PARAMS, params);
+		return branch;
+	}
+
 	inline Branch Param(const Type& type, const std::string& name)
 	{
-		Branch branch(AST_FUNC);
+		Branch branch(AST_PARAM);
 		branch.PushBranch(AST_NAME, name);
 		branch.PushBranch(AST_TYPE, type);
 		return branch;
 	}
 
-	inline Branch Var(Type type, const std::string& name)
+	inline Branch Param(const Type& type)
 	{
-		Branch branch(AST_VAR);
+		Branch branch(AST_PARAM);
+		branch.PushBranch(AST_TYPE, type);
+		return branch;
+	}
+
+	inline Branch VarDecl(Type type, const std::string& name, Branch value)
+	{
+		Branch branch(AST_VAR_DECL);
+		branch.PushBranch(AST_NAME, name);
+		branch.PushBranch(AST_TYPE, type);
+		branch.PushBranch(AST_VALUE, value);
+		return branch;
+	}
+
+	inline Branch VarVal(Type type, const std::string& name)
+	{
+		Branch branch(AST_VAR_VAL);
 		branch.PushBranch(AST_NAME, name);
 		branch.PushBranch(AST_TYPE, type);
 		return branch;

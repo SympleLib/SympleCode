@@ -8,6 +8,8 @@
 #include "SympleCode/Tree/Tree.hpp"
 #include "SympleCode/Tree/AST.hpp"
 
+#include "SympleCode/Variable.hpp"
+
 #include "SympleCode/Lexer.hpp"
 
 namespace Symple::Parser
@@ -15,6 +17,8 @@ namespace Symple::Parser
 	static std::vector<std::string> sErrorList;
 	static std::vector<TokenInfo> sTokens;
 	static std::vector<Type> sTypes;
+	static std::vector<Function> sFuncs;
+	static std::vector<Variable> sVars;
 	static Tree sTree;
 	static size_t sCurrentTok;
 
@@ -42,13 +46,14 @@ namespace Symple::Parser
 			VoidType,
 			IntType
 		};
+		sFuncs.clear();
+		sVars.clear();
 		sErrorList.clear();
 
 		ParseMembers();
 
 		if (sErrorList.size() <= 0)
 		{
-			//COut(sTree);
 			Write("../test/test.tree", sTree);
 		}
 		else
@@ -90,10 +95,24 @@ namespace Symple::Parser
 		Type type = ParseType();
 		std::string name(Match(Tokens::Identifier));
 		Branch params = ParseParams();
-		COut(params);
 		Branch body = ParseBlock();
 		
-		return AST::Func(type, name, params, body);
+		for (const auto& func : sFuncs)
+			if (func.Name == name)
+			{
+				std::stringstream ss;
+				ss << "Function '" << name << "' already exists";
+				sErrorList.push_back(ss.str());
+			}
+
+		std::vector<Param> funcParams;
+		//for (size_t i = 0; i < params.SubBranches.size(); i++)
+		//{
+		//	funcParams.push_back({ params.SubBranches[i].FindBranch(AST_NAME) });
+		//}
+		sFuncs.push_back({ name, funcParams, type });
+
+		return AST::FuncDecl(type, name, params, body);
 	}
 
 	Branch ParseParams()
@@ -105,7 +124,8 @@ namespace Symple::Parser
 		while (parseNext && Peek().IsNot(Tokens::RightParen) && Peek().IsNot(Tokens::End))
 		{
 			Branch param = ParseParam();
-			list.PushBranch(param);
+			if (param != Branch())
+				list.PushBranch(param);
 
 			if (parseNext = Peek().Is(Tokens::Comma))
 				Next();
@@ -121,11 +141,41 @@ namespace Symple::Parser
 		std::string name(Match(Tokens::Identifier).GetLex());
 		return AST::Param(type, name);
 	}
+
+	Branch ParseParams(const Function& func)
+	{
+		Match(Tokens::LeftParen);
+
+		Branch list;
+		bool parseNext = true;
+		size_t nparam = 0;
+		while (parseNext && Peek().IsNot(Tokens::RightParen) && Peek().IsNot(Tokens::End))
+		{
+			Branch param = ParseParam(func, nparam);
+			if (param != Branch())
+				list.PushBranch(param);
+
+			nparam++;
+			if (parseNext = Peek().Is(Tokens::Comma))
+				Next();
+		}
+		Next();
+
+		return list;
+	}
+
+	Branch ParseParam(const Function& func, size_t nparam)
+	{
+		Type type = func.Params[nparam].Type;
+		return AST::Param(type);
+	}
 	
 	Branch ParseStatement()
 	{
-		switch (Peek().GetToken())
+		switch (Peek().AsKeyWord())
 		{
+		case KeyWords::Varieble:
+			return ParseVarDecl();
 		default:
 			return ParseExpr();
 		}
@@ -140,7 +190,8 @@ namespace Symple::Parser
 			TokenInfo start = Peek();
 
 			Branch statement = ParseStatement();
-			block.PushBranch(statement);
+			if (statement != Branch())
+				block.PushBranch(statement);
 
 			if (Peek() == start)
 				Next();
@@ -155,16 +206,22 @@ namespace Symple::Parser
 		return ParseBinExpr();
 	}
 
-	Branch ParseSetExpr()
+	Branch ParseVarDecl()
 	{
-		if (Peek(0).Is(Tokens::Identifier) && Peek(1).Is(Tokens::EqualsEqual))
-		{
-			TokenInfo idTok = PNext();
-			Next();
-			Branch right = ParseSetExpr();
-			return AST::Set(IntType, idTok, right);
-		}
-		return ParseBinExpr();
+		Next();
+		Type type = ParseType();
+		std::string name(Match(Tokens::Identifier).GetLex());
+		Match(Tokens::Equal);
+		Branch init = ParseExpr();
+		for (const auto& var : sVars)
+			if (var.Name == name)
+			{
+				std::stringstream ss;
+				ss << "Varieble '" << name << "' already exists";
+				sErrorList.push_back(ss.str());
+			}
+		sVars.push_back({ type, name });
+		return AST::VarDecl(type, name, init);
 	}
 
 	Branch ParseBinExpr(int8_t parentOOO)
@@ -178,11 +235,15 @@ namespace Symple::Parser
 			left = AST::UnExpr(IntType, opTok, value);
 		}
 		else
+		{
+			if (Peek().Is(Tokens::Semicolon))
+				return {};
 			left = ParsePrimaryExpr();
+		}
 
 		while (true)
 		{
-			int8_t ooo = GetBinOpOOO(Peek(0).GetToken());
+			int8_t ooo = GetBinOpOOO(Peek().GetToken());
 			if (ooo < 0 || ooo <= parentOOO)
 				break;
 			TokenInfo opTok = PNext();
@@ -195,7 +256,7 @@ namespace Symple::Parser
 
 	Branch ParsePrimaryExpr()
 	{
-		switch (Peek(0).GetToken())
+		switch (Peek().GetToken())
 		{
 		case Tokens::LeftParen:
 		{
@@ -206,7 +267,23 @@ namespace Symple::Parser
 		}
 		case Tokens::Comment:
 		{
-			return AST::Comment(Peek(0));
+			Next();
+			return ParsePrimaryExpr();
+		}
+		case Tokens::Identifier:
+		{
+			for (const auto& var : sVars)
+				if (Peek().GetLex() == var.Name)
+				{
+					return AST::VarVal(var.Type, var.Name);
+				}
+
+			if (Peek(1).Is(Tokens::LeftParen))
+				for (const auto& func : sFuncs)
+					if (func.Name == Peek().GetLex())
+					{
+						return AST::FuncCall(func.Name, ParseParams(func));
+					}
 		}
 		}
 		TokenInfo numTok = Match(Tokens::Number);

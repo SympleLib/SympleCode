@@ -123,11 +123,11 @@ namespace Symple
 			return Is(t1) || IsEither(t1, t...);
 		}
 
-		inline KeyWord AsKeyWord(TokenInfo token)
+		inline KeyWord AsKeyWord()
 		{
-			if (token.Is(Tokens::Identifier))
+			if (Is(Tokens::Identifier))
 				for (KeyWord i = 0; i < KeyWords::Last; i++)
-					if (KeyWords::ToString(i) == token.GetLex())
+					if (KeyWords::ToString(i) == GetLex())
 						return i;
 			return -1;
 		}

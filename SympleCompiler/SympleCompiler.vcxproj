@@ -127,6 +127,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="src\SympleCode\Function.hpp" />
     <ClInclude Include="src\SympleCode\Lexer.hpp" />
     <ClInclude Include="src\SympleCode\Parser.hpp" />
     <ClInclude Include="src\SympleCode\Token.hpp" />
@@ -134,6 +135,7 @@
     <ClInclude Include="src\SympleCode\Tree\Tree.hpp" />
     <ClInclude Include="src\SympleCode\Type.hpp" />
     <ClInclude Include="src\SympleCode\Util\Util.hpp" />
+    <ClInclude Include="src\SympleCode\Variable.hpp" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\SympleCode\Application.cpp" />

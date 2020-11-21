@@ -3,6 +3,7 @@
 #include <string_view>
 
 #include "SympleCode/Tree/Tree.hpp"
+#include "SympleCode/Function.hpp"
 #include "SympleCode/Type.hpp"
 #include "SympleCode/Token.hpp"
 
@@ -18,11 +19,14 @@ namespace Symple::Parser
 	Branch ParseParams();
 	Branch ParseParam();
 
+	Branch ParseParams(const Function& func);
+	Branch ParseParam(const Function& func, size_t nparam);
+
 	Branch ParseStatement();
 	Branch ParseBlock();
 	Branch ParseExpr();
 
-	Branch ParseSetExpr();
+	Branch ParseVarDecl();
 	Branch ParseBinExpr(int8_t parentOOO = -1);
 	Branch ParsePrimaryExpr();
 

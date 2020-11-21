@@ -102,6 +102,16 @@ namespace Symple
 		return ToString();
 	}
 
+	bool Branch::operator ==(const Branch& other) const
+	{
+		return Label == other.Label && (Data.has_value() || SubBranches == other.SubBranches);
+	}
+
+	bool Branch::operator !=(const Branch& other) const
+	{
+		return !(*this == other);
+	}
+
 	Branch::string Branch::ThisString(std::string indent, bool last) const
 	{
 		std::stringstream ss;
