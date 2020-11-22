@@ -99,13 +99,6 @@ namespace Symple::Parser
 		Branch params = ParseParams();
 		Branch body = ParseBlock();
 
-		std::vector<Param> funcParams;
-		for (size_t i = 0; i < params.SubBranches.size(); i++)
-		{
-			funcParams.push_back({ params.SubBranches[i].FindBranch(AST_NAME) });
-		}
-		sFuncs.push_back({ name, funcParams, type });
-
 		return AST::FuncDecl(type, name, params, body);
 	}
 
@@ -171,8 +164,8 @@ namespace Symple::Parser
 		case KeyWords::Varieble:
 			return ParseVarDecl();
 		default:
-			// return {}; // Tiny optimization for file size, but I'm not going to do it when I'm testing
-			return ParseExpr();
+			return {}; // Tiny optimization for file size, but I'm not going to do it when I'm testing
+			//return ParseExpr();
 		}
 	}
 
@@ -191,7 +184,7 @@ namespace Symple::Parser
 			if (Peek() == start)
 				Next();
 		}
-		Match(Tokens::RightCurly);
+		Next();
 
 		return block;
 	}
@@ -263,6 +256,7 @@ namespace Symple::Parser
 			for (const auto& var : sVars)
 				if (Peek().GetLex() == var.Name)
 				{
+					Next();
 					return AST::VarVal(var.Type, var.Name);
 				}
 
@@ -270,6 +264,7 @@ namespace Symple::Parser
 				for (const auto& func : sFuncs)
 					if (func.Name == Peek().GetLex())
 					{
+						Next();
 						return AST::FuncCall(func.Name, ParseParams(func));
 					}
 		}

@@ -10,217 +10,88 @@
 
 using ASTToken = const std::string&;
 
-#define AST_UNKNOWN    "???"
+#define AST_UNKNOWN    (ASTToken)"???"
 
-#define AST_EXPR       "Expression"
-#define AST_ID         "Identifier"
-#define AST_COMMENT    "Comment"
+#define AST_EXPR       (ASTToken)"Expression"
+#define AST_ID         (ASTToken)"Identifier"
+#define AST_COMMENT    (ASTToken)"Comment"
 
-#define AST_TYPE       "Type"
-#define AST_RETURN     "Return"
-#define AST_VALUE      "Value"
-#define AST_LVALUE     "LValue"
-#define AST_RVALUE     "RValue"
-#define AST_CONSTANT   "Constant"
+#define AST_TYPE       (ASTToken)"Type"
+#define AST_RETURN     (ASTToken)"Return"
+#define AST_VALUE      (ASTToken)"Value"
+#define AST_LVALUE     (ASTToken)"LValue"
+#define AST_RVALUE     (ASTToken)"RValue"
+#define AST_CONSTANT   (ASTToken)"Constant"
 
-#define AST_FUNC_DECL  "Function Decleration"
-#define AST_FUNC_CALL  "Function Call"
-#define AST_PARAM      "Parameter"
-#define AST_PARAMS     "Parameters"
-#define AST_BODY       "Body"
+#define AST_FUNC_DECL  (ASTToken)"Function Decleration"
+#define AST_FUNC_CALL  (ASTToken)"Function Call"
+#define AST_PARAM      (ASTToken)"Parameter"
+#define AST_PARAMS     (ASTToken)"Parameters"
+#define AST_BODY       (ASTToken)"Body"
 
-#define AST_VAR_DECL   "Varieble Declaration"
-#define AST_VAR_VAL    "Varieble Value"
-#define AST_NAME       "Name"
+#define AST_VAR_DECL   (ASTToken)"Varieble Declaration"
+#define AST_VAR_VAL    (ASTToken)"Varieble Value"
+#define AST_NAME       (ASTToken)"Name"
 
-#define AST_GOTO       "Goto"
-#define AST_LABEL      "Label"
+#define AST_GOTO       (ASTToken)"Goto"
+#define AST_LABEL      (ASTToken)"Label"
 
-#define AST_IF         "If"
-#define AST_ELSE       "Else"
-#define AST_WHILE      "While"
-#define AST_TERNARY    "Ternary"
-#define AST_COND       "Condition"
-#define AST_THEN       "Then"
+#define AST_IF         (ASTToken)"If"
+#define AST_ELSE       (ASTToken)"Else"
+#define AST_WHILE      (ASTToken)"While"
+#define AST_TERNARY    (ASTToken)"Ternary"
+#define AST_COND       (ASTToken)"Condition"
+#define AST_THEN       (ASTToken)"Then"
 
-#define AST_BIN        "Binary Expression"
-#define AST_OP         "Operator"
-#define AST_ADD        "Add"
-#define AST_SUB        "Subtract"
-#define AST_MULT       "Multiply"
-#define AST_DIV        "Divide"
+#define AST_BIN        (ASTToken)"Binary Expression"
+#define AST_OP         (ASTToken)"Operator"
+#define AST_ADD        (ASTToken)"Add"
+#define AST_SUB        (ASTToken)"Subtract"
+#define AST_MULT       (ASTToken)"Multiply"
+#define AST_DIV        (ASTToken)"Divide"
 
-#define AST_UN         "Unary Expression"
-#define AST_POS        "Positive"
-#define AST_NEG        "Negative"
+#define AST_UN         (ASTToken)"Unary Expression"
+#define AST_POS        (ASTToken)"Positive"
+#define AST_NEG        (ASTToken)"Negative"
 
-#define AST_PAREN      "Parentasis Expression"
-#define AST_LPAREN     "Left Parentasis"
-#define AST_RPAREN     "Right Parentasis"
+#define AST_PAREN      (ASTToken)"Parentasis Expression"
+#define AST_LPAREN     (ASTToken)"Left Parentasis"
+#define AST_RPAREN     (ASTToken)"Right Parentasis"
 
 namespace Symple::AST
 {
-	inline Branch Null()
-	{
-		return { "Null" };
-	}
+	Branch Null();
 
-	inline Branch Id(const TokenInfo& tok)
-	{
-		Branch branch(AST_ID);
-		branch.PushBranch(AST_NAME, tok.GetLex());
-		return branch;
-	}
+	Branch Id(const TokenInfo& tok);
 
-	inline Branch FuncDecl(const Type& ret, const std::string& name, const Branch& params, const Branch& body)
-	{
-		Branch branch(AST_FUNC_DECL);
-		branch.PushBranch(AST_NAME, name);
-		branch.PushBranch(AST_TYPE, ret);
-		branch.PushBranch(AST_PARAMS, params);
-		branch.PushBranch(AST_BODY, body);
-		return branch;
-	}
+	Branch FuncDecl(const Type& ret, const std::string& name, const Branch& params, const Branch& body);
+	Branch FuncCall(const std::string& name, const Branch& params);
+	Branch Param(const Type& type, const std::string& name);
+	Branch Param(const Type& type);
 
-	inline Branch FuncCall(const std::string& name, const Branch& params)
-	{
-		Branch branch(AST_FUNC_CALL);
-		branch.PushBranch(AST_NAME, name);
-		branch.PushBranch(AST_PARAMS, params);
-		return branch;
-	}
+	Branch VarDecl(Type type, const std::string& name, Branch value);
+	Branch VarVal(Type type, const std::string& name);
 
-	inline Branch Param(const Type& type, const std::string& name)
-	{
-		Branch branch(AST_PARAM);
-		branch.PushBranch(AST_NAME, name);
-		branch.PushBranch(AST_TYPE, type);
-		return branch;
-	}
+	Branch If(const Branch& cond, const Branch& then, const Branch& elze);
 
-	inline Branch Param(const Type& type)
-	{
-		Branch branch(AST_PARAM);
-		branch.PushBranch(AST_TYPE, type);
-		return branch;
-	}
+	Branch Constant(const Type& type, int value);
 
-	inline Branch VarDecl(Type type, const std::string& name, Branch value)
-	{
-		Branch branch(AST_VAR_DECL);
-		branch.PushBranch(AST_NAME, name);
-		branch.PushBranch(AST_TYPE, type);
-		branch.PushBranch(AST_VALUE, value);
-		return branch;
-	}
+	Branch Comment(const TokenInfo& comment);
 
-	inline Branch VarVal(Type type, const std::string& name)
-	{
-		Branch branch(AST_VAR_VAL);
-		branch.PushBranch(AST_NAME, name);
-		branch.PushBranch(AST_TYPE, type);
-		return branch;
-	}
+	Branch Set(const Type& type, const TokenInfo& lvalue, const Branch& rvalue);
 
-	inline Branch If(const Branch& cond, const Branch& then, const Branch& elze)
-	{
-		Branch branch(AST_IF);
-		branch.PushBranch(AST_COND, cond);
-		branch.PushBranch(AST_THEN, then);
-		branch.PushBranch(AST_ELSE, elze);
-		return branch;
-	}
+	Branch BinExpr(const Type& type, const TokenInfo& op, const Branch& lvalue, const Branch& rvalue);
+	Branch UnExpr(const Type& type, const TokenInfo& op, const Branch& value);
+	Branch ParenExpr(const Type& type, const TokenInfo& lvalue, const Branch& expr, const TokenInfo& rvalue);
 
-	inline Branch Constant(const Type& type, int value)
-	{
-		return { AST_CONSTANT, value };
-	}
+	Branch While(const Branch& cond, const Branch& then);
 
-	inline Branch Comment(const TokenInfo& comment)
-	{
-		return { AST_COMMENT, comment };
-	}
+	Branch Ternary(Type type, const Branch& cond, const Branch& then, const Branch& elze);
 
-	inline Branch Set(const Type& type, const TokenInfo& lvalue, const Branch& rvalue)
-	{
-		Branch branch(AST_BIN);
-		branch.PushBranch(AST_TYPE, type);
-		branch.PushBranch(AST_LVALUE, lvalue);
-		branch.PushBranch(AST_RVALUE, rvalue);
-		return branch;
-	}
+	Branch Return(const Branch& value);
 
-	inline Branch BinExpr(const Type& type, const TokenInfo& op, const Branch& lvalue, const Branch& rvalue)
-	{
-		Branch branch(AST_BIN);
-		branch.PushBranch(AST_TYPE, type);
-		branch.PushBranch(AST_OP, op.Is(Tokens::Plus) ? AST_ADD : op.Is(Tokens::Minus) ? AST_SUB : op.Is(Tokens::Asterisk) ? AST_MULT : op.Is(Tokens::Slash) ? AST_DIV : AST_UNKNOWN);
-		branch.PushBranch(AST_LVALUE, lvalue);
-		branch.PushBranch(AST_RVALUE, rvalue);
-		return branch;
-	}
+	Branch Goto(const std::string& label);
+	Branch Label(const std::string& label);
 
-	inline Branch UnExpr(const Type& type, const TokenInfo& op, const Branch& value)
-	{
-		Branch branch(AST_UN);
-		branch.PushBranch(AST_TYPE, type);
-		branch.PushBranch(AST_OP, op.Is(Tokens::Plus) ? AST_POS : op.Is(Tokens::Minus) ? AST_NEG : AST_UNKNOWN);
-		branch.PushBranch(AST_VALUE, value);
-		return branch;
-	}
-
-	inline Branch ParenExpr(const Type& type, const TokenInfo& lvalue, const Branch& expr, const TokenInfo& rvalue)
-	{
-		Branch branch(AST_PAREN);
-		branch.PushBranch(AST_TYPE, type);
-		branch.PushBranch(AST_EXPR, expr);
-		branch.PushBranch(AST_LVALUE, lvalue);
-		branch.PushBranch(AST_RVALUE, rvalue);
-		return branch;
-	}
-
-	inline Branch While(const Branch& cond, const Branch& then)
-	{
-		Branch branch(AST_WHILE);
-		branch.PushBranch(AST_COND, cond);
-		branch.PushBranch(AST_THEN, then);
-		return branch;
-	}
-
-	inline Branch Ternary(Type type, const Branch& cond, const Branch& then, const Branch& elze)
-	{
-		Branch branch(AST_TERNARY);
-		branch.PushBranch(AST_TYPE, type);
-		branch.PushBranch(AST_COND, cond);
-		branch.PushBranch(AST_THEN, then);
-		branch.PushBranch(AST_ELSE, elze);
-		return branch;
-	}
-
-	inline Branch Return(const Branch& value)
-	{
-		Branch branch(AST_RETURN);
-		branch.PushBranch(AST_VALUE, value);
-		return branch;
-	}
-
-	inline Branch Goto(const std::string& label)
-	{
-		Branch branch(AST_GOTO);
-		branch.PushBranch(AST_LABEL, label);
-		return branch;
-	}
-
-	inline Branch Label(const std::string& label)
-	{
-		Branch branch(AST_LABEL);
-		return branch;
-	}
-
-	inline void AssertLValue(const Branch& branch)
-	{
-		if (branch.Label == AST_LVALUE)
-			return;
-		perror("LValue Expected!");
-	}
+	void AssertLValue(const Branch& branch);
 }

@@ -3,11 +3,11 @@
 
 #include "SympleCode/Lexer.hpp"
 #include "SympleCode/Parser.hpp"
-#include "SympleCode/CodeGenerator.hpp"
+#include "SympleCode/CodeGen/CodeGenerator.hpp"
 
 int main()
 {
-	Symple::CodeGenerator::GenerateCode("D:/Projects/C++/SympleCode/SympleCompiler/sy/test.sy", "D:/Projects/C++/SympleCode/SympleCompiler/sy/test.syc");
+	Symple::CodeGenerator::GenerateCode("sy/test.sy", "sy/test.syc");
 
-	std::cin.get();
+	//std::cin.get();
 }

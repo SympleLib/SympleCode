@@ -24,7 +24,10 @@
     <ClInclude Include="src\SympleCode\Type.hpp" />
     <ClInclude Include="src\SympleCode\Function.hpp" />
     <ClInclude Include="src\SympleCode\Variable.hpp" />
-    <ClInclude Include="src\SympleCode\CodeGenerator.hpp" />
+    <ClInclude Include="src\SympleCode\CodeGen\CodeGenerator.hpp" />
+    <ClInclude Include="src\SympleCode\CodeGen\ASM.cpp" />
+    <ClInclude Include="src\SympleCode\CodeGen\ASM.hpp" />
+    <ClInclude Include="src\SympleCode\Parameter.hpp" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\SympleCode\Application.cpp" />
@@ -36,9 +39,11 @@
     <ClCompile Include="src\SympleCode\Util\Util.cpp">
       <Filter>Util</Filter>
     </ClCompile>
-    <ClCompile Include="src\SympleCode\CodeGenerator.cpp" />
+    <ClCompile Include="src\SympleCode\CodeGen\CodeGenerator.cpp" />
+    <ClCompile Include="src\SympleCode\Tree\AST.cpp" />
   </ItemGroup>
   <ItemGroup>
     <None Include="sy\test.sy" />
+    <None Include="sy\test.syc" />
   </ItemGroup>
 </Project>
