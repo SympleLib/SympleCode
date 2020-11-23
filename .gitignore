@@ -28,9 +28,8 @@ bin-int/
 # Visual Studio 2017 auto generated files
 Generated\ Files/
 
-# MSTest test Results
-[Tt]est[Rr]esult*/
-[Bb]uild[Ll]og.*
+*.sln
+*.vcxproj
 
 # NUnit
 *.VisualState.xml
