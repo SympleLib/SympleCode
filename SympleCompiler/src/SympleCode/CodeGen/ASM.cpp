@@ -52,10 +52,50 @@ namespace Symple::ASM
 		fprintf(sOut, "\n");
 	}
 
+	const char* GetIntReg(const Type& type, char reg)
+	{
+		switch (type.Size)
+		{
+		case 1: return (reg == 'a') ? "al" : "cl";
+		case 2: return (reg == 'a') ? "ax" : "cx";
+		case 4: return (reg == 'a') ? "eax" : "ecx";
+		case 8: return (reg == 'a') ? "rax" : "rcx";
+		default:
+			Err("Unknown data size: %s: %d", "TMNI", type.Size);
+		}
+	}
+
+	const char* GetLoadInst(const Type& type)
+	{
+		switch (type.Size)
+		{
+		case 1: "movsbq";
+		case 2: "movswq";
+		case 4: "movslq";
+		case 8: "mov";
+		default:
+			Err("Unknown data size for type '%s (size %i)'", "TMNI", type.Size);
+		}
+	}
+
 	int Align(int n, int m)
 	{
 		int rem = n % m;
 		return (rem == 0) ? n : n - rem + m;
+	}
+
+	void PushXMM(int reg)
+	{
+		Write("sub $8, #rsp");
+		Write("movsd #xmm%d, (#rsp)", reg);
+		sStackPos += 8;
+	}
+
+	void PopXMM(int reg)
+	{
+		Write("movsd (#rsp), #xmm%d", reg);
+		Write("add $8, #rsp");
+		sStackPos -= 8;
 	}
 
 	void Push(const char* reg)
@@ -99,11 +139,95 @@ namespace Symple::ASM
 		return aligned;
 	}
 
-	void IntCast(const Type& type)
+	void MaybeWriteBitshiftLoad(const Type& type)
 	{
-		switch (type.Name)
-		{
+		if (type.BitSize <= 0)
+			return;
+		Write("shr $%d, #rax", type.BitOff);
+		Push("rcx");
+		Write("mov $0x%lx, #rcx", (1 << (long)type.BitSize) - 1);
+		Write("and #rcx, #rax");
+		Pop("rcx");
+	}
 
+	void MaybeWriteBitshiftSave(const Type& type, const char* addr)
+	{
+		if (type.BitSize <= 0)
+			return;
+		Push("rcx");
+		Push("rdi");
+		Write("mov $0x%lx, #rdi", (1 << (long)type.BitSize) - 1);
+		Write("and #rdi, #rax");
+		Write("shl $%d, #rax", type.BitOff);
+		Write("mov %s, #%s", addr, GetIntReg(type, 'c'));
+		Write("mov $0x%lx, #rdi", ~(((1 << (long)type.BitSize) - 1) << type.BitOff));
+		Write("and #rdi, #rcx");
+		Write("or #rcx, #rax");
+		Pop("rdi");
+		Pop("rcx");
+	}
+
+	void WriteGLoad(const Type& type, const char* label, long off)
+	{
+		if (type.Kind == Kinds::Array)
+		{
+			if (off)
+				Write("lea %s+%d(#rip), #rax", label, off);
+			else
+				Write("lea %s(#rip), #rax", label);
+		}
+		const char* inst = GetLoadInst(type);
+		Write("%s, %s+%d(#rip), #rax", inst, label, off);
+		MaybeWriteBitshiftLoad(type);
+	}
+
+	void WriteIntCast(const Type& type)
+	{
+		switch (type.Kind)
+		{
+			using namespace Kinds;
+		case Bool:
+		case Char:
+		case Byte:
+			type.Signed ? Write("movsbq #al, #rax") : Write("movzbq #al, #rax");
+			break;
+		case Short:
+			type.Signed ? Write("movswq #ax, #rax") : Write("movzwq #a, #rax");
+			break;
+		case Int:
+			type.Signed ? Write("cltq") : Write("mov #eax, #eax");
+			break;
+		case Long:
+			break;
+		}
+	}
+
+	void WriteToInt(const Type& type)
+	{
+		if (type.Kind == Kinds::Float)
+			Write("cvttss2si #xmm0, #eax");
+		else if (type.Kind == Kinds::Double)
+			Write("cvttss2di #xmm0, #eax");
+	}
+
+	void WriteLLoad(const Type& type, const char* base, long off)
+	{
+		switch (type.Kind)
+		{
+			using namespace Kinds;
+		case Array:
+			Write("lea %d(#%s), #rax", off, base);
+			break;
+		case Float:
+			Write("movss %d(#%s), #xmm0", off, base);
+			break;
+		case Double:
+			Write("movsd %d(#%s), #xmm0", off, base);
+			break;
+		default:
+			const char* inst = GetLoadInst(type);
+			Write("$s $d(#%s), #rax", inst, off, base);
+			break;
 		}
 	}
 }

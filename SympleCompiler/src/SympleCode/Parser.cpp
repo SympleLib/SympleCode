@@ -8,6 +8,7 @@
 #include "SympleCode/Tree/Tree.hpp"
 #include "SympleCode/Tree/AST.hpp"
 
+#include "SympleCode/Type.hpp"
 #include "SympleCode/Variable.hpp"
 
 #include "SympleCode/Lexer.hpp"
@@ -16,9 +17,6 @@ namespace Symple::Parser
 {
 	static std::vector<std::string> sErrorList;
 	static std::vector<TokenInfo> sTokens;
-	static std::vector<Type> sTypes;
-	static std::vector<Function> sFuncs;
-	static std::vector<Variable> sVars;
 	static Tree sTree;
 	static size_t sCurrentTok;
 
@@ -42,12 +40,6 @@ namespace Symple::Parser
 		Lexer::Lex(source.c_str(), myLex);
 		
 		sCurrentTok = 0;
-		sTypes = {
-			VoidType,
-			IntType
-		};
-		sFuncs.clear();
-		sVars.clear();
 		sErrorList.clear();
 
 		ParseMembers();
@@ -153,7 +145,7 @@ namespace Symple::Parser
 
 	Branch ParseParam(const Function& func, size_t nparam)
 	{
-		Type type = func.Params[nparam].Type;
+		Type type = func.Params[nparam];
 		return AST::Param(type);
 	}
 	
@@ -201,7 +193,6 @@ namespace Symple::Parser
 		std::string name(Match(Tokens::Identifier).GetLex());
 		Match(Tokens::Equal);
 		Branch init = ParseExpr();
-		sVars.push_back({ type, name });
 		return AST::VarDecl(type, name, init);
 	}
 
@@ -213,7 +204,7 @@ namespace Symple::Parser
 		{
 			TokenInfo opTok = PNext();
 			Branch value = ParseBinExpr(uooo);
-			left = AST::UnExpr(IntType, opTok, value);
+			left = AST::UnExpr(Type::Int, opTok, value);
 		}
 		else
 		{
@@ -229,7 +220,7 @@ namespace Symple::Parser
 				break;
 			TokenInfo opTok = PNext();
 			Branch right = ParseBinExpr(ooo);
-			left = AST::BinExpr(IntType, opTok, left, right);
+			left = AST::BinExpr(Type::Int, opTok, left, right);
 		}
 
 		return left;
@@ -253,33 +244,19 @@ namespace Symple::Parser
 		}
 		case Tokens::Identifier:
 		{
-			for (const auto& var : sVars)
-				if (Peek().GetLex() == var.Name)
-				{
-					Next();
-					return AST::VarVal(var.Type, var.Name);
-				}
-
 			if (Peek(1).Is(Tokens::LeftParen))
-				for (const auto& func : sFuncs)
-					if (func.Name == Peek().GetLex())
-					{
-						Next();
-						return AST::FuncCall(func.Name, ParseParams(func));
-					}
+					return AST::FuncCall(std::string(Peek(0).GetLex()), ParseParams());
+			return AST::Id(Peek(0));
 		}
 		}
 		TokenInfo numTok = Match(Tokens::Number);
-		return AST::Constant(IntType, ParseInt(numTok));
+		return AST::Constant(Type::Int, ParseInt(numTok));
 	}
 
 	Type ParseType()
 	{
 		TokenInfo tok = PNext();
-		for (const auto& ty : sTypes)
-			if (ty.Name == tok.GetLex())
-				return ty;
-		return VoidType;
+		return Type::Void;
 	}
 
 	int8_t GetBinOpOOO(Token tok)

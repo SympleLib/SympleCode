@@ -39,6 +39,7 @@
     </ClCompile>
     <ClCompile Include="src\SympleCode\CodeGen\CodeGenerator.cpp" />
     <ClCompile Include="src\SympleCode\Tree\AST.cpp" />
+    <ClCompile Include="src\SympleCode\Type.cpp" />
   </ItemGroup>
   <ItemGroup>
     <None Include="sy\test.sy" />

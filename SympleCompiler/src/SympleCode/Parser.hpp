@@ -3,7 +3,6 @@
 #include <string_view>
 
 #include "SympleCode/Tree/Tree.hpp"
-#include "SympleCode/Function.hpp"
 #include "SympleCode/Type.hpp"
 #include "SympleCode/Token.hpp"
 
