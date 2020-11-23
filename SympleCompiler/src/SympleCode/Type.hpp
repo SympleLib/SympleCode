@@ -36,7 +36,7 @@ namespace Kinds
 
 struct Type
 {
-	std::string Name;
+	Kind Name;
 	long Size;
 	long Align;
 	bool Signed = true;
@@ -52,11 +52,18 @@ struct Type
 	// Bit fields
 	long BitOff;
 	long BitSize;
-
+	// Function Data
 	const Type* const Return;
 	std::vector<Type*> Params;
 	bool HasVa;
+
+	static const Type Void;
+	static const Type Byte;
+	static const Type Short;
+	static const Type Int;
 };
 
-const Type* const VoidType = new Type{ "void" };
-const Type* const IntType = new Type{ "int", sizeof(int) };
+const Type Type::Void = Type{ Kinds::Void, 0, 0, true };
+const Type Type::Byte = Type{ Kinds::Byte, 1, 1, true };
+const Type Type::Short = Type{ Kinds::Short, 2, 2, true };
+const Type Type::Int = Type{ Kinds::Int, 4, 4, true };
