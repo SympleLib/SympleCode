@@ -9,7 +9,6 @@
 #include "SympleCode/Tree/AST.hpp"
 
 #include "SympleCode/Type.hpp"
-#include "SympleCode/Variable.hpp"
 
 #include "SympleCode/Lexer.hpp"
 

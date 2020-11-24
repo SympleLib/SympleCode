@@ -1,3 +1,7 @@
-|--	Function Decleration
-|	|--	Name: main
-|	|--	Type: 
+	sub $8, %rsp
+	sub $8, %rsp
+	sub $8, %rsp
+	movl $-738985404 -24(%rdp)
+	add $8, %rsp
+	add $8, %rsp
+	add $8, %rsp

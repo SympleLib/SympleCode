@@ -197,7 +197,7 @@ namespace Symple
 													{
 														try
 														{
-															ss << std::any_cast<Type>(Data).Name << " (" << std::any_cast<Type>(Data).Size << " bytes)";
+															ss << std::any_cast<Type>(Data).Kind << " (" << std::any_cast<Type>(Data).Size << " bytes)";
 														}
 														catch (const std::bad_any_cast&)
 														{
