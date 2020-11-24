@@ -1,8 +1,1 @@
-function int main()
-{
-	var int lvalue = 2;
-	var int rvalue = 4;
-	var int value = lvalue + rvalue;
-}
-
-var int sum = 4 + 4;
+6 + 9;

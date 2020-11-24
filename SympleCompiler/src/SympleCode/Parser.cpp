@@ -155,8 +155,8 @@ namespace Symple::Parser
 		case KeyWords::Varieble:
 			return ParseVarDecl();
 		default:
-			return {}; // Tiny optimization for file size, but I'm not going to do it when I'm testing
-			//return ParseExpr();
+			//return {}; // Tiny optimization for file size, but I'm not going to do it when I'm testing
+			return ParseExpr();
 		}
 	}
 

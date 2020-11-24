@@ -1,3 +1,8 @@
-|--	Function Decleration
-|	|--	Name: main
-|	|--	Type: 
+|--	Binary Expression
+|	|--	Type:  (4 bytes)
+|	|--	Operator: Add
+|	|--	LValue: 
+|	|	L--	Constant: 6
+|	L--	RValue: 
+|	 	L--	Constant: 9
+L--	

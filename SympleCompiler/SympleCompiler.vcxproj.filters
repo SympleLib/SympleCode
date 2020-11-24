@@ -31,6 +31,7 @@
     <ClInclude Include="src\SympleCode\CodeGen\Generator.hpp">
       <Filter>CodeGen</Filter>
     </ClInclude>
+    <ClInclude Include="src\SympleCode\Tree\Branch.hpp" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\SympleCode\Application.cpp" />
