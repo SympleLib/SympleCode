@@ -42,22 +42,6 @@ namespace Symple
 		long Size;
 		long Align;
 		bool Signed;
-		bool Static;
-
-		Type* Ptr; // Pointer
-		int Length; // Array Length
-
-		std::vector<Type> Fields; // Struct Fields
-		long Offset; // Struct Offset
-		bool IsStruct;
-
-		// Bit fields
-		long BitOff;
-		long BitSize;
-		// Function Data
-		const Type* const Return;
-		std::vector<Type> Params;
-		bool HasVa;
 
 		// Primitive Types
 		static const Type Void;
@@ -82,5 +66,18 @@ namespace Symple
 
 		static const Type Char;
 		static const Type Bool;
-	} Param, Function;
+	} Param;
+
+	struct Varieble
+	{
+		const std::string Name;
+		const Type Type;
+	};
+
+	struct Function
+	{
+		const std::string Name;
+		const Type Type;
+		const std::vector<Param> Params;
+	};
 }

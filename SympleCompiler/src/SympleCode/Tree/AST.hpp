@@ -27,6 +27,7 @@ using ASTToken = const std::string&;
 #define AST_FUNC_CALL  (ASTToken)"Function Call"
 #define AST_PARAM      (ASTToken)"Parameter"
 #define AST_PARAMS     (ASTToken)"Parameters"
+#define AST_PARAM_VAL  (ASTToken)"Parameter Value"
 #define AST_BODY       (ASTToken)"Body"
 
 #define AST_VAR_DECL   (ASTToken)"Varieble Declaration"
@@ -66,10 +67,10 @@ namespace Symple::AST
 
 	Branch FuncDecl(const Type& ret, const std::string& name, const Branch& params, const Branch& body);
 	Branch FuncCall(const std::string& name, const Branch& params);
-	Branch Param(const Type& type, const std::string& name);
+	Branch ParamVal(const Type& type);
 	Branch Param(const Type& type);
 
-	Branch VarDecl(Type type, const std::string& name, Branch value);
+	Branch VarDecl(Type type, const std::string& name, const Branch& value);
 	Branch VarVal(Type type, const std::string& name);
 
 	Branch If(const Branch& cond, const Branch& then, const Branch& elze);
@@ -88,7 +89,7 @@ namespace Symple::AST
 
 	Branch Ternary(Type type, const Branch& cond, const Branch& then, const Branch& elze);
 
-	Branch Return(const Branch& value);
+	Branch Return(const Type& ty, const Branch& val);
 
 	Branch Goto(const std::string& label);
 	Branch Label(const std::string& label);

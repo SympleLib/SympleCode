@@ -240,7 +240,7 @@ namespace Symple::Lexer
         case '@':
             return Atom(Tokens::At);
         case '!':
-            return Atom(Tokens::Exclimation);
+            return Equals();
         }
     }
 
@@ -315,5 +315,6 @@ namespace Symple::Lexer
                 return { Tokens::NotEqual, start, sBeg };
             return Tokens::Exclimation;
         }
+        return { Tokens::Unexpected, start, 1 };
     }
 }

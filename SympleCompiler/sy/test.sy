@@ -1,1 +1,9 @@
-6 + 9;
+function int main()
+{
+	var int myVar = 69;
+	var int out1 = 6 + myVar;
+	var int myOther = myVar;
+	var int out2 = 5 + myOther;
+
+	return int 0;
+}

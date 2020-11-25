@@ -42,7 +42,9 @@ namespace Symple
 			At,
 			Exclimation,
 			EqualsEqual,
-			NotEqual
+			NotEqual,
+
+			Last = NotEqual
 		} tok;
 
 		inline const char* ToString(Token token)
@@ -69,14 +71,15 @@ namespace Symple
 			Function,
 			Varieble,
 			Null,
+			Return,
 
-			Last = Null
+			Last = Return
 		} key;
 
 		inline const char* ToString(Token token)
 		{
 			static const char* names[]{
-				"true", "false", "function", "var", "null",
+				"true", "false", "function", "var", "null", "return",
 			};
 			return names[static_cast<int>(token)];
 		}
@@ -126,7 +129,7 @@ namespace Symple
 		inline KeyWord AsKeyWord()
 		{
 			if (Is(Tokens::Identifier))
-				for (KeyWord i = 0; i < KeyWords::Last; i++)
+				for (KeyWord i = 0; i <= KeyWords::Last; i++)
 					if (KeyWords::ToString(i) == GetLex())
 						return i;
 			return -1;

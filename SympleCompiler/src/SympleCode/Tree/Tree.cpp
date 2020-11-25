@@ -56,6 +56,36 @@ namespace Symple
 		PopBranch(FindBranchIndex(label));
 	}
 
+	bool Branch::HasBranch(const std::string& label) const
+	{
+		for (auto& Branch : SubBranches)
+			if (Branch.Label == label)
+				return true;
+		return false;
+	}
+
+	bool Branch::TryFind(const std::string& label, Branch** ptr)
+	{
+		for (auto& Branch : SubBranches)
+			if (Branch.Label == label)
+			{
+				*ptr = &Branch;
+				return true;
+			}
+		return false;
+	}
+
+	bool Branch::TryFind(const std::string& label, const Branch** ptr) const
+	{
+		for (const auto& Branch : SubBranches)
+			if (Branch.Label == label)
+			{
+				*ptr = &Branch;
+				return true;
+			}
+		return false;
+	}
+
 	Branch& Branch::FindBranch(const std::string& label)
 	{
 		for (auto& Branch : SubBranches)
@@ -79,8 +109,7 @@ namespace Symple
 		for (size_t i = 0; i < SubBranches.size(); i++)
 			if (SubBranches[i].Label == label)
 				return i;
-		Err("Branch '%s' Doesn't Exist!", label.c_str());
-		abort();
+		return -1;
 	}
 
 	Branch::string Branch::ToString() const

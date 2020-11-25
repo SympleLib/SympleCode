@@ -1,6 +1,7 @@
 #pragma once
 
 #include <string_view>
+#include <map>
 
 #include "SympleCode/Tree/Tree.hpp"
 #include "SympleCode/Type.hpp"
@@ -8,6 +9,9 @@
 
 namespace Symple::Parser
 {
+	extern std::vector<Varieble> sVars;
+	extern std::map<std::string, Type> sTypes;
+
 	Branch Parse(std::string& source);
 
 	Branch ParseMembers();
@@ -23,6 +27,7 @@ namespace Symple::Parser
 
 	Branch ParseStatement();
 	Branch ParseBlock();
+	Branch ParseReturn();
 	Branch ParseExpr();
 
 	Branch ParseVarDecl();

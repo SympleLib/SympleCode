@@ -45,15 +45,26 @@ namespace Symple::CodeGenerator
 
 		Branch ast = Parser::Parse(source);
 		ASM::Open(out);
-		HandleBranch(ast.SubBranches[0]);
+		HandleBranch(ast);
 		ASM::Close();
 	}
 
 	void HandleBranch(const Branch& branch)
 	{
 		if (branch.Label == AST_BIN)
-		{
 			ASM::BinExpr(branch);
+		else if (branch.Label == AST_VAR_DECL)
+			ASM::VarDecl(branch);
+		else if (branch.Label == AST_FUNC_DECL)
+		{
+			ASM::StartFunc(branch.FindBranch(AST_NAME).Cast<std::string>().c_str());
+			HandleBranch(branch.FindBranch(AST_BODY).Cast<Branch>());
+			ASM::EndFunc(branch.FindBranch(AST_TYPE).Cast<Type>());
 		}
+		else if (branch.Label == AST_RETURN)
+			ASM::Return(branch);
+		else
+			for (const auto& subBranch : branch.SubBranches)
+				HandleBranch(subBranch);
 	}
 }

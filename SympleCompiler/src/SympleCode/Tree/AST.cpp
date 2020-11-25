@@ -14,6 +14,14 @@ namespace Symple::AST
 		return branch;
 	}
 
+	Branch Return(const Type& ty, const Branch& val)
+	{
+		Branch branch(AST_RETURN);
+		branch.PushBranch(AST_TYPE, ty);
+		branch.PushBranch(AST_VALUE, val);
+		return branch;
+	}
+
 	Branch FuncDecl(const Type& ret, const std::string& name, const Branch& params, const Branch& body)
 	{
 		Branch branch(AST_FUNC_DECL);
@@ -32,10 +40,9 @@ namespace Symple::AST
 		return branch;
 	}
 
-	Branch Param(const Type& type, const std::string& name)
+	Branch ParamVal(const Type& type)
 	{
-		Branch branch(AST_PARAM);
-		branch.PushBranch(AST_NAME, name);
+		Branch branch(AST_PARAM_VAL);
 		branch.PushBranch(AST_TYPE, type);
 		return branch;
 	}
@@ -47,7 +54,7 @@ namespace Symple::AST
 		return branch;
 	}
 
-	Branch VarDecl(Type type, const std::string& name, Branch value)
+	Branch VarDecl(Type type, const std::string& name, const Branch& value)
 	{
 		Branch branch(AST_VAR_DECL);
 		branch.PushBranch(AST_NAME, name);

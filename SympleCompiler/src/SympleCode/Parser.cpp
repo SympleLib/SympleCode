@@ -1,6 +1,5 @@
 #include "SympleCode/Parser.hpp"
 
-#include <vector>
 #include <sstream>
 
 #include "SympleCode/Util/Util.hpp"
@@ -16,6 +15,10 @@ namespace Symple::Parser
 {
 	static std::vector<std::string> sErrorList;
 	static std::vector<TokenInfo> sTokens;
+	std::vector<Varieble> sVars;
+	std::vector<Function> sFuncs;
+	std::map<std::string, Type> sTypes;
+	std::map<std::string, Param> sParams;
 	static Tree sTree;
 	static size_t sCurrentTok;
 
@@ -39,6 +42,26 @@ namespace Symple::Parser
 		Lexer::Lex(source.c_str(), myLex);
 		
 		sCurrentTok = 0;
+		sVars.clear();
+		sFuncs.clear();
+		sTypes = {
+			{ "void", Type::Void },
+
+			{ "byte", Type::Byte },
+			{ "short", Type::Short },
+			{ "int", Type::Int },
+			{ "long", Type::Long },
+
+			{ "sbyte", Type::SByte },
+			{ "sshort", Type::SShort },
+			{ "sint", Type::SInt },
+			{ "slong", Type::SLong },
+
+			{ "ubyte", Type::UByte },
+			{ "ushort", Type::UShort },
+			{ "uint", Type::UInt },
+			{ "ulong", Type::ULong },
+		};
 		sErrorList.clear();
 
 		ParseMembers();
@@ -90,6 +113,11 @@ namespace Symple::Parser
 		Branch params = ParseParams();
 		Branch body = ParseBlock();
 
+		std::vector<Param> pparams;
+		for (const auto& pair : sParams)
+			pparams.push_back(pair.second);
+
+		sFuncs.push_back({ name, type, pparams });
 		return AST::FuncDecl(type, name, params, body);
 	}
 
@@ -109,6 +137,7 @@ namespace Symple::Parser
 				Next();
 		}
 		Next();
+		sParams.clear();
 
 		return list;
 	}
@@ -117,7 +146,15 @@ namespace Symple::Parser
 	{
 		Type type = ParseType();
 		std::string name(Match(Tokens::Identifier).GetLex());
-		return AST::Param(type, name);
+
+		if (sParams.find(name) != sParams.end())
+		{
+			Err("Parameter '%s' already exists!\n", name.c_str());
+			abort();
+		}
+		sParams[name] = { type };
+
+		return AST::Param(type);
 	}
 
 	Branch ParseParams(const Function& func)
@@ -154,9 +191,11 @@ namespace Symple::Parser
 		{
 		case KeyWords::Varieble:
 			return ParseVarDecl();
+		case KeyWords::Return:
+			return ParseReturn();
 		default:
-			//return {}; // Tiny optimization for file size, but I'm not going to do it when I'm testing
-			return ParseExpr();
+			return {}; // Tiny optimization for file size, but I'm not going to do it when I'm testing
+			//return ParseExpr();
 		}
 	}
 
@@ -180,6 +219,14 @@ namespace Symple::Parser
 		return block;
 	}
 
+	Branch ParseReturn()
+	{
+		Next();
+		Type ty = ParseType();
+		Branch ret = ParseExpr();
+		return AST::Return(ty, ret);
+	}
+
 	Branch ParseExpr()
 	{
 		return ParseBinExpr();
@@ -192,6 +239,7 @@ namespace Symple::Parser
 		std::string name(Match(Tokens::Identifier).GetLex());
 		Match(Tokens::Equal);
 		Branch init = ParseExpr();
+		sVars.push_back({ name, type });
 		return AST::VarDecl(type, name, init);
 	}
 
@@ -244,18 +292,31 @@ namespace Symple::Parser
 		case Tokens::Identifier:
 		{
 			if (Peek(1).Is(Tokens::LeftParen))
-					return AST::FuncCall(std::string(Peek(0).GetLex()), ParseParams());
-			return AST::Id(Peek(0));
+				return AST::FuncCall(std::string(Peek().GetLex()), ParseParams());
+			for (const auto& var : sVars)
+				if (var.Name == Peek().GetLex())
+					return AST::VarVal(var.Type, var.Name);
+			for (const auto& pair : sParams)
+				if (pair.first == Peek().GetLex())
+					return AST::ParamVal(pair.second);
+			Err("Unexpected Identifier: '%s'", std::string(Peek().GetLex()).c_str());
+			abort();
 		}
 		}
 		TokenInfo numTok = Match(Tokens::Number);
+#pragma warning(push)
+#pragma warning(disable: 4244)
 		return AST::Constant(Type::Int, ParseInt(numTok));
+#pragma warning(pop)
 	}
 
 	Type ParseType()
 	{
 		TokenInfo tok = PNext();
-		return Type::Void;
+		if (sTypes.find(std::string(tok.GetLex())) != sTypes.end())
+			return sTypes[std::string(tok.GetLex())];
+		Err("Cannot Parse Type '%s'!\n", std::string(tok.GetLex()).c_str());
+		abort();
 	}
 
 	int8_t GetBinOpOOO(Token tok)
@@ -296,6 +357,8 @@ namespace Symple::Parser
 		case NotEqual:
 			return 0;
 		}
+
+		return -1;
 	}
 
 	TokenInfo Peek(size_t offset)
@@ -349,7 +412,10 @@ namespace Symple::Parser
 				sErrorList.push_back(ss.str());
 				return -1;
 			}
+#pragma warning(push)
+#pragma warning(disable: 4267)
 			val += (view[i] - '0') * powi(10, view.size() - 1 - i);
+#pragma warning(pop)
 		}
 		return val;
 	}
