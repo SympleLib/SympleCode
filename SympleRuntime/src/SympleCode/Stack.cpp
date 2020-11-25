@@ -28,17 +28,17 @@ namespace Symple::Stack
 		assert(sStackPtr > 0);
 	}
 
-	void Move(uint64_t size, void* data, uint64_t pos)
+	void Move(uint64_t size, void* data, uint64_t ptr)
 	{
-		assert(sStackPtr >= pos + size); // Data is not on stack.
+		assert(sStackPtr >= ptr + size); // Data is not on stack.
 
 		for (uint64_t i = 0; i < size; i++)
-			sStack[pos + i] = ((uint8_t*)data)[i];
+			sStack[ptr + i] = ((uint8_t*)data)[i];
 	}
 
-	uint8_t* Get(uint64_t size, uint64_t pos)
+	uint8_t* Get(uint64_t size, uint64_t ptr)
 	{
-		assert(sStackPtr >= pos + size); // Data is not on stack.
-		return &sStack[pos];
+		assert(sStackPtr >= ptr + size); // Data is not on stack.
+		return &sStack[ptr];
 	}
 }

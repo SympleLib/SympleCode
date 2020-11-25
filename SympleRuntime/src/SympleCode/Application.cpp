@@ -2,18 +2,26 @@
 #include <string>
 
 #include "SympleCode/Stack.hpp"
+#include "SympleCode/Heap.hpp"
 
 int main(int argc, char* args[])
 {
 	using namespace Symple;
 
-	Stack::SetSize(256 * 1000000); // Set stack size to 256 megabytes
+	Stack::SetSize(256); // Set stack size to 256 bytes
+	Heap::SetSize(256); // Set max heap size to 256 bytes
 
-	uint64_t intPtr = Stack::Alloc(4);
-	long long num = 1337;
-	Stack::Move(4, &num, intPtr);
-	std::cout << *(int*)Stack::Get(4, intPtr) << " @" << std::hex << intPtr << std::endl;
-	Stack::Free(intPtr);
+	int64_t num = 1234567890;
+
+	uint64_t stackPtr = Stack::Alloc(8);
+	Stack::Move(8, &num, stackPtr);
+	std::cout << "Stack Test: " << *(int64_t*)Stack::Get(8, stackPtr) << " @" << std::hex << stackPtr << std::dec << std::endl;
+	Stack::Free(stackPtr);
+
+	uint64_t heapPtr = Heap::Alloc(8);
+	Heap::Move(8, &num, heapPtr);
+	std::cout << "Heap Test: " << *(int64_t*)Heap::Get(8, heapPtr) << " @" << std::hex << heapPtr << std::dec << std::endl;
+	Heap::Free(heapPtr);
 
 	std::cin.get();
 }
