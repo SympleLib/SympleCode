@@ -15,6 +15,9 @@
     <ClInclude Include="src\SympleCode\CodeGen\CodeGenerator.hpp">
       <Filter>CodeGen</Filter>
     </ClInclude>
+    <ClInclude Include="src\SympleCode\CodeGen\Generator.hpp">
+      <Filter>CodeGen</Filter>
+    </ClInclude>
     <ClInclude Include="src\SympleCode\Lexer.hpp" />
     <ClInclude Include="src\SympleCode\Parser.hpp" />
     <ClInclude Include="src\SympleCode\Token.hpp" />
@@ -28,14 +31,13 @@
     <ClInclude Include="src\SympleCode\Util\Util.hpp">
       <Filter>Util</Filter>
     </ClInclude>
-    <ClInclude Include="src\SympleCode\CodeGen\Generator.hpp">
-      <Filter>CodeGen</Filter>
-    </ClInclude>
-    <ClInclude Include="src\SympleCode\Tree\Branch.hpp" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\SympleCode\Application.cpp" />
     <ClCompile Include="src\SympleCode\CodeGen\CodeGenerator.cpp">
+      <Filter>CodeGen</Filter>
+    </ClCompile>
+    <ClCompile Include="src\SympleCode\CodeGen\Generator.cpp">
       <Filter>CodeGen</Filter>
     </ClCompile>
     <ClCompile Include="src\SympleCode\Lexer.cpp" />
@@ -49,9 +51,6 @@
     <ClCompile Include="src\SympleCode\Type.cpp" />
     <ClCompile Include="src\SympleCode\Util\Util.cpp">
       <Filter>Util</Filter>
-    </ClCompile>
-    <ClCompile Include="src\SympleCode\CodeGen\Generator.cpp">
-      <Filter>CodeGen</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>
