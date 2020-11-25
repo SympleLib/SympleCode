@@ -1,10 +1,9 @@
+#include <pch.hpp>
 #include "SympleCode/Stack.hpp"
-
-#include <cassert>
 
 namespace Symple::Stack
 {
-	uint8_t* sStack;
+	uint8_t* sStack = nullptr;
 	uint64_t sStackSize;
 	uint64_t sStackPtr;
 
@@ -14,18 +13,18 @@ namespace Symple::Stack
 		sStack = new uint8_t[sStackSize = size];
 	}
 
-	uint64_t Alloc(uint64_t mem)
+	uint64_t Alloc(uint64_t size)
 	{
 		uint64_t ptr = sStackPtr;
-		sStackPtr += mem;
+		sStackPtr += size;
 		assert(sStackPtr <= sStackSize); // Stack overflow
 		return ptr;
 	}
 
-	void Free(uint64_t mem)
+	void Free(uint64_t size)
 	{
-		sStackPtr -= mem;
-		assert(sStackPtr > 0);
+		sStackPtr -= size;
+		assert(sStackPtr >= 0);
 	}
 
 	void Move(uint64_t size, void* data, uint64_t ptr)

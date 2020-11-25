@@ -6,6 +6,9 @@ project "SympleRuntime"
 	targetdir ("%{wks.location}/bin/" .. outputdir .. "/%{prj.name}")
 	objdir ("%{wks.location}/bin-int/" .. outputdir .. "/%{prj.name}")
 	
+	pchheader "pch.hpp"
+	pchsource "src/pch.cpp"
+	
 	files {
 		"src/**.h",
 		"src/**.c",

@@ -1,6 +1,6 @@
+#include <pch.hpp>
 #include "SympleCode/Heap.hpp"
 
-#include <cassert>
 #include <vector>
 
 namespace Symple::Heap
