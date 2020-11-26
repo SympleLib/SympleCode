@@ -50,6 +50,11 @@ namespace Symple
 			return Kind == o.Kind && Size == o.Size && Align == o.Align && Signed == o.Signed;
 		}
 
+		inline bool operator !=(const Type& o) const
+		{
+			return !(*this == o);
+		}
+
 		// Primitive Types
 		static const Type Void;
 
@@ -81,6 +86,16 @@ namespace Symple
 	{
 		const std::string Name;
 		const Type Type;
+
+		inline bool operator ==(const Varieble& o) const
+		{
+			return Name == o.Name && Type == o.Type;
+		}
+
+		inline bool operator !=(const Varieble& o) const
+		{
+			return !(*this == o);
+		}
 	};
 
 	struct Function
@@ -88,5 +103,15 @@ namespace Symple
 		const std::string Name;
 		const Type Type;
 		const std::vector<Param> Params;
+
+		inline bool operator ==(const Function& o) const
+		{
+			return Name == o.Name && Type == o.Type && Params == o.Params;
+		}
+
+		inline bool operator !=(const Function& o) const
+		{
+			return !(*this == o);
+		}
 	};
 }

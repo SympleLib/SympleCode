@@ -15,6 +15,9 @@
 #define Write(...) WriteF("\t" __VA_ARGS__)
 #define WriteNoIndent(...) WriteF(__VA_ARGS__)
 
+#define Glo(...) GloF(__VA_ARGS__)
+#define GloIndent(...) GloF("\t" __VA_ARGS__)
+
 #define Pre(...) PreF(__VA_ARGS__)
 #define PreIndent(...) PreF("\t" __VA_ARGS__)
 
@@ -40,6 +43,7 @@ namespace Symple::ASM
 {
 	static FILE* sOut;
 	static FILE* sPr;
+	static FILE* sGl;
 	static FILE* sSu;
 	static FILE* sIm;
 
@@ -60,7 +64,18 @@ namespace Symple::ASM
 
 		{
 			errno_t err;
-			if (err = fopen_s(&sPr, "asm-suf.~temp", "w+") && !sPr)
+			if (err = fopen_s(&sGl, "asm-glo.~temp", "w+") && !sGl)
+			{
+				char errMsg[256];
+				if (!strerror_s(errMsg, err))
+					Err("Error opening GLO file: %s\n", errMsg);
+				abort();
+			}
+		}
+
+		{
+			errno_t err;
+			if (err = fopen_s(&sPr, "asm-pre.~temp", "w+") && !sPr)
 			{
 				char errMsg[256];
 				if (!strerror_s(errMsg, err))
@@ -71,7 +86,7 @@ namespace Symple::ASM
 
 		{
 			errno_t err;
-			if (err = fopen_s(&sSu, "asm-pre.~temp", "w+") && !sSu)
+			if (err = fopen_s(&sSu, "asm-suf.~temp", "w+") && !sSu)
 			{
 				char errMsg[256];
 				if (!strerror_s(errMsg, err))
@@ -96,8 +111,11 @@ namespace Symple::ASM
 	{
 		char c;
 		rewind(sPr);
+		rewind(sGl);
 		rewind(sSu);
 		rewind(sIm);
+		while ((c = fgetc(sGl)) != EOF)
+			fputc(c, sOut);
 		while ((c = fgetc(sPr)) != EOF)
 			fputc(c, sOut);
 		while ((c = fgetc(sIm)) != EOF)
@@ -108,42 +126,43 @@ namespace Symple::ASM
 		fclose(sIm); sIm = nullptr;
 		fclose(sSu); sSu = nullptr;
 		fclose(sPr); sPr = nullptr;
+		fclose(sGl); sGl = nullptr;
 
-		remove("asm-pre.~temp");
 		remove("asm-im.~temp");
+		remove("asm-glo.~temp");
+		remove("asm-pre.~temp");
+		remove("asm-suf.~temp");
 
 		fclose(sOut);
 	}
 	
 	void WriteStandards()
 	{
-		//Pre(".global main");
-		//WriteNoIndent("main:");
-		//Write("leaq text(#rip), #rcx");
-		//Write("callq print");
-		//Write("retq");
-
-		Pre(".global print");
+		Glo(".global print");
 		WriteNoIndent("print:");
+		Write("leaq .message(#rip), #rcx");
+
+		Write("subq $72, #rsp");
 		Write("movq #r9, 104(#rsp)");
-		Write("movq #r8, 96(#rsp)");
-		Write("movq #rdx, 88(#rsp)");
-		Write("movq #rcx, 64(#rsp)");
-		Write("leaq 88(#rsp), #rax");
-		Write("movq #rax, 48(#rsp)");
-		Write("movq 48(#rsp), #r9");
-		Write("movq 64(#rsp), #rdx");
-		Write("movl $1, #ecx");
+		Write("movq	#r8, 96(#rsp)");
+		Write("movq	#rdx, 88(#rsp)");
+		Write("movq	#rcx, 64(#rsp)");
+		Write("leaq	88(#rsp), #rax");
+		Write("leaq	88(#rsp), #rax");
+		Write("movq	#rax, 48(#rsp)");
+		Write("movq	48(#rsp), #r9");
+		Write("movq	64(#rsp), #rdx");
+		Write("movl	$1, #ecx");
+		Write("movq	#r9, 40(#rsp)");
+		Write("movq	#rdx, 32(#rsp)");
 		Write("callq __acrt_iob_func");
-		Write("xorl #ecx, #ecx");
-		Write("movl #ecx, #r8d");
-		Write("movq #rax, #rcx");
+		Write("xorl	#ecx, #ecx");
+		Write("movl	#ecx, #r8d");
+		Write("movq	#rax, #rcx");
+		Write("movq	32(#rsp), #rdx");
+		Write("movq	40(#rsp), #r9");
 		Write("callq _vfprintf_l");
 		Write("retq");
-
-		//Pre(".global text");
-		//WriteNoIndent("text:");
-		//Write(".asciz \"Hello, world!\"");
 	}
 
 	void WriteF(const char* fmt, ...)
@@ -172,6 +191,35 @@ namespace Symple::ASM
 		va_list args;
 		va_start(args, fmt);
 		vfprintf(sIm, ss.str().c_str(), args);
+		va_end(args);
+	}
+
+	void GloF(const char* fmt, ...)
+	{
+		size_t fmtLen = strlen(fmt);
+
+		std::stringstream ss;
+		for (size_t i = 0; i < fmtLen; i++)
+			if (fmt[i] == '#')
+			{
+				ss << "%%";
+			}
+			else if (fmt[i] == ';')
+			{
+#if ASM_COMMENTS
+				ss << '#';
+#else
+				while (i < fmtLen && fmt[i] != '\n')
+					i++;
+#endif
+			}
+			else
+				ss << fmt[i];
+		ss << '\n';
+
+		va_list args;
+		va_start(args, fmt);
+		vfprintf(sGl, ss.str().c_str(), args);
 		va_end(args);
 	}
 
@@ -368,7 +416,7 @@ namespace Symple::ASM
 		}
 		else if (decl.FindBranch(AST_VALUE).Cast<Branch>().Label == AST_STRING)
 		{
-			Pre(".global .%s", name.c_str());
+			//Glo(".global .%s", name.c_str());
 			SufNoIndent(".%s:", name.c_str());
 			Suf(".asciz \"%s\"", decl.FindBranch(AST_VALUE).Cast<Branch>().Cast<std::string>().c_str());
 
@@ -405,7 +453,7 @@ namespace Symple::ASM
 
 	void StartFunc(const char* name)
 	{
-		Pre(".global %s", name);
+		Glo(".global %s", name);
 		WriteNoIndent("%s: ; Declare Function", name);
 		Write("; Push Stack");
 		Write("pushq #rbp");
@@ -416,5 +464,10 @@ namespace Symple::ASM
 	{
 		Write("popq #rbp ; Pop Stack");
 		Write("ret ; Exit Function");
+	}
+
+	void FuncCall(const Branch& call)
+	{
+		Write("callq %s", call.FindBranch(AST_NAME).Cast<std::string>().c_str());
 	}
 }

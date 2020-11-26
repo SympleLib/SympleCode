@@ -1,7 +1,0 @@
-.global main
-myVar$ = 4 # Set stack value of myVar to 0
-out1$ = 8 # Set stack value of out1 to 4
-myOther$ = 12 # Set stack value of myOther to 8
-out2$ = 16 # Set stack value of out2 to 12
-myStr$ = 24 # Set stack value of myStr to 16
-.global .myStr

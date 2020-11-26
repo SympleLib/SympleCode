@@ -73,14 +73,15 @@ namespace Symple
 			Varieble,
 			Null,
 			Return,
+			Call,
 
-			Last = Return
+			Last = Call
 		} key;
 
 		inline const char* ToString(Token token)
 		{
 			static const char* names[]{
-				"true", "false", "function", "var", "null", "return",
+				"true", "false", "function", "var", "null", "return", "call",
 			};
 			return names[static_cast<int>(token)];
 		}

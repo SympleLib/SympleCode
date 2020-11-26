@@ -46,14 +46,14 @@ namespace Symple::CodeGenerator
 		Branch ast = Parser::Parse(source);
 		ASM::Open("~temp.s");
 		HandleBranch(ast);
-		//ASM::WriteStandards();
+		ASM::WriteStandards();
 		ASM::Close();
 
 		char cmd[64];
-		snprintf(cmd, 64, "clang ~temp.s -o %s -L libc.lib", out.c_str());
+		snprintf(cmd, 64, "clang ~temp.s -o %s", out.c_str());
 		system(cmd);
 		system("pause");
-		//remove("~temp.s");
+		remove("~temp.s");
 	}
 
 	void HandleBranch(const Branch& branch)
@@ -70,6 +70,8 @@ namespace Symple::CodeGenerator
 		}
 		else if (branch.Label == AST_RETURN)
 			ASM::Return(branch);
+		else if (branch.Label == AST_FUNC_CALL)
+			ASM::FuncCall(branch);
 		else
 			for (const auto& subBranch : branch.SubBranches)
 				HandleBranch(subBranch);

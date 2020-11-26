@@ -46,6 +46,7 @@ namespace Symple::Parser
 		sCurrentTok = 0;
 		sVars.clear();
 		sFuncs.clear();
+		sFuncs.push_back({ "print", Type::Void, {} });
 		sTypes = {
 			{ "void", Type::Void },
 
@@ -199,6 +200,8 @@ namespace Symple::Parser
 			return ParseVarDecl();
 		case KeyWords::Return:
 			return ParseReturn();
+		case KeyWords::Call:
+			return AST::FuncCall(std::string(Next().GetLex()), {});
 		default:
 			return {}; // Tiny optimization for file size, but I'm not going to do it when I'm testing
 			//return ParseExpr();

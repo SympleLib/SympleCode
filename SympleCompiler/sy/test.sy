@@ -1,10 +1,6 @@
 function int main()
 {
-	var int myVar = 69;
-	var int out1 = 6 + myVar;
-	var int myOther = myVar;
-	var int out2 = 5 + myOther;
-	var string myStr = "lol gamer moment";
-
-	return int 0;
+	var int length = 4;
+	var string message = "Hello, world";
+	call print;
 }

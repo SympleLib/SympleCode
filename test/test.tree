@@ -6,49 +6,16 @@ L--	Function Decleration
  	L--	Body: 
  	 	L--	
  	 	 	|--	Varieble Declaration
- 	 	 	|	|--	Name: myVar
+ 	 	 	|	|--	Name: length
  	 	 	|	|--	Type: sint (4 bytes)
  	 	 	|	L--	Value: 
- 	 	 	|	 	L--	Constant: 69
+ 	 	 	|	 	L--	Constant: 4
  	 	 	|--	Varieble Declaration
- 	 	 	|	|--	Name: out1
- 	 	 	|	|--	Type: sint (4 bytes)
- 	 	 	|	L--	Value: 
- 	 	 	|	 	L--	Binary Expression
- 	 	 	|	 	 	|--	Type: sint (4 bytes)
- 	 	 	|	 	 	|--	Operator: Add
- 	 	 	|	 	 	|--	LValue: 
- 	 	 	|	 	 	|	L--	Constant: 6
- 	 	 	|	 	 	L--	RValue: 
- 	 	 	|	 	 	 	L--	Varieble Value
- 	 	 	|	 	 	 	 	|--	Name: myVar
- 	 	 	|	 	 	 	 	L--	Type: sint (4 bytes)
- 	 	 	|--	Varieble Declaration
- 	 	 	|	|--	Name: myOther
- 	 	 	|	|--	Type: sint (4 bytes)
- 	 	 	|	L--	Value: 
- 	 	 	|	 	L--	Varieble Value
- 	 	 	|	 	 	|--	Name: myVar
- 	 	 	|	 	 	L--	Type: sint (4 bytes)
- 	 	 	|--	Varieble Declaration
- 	 	 	|	|--	Name: out2
- 	 	 	|	|--	Type: sint (4 bytes)
- 	 	 	|	L--	Value: 
- 	 	 	|	 	L--	Binary Expression
- 	 	 	|	 	 	|--	Type: sint (4 bytes)
- 	 	 	|	 	 	|--	Operator: Add
- 	 	 	|	 	 	|--	LValue: 
- 	 	 	|	 	 	|	L--	Constant: 5
- 	 	 	|	 	 	L--	RValue: 
- 	 	 	|	 	 	 	L--	Varieble Value
- 	 	 	|	 	 	 	 	|--	Name: myOther
- 	 	 	|	 	 	 	 	L--	Type: sint (4 bytes)
- 	 	 	|--	Varieble Declaration
- 	 	 	|	|--	Name: myStr
+ 	 	 	|	|--	Name: message
  	 	 	|	|--	Type: string (8 bytes)
  	 	 	|	L--	Value: 
- 	 	 	|	 	L--	String: lol gamer moment
- 	 	 	L--	Return
- 	 	 	 	|--	Type: sint (4 bytes)
- 	 	 	 	L--	Value: 
- 	 	 	 	 	L--	Constant: 0
+ 	 	 	|	 	L--	String: Hello, world
+ 	 	 	L--	Function Call
+ 	 	 	 	|--	Name: print
+ 	 	 	 	L--	Parameters: 
+ 	 	 	 	 	L--	

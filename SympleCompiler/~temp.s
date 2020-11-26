@@ -1,33 +1,41 @@
 .global main
-myVar$ = 4 # Set stack value of myVar to 0
-out1$ = 8 # Set stack value of out1 to 4
-myOther$ = 12 # Set stack value of myOther to 8
-out2$ = 16 # Set stack value of out2 to 12
-myStr$ = 24 # Set stack value of myStr to 16
-.global .myStr
+.global print
+length$ = 4 # Set stack value of length to 0
+message$ = 12 # Set stack value of message to 4
 main: # Declare Function
 	# Push Stack
 	pushq %rbp
 	mov %rsp, %rbp
 	subq $4, %rsp # Allocate 4 bytes to the stack
-	movl $69, -myVar$(%rbp) # Set myVar to $69
-	subq $4, %rsp # Allocate 4 bytes to the stack
-	movl -myVar$(%rbp), %eax
-	addl $6, %eax
-	movl %eax, -out1$(%rbp) # Move operation into out1
-	subq $4, %rsp # Allocate 4 bytes to the stack
-	# Set myOther to -myVar$(%rbp)
-	movl -myVar$(%rbp), %eax
-	movl %eax, -myOther$(%rbp)
-	subq $4, %rsp # Allocate 4 bytes to the stack
-	movl -myOther$(%rbp), %eax
-	addl $5, %eax
-	movl %eax, -out2$(%rbp) # Move operation into out2
+	movl $4, -length$(%rbp) # Set length to $4
 	subq $8, %rsp # Allocate 8 bytes to the stack
-	movabsq $.myStr, %rcx
-	movq %rcx, -myStr$(%rbp)
-	movl $0, %eax # Return $0
+	movabsq $.message, %rcx
+	movq %rcx, -message$(%rbp)
+	callq print
 	popq %rbp # Pop Stack
 	ret # Exit Function
-.myStr:
-	.asciz "lol gamer moment"
+print:
+	leaq .message(%rip), %rcx
+	subq $72, %rsp
+	movq %r9, 104(%rsp)
+	movq	%r8, 96(%rsp)
+	movq	%rdx, 88(%rsp)
+	movq	%rcx, 64(%rsp)
+	leaq	88(%rsp), %rax
+	leaq	88(%rsp), %rax
+	movq	%rax, 48(%rsp)
+	movq	48(%rsp), %r9
+	movq	64(%rsp), %rdx
+	movl	$1, %ecx
+	movq	%r9, 40(%rsp)
+	movq	%rdx, 32(%rsp)
+	callq __acrt_iob_func
+	xorl	%ecx, %ecx
+	movl	%ecx, %r8d
+	movq	%rax, %rcx
+	movq	32(%rsp), %rdx
+	movq	40(%rsp), %r9
+	callq _vfprintf_l
+	retq
+.message:
+	.asciz "Hello, world"
