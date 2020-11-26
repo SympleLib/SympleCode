@@ -5,10 +5,13 @@
 #include "SympleCode/Tree/Tree.hpp"
 #include "SympleCode/Type.hpp"
 
+#define ASM_COMMENTS false
+
 namespace Symple::ASM
 {
 	void Open(const std::string& path);
 	void Close();
+	void WriteStandards();
 
 	void WriteF(const char*, ...);
 	void PreF(const char*, ...);

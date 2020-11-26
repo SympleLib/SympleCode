@@ -5,7 +5,7 @@
 int main()
 {
 	using namespace Symple;
-	CodeGenerator::GenerateCode("sy/test.sy", "sy/test.syc");
+	CodeGenerator::GenerateCode("sy/test.sy", "test.exe");
 
 	//std::cin.get();
 }

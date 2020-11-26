@@ -20,7 +20,7 @@
 
 /*
 * 
-* rdp - stack
+* rbp - stack
 * rsp - stack pointer
 * rax - temp storage
 * rdi - this
@@ -95,6 +95,37 @@ namespace Symple::ASM
 
 		fclose(sOut);
 	}
+	
+	void WriteStandards()
+	{
+		//Pre(".global main");
+		//WriteNoIndent("main:");
+		//Write("leaq text(#rip), #rcx");
+		//Write("callq print");
+		//Write("retq");
+
+		Pre(".global print");
+		WriteNoIndent("print:");
+		Write("movq #r9, 104(#rsp)");
+		Write("movq #r8, 96(#rsp)");
+		Write("movq #rdx, 88(#rsp)");
+		Write("movq #rcx, 64(#rsp)");
+		Write("leaq 88(#rsp), #rax");
+		Write("movq #rax, 48(#rsp)");
+		Write("movq 48(#rsp), #r9");
+		Write("movq 64(#rsp), #rdx");
+		Write("movl $1, #ecx");
+		Write("callq __acrt_iob_func");
+		Write("xorl #ecx, #ecx");
+		Write("movl #ecx, #r8d");
+		Write("movq #rax, #rcx");
+		Write("callq _vfprintf_l");
+		Write("retq");
+
+		//Pre(".global text");
+		//WriteNoIndent("text:");
+		//Write(".asciz \"Hello, world!\"");
+	}
 
 	void WriteF(const char* fmt, ...)
 	{
@@ -106,6 +137,13 @@ namespace Symple::ASM
 			{
 				ss << "%%";
 			}
+#if !ASM_COMMENTS
+			else if (fmt[i] == ';')
+			{
+				while (i < fmtLen && fmt[i] != '\n')
+					i++;
+			}
+#endif
 			else
 				ss << fmt[i];
 		ss << '\n';
@@ -126,6 +164,13 @@ namespace Symple::ASM
 			{
 				ss << "%%";
 			}
+#if !ASM_COMMENTS
+			else if (fmt[i] == ';')
+			{
+				while (i < fmtLen && fmt[i] != '\n')
+					i++;
+			}
+#endif
 			else
 				ss << fmt[i];
 		ss << '\n';
@@ -210,7 +255,7 @@ namespace Symple::ASM
 		}
 		else if (val.Label == AST_VAR_VAL)
 		{
-			snprintf(str, 64, "-%s$(#rdp)", val.FindBranch(AST_NAME).Cast<std::string>().c_str());
+			snprintf(str, 64, "-%s$(%%rbp)", val.FindBranch(AST_NAME).Cast<std::string>().c_str());
 		}
 		else
 		{
@@ -266,13 +311,25 @@ namespace Symple::ASM
 		if (decl.FindBranch(AST_VALUE).Cast<Branch>().Label == AST_BIN)
 		{
 			BinExpr(decl.FindBranch(AST_VALUE).Cast<Branch>());
-			Write("mov%c #eax, -%s$(#rdp) ; Move operation into %s", Mod(size), name.c_str(), name.c_str());
+			Write("mov%c #eax, -%s$(#rbp) ; Move operation into %s", Mod(size), name.c_str(), name.c_str());
 		}
 		else
 		{
-			char val[64];
-			ParseVal(decl.FindBranch(AST_VALUE).Cast<Branch>(), val);
-			Write("mov%c %s, -%s$(#rdp) ; Set %s to %s", Mod(size), val, name.c_str(), name.c_str(), val);
+			if (decl.FindBranch(AST_VALUE).Cast<Branch>().Label != AST_VAR_VAL)
+			{
+				char val[64];
+				ParseVal(decl.FindBranch(AST_VALUE).Cast<Branch>(), val);
+				Write("mov%c %s, -%s$(#rbp) ; Set %s to %s", Mod(size), val, name.c_str(), name.c_str(), val);
+			}
+			else
+			{
+				char val[64];
+				ParseVal(decl.FindBranch(AST_VALUE).Cast<Branch>(), val);
+				long size = decl.FindBranch(AST_VALUE).Cast<Branch>().FindBranch(AST_TYPE).Cast<Type>().Size;
+				Write("; Set %s to %s", name.c_str(), val);
+				Write("mov%c %s, %s", Mod(size), val, RegAx(size));
+				Write("mov%c %s, -%s$(#rbp)", Mod(size), RegAx(size), name.c_str());
+			}
 		}
 	}
 
@@ -286,10 +343,11 @@ namespace Symple::ASM
 
 	void StartFunc(const char* name)
 	{
+		Pre(".global %s", name);
 		WriteNoIndent("%s: ; Declare Function", name);
 		Write("; Push Stack");
 		Write("pushq #rbp");
-		Write("movl #rsp, #rbp");
+		Write("mov #rsp, #rbp");
 	}
 
 	void EndFunc(const Type& ty)
