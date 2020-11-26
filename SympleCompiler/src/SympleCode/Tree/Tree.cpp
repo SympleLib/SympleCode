@@ -5,6 +5,7 @@
 #include "SympleCode/Util/Util.hpp"
 #include "SympleCode/Type.hpp"
 #include "SympleCode/Token.hpp"
+#include "SympleCode/Parser.hpp"
 
 namespace Symple
 {
@@ -226,7 +227,11 @@ namespace Symple
 													{
 														try
 														{
-															ss << std::any_cast<Type>(Data).Kind << " (" << std::any_cast<Type>(Data).Size << " bytes)";
+															std::string typenanne = "unknown";
+															for (const auto& pair : Parser::sTypes)
+																if (pair.second == std::any_cast<Type>(Data))
+																	typenanne = pair.first;
+															ss << typenanne << " (" << std::any_cast<Type>(Data).Size << " bytes)";
 														}
 														catch (const std::bad_any_cast&)
 														{

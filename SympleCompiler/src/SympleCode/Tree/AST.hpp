@@ -59,6 +59,8 @@ using ASTToken = const std::string&;
 #define AST_LPAREN     (ASTToken)"Left Parentasis"
 #define AST_RPAREN     (ASTToken)"Right Parentasis"
 
+#define AST_STRING     (ASTToken)"String"
+
 namespace Symple::AST
 {
 	Branch Null();
@@ -76,6 +78,8 @@ namespace Symple::AST
 	Branch If(const Branch& cond, const Branch& then, const Branch& elze);
 
 	Branch Constant(const Type& type, int value);
+
+	Branch String(const std::string& str);
 
 	Branch Comment(const TokenInfo& comment);
 

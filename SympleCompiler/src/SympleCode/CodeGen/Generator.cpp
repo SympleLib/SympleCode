@@ -18,6 +18,9 @@
 #define Pre(...) PreF(__VA_ARGS__)
 #define PreIndent(...) PreF("\t" __VA_ARGS__)
 
+#define Suf(...) SufF("\t" __VA_ARGS__)
+#define SufNoIndent(...) SufF(__VA_ARGS__)
+
 /*
 * 
 * rbp - stack
@@ -37,6 +40,7 @@ namespace Symple::ASM
 {
 	static FILE* sOut;
 	static FILE* sPr;
+	static FILE* sSu;
 	static FILE* sIm;
 
 	static long sStackPos;
@@ -56,11 +60,22 @@ namespace Symple::ASM
 
 		{
 			errno_t err;
-			if (err = fopen_s(&sPr, "asm-pre.~temp", "w+") && !sPr)
+			if (err = fopen_s(&sPr, "asm-suf.~temp", "w+") && !sPr)
 			{
 				char errMsg[256];
 				if (!strerror_s(errMsg, err))
 					Err("Error opening PRE file: %s\n", errMsg);
+				abort();
+			}
+		}
+
+		{
+			errno_t err;
+			if (err = fopen_s(&sSu, "asm-pre.~temp", "w+") && !sSu)
+			{
+				char errMsg[256];
+				if (!strerror_s(errMsg, err))
+					Err("Error opening SUF file: %s\n", errMsg);
 				abort();
 			}
 		}
@@ -81,13 +96,17 @@ namespace Symple::ASM
 	{
 		char c;
 		rewind(sPr);
+		rewind(sSu);
 		rewind(sIm);
 		while ((c = fgetc(sPr)) != EOF)
 			fputc(c, sOut);
 		while ((c = fgetc(sIm)) != EOF)
 			fputc(c, sOut);
+		while ((c = fgetc(sSu)) != EOF)
+			fputc(c, sOut);
 
 		fclose(sIm); sIm = nullptr;
+		fclose(sSu); sSu = nullptr;
 		fclose(sPr); sPr = nullptr;
 
 		remove("asm-pre.~temp");
@@ -137,13 +156,15 @@ namespace Symple::ASM
 			{
 				ss << "%%";
 			}
-#if !ASM_COMMENTS
 			else if (fmt[i] == ';')
 			{
+#if ASM_COMMENTS
+				ss << '#';
+#else
 				while (i < fmtLen && fmt[i] != '\n')
 					i++;
-			}
 #endif
+			}
 			else
 				ss << fmt[i];
 		ss << '\n';
@@ -164,13 +185,15 @@ namespace Symple::ASM
 			{
 				ss << "%%";
 			}
-#if !ASM_COMMENTS
 			else if (fmt[i] == ';')
 			{
+#if ASM_COMMENTS
+				ss << '#';
+#else
 				while (i < fmtLen && fmt[i] != '\n')
 					i++;
-			}
 #endif
+			}
 			else
 				ss << fmt[i];
 		ss << '\n';
@@ -178,6 +201,35 @@ namespace Symple::ASM
 		va_list args;
 		va_start(args, fmt);
 		vfprintf(sPr, ss.str().c_str(), args);
+		va_end(args);
+	}
+
+	void SufF(const char* fmt, ...)
+	{
+		size_t fmtLen = strlen(fmt);
+
+		std::stringstream ss;
+		for (size_t i = 0; i < fmtLen; i++)
+			if (fmt[i] == '#')
+			{
+				ss << "%%";
+			}
+			else if (fmt[i] == ';')
+			{
+#if ASM_COMMENTS
+				ss << '#';
+#else
+				while (i < fmtLen && fmt[i] != '\n')
+					i++;
+#endif
+			}
+			else
+				ss << fmt[i];
+		ss << '\n';
+
+		va_list args;
+		va_start(args, fmt);
+		vfprintf(sSu, ss.str().c_str(), args);
 		va_end(args);
 	}
 
@@ -305,6 +357,7 @@ namespace Symple::ASM
 	{
 		std::string name = decl.FindBranch(AST_NAME).Cast<std::string>();
 		long size = decl.FindBranch(AST_TYPE).Cast<Type>().Size;
+
 		Pre("%s$ = %d ; Set stack value of %s to %d", name.c_str(),
 			sStackPos += size, name.c_str(), sStackPos);
 		Write("subq $%d, #rsp ; Allocate %d bytes to the stack", size, size);
@@ -312,6 +365,15 @@ namespace Symple::ASM
 		{
 			BinExpr(decl.FindBranch(AST_VALUE).Cast<Branch>());
 			Write("mov%c #eax, -%s$(#rbp) ; Move operation into %s", Mod(size), name.c_str(), name.c_str());
+		}
+		else if (decl.FindBranch(AST_VALUE).Cast<Branch>().Label == AST_STRING)
+		{
+			Pre(".global .%s", name.c_str());
+			SufNoIndent(".%s:", name.c_str());
+			Suf(".asciz \"%s\"", decl.FindBranch(AST_VALUE).Cast<Branch>().Cast<std::string>().c_str());
+
+			Write("movabsq $.%s, #rcx", name.c_str());
+			Write("movq #rcx, -%s$(#rbp)", name.c_str());
 		}
 		else
 		{

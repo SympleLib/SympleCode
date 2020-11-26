@@ -32,7 +32,9 @@ namespace Symple::Parser
 
 			return false;
 		}
-		//COut(Tokens::ToString(tokenInfo.GetToken()) << " '" << tokenInfo.GetLex() << "'\n");
+#if PRINT_LEX
+		COut(Tokens::ToString(tokenInfo.GetToken()) << " '" << tokenInfo.GetLex() << "'\n");
+#endif
 		return true;
 	}
 
@@ -61,6 +63,10 @@ namespace Symple::Parser
 			{ "ushort", Type::UShort },
 			{ "uint", Type::UInt },
 			{ "ulong", Type::ULong },
+
+			{ "string", Type::String },
+			{ "char", Type::Char },
+			{ "bool", Type::Bool },
 		};
 		sErrorList.clear();
 
@@ -301,6 +307,10 @@ namespace Symple::Parser
 					return AST::ParamVal(pair.second);
 			Err("Unexpected Identifier: '%s'", std::string(Peek().GetLex()).c_str());
 			abort();
+		}
+		case Tokens::String:
+		{
+			return AST::String(std::string(Peek().GetLex()));
 		}
 		}
 		TokenInfo numTok = Match(Tokens::Number);

@@ -85,6 +85,11 @@ namespace Symple::AST
 		return { AST_CONSTANT, value };
 	}
 
+	Branch String(const std::string& str)
+	{
+		return { AST_STRING, str };
+	}
+
 	Branch Comment(const TokenInfo& comment)
 	{
 		return { AST_COMMENT, comment };

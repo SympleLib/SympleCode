@@ -5,7 +5,7 @@
 #include "SympleCode/Tree/Tree.hpp"
 #include "SympleCode/Type.hpp"
 
-#define ASM_COMMENTS false
+#define ASM_COMMENTS true
 
 namespace Symple::ASM
 {
@@ -15,6 +15,7 @@ namespace Symple::ASM
 
 	void WriteF(const char*, ...);
 	void PreF(const char*, ...);
+	void SufF(const char*, ...);
 
 	char* RegDx(long size);
 	char* RegAx(long size);

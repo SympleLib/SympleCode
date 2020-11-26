@@ -232,7 +232,7 @@ namespace Symple::Lexer
         case '\'':
             return Atom(Tokens::SingleQuote);
         case '"':
-            return Atom(Tokens::DoubleQuote);
+            return String();
         case '|':
             return Atom(Tokens::Pipe);
         case '$':
@@ -316,5 +316,13 @@ namespace Symple::Lexer
             return Tokens::Exclimation;
         }
         return { Tokens::Unexpected, start, 1 };
+    }
+
+    TokenInfo String()
+    {
+        Get();
+        const char* start = sBeg;
+        while (Get() != '"');
+        return { Tokens::String, start, std::distance(start, sBeg) - (size_t)1 };
     }
 }

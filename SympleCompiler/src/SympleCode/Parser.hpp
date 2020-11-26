@@ -7,6 +7,8 @@
 #include "SympleCode/Type.hpp"
 #include "SympleCode/Token.hpp"
 
+#define PRINT_LEX false
+
 namespace Symple::Parser
 {
 	extern std::vector<Varieble> sVars;

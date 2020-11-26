@@ -1,49 +1,54 @@
 L--	Function Decleration
  	|--	Name: main
- 	|--	Type:  (4 bytes)
+ 	|--	Type: sint (4 bytes)
  	|--	Parameters: 
  	|	L--	
  	L--	Body: 
  	 	L--	
  	 	 	|--	Varieble Declaration
  	 	 	|	|--	Name: myVar
- 	 	 	|	|--	Type:  (4 bytes)
+ 	 	 	|	|--	Type: sint (4 bytes)
  	 	 	|	L--	Value: 
  	 	 	|	 	L--	Constant: 69
  	 	 	|--	Varieble Declaration
  	 	 	|	|--	Name: out1
- 	 	 	|	|--	Type:  (4 bytes)
+ 	 	 	|	|--	Type: sint (4 bytes)
  	 	 	|	L--	Value: 
  	 	 	|	 	L--	Binary Expression
- 	 	 	|	 	 	|--	Type:  (4 bytes)
+ 	 	 	|	 	 	|--	Type: sint (4 bytes)
  	 	 	|	 	 	|--	Operator: Add
  	 	 	|	 	 	|--	LValue: 
  	 	 	|	 	 	|	L--	Constant: 6
  	 	 	|	 	 	L--	RValue: 
  	 	 	|	 	 	 	L--	Varieble Value
  	 	 	|	 	 	 	 	|--	Name: myVar
- 	 	 	|	 	 	 	 	L--	Type:  (4 bytes)
+ 	 	 	|	 	 	 	 	L--	Type: sint (4 bytes)
  	 	 	|--	Varieble Declaration
  	 	 	|	|--	Name: myOther
- 	 	 	|	|--	Type:  (4 bytes)
+ 	 	 	|	|--	Type: sint (4 bytes)
  	 	 	|	L--	Value: 
  	 	 	|	 	L--	Varieble Value
  	 	 	|	 	 	|--	Name: myVar
- 	 	 	|	 	 	L--	Type:  (4 bytes)
+ 	 	 	|	 	 	L--	Type: sint (4 bytes)
  	 	 	|--	Varieble Declaration
  	 	 	|	|--	Name: out2
- 	 	 	|	|--	Type:  (4 bytes)
+ 	 	 	|	|--	Type: sint (4 bytes)
  	 	 	|	L--	Value: 
  	 	 	|	 	L--	Binary Expression
- 	 	 	|	 	 	|--	Type:  (4 bytes)
+ 	 	 	|	 	 	|--	Type: sint (4 bytes)
  	 	 	|	 	 	|--	Operator: Add
  	 	 	|	 	 	|--	LValue: 
  	 	 	|	 	 	|	L--	Constant: 5
  	 	 	|	 	 	L--	RValue: 
  	 	 	|	 	 	 	L--	Varieble Value
  	 	 	|	 	 	 	 	|--	Name: myOther
- 	 	 	|	 	 	 	 	L--	Type:  (4 bytes)
+ 	 	 	|	 	 	 	 	L--	Type: sint (4 bytes)
+ 	 	 	|--	Varieble Declaration
+ 	 	 	|	|--	Name: myStr
+ 	 	 	|	|--	Type: string (8 bytes)
+ 	 	 	|	L--	Value: 
+ 	 	 	|	 	L--	String: lol gamer moment
  	 	 	L--	Return
- 	 	 	 	|--	Type:  (4 bytes)
+ 	 	 	 	|--	Type: sint (4 bytes)
  	 	 	 	L--	Value: 
  	 	 	 	 	L--	Constant: 0

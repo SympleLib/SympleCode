@@ -23,6 +23,8 @@ namespace Symple
 	const Type Type::Float = Type{ Kinds::Float, 4, 4, true };
 	const Type Type::Double = Type{ Kinds::Double, 8, 8, true };
 
+	const Type Type::String = Type{ Kinds::String, 8, 8, false };
+
 	const Type Type::Char = Type{ Kinds::Char, 1, 1, true };
 	const Type Type::Bool = Type{ Kinds::Double, 1, 1, true };
 }

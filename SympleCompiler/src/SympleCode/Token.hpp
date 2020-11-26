@@ -43,8 +43,9 @@ namespace Symple
 			Exclimation,
 			EqualsEqual,
 			NotEqual,
+			String,
 
-			Last = NotEqual
+			Last = String
 		} tok;
 
 		inline const char* ToString(Token token)
@@ -56,7 +57,7 @@ namespace Symple
 				"Hash",        "Dot",         "Comma",      "Colon",      "Semicolon",
 				"SingleQuote", "DoubleQuote", "Comment",    "Pipe",       "End",
 				"Unexpected",
-				"Dollar", "At", "Exclimation", "Equals Equal", "Not Equal",
+				"Dollar", "At", "Exclimation", "Equals Equal", "Not Equal", "String"
 			};
 			return names[static_cast<int>(token)];
 		}

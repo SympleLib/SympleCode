@@ -4,6 +4,7 @@ function int main()
 	var int out1 = 6 + myVar;
 	var int myOther = myVar;
 	var int out2 = 5 + myOther;
+	var string myStr = "lol gamer moment";
 
 	return int 0;
 }

@@ -20,6 +20,8 @@ namespace Symple
 			Float,
 			Double,
 
+			String,
+
 			Char,
 			Bool,
 
@@ -43,6 +45,11 @@ namespace Symple
 		long Align;
 		bool Signed;
 
+		inline bool operator ==(const Type& o) const
+		{
+			return Kind == o.Kind && Size == o.Size && Align == o.Align && Signed == o.Signed;
+		}
+
 		// Primitive Types
 		static const Type Void;
 
@@ -63,6 +70,8 @@ namespace Symple
 
 		static const Type Float;
 		static const Type Double;
+
+		static const Type String;
 
 		static const Type Char;
 		static const Type Bool;

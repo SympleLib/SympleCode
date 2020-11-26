@@ -45,15 +45,15 @@ namespace Symple::CodeGenerator
 
 		Branch ast = Parser::Parse(source);
 		ASM::Open("~temp.s");
-		//HandleBranch(ast);
-		ASM::WriteStandards();
+		HandleBranch(ast);
+		//ASM::WriteStandards();
 		ASM::Close();
 
 		char cmd[64];
 		snprintf(cmd, 64, "clang ~temp.s -o %s -L libc.lib", out.c_str());
 		system(cmd);
 		system("pause");
-		remove("~temp.s");
+		//remove("~temp.s");
 	}
 
 	void HandleBranch(const Branch& branch)
