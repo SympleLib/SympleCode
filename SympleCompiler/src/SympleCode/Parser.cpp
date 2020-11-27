@@ -294,7 +294,7 @@ namespace Symple::Parser
 		}
 		Match(Tokens::Equal);
 
-		Branch right = ParsePrimaryExpr();
+		Branch right = ParseExpr();
 
 		return AST::Assign(left, right);
 	}
@@ -318,13 +318,22 @@ namespace Symple::Parser
 		case Tokens::Identifier:
 		{
 			if (Peek(1).Is(Tokens::LeftParen))
+			{
+				Match(Tokens::Identifier);
 				return AST::FuncCall(std::string(Peek().GetLex()), ParseParams());
+			}
 			for (const auto& var : sVars)
 				if (var.Name == Peek().GetLex())
+				{
+					Match(Tokens::Identifier);
 					return AST::VarVal(var.Type, var.Name);
+				}
 			for (const auto& pair : sParams)
 				if (pair.first == Peek().GetLex())
+				{
+					Match(Tokens::Identifier);
 					return AST::ParamVal(pair.second);
+				}
 			Err("Unexpected Identifier: '%s'", std::string(Peek().GetLex()).c_str());
 			abort();
 		}

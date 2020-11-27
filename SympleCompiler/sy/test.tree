@@ -5,23 +5,25 @@ L--	Function Decleration
  	|	L--	
  	L--	Body: 
  	 	L--	
- 	 	 	|--	Binary Expression
- 	 	 	|	|--	Type: sint (4 bytes)
- 	 	 	|	|--	Operator: Add
+ 	 	 	|--	Varieble Declaration
+ 	 	 	|	|--	Name: message
+ 	 	 	|	|--	Type: string (8 bytes)
+ 	 	 	|	L--	Value: 
+ 	 	 	|	 	L--	String: Test 1!
+ 	 	 	|--	String: Test 1!
+ 	 	 	|--	Function Call
+ 	 	 	|	|--	Name: print
+ 	 	 	|	L--	Parameters: 
+ 	 	 	|	 	L--	
+ 	 	 	|--	Assignment
  	 	 	|	|--	LValue: 
- 	 	 	|	|	L--	Constant: 1
+ 	 	 	|	|	L--	Varieble Value
+ 	 	 	|	|	 	|--	Name: message
+ 	 	 	|	|	 	L--	Type: string (8 bytes)
  	 	 	|	L--	RValue: 
- 	 	 	|	 	L--	Binary Expression
- 	 	 	|	 	 	|--	Type: sint (4 bytes)
- 	 	 	|	 	 	|--	Operator: Multiply
- 	 	 	|	 	 	|--	LValue: 
- 	 	 	|	 	 	|	L--	Constant: 2
- 	 	 	|	 	 	L--	RValue: 
- 	 	 	|	 	 	 	L--	Constant: 3
- 	 	 	L--	Binary Expression
- 	 	 	 	|--	Type: sint (4 bytes)
- 	 	 	 	|--	Operator: Add
- 	 	 	 	|--	LValue: 
- 	 	 	 	|	L--	Constant: 6
- 	 	 	 	L--	RValue: 
- 	 	 	 	 	L--	Constant: 9
+ 	 	 	|	 	L--	String: Test 2!
+ 	 	 	|--	String: Test 2!
+ 	 	 	L--	Function Call
+ 	 	 	 	|--	Name: print
+ 	 	 	 	L--	Parameters: 
+ 	 	 	 	 	L--	

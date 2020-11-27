@@ -475,9 +475,9 @@ namespace Symple::ASM
 			{
 				char val[64];
 				ParseVal(decl.FindBranch(AST_VALUE).Cast<Branch>(), val);
-				long size = decl.FindBranch(AST_VALUE).Cast<Branch>().FindBranch(AST_TYPE).Cast<Type>().Size;
+				long rsize = decl.FindBranch(AST_VALUE).Cast<Branch>().FindBranch(AST_TYPE).Cast<Type>().Size;
 				Write("; Set %s to %s", name.c_str(), val);
-				Write("mov%c %s, %s", Mod(size), val, RegAx(size));
+				Write("mov%c %s, %s", Mod(rsize), val, RegAx(size));
 				Write("mov%c %s, -%s$(#rbp)", Mod(size), RegAx(size), name.c_str());
 			}
 		}
@@ -486,17 +486,49 @@ namespace Symple::ASM
 	void Assign(const Branch& expr)
 	{
 		const Varieble* left = nullptr;
-		std::string vname = expr.FindBranch(AST_LVALUE).Cast<Branch>().FindBranch(AST_NAME).Cast<std::string>();
+		std::string name = expr.FindBranch(AST_LVALUE).Cast<Branch>().FindBranch(AST_NAME).Cast<std::string>();
 		for (const auto& var : Parser::sVars)
-			if (var.Name == vname)
+			if (var.Name == name)
 				left = &var;
 		if (!left)
 		{
 			Err("Internal Error!");
 			abort();
 		}
+		long size = left->Type.Size;
+		if (expr.FindBranch(AST_RVALUE).Cast<Branch>().Label == AST_BIN)
+		{
+			BinExpr(expr.FindBranch(AST_RVALUE).Cast<Branch>());
+			const char* reg = RegAx(size);
+			Write("mov%c %s, -%s$(#rbp) ; Move operation into %s", Mod(size), reg, name.c_str(), name.c_str());
+		}
+		else if (expr.FindBranch(AST_RVALUE).Cast<Branch>().Label == AST_STRING)
+		{
+			//Glo(".global .%s", name.c_str());
+			SufNoIndent(".%s:", name.c_str());
+			Suf(".asciz \"%s\"", expr.FindBranch(AST_RVALUE).Cast<Branch>().Cast<std::string>().c_str());
 
-		
+			Write("movabsq $.%s, #rcx", name.c_str());
+			Write("movq #rcx, -%s$(#rbp)", name.c_str());
+		}
+		else
+		{
+			if (expr.FindBranch(AST_RVALUE).Cast<Branch>().Label != AST_VAR_VAL)
+			{
+				char val[64];
+				ParseVal(expr.FindBranch(AST_RVALUE).Cast<Branch>(), val);
+				Write("mov%c %s, -%s$(#rbp) ; Set %s to %s", Mod(size), val, name.c_str(), name.c_str(), val);
+			}
+			else
+			{
+				char val[64];
+				ParseVal(expr.FindBranch(AST_RVALUE).Cast<Branch>(), val);
+				long size = expr.FindBranch(AST_RVALUE).Cast<Branch>().FindBranch(AST_TYPE).Cast<Type>().Size;
+				Write("; Set %s to %s", name.c_str(), val);
+				Write("mov%c %s, %s", Mod(size), val, RegAx(size));
+				Write("mov%c %s, -%s$(#rbp)", Mod(size), RegAx(size), name.c_str());
+			}
+		}
 	}
 
 	void Return(const Branch& ret)

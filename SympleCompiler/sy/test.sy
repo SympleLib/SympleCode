@@ -1,5 +1,7 @@
 function int main()
 {
-	1 + 2 * 3;
-	6 + 9;
+	var string message = "Test 1!";
+	call print;
+	message = "Test 2!";
+	call print;
 }
