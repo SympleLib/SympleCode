@@ -16,6 +16,7 @@ using ASTToken = const std::string&;
 #define AST_ID         (ASTToken)"Identifier"
 #define AST_COMMENT    (ASTToken)"Comment"
 
+#define AST_NAME       (ASTToken)"Name"
 #define AST_TYPE       (ASTToken)"Type"
 #define AST_RETURN     (ASTToken)"Return"
 #define AST_VALUE      (ASTToken)"Value"
@@ -32,7 +33,7 @@ using ASTToken = const std::string&;
 
 #define AST_VAR_DECL   (ASTToken)"Varieble Declaration"
 #define AST_VAR_VAL    (ASTToken)"Varieble Value"
-#define AST_NAME       (ASTToken)"Name"
+#define AST_ASSIGN     (ASTToken)"Assignment"
 
 #define AST_GOTO       (ASTToken)"Goto"
 #define AST_LABEL      (ASTToken)"Label"
@@ -74,6 +75,7 @@ namespace Symple::AST
 
 	Branch VarDecl(Type type, const std::string& name, const Branch& value);
 	Branch VarVal(Type type, const std::string& name);
+	Branch Assign(const Branch& lvalue, const Branch& rvalue);
 
 	Branch If(const Branch& cond, const Branch& then, const Branch& elze);
 

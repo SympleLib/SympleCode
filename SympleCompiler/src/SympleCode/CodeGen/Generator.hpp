@@ -7,6 +7,10 @@
 
 #define ASM_COMMENTS true
 
+#define ASM_ORDER_NONE  0
+#define ASM_ORDER_LEFT  1
+#define ASM_ORDER_RIGHT 2
+
 namespace Symple::ASM
 {
 	void Open(const std::string& path);
@@ -32,9 +36,10 @@ namespace Symple::ASM
 
 	void ParseVal(const Branch& val, char str[64]);
 
-	void BinExpr(const Branch& expr);
+	void BinExpr(const Branch& expr, int8_t ignore = ASM_ORDER_NONE);
 
 	void VarDecl(const Branch& decl);
+	void Assign(const Branch& expr);
 
 	void Return(const Branch& ret);
 	void StartFunc(const char* name);

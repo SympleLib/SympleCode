@@ -1,6 +1,5 @@
 function int main()
 {
-	var int length = 4;
-	var string message = "Hello, world";
-	call print;
+	1 + 2 * 3;
+	6 + 9;
 }

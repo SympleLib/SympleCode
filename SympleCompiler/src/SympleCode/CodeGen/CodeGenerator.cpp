@@ -12,6 +12,8 @@
 
 namespace Symple::CodeGenerator
 {
+	static bool sPrintCalled;
+
 	void GenerateCode(const std::string& in, const std::string& out)
 	{
 		std::string source;
@@ -46,14 +48,15 @@ namespace Symple::CodeGenerator
 		Branch ast = Parser::Parse(source);
 		ASM::Open("~temp.s");
 		HandleBranch(ast);
-		ASM::WriteStandards();
+		if (sPrintCalled)
+			ASM::WriteStandards();
 		ASM::Close();
 
 		char cmd[64];
 		snprintf(cmd, 64, "clang ~temp.s -o %s", out.c_str());
 		system(cmd);
 		system("pause");
-		remove("~temp.s");
+		//remove("~temp.s");
 	}
 
 	void HandleBranch(const Branch& branch)
@@ -71,7 +74,12 @@ namespace Symple::CodeGenerator
 		else if (branch.Label == AST_RETURN)
 			ASM::Return(branch);
 		else if (branch.Label == AST_FUNC_CALL)
+		{
 			ASM::FuncCall(branch);
+			sPrintCalled |= branch.FindBranch(AST_NAME).Cast<std::string>() == "print";
+		}
+		else if (branch.Label == AST_ASSIGN)
+			ASM::Assign(branch);
 		else
 			for (const auto& subBranch : branch.SubBranches)
 				HandleBranch(subBranch);

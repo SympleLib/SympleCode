@@ -34,6 +34,7 @@ namespace Symple::Parser
 
 	Branch ParseVarDecl();
 	Branch ParseBinExpr(int8_t parentOOO = -1);
+	Branch ParseAssignExpr();
 	Branch ParsePrimaryExpr();
 
 	Type ParseType();

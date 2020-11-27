@@ -1,0 +1,27 @@
+L--	Function Decleration
+ 	|--	Name: main
+ 	|--	Type: sint (4 bytes)
+ 	|--	Parameters: 
+ 	|	L--	
+ 	L--	Body: 
+ 	 	L--	
+ 	 	 	|--	Binary Expression
+ 	 	 	|	|--	Type: sint (4 bytes)
+ 	 	 	|	|--	Operator: Add
+ 	 	 	|	|--	LValue: 
+ 	 	 	|	|	L--	Constant: 1
+ 	 	 	|	L--	RValue: 
+ 	 	 	|	 	L--	Binary Expression
+ 	 	 	|	 	 	|--	Type: sint (4 bytes)
+ 	 	 	|	 	 	|--	Operator: Multiply
+ 	 	 	|	 	 	|--	LValue: 
+ 	 	 	|	 	 	|	L--	Constant: 2
+ 	 	 	|	 	 	L--	RValue: 
+ 	 	 	|	 	 	 	L--	Constant: 3
+ 	 	 	L--	Binary Expression
+ 	 	 	 	|--	Type: sint (4 bytes)
+ 	 	 	 	|--	Operator: Add
+ 	 	 	 	|--	LValue: 
+ 	 	 	 	|	L--	Constant: 6
+ 	 	 	 	L--	RValue: 
+ 	 	 	 	 	L--	Constant: 9

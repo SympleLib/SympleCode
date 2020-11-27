@@ -75,7 +75,7 @@ namespace Symple::Parser
 
 		if (sErrorList.size() <= 0)
 		{
-			Write("../test/test.tree", sTree);
+			Write("sy/test.tree", sTree);
 		}
 		else
 		{
@@ -203,8 +203,8 @@ namespace Symple::Parser
 		case KeyWords::Call:
 			return AST::FuncCall(std::string(Next().GetLex()), {});
 		default:
-			return {}; // Tiny optimization for file size, but I'm not going to do it when I'm testing
-			//return ParseExpr();
+			//return {}; // Tiny optimization for file size, but I'm not going to do it when I'm testing
+			return ParseExpr();
 		}
 	}
 
@@ -238,6 +238,8 @@ namespace Symple::Parser
 
 	Branch ParseExpr()
 	{
+		if (Peek(1).Is(Tokens::Equal))
+			return ParseAssignExpr();
 		return ParseBinExpr();
 	}
 
@@ -280,6 +282,21 @@ namespace Symple::Parser
 		}
 
 		return left;
+	}
+
+	Branch ParseAssignExpr()
+	{
+		Branch left = ParsePrimaryExpr();
+		if (left.Label != AST_VAR_VAL)
+		{
+			sErrorList.push_back("Attempting to assign a value to a non-lvalue");
+			return {};
+		}
+		Match(Tokens::Equal);
+
+		Branch right = ParsePrimaryExpr();
+
+		return AST::Assign(left, right);
 	}
 
 	Branch ParsePrimaryExpr()

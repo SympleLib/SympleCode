@@ -71,6 +71,14 @@ namespace Symple::AST
 		return branch;
 	}
 
+	Branch Assign(const Branch& lvalue, const Branch& rvalue)
+	{
+		Branch branch(AST_ASSIGN);
+		branch.PushBranch(AST_LVALUE, lvalue);
+		branch.PushBranch(AST_RVALUE, rvalue);
+		return branch;
+	}
+
 	Branch If(const Branch& cond, const Branch& then, const Branch& elze)
 	{
 		Branch branch(AST_IF);

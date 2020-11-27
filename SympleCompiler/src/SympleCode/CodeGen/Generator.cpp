@@ -367,17 +367,41 @@ namespace Symple::ASM
 		}
 	}
 
-	void BinExpr(const Branch& expr)
+	void BinExpr(const Branch& expr, int8_t ignore)
 	{
 		const std::string& op = expr.FindBranch(AST_OP).Cast<std::string>();
 		long size = expr.FindBranch(AST_TYPE).Cast<Type>().Size;
 		char mod = Mod(size);
 
 		const char* reg = RegAx(size);
+
 		char lval[64], rval[64];
 		ParseVal(expr.FindBranch(AST_LVALUE).Cast<Branch>(), lval);
 		ParseVal(expr.FindBranch(AST_RVALUE).Cast<Branch>(), rval);
-		Write("mov%c %s, %s", mod, rval, reg);
+
+		if (expr.FindBranch(AST_LVALUE).Cast<Branch>().Label == AST_BIN)
+		{
+			BinExpr(expr.FindBranch(AST_LVALUE).Cast<Branch>(), ASM_ORDER_LEFT);
+			if (expr.FindBranch(AST_RVALUE).Cast<Branch>().Label == AST_BIN)
+			{
+				BinExpr(expr.FindBranch(AST_RVALUE).Cast<Branch>(), ASM_ORDER_RIGHT);
+				return;
+			}
+			else
+				goto PrintR;
+		}
+		else if (expr.FindBranch(AST_RVALUE).Cast<Branch>().Label == AST_BIN)
+		{
+			BinExpr(expr.FindBranch(AST_RVALUE).Cast<Branch>(), ASM_ORDER_RIGHT);
+			goto PrintL;
+		}
+		else
+		{
+			Write("mov%c %s, %s", mod, lval, reg);
+			goto PrintR;
+		}
+		return;
+	PrintL:
 		if (op == AST_ADD)
 		{
 			Write("add%c %s, %s", mod, lval, reg);
@@ -388,17 +412,33 @@ namespace Symple::ASM
 		}
 		else if (op == AST_MULT)
 		{
-			
+
 			Write("imul%c %s, %s", mod, lval, reg);
 		}
 		else if (op == AST_DIV)
 		{
-			const char* reg = RegAx(size);
-			char lval[64], rval[64];
-			ParseVal(expr.FindBranch(AST_LVALUE).Cast<Branch>(), lval);
-			ParseVal(expr.FindBranch(AST_RVALUE).Cast<Branch>(), rval);
 			Write("sum div op with %s,%s", mod, lval, rval);
 		}
+		return;
+	PrintR:
+		if (op == AST_ADD)
+		{
+			Write("add%c %s, %s", mod, rval, reg);
+		}
+		else if (op == AST_SUB)
+		{
+			Write("sub%c %s, %s", mod, rval, reg);
+		}
+		else if (op == AST_MULT)
+		{
+
+			Write("imul%c %s, %s", mod, rval, reg);
+		}
+		else if (op == AST_DIV)
+		{
+			Write("sum div op with %s,%s", mod, rval, rval);
+		}
+		return;
 	}
 
 	void VarDecl(const Branch& decl)
@@ -441,6 +481,22 @@ namespace Symple::ASM
 				Write("mov%c %s, -%s$(#rbp)", Mod(size), RegAx(size), name.c_str());
 			}
 		}
+	}
+
+	void Assign(const Branch& expr)
+	{
+		const Varieble* left = nullptr;
+		std::string vname = expr.FindBranch(AST_LVALUE).Cast<Branch>().FindBranch(AST_NAME).Cast<std::string>();
+		for (const auto& var : Parser::sVars)
+			if (var.Name == vname)
+				left = &var;
+		if (!left)
+		{
+			Err("Internal Error!");
+			abort();
+		}
+
+		
 	}
 
 	void Return(const Branch& ret)
