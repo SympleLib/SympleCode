@@ -9,8 +9,8 @@ L--	Function Decleration
  	 	 	|	|--	Name: message
  	 	 	|	|--	Type: string (8 bytes)
  	 	 	|	L--	Value: 
- 	 	 	|	 	L--	String: Test 1!
- 	 	 	|--	String: Test 1!
+ 	 	 	|	 	L--	String: Test 1!\n
+ 	 	 	|--	String: Test 1!\n
  	 	 	|--	Function Call
  	 	 	|	|--	Name: print
  	 	 	|	L--	Parameters: 
@@ -21,8 +21,8 @@ L--	Function Decleration
  	 	 	|	|	 	|--	Name: message
  	 	 	|	|	 	L--	Type: string (8 bytes)
  	 	 	|	L--	RValue: 
- 	 	 	|	 	L--	String: Test 2!
- 	 	 	|--	String: Test 2!
+ 	 	 	|	 	L--	String: Test 2!\n
+ 	 	 	|--	String: Test 2!\n
  	 	 	L--	Function Call
  	 	 	 	|--	Name: print
  	 	 	 	L--	Parameters: 

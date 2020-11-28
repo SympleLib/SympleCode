@@ -1,7 +1,7 @@
 function int main()
 {
-	var string message = "Test 1!";
+	var string message = "Test 1!\n";
 	call print;
-	message = "Test 2!";
+	message = "Test 2!\n";
 	call print;
 }

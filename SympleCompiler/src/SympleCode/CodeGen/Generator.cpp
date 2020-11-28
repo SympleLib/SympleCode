@@ -48,6 +48,7 @@ namespace Symple::ASM
 	static FILE* sIm;
 
 	static long sStackPos;
+	static long sDatPos;
 
 	void Open(const std::string& path)
 	{
@@ -140,7 +141,7 @@ namespace Symple::ASM
 	{
 		Glo(".global print");
 		WriteNoIndent("print:");
-		Write("leaq .message(#rip), #rcx");
+		Write("movq -message$(#rbp), #rcx");
 
 		Write("subq $72, #rsp");
 		Write("movq #r9, 104(#rsp)");
@@ -162,6 +163,9 @@ namespace Symple::ASM
 		Write("movq	32(#rsp), #rdx");
 		Write("movq	40(#rsp), #r9");
 		Write("callq _vfprintf_l");
+		Write("movl #eax, 60(#rsp)");
+		Write("movl 60(#rsp), #eax");
+		Write("addq $72, #rsp");
 		Write("retq");
 	}
 
@@ -456,11 +460,11 @@ namespace Symple::ASM
 		}
 		else if (decl.FindBranch(AST_VALUE).Cast<Branch>().Label == AST_STRING)
 		{
-			//Glo(".global .%s", name.c_str());
-			SufNoIndent(".%s:", name.c_str());
+			Glo(".global _Dat$%d", ++sDatPos);
+			SufNoIndent("_Dat$%d:", sDatPos);
 			Suf(".asciz \"%s\"", decl.FindBranch(AST_VALUE).Cast<Branch>().Cast<std::string>().c_str());
 
-			Write("movabsq $.%s, #rcx", name.c_str());
+			Write("leaq _Dat$%d(#rip), #rcx", sDatPos);
 			Write("movq #rcx, -%s$(#rbp)", name.c_str());
 		}
 		else
@@ -504,11 +508,11 @@ namespace Symple::ASM
 		}
 		else if (expr.FindBranch(AST_RVALUE).Cast<Branch>().Label == AST_STRING)
 		{
-			//Glo(".global .%s", name.c_str());
-			SufNoIndent(".%s:", name.c_str());
+			Glo(".global _Dat$%d", ++sDatPos);
+			SufNoIndent("_Dat$%d:", sDatPos);
 			Suf(".asciz \"%s\"", expr.FindBranch(AST_RVALUE).Cast<Branch>().Cast<std::string>().c_str());
 
-			Write("movabsq $.%s, #rcx", name.c_str());
+			Write("leaq _Dat$%d(#rip), #rcx", sDatPos);
 			Write("movq #rcx, -%s$(#rbp)", name.c_str());
 		}
 		else
