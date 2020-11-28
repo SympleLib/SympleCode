@@ -145,24 +145,24 @@ namespace Symple::ASM
 
 		Write("subq $72, #rsp");
 		Write("movq #r9, 104(#rsp)");
-		Write("movq	#r8, 96(#rsp)");
-		Write("movq	#rdx, 88(#rsp)");
-		Write("movq	#rcx, 64(#rsp)");
-		Write("leaq	88(#rsp), #rax");
-		Write("leaq	88(#rsp), #rax");
-		Write("movq	#rax, 48(#rsp)");
-		Write("movq	48(#rsp), #r9");
-		Write("movq	64(#rsp), #rdx");
-		Write("movl	$1, #ecx");
-		Write("movq	#r9, 40(#rsp)");
-		Write("movq	#rdx, 32(#rsp)");
-		Write("callq __acrt_iob_func");
-		Write("xorl	#ecx, #ecx");
-		Write("movl	#ecx, #r8d");
-		Write("movq	#rax, #rcx");
-		Write("movq	32(#rsp), #rdx");
-		Write("movq	40(#rsp), #r9");
-		Write("callq _vfprintf_l");
+		Write("movq #r8, 96(#rsp)");
+		Write("movq #rdx, 88(#rsp)");
+		Write("movq #rcx, 64(#rsp)");
+		Write("leaq 88(#rsp), #rax");
+		Write("leaq 88(#rsp), #rax");
+		Write("movq #rax, 48(#rsp)");
+		Write("movq 48(#rsp), #r9");
+		Write("movq 64(#rsp), #rdx");
+		Write("movl $1, #ecx");
+		Write("movq #r9, 40(#rsp)");
+		Write("movq #rdx, 32(#rsp)");
+		Write("call __acrt_iob_func");
+		Write("xorl #ecx, #ecx");
+		Write("movl #ecx, #r8d");
+		Write("movq #rax, #rcx");
+		Write("movq 32(#rsp), #rdx");
+		Write("movq 40(#rsp), #r9");
+		Write("call _vfprintf_l");
 		Write("movl #eax, 60(#rsp)");
 		Write("movl 60(#rsp), #eax");
 		Write("addq $72, #rsp");
@@ -323,6 +323,13 @@ namespace Symple::ASM
 		Err("Invalid size of Mod: %d", size);
 		abort();
 	}
+
+	void WriteStr(const char* str)
+	{
+		Glo(".global _Dat$%d", ++sDatPos);
+		SufNoIndent("_Dat$%d:", sDatPos);
+		Suf(".string \"%s\"", str);
+	}
 	
 	void Push(const char* reg)
 	{
@@ -440,7 +447,7 @@ namespace Symple::ASM
 		}
 		else if (op == AST_DIV)
 		{
-			Write("sum div op with %s,%s", mod, rval, rval);
+			Write("; sum div op with %s,%s", mod, rval, rval);
 		}
 		return;
 	}
@@ -460,10 +467,9 @@ namespace Symple::ASM
 		}
 		else if (decl.FindBranch(AST_VALUE).Cast<Branch>().Label == AST_STRING)
 		{
-			Glo(".global _Dat$%d", ++sDatPos);
-			SufNoIndent("_Dat$%d:", sDatPos);
-			Suf(".asciz \"%s\"", decl.FindBranch(AST_VALUE).Cast<Branch>().Cast<std::string>().c_str());
+			WriteStr(decl.FindBranch(AST_VALUE).Cast<Branch>().Cast<std::string>().c_str());
 
+			Write("; Set %s to '%s'", name.c_str(), decl.FindBranch(AST_VALUE).Cast<Branch>().Cast<std::string>().c_str());
 			Write("leaq _Dat$%d(#rip), #rcx", sDatPos);
 			Write("movq #rcx, -%s$(#rbp)", name.c_str());
 		}
@@ -508,10 +514,9 @@ namespace Symple::ASM
 		}
 		else if (expr.FindBranch(AST_RVALUE).Cast<Branch>().Label == AST_STRING)
 		{
-			Glo(".global _Dat$%d", ++sDatPos);
-			SufNoIndent("_Dat$%d:", sDatPos);
-			Suf(".asciz \"%s\"", expr.FindBranch(AST_RVALUE).Cast<Branch>().Cast<std::string>().c_str());
+			WriteStr(expr.FindBranch(AST_RVALUE).Cast<Branch>().Cast<std::string>().c_str());
 
+			Write("; Set %s to '%s'", name.c_str(), expr.FindBranch(AST_RVALUE).Cast<Branch>().Cast<std::string>().c_str());
 			Write("leaq _Dat$%d(#rip), #rcx", sDatPos);
 			Write("movq #rcx, -%s$(#rbp)", name.c_str());
 		}
@@ -549,7 +554,7 @@ namespace Symple::ASM
 		WriteNoIndent("%s: ; Declare Function", name);
 		Write("; Push Stack");
 		Write("pushq #rbp");
-		Write("mov #rsp, #rbp");
+		Write("mov  #rsp, #rbp");
 	}
 
 	void EndFunc(const Type& ty)
@@ -560,6 +565,6 @@ namespace Symple::ASM
 
 	void FuncCall(const Branch& call)
 	{
-		Write("callq %s", call.FindBranch(AST_NAME).Cast<std::string>().c_str());
+		Write("call %s", call.FindBranch(AST_NAME).Cast<std::string>().c_str());
 	}
 }

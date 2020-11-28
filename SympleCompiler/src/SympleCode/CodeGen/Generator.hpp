@@ -26,6 +26,8 @@ namespace Symple::ASM
 	char* RegAx(long size);
 	char Mod(long size);
 
+	void WriteStr(const char* str);
+
 	void Push(const char* reg);
 	void Pop(const char* reg);
 
