@@ -1,7 +1,18 @@
-function int main()
+var string message = "";
+var int x = 0;
+var int y = 0 + 0;
+
+function void main()
 {
-	var string message = "Test 1!\n";
+	call myFunc();
+
+	message = "Test 1!\n";
 	call print;
 	message = "Test 2!\n";
 	call print;
-}
+};
+
+function int myFunc()
+{
+	return int x + y;
+};

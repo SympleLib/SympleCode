@@ -96,7 +96,10 @@ namespace Symple::Parser
 		{
 			TokenInfo start = Peek();
 
-			sTree.PushBranch(ParseMember());
+			Branch member = ParseMember();
+
+			if (member != Branch())
+				sTree.PushBranch(member);
 
 			if (Peek() == start)
 				Next();
@@ -107,9 +110,26 @@ namespace Symple::Parser
 
 	Branch ParseMember()
 	{
-		if (Peek().IsKeyWord(KeyWords::Function))
-			return ParseFuncDecl();
+		COut(Peek().GetLex() << '\n');
 		return ParseStatement();
+	}
+
+	Branch ParseStatement()
+	{
+		switch (Peek().AsKeyWord())
+		{
+		case KeyWords::Function:
+			return ParseFuncDecl();
+		case KeyWords::Varieble:
+			return ParseVarDecl();
+		case KeyWords::Return:
+			return ParseReturn();
+		case KeyWords::Call:
+			return AST::FuncCall(std::string(Next().GetLex()), {});
+		default:
+			//return {}; // Tiny optimization for file size, but I'm not going to do it when I'm testing
+			return ParseExpr();
+		}
 	}
 
 	Branch ParseFuncDecl()
@@ -191,22 +211,6 @@ namespace Symple::Parser
 		Type type = func.Params[nparam];
 		return AST::Param(type);
 	}
-	
-	Branch ParseStatement()
-	{
-		switch (Peek().AsKeyWord())
-		{
-		case KeyWords::Varieble:
-			return ParseVarDecl();
-		case KeyWords::Return:
-			return ParseReturn();
-		case KeyWords::Call:
-			return AST::FuncCall(std::string(Next().GetLex()), {});
-		default:
-			//return {}; // Tiny optimization for file size, but I'm not going to do it when I'm testing
-			return ParseExpr();
-		}
-	}
 
 	Branch ParseBlock()
 	{
@@ -223,7 +227,7 @@ namespace Symple::Parser
 			if (Peek() == start)
 				Next();
 		}
-		Next();
+		Match(Tokens::RightCurly);
 
 		return block;
 	}

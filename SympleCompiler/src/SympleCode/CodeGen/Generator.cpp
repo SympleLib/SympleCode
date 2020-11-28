@@ -542,10 +542,37 @@ namespace Symple::ASM
 
 	void Return(const Branch& ret)
 	{
-		char retv[64];
 		long size = ret.FindBranch(AST_TYPE).Cast<Type>().Size;
-		ParseVal(ret.FindBranch(AST_VALUE).Cast<Branch>(), retv);
-		Write("mov%c %s, %s ; Return %s", Mod(size), retv, RegAx(size), retv);
+
+		if (ret.FindBranch(AST_VALUE).Cast<Branch>().Label == AST_BIN)
+		{
+			BinExpr(ret.FindBranch(AST_VALUE).Cast<Branch>());
+		}
+		else if (ret.FindBranch(AST_VALUE).Cast<Branch>().Label == AST_STRING)
+		{
+			WriteStr(ret.FindBranch(AST_VALUE).Cast<Branch>().Cast<std::string>().c_str());
+
+			Write("; Return '%s'", ret.FindBranch(AST_VALUE).Cast<Branch>().Cast<std::string>().c_str());
+			Write("leaq _Dat$%d(#rip), #rcx", sDatPos);
+			Write("movq #rcx, #rax");
+		}
+		else
+		{
+			if (ret.FindBranch(AST_VALUE).Cast<Branch>().Label != AST_VAR_VAL)
+			{
+				char val[64];
+				ParseVal(ret.FindBranch(AST_VALUE).Cast<Branch>(), val);
+				Write("mov%c %s, %s ; Return %s", Mod(size), val, RegAx(size), val);
+			}
+			else
+			{
+				char val[64];
+				ParseVal(ret.FindBranch(AST_VALUE).Cast<Branch>(), val);
+				long rsize = ret.FindBranch(AST_VALUE).Cast<Branch>().FindBranch(AST_TYPE).Cast<Type>().Size;
+				Write("; Return %s", val);
+				Write("mov%c %s, %s", Mod(rsize), val, RegAx(size));
+			}
+		}
 	}
 
 	void StartFunc(const char* name)

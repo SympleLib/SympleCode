@@ -1,29 +1,68 @@
+|--	Varieble Declaration
+|	|--	Name: message
+|	|--	Type: string (8 bytes)
+|	L--	Value: 
+|	 	L--	String: 
+|--	String: 
+|--	Varieble Declaration
+|	|--	Name: x
+|	|--	Type: sint (4 bytes)
+|	L--	Value: 
+|	 	L--	Constant: 0
+|--	Varieble Declaration
+|	|--	Name: y
+|	|--	Type: sint (4 bytes)
+|	L--	Value: 
+|	 	L--	Constant: 0
+|--	Function Decleration
+|	|--	Name: main
+|	|--	Type: void (0 bytes)
+|	|--	Parameters: 
+|	|	L--	
+|	L--	Body: 
+|	 	L--	
+|	 	 	|--	Assignment
+|	 	 	|	|--	LValue: 
+|	 	 	|	|	L--	Varieble Value
+|	 	 	|	|	 	|--	Name: message
+|	 	 	|	|	 	L--	Type: string (8 bytes)
+|	 	 	|	L--	RValue: 
+|	 	 	|	 	L--	String: Test 1!\n
+|	 	 	|--	String: Test 1!\n
+|	 	 	|--	Function Call
+|	 	 	|	|--	Name: print
+|	 	 	|	L--	Parameters: 
+|	 	 	|	 	L--	
+|	 	 	|--	Assignment
+|	 	 	|	|--	LValue: 
+|	 	 	|	|	L--	Varieble Value
+|	 	 	|	|	 	|--	Name: message
+|	 	 	|	|	 	L--	Type: string (8 bytes)
+|	 	 	|	L--	RValue: 
+|	 	 	|	 	L--	String: Test 2!\n
+|	 	 	|--	String: Test 2!\n
+|	 	 	L--	Function Call
+|	 	 	 	|--	Name: print
+|	 	 	 	L--	Parameters: 
+|	 	 	 	 	L--	
 L--	Function Decleration
- 	|--	Name: main
+ 	|--	Name: myFunc
  	|--	Type: sint (4 bytes)
  	|--	Parameters: 
  	|	L--	
  	L--	Body: 
  	 	L--	
- 	 	 	|--	Varieble Declaration
- 	 	 	|	|--	Name: message
- 	 	 	|	|--	Type: string (8 bytes)
- 	 	 	|	L--	Value: 
- 	 	 	|	 	L--	String: Test 1!\n
- 	 	 	|--	String: Test 1!\n
- 	 	 	|--	Function Call
- 	 	 	|	|--	Name: print
- 	 	 	|	L--	Parameters: 
- 	 	 	|	 	L--	
- 	 	 	|--	Assignment
- 	 	 	|	|--	LValue: 
- 	 	 	|	|	L--	Varieble Value
- 	 	 	|	|	 	|--	Name: message
- 	 	 	|	|	 	L--	Type: string (8 bytes)
- 	 	 	|	L--	RValue: 
- 	 	 	|	 	L--	String: Test 2!\n
- 	 	 	|--	String: Test 2!\n
- 	 	 	L--	Function Call
- 	 	 	 	|--	Name: print
- 	 	 	 	L--	Parameters: 
- 	 	 	 	 	L--	
+ 	 	 	L--	Return
+ 	 	 	 	|--	Type: sint (4 bytes)
+ 	 	 	 	L--	Value: 
+ 	 	 	 	 	L--	Binary Expression
+ 	 	 	 	 	 	|--	Type: sint (4 bytes)
+ 	 	 	 	 	 	|--	Operator: Add
+ 	 	 	 	 	 	|--	LValue: 
+ 	 	 	 	 	 	|	L--	Varieble Value
+ 	 	 	 	 	 	|	 	|--	Name: x
+ 	 	 	 	 	 	|	 	L--	Type: sint (4 bytes)
+ 	 	 	 	 	 	L--	RValue: 
+ 	 	 	 	 	 	 	L--	Varieble Value
+ 	 	 	 	 	 	 	 	|--	Name: y
+ 	 	 	 	 	 	 	 	L--	Type: sint (4 bytes)
