@@ -1,68 +1,69 @@
-|--	Varieble Declaration
-|	|--	Name: message
-|	|--	Type: string (8 bytes)
-|	L--	Value: 
-|	 	L--	String: 
-|--	String: 
-|--	Varieble Declaration
-|	|--	Name: x
-|	|--	Type: sint (4 bytes)
-|	L--	Value: 
-|	 	L--	Constant: 0
-|--	Varieble Declaration
-|	|--	Name: y
-|	|--	Type: sint (4 bytes)
-|	L--	Value: 
-|	 	L--	Constant: 0
-|--	Function Decleration
-|	|--	Name: main
-|	|--	Type: void (0 bytes)
-|	|--	Parameters: 
-|	|	L--	
-|	L--	Body: 
-|	 	L--	
-|	 	 	|--	Assignment
-|	 	 	|	|--	LValue: 
-|	 	 	|	|	L--	Varieble Value
-|	 	 	|	|	 	|--	Name: message
-|	 	 	|	|	 	L--	Type: string (8 bytes)
-|	 	 	|	L--	RValue: 
-|	 	 	|	 	L--	String: Test 1!\n
-|	 	 	|--	String: Test 1!\n
-|	 	 	|--	Function Call
-|	 	 	|	|--	Name: print
-|	 	 	|	L--	Parameters: 
-|	 	 	|	 	L--	
-|	 	 	|--	Assignment
-|	 	 	|	|--	LValue: 
-|	 	 	|	|	L--	Varieble Value
-|	 	 	|	|	 	|--	Name: message
-|	 	 	|	|	 	L--	Type: string (8 bytes)
-|	 	 	|	L--	RValue: 
-|	 	 	|	 	L--	String: Test 2!\n
-|	 	 	|--	String: Test 2!\n
-|	 	 	L--	Function Call
-|	 	 	 	|--	Name: print
-|	 	 	 	L--	Parameters: 
-|	 	 	 	 	L--	
 L--	Function Decleration
- 	|--	Name: myFunc
- 	|--	Type: sint (4 bytes)
+ 	|--	Name: main
+ 	|--	Type: void (0 bytes)
  	|--	Parameters: 
  	|	L--	
  	L--	Body: 
  	 	L--	
- 	 	 	L--	Return
- 	 	 	 	|--	Type: sint (4 bytes)
- 	 	 	 	L--	Value: 
- 	 	 	 	 	L--	Binary Expression
- 	 	 	 	 	 	|--	Type: sint (4 bytes)
- 	 	 	 	 	 	|--	Operator: Add
- 	 	 	 	 	 	|--	LValue: 
- 	 	 	 	 	 	|	L--	Varieble Value
- 	 	 	 	 	 	|	 	|--	Name: x
- 	 	 	 	 	 	|	 	L--	Type: sint (4 bytes)
- 	 	 	 	 	 	L--	RValue: 
- 	 	 	 	 	 	 	L--	Varieble Value
- 	 	 	 	 	 	 	 	|--	Name: y
- 	 	 	 	 	 	 	 	L--	Type: sint (4 bytes)
+ 	 	 	|--	Varieble Declaration
+ 	 	 	|	|--	Name: message
+ 	 	 	|	|--	Type: string (8 bytes)
+ 	 	 	|	L--	Value: 
+ 	 	 	|	 	L--	String: idk
+ 	 	 	|--	String: idk
+ 	 	 	|--	If
+ 	 	 	|	|--	Condition: 
+ 	 	 	|	|	L--	Condition
+ 	 	 	|	|	 	|--	Compare: Is Equal
+ 	 	 	|	|	 	|--	LValue: 
+ 	 	 	|	|	 	|	L--	Binary Expression
+ 	 	 	|	|	 	|	 	|--	Type: sint (4 bytes)
+ 	 	 	|	|	 	|	 	|--	Operator: Add
+ 	 	 	|	|	 	|	 	|--	LValue: 
+ 	 	 	|	|	 	|	 	|	L--	Constant: 1
+ 	 	 	|	|	 	|	 	L--	RValue: 
+ 	 	 	|	|	 	|	 	 	L--	Constant: 1
+ 	 	 	|	|	 	L--	RValue: 
+ 	 	 	|	|	 	 	L--	Constant: 2
+ 	 	 	|	|--	Then: 
+ 	 	 	|	|	L--	
+ 	 	 	|	|	 	|--	Assignment
+ 	 	 	|	|	 	|	|--	LValue: 
+ 	 	 	|	|	 	|	|	L--	Varieble Value
+ 	 	 	|	|	 	|	|	 	|--	Name: message
+ 	 	 	|	|	 	|	|	 	L--	Type: string (8 bytes)
+ 	 	 	|	|	 	|	L--	RValue: 
+ 	 	 	|	|	 	|	 	L--	String: yes
+ 	 	 	|	|	 	L--	String: yes
+ 	 	 	|	L--	Else: 
+ 	 	 	|	 	L--	
+ 	 	 	|--	If
+ 	 	 	|	|--	Condition: 
+ 	 	 	|	|	L--	Condition
+ 	 	 	|	|	 	|--	Compare: ???
+ 	 	 	|	|	 	|--	LValue: 
+ 	 	 	|	|	 	|	L--	Binary Expression
+ 	 	 	|	|	 	|	 	|--	Type: sint (4 bytes)
+ 	 	 	|	|	 	|	 	|--	Operator: Add
+ 	 	 	|	|	 	|	 	|--	LValue: 
+ 	 	 	|	|	 	|	 	|	L--	Constant: 1
+ 	 	 	|	|	 	|	 	L--	RValue: 
+ 	 	 	|	|	 	|	 	 	L--	Constant: 1
+ 	 	 	|	|	 	L--	RValue: 
+ 	 	 	|	|	 	 	L--	Constant: 2
+ 	 	 	|	|--	Then: 
+ 	 	 	|	|	L--	
+ 	 	 	|	|	 	|--	Assignment
+ 	 	 	|	|	 	|	|--	LValue: 
+ 	 	 	|	|	 	|	|	L--	Varieble Value
+ 	 	 	|	|	 	|	|	 	|--	Name: message
+ 	 	 	|	|	 	|	|	 	L--	Type: string (8 bytes)
+ 	 	 	|	|	 	|	L--	RValue: 
+ 	 	 	|	|	 	|	 	L--	String: nope
+ 	 	 	|	|	 	L--	String: nope
+ 	 	 	|	L--	Else: 
+ 	 	 	|	 	L--	
+ 	 	 	L--	Function Call
+ 	 	 	 	|--	Name: print
+ 	 	 	 	L--	Parameters: 
+ 	 	 	 	 	L--	

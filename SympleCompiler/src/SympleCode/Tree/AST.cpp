@@ -88,9 +88,30 @@ namespace Symple::AST
 		return branch;
 	}
 
+	static Branch Cond(const ASTToken& compare, const Branch& left, const Branch& right)
+	{
+		Branch branch(AST_COND);
+		branch.PushBranch(AST_COM, compare);
+		branch.PushBranch(AST_LVALUE, left);
+		branch.PushBranch(AST_RVALUE, right);
+		return branch;
+	}
+
+	Branch Cond(const TokenInfo& compare, const Branch& left, const Branch& right)
+	{
+		Token tok = compare.GetToken();
+		return Cond(tok == Tokens::EqualsEqual ? AST_EQU : tok == Tokens::LessThan ? AST_LES : tok == Tokens::LessThanOrEqual ? AST_LEQ :
+			tok == Tokens::GreaterThan ? AST_GES : tok == Tokens::GreaterThanOrEqual ? AST_GEQ : AST_UNKNOWN, left, right);
+	}
+
 	Branch Constant(const Type& type, int value)
 	{
 		return { AST_CONSTANT, value };
+	}
+
+	Branch Bool(bool value)
+	{
+		return { AST_BOOL, value };
 	}
 
 	Branch String(const std::string& str)

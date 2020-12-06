@@ -47,8 +47,8 @@ namespace Symple::CodeGenerator
 
 		Branch ast = Parser::Parse(source);
 		ASM::Open("~temp.s");
-		HandleBranch(ast);
 		ASM::WriteStandards();
+		HandleBranch(ast);
 		ASM::Close();
 
 		char cmd[64];
@@ -76,6 +76,14 @@ namespace Symple::CodeGenerator
 			ASM::FuncCall(branch);
 		else if (branch.Label == AST_ASSIGN)
 			ASM::Assign(branch);
+		else if (branch.Label == AST_IF)
+		{
+			ASM::If(branch);
+			HandleBranch(branch.FindBranch(AST_THEN).Cast<Branch>());
+			ASM::Else();
+			HandleBranch(branch.FindBranch(AST_ELSE).Cast<Branch>());
+			ASM::EndIf();
+		}
 		else
 			for (const auto& subBranch : branch.SubBranches)
 				HandleBranch(subBranch);

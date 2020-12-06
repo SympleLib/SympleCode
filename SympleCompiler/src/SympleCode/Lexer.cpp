@@ -303,16 +303,21 @@ namespace Symple::Lexer
         if (Peek() == '=')
         {
             Get();
-            if (Get() == '=')
+            if (Peek() == '=')
+            {
+                Get();
                 return { Tokens::EqualsEqual, start, sBeg };
+            }
             return Tokens::Equal;
         }
         else if (Peek() == '!')
         {
-
             Get();
-            if (Get() == '=')
+            if (Peek() == '=')
+            {
+                Get();
                 return { Tokens::NotEqual, start, sBeg };
+            }
             return Tokens::Exclimation;
         }
         return { Tokens::Unexpected, start, 1 };

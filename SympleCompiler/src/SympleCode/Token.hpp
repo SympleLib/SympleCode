@@ -44,8 +44,10 @@ namespace Symple
 			EqualsEqual,
 			NotEqual,
 			String,
+			GreaterThanOrEqual,
+			LessThanOrEqual,
 
-			Last = String
+			Last = LessThanOrEqual
 		} tok;
 
 		inline const char* ToString(Token token)
@@ -57,7 +59,8 @@ namespace Symple
 				"Hash",        "Dot",         "Comma",      "Colon",      "Semicolon",
 				"SingleQuote", "DoubleQuote", "Comment",    "Pipe",       "End",
 				"Unexpected",
-				"Dollar", "At", "Exclimation", "Equals Equal", "Not Equal", "String"
+				"Dollar", "At", "Exclimation", "Equals Equal", "Not Equal", "String",
+				"Greater Than", "Greater Than or equal", "Less Than", "Less then or equal"
 			};
 			return names[static_cast<int>(token)];
 		}
@@ -74,14 +77,17 @@ namespace Symple
 			Null,
 			Return,
 			Call,
+			If,
+			Else,
 
-			Last = Call
+			Last = Else
 		} key;
 
 		inline const char* ToString(Token token)
 		{
 			static const char* names[]{
-				"true", "false", "function", "var", "null", "return", "call",
+				"true", "false", "function", "var", "null",
+				"return", "call", "if", "else"
 			};
 			return names[static_cast<int>(token)];
 		}

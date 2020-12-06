@@ -32,7 +32,7 @@ namespace Symple::Parser
 
 			return false;
 		}
-#if PRINT_LEX
+#if PARSE_PRINT_LEX
 		COut(Tokens::ToString(tokenInfo.GetToken()) << " '" << tokenInfo.GetLex() << "'\n");
 #endif
 		return true;
@@ -110,12 +110,14 @@ namespace Symple::Parser
 
 	Branch ParseMember()
 	{
-		COut(Peek().GetLex() << '\n');
 		return ParseStatement();
 	}
 
 	Branch ParseStatement()
 	{
+#if PARSE_PRINT_START
+		COut(Peek().GetLex() << '\n');
+#endif
 		switch (Peek().AsKeyWord())
 		{
 		case KeyWords::Function:
@@ -124,6 +126,8 @@ namespace Symple::Parser
 			return ParseVarDecl();
 		case KeyWords::Return:
 			return ParseReturn();
+		case KeyWords::If:
+			return ParseIfStatement();
 		case KeyWords::Call:
 			return AST::FuncCall(std::string(Next().GetLex()), {});
 		default:
@@ -258,6 +262,28 @@ namespace Symple::Parser
 		return AST::VarDecl(type, name, init);
 	}
 
+	Branch ParseCondition()
+	{
+		Branch left = ParseExpr();
+		TokenInfo compare = Next(); Next();
+		Branch right = ParseExpr(); Next();
+
+		COut(compare.GetLex() << '\n');
+
+		return AST::Cond(compare, left, right);
+	}
+
+	Branch ParseIfStatement()
+	{
+		Next();
+		Branch cond = ParseCondition();
+		Branch body = ParseBlock();
+		if (Peek().AsKeyWord() == KeyWords::Else)
+			return AST::If(cond, body, ParseBlock());
+
+		return AST::If(cond, body, {});
+	}
+
 	Branch ParseBinExpr(int8_t parentOOO)
 	{
 		Branch left;
@@ -338,6 +364,10 @@ namespace Symple::Parser
 					Match(Tokens::Identifier);
 					return AST::ParamVal(pair.second);
 				}
+			if (Peek().AsKeyWord() == KeyWords::True)
+				return AST::Bool(true);
+			if (Peek().AsKeyWord() == KeyWords::False)
+				return AST::Bool(false);
 			Err("Unexpected Identifier: '%s'", std::string(Peek().GetLex()).c_str());
 			abort();
 		}

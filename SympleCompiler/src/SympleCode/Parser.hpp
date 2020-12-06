@@ -7,7 +7,8 @@
 #include "SympleCode/Type.hpp"
 #include "SympleCode/Token.hpp"
 
-#define PRINT_LEX false
+#define PARSE_PRINT_LEX false
+#define PARSE_PRINT_START false
 
 namespace Symple::Parser
 {
@@ -36,6 +37,8 @@ namespace Symple::Parser
 	Branch ParseBinExpr(int8_t parentOOO = -1);
 	Branch ParseAssignExpr();
 	Branch ParsePrimaryExpr();
+	Branch ParseCondition();
+	Branch ParseIfStatement();
 
 	Type ParseType();
 

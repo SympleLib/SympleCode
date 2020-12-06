@@ -39,11 +39,21 @@ using ASTToken = const std::string&;
 #define AST_LABEL      (ASTToken)"Label"
 
 #define AST_IF         (ASTToken)"If"
+#define AST_THEN       (ASTToken)"Then"
 #define AST_ELSE       (ASTToken)"Else"
 #define AST_WHILE      (ASTToken)"While"
 #define AST_TERNARY    (ASTToken)"Ternary"
-#define AST_COND       (ASTToken)"Condition"
 #define AST_THEN       (ASTToken)"Then"
+
+#define AST_BOOL       (ASTToken)"Boolean"
+#define AST_COND       (ASTToken)"Condition"
+#define AST_COM        (ASTToken)"Compare"
+#define AST_EQU        (ASTToken)"Is Equal"
+#define AST_NEQ        (ASTToken)"Is Not Equal"
+#define AST_GEQ        (ASTToken)"Greater than or Equal"
+#define AST_LEQ        (ASTToken)"Less than or Equal"
+#define AST_GES        (ASTToken)"Greater than"
+#define AST_LES        (ASTToken)"Less than"
 
 #define AST_BIN        (ASTToken)"Binary Expression"
 #define AST_OP         (ASTToken)"Operator"
@@ -78,8 +88,10 @@ namespace Symple::AST
 	Branch Assign(const Branch& lvalue, const Branch& rvalue);
 
 	Branch If(const Branch& cond, const Branch& then, const Branch& elze);
+	Branch Cond(const TokenInfo& compare, const Branch& left, const Branch& right);
 
 	Branch Constant(const Type& type, int value);
+	Branch Bool(bool value);
 
 	Branch String(const std::string& str);
 

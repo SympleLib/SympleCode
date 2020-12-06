@@ -1,18 +1,15 @@
-var string message = "";
-var int x = 0;
-var int y = 0 + 0;
-
 function void main()
 {
-	call myFunc();
+	var string message = "idk";
 
-	message = "Test 1!\n";
-	call print;
-	message = "Test 2!\n";
-	call print;
-};
+	if 1 + 1; == 2;
+	{
+		message = "yes";
+	};
+	if 1 + 1; != 2;
+	{
+		message = "nope";
+	};
 
-function int myFunc()
-{
-	return int x + y;
+	call print;
 };

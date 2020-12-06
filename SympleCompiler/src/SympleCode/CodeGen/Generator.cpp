@@ -10,7 +10,6 @@
 #include "SympleCode/Parser.hpp"
 
 #include "SympleCode/Util/Util.hpp"
-#include "SympleCode/Tree/AST.hpp"
 
 #define Write(...) WriteF("\t" __VA_ARGS__)
 #define WriteNoIndent(...) WriteF(__VA_ARGS__)
@@ -48,7 +47,8 @@ namespace Symple::ASM
 	static FILE* sIm;
 
 	static long sStackPos;
-	static long sDatPos;
+	static long sDatPos = -1;
+	static long sStatPos = -1;
 
 	void Open(const std::string& path)
 	{
@@ -291,8 +291,8 @@ namespace Symple::ASM
 		{
 		case 1: return "%dl";
 		case 2: return "%dx";
-		case 4: return "edx";
-		case 8: return "rdx";
+		case 4: return "%edx";
+		case 8: return "%rdx";
 		}
 		Err("Invalid size of reg dx: %d", size);
 		abort();
@@ -311,6 +311,42 @@ namespace Symple::ASM
 		abort();
 	}
 
+	char* Compare(ASTToken tok)
+	{
+		if (tok == AST_EQU)
+			return "je";
+		if (tok == AST_NEQ)
+			return "jne";
+		if (tok == AST_LES)
+			return "jl";
+		if (tok == AST_LEQ)
+			return "jle";
+		if (tok == AST_GES)
+			return "jg";
+		if (tok == AST_GEQ)
+			return "jge";
+		Err("Invalid Compare: %s", tok.c_str());
+		abort();
+	}
+
+	char* CompareNot(ASTToken tok)
+	{
+		if (tok == AST_EQU)
+			return "jne";
+		if (tok == AST_NEQ)
+			return "je";
+		if (tok == AST_LES)
+			return "jge";
+		if (tok == AST_LEQ)
+			return "jg";
+		if (tok == AST_GES)
+			return "jle";
+		if (tok == AST_GEQ)
+			return "jl";
+		Err("Invalid Not Compare: %s", tok.c_str());
+		abort();
+	}
+
 	char Mod(long size)
 	{
 		switch (size)
@@ -326,9 +362,17 @@ namespace Symple::ASM
 
 	void WriteStr(const char* str)
 	{
-		Glo(".global _Dat$%d", ++sDatPos);
+		sDatPos++;
+		Glo(".global _Dat$%d", sDatPos);
 		SufNoIndent("_Dat$%d:", sDatPos);
 		Suf(".string \"%s\"", str);
+	}
+
+	void WriteStat()
+	{
+		sStatPos++;
+		Glo(".global _Stat$%d", sStatPos);
+		WriteNoIndent("_Stat$%d:", sStatPos);
 	}
 	
 	void Push(const char* reg)
@@ -593,5 +637,58 @@ namespace Symple::ASM
 	void FuncCall(const Branch& call)
 	{
 		Write("call %s", call.FindBranch(AST_NAME).Cast<std::string>().c_str());
+	}
+
+	void ComVal(const Branch& val, const char* reg)
+	{
+		if (val.Label == AST_BIN)
+		{
+			BinExpr(val);
+			Write("movl #eax, %s", reg);
+		}
+		else if (val.Label == AST_STRING)
+		{
+			WriteStr(val.Cast<std::string>().c_str());
+
+			Write("leaq _Dat$%d(#rip), %s", sDatPos, reg);
+		}
+		else
+		{
+			if (val.Label != AST_VAR_VAL)
+			{
+				char vval[64];
+				ParseVal(val, vval);
+				Write("movl %s, %s", vval, reg);
+			}
+			else
+			{
+				char vval[64];
+				ParseVal(val, vval);
+				long size = val.FindBranch(AST_TYPE).Cast<Type>().Size;
+				Write("mov%c %s, %s", Mod(size), vval, RegAx(size));
+				Write("mov%c %s, -%s$(#rbp)", Mod(size), RegAx(size), reg);
+			}
+		}
+	}
+
+	void If(const Branch& statement)
+	{
+		ComVal(statement.FindBranch(AST_COND).Cast<Branch>().FindBranch(AST_LVALUE).Cast<Branch>(), RegAx(4));
+		ComVal(statement.FindBranch(AST_COND).Cast<Branch>().FindBranch(AST_RVALUE).Cast<Branch>(), RegDx(4));
+		Write("cmp%c %s, %s", Mod(4), RegAx(4), RegDx(4));
+		Write("%s _Stat$%d", CompareNot(statement.FindBranch(AST_COND).Cast<Branch>().FindBranch(AST_COM).Cast<ASTToken>()), sStatPos + 2);
+
+		WriteStat(); // If
+	}
+
+	void Else()
+	{
+		Write("jmp _Stat$%d", sStatPos + 2);
+		WriteStat(); // Else
+	}
+
+	void EndIf()
+	{
+		WriteStat();
 	}
 }

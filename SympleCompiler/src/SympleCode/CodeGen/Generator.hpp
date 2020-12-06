@@ -3,6 +3,7 @@
 #include <string>
 
 #include "SympleCode/Tree/Tree.hpp"
+#include "SympleCode/Tree/AST.hpp"
 #include "SympleCode/Type.hpp"
 
 #define ASM_COMMENTS true
@@ -24,9 +25,12 @@ namespace Symple::ASM
 
 	char* RegDx(long size);
 	char* RegAx(long size);
+	char* Compare(ASTToken tok);
+	char* CompareNot(ASTToken tok);
 	char Mod(long size);
 
 	void WriteStr(const char* str);
+	void WriteStat();
 
 	void Push(const char* reg);
 	void Pop(const char* reg);
@@ -46,6 +50,10 @@ namespace Symple::ASM
 	void Return(const Branch& ret);
 	void StartFunc(const char* name);
 	void EndFunc(const Type& ty);
-
 	void FuncCall(const Branch& call);
+
+	void ComVal(const Branch& val, const char* reg);
+	void If(const Branch& statement);
+	void Else();
+	void EndIf();
 }
