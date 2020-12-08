@@ -17,6 +17,8 @@ namespace Symple
 		Multiplication,
 		Division,
 
+		Assignment,
+
 		BitShiftLeft,
 		BitShiftRight,
 		BitOr,
@@ -27,5 +29,6 @@ namespace Symple
 		LogicalNot,
 		LogicalOr,
 		LogicalAnd,
+		Logicalis,
 	};
 }

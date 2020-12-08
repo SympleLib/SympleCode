@@ -9,19 +9,27 @@ namespace Symple
 	{
 	private:
 		Lexer mLexer;
-		Token* mToken, mPToken;
+		const Token* mToken;
+		const Token* mPToken;
 	public:
 		Parser(const char* source = "");
 
 		Node* ParseCompilationUnit();
 	private:
-		Token* Next();
-		Token* Match(Token::Kind kind);
+		const Token* Next();
+		const Token* Match(Token::Kind kind);
 
-		Node* ParseMembers();
+		const std::list<Node*> ParseMembers();
 		Node* ParseMember();
 
+		Node* ParseGlobalStatement();
+		Node* ParseStatement();
+
 		Node* ParseExpresion();
-		Node* ParseBinaryExpression();
+		Node* ParseAssignmentExpresion();
+		Node* ParseBinaryExpression(int parentPrecedense = 0);
+		Node* ParsePrimaryExpression();
+
+		Node* ParseNumberLiteral();
 	};
 }

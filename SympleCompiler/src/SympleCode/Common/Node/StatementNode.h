@@ -4,5 +4,5 @@
 
 namespace Symple
 {
-	class ExpressionNode : public Node {};
+	class StatementNode : public Node {};
 }

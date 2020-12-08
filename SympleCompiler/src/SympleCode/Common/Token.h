@@ -13,6 +13,11 @@ namespace Symple
 			Identifier,
 			Number,
 
+			Plus,
+			Minus,
+			Asterisk,
+			Slash,
+
 			Unknown = -2,
 			EndOfFile = -1,
 		};

@@ -35,6 +35,12 @@
     </ClInclude>
     <ClInclude Include="src\SympleCode\Common\Node\BinaryExpressionNode.h" />
     <ClInclude Include="src\SympleCode\Common\Operator.h" />
+    <ClInclude Include="src\SympleCode\Common\Node\MemberNode.h" />
+    <ClInclude Include="src\SympleCode\Common\Node\GlobalStatementNode.h" />
+    <ClInclude Include="src\SympleCode\Common\Node\StatementNode.h" />
+    <ClInclude Include="src\SympleCode\Common\Keyword.h" />
+    <ClInclude Include="src\SympleCode\Common\Node\LiteralExpressionNode.h" />
+    <ClInclude Include="src\SympleCode\Common\LiteralType.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\SympleCode\Application.cpp" />
