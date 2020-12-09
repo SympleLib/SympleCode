@@ -12,4 +12,9 @@ namespace Symple
 		4,
 		8
 	};
+
+	constexpr const char* LiteralStrings[] = {
+		"Integer",
+		"LongInteger",
+	};
 }

@@ -1,6 +1,7 @@
 #pragma once
 
 #include <list>
+#include <cstdio>
 
 namespace Symple
 {
@@ -10,22 +11,34 @@ namespace Symple
 		enum class Kind
 		{
 			Unknown,
-			CompilationUnit,
+
+			Expression,
 			BinaryExpression,
 		};
 
 		static constexpr const char* KindMap[] = {
 			"Unknown", "CompilationUnit", "BinaryExpression",
+			"LiteralExpression",
 		};
 
 		inline static constexpr const char* KindString(Kind kind)
 		{
 			return KindMap[(int)kind];
 		}
-	public:
+
 		inline virtual Kind GetKind() const
 		{
 			return Kind::Unknown;
+		}
+
+		inline bool Is(const Node* other) const
+		{
+			return InHeirarchy(other->GetKind());
+		}
+
+		inline virtual bool InHeirarchy(Kind kind) const
+		{
+			return false;
 		}
 	};
 }

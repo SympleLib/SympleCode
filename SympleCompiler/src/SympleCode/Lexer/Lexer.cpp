@@ -19,6 +19,18 @@ namespace Symple
 		if (IsIdentifier(c))
 			return Identifier();
 
+		switch (c)
+		{
+		case '+':
+			return Atom(Token::Kind::Plus);
+		case '-':
+			return Atom(Token::Kind::Minus);
+		case '*':
+			return Atom(Token::Kind::Asterisk);
+		case '/':
+			return Atom(Token::Kind::Slash);
+		}
+
 		return Atom(Token::Kind::Unknown);
 	}
 	

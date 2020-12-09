@@ -13,23 +13,11 @@ namespace Symple
 		const Token* mPToken;
 	public:
 		Parser(const char* source = "");
-
-		Node* ParseCompilationUnit();
 	private:
 		const Token* Next();
 		const Token* Match(Token::Kind kind);
-
-		const std::list<Node*> ParseMembers();
-		Node* ParseMember();
-
-		Node* ParseGlobalStatement();
-		Node* ParseStatement();
-
-		Node* ParseExpresion();
-		Node* ParseAssignmentExpresion();
-		Node* ParseBinaryExpression(int parentPrecedense = 0);
-		Node* ParsePrimaryExpression();
-
-		Node* ParseNumberLiteral();
+	public:
+		ExpressionNode* ParseBinaryExpression(int parentPrecedense = 0);
+		ExpressionNode* ParsePrimaryExpression();
 	};
 }
