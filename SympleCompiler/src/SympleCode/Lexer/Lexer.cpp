@@ -50,9 +50,9 @@ namespace Symple
 		return (c >= '0' && c <= '9') || c == '.';
 	}
 
-	char Lexer::Peek(int step) const
+	char Lexer::Peek(int offset) const
 	{
-		return mCurrent[step];
+		return mCurrent[offset];
 	}
 
 	char Lexer::Get()

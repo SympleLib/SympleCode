@@ -1,7 +1,10 @@
 #pragma once
 
+#include <vector>
+
 #include "SympleCode/Lexer/Lexer.h"
 #include "SympleCode/Common/Node/Node.h"
+#include "SympleCode/Common/Node/ExpressionNode.h"
 
 namespace Symple
 {
@@ -9,15 +12,16 @@ namespace Symple
 	{
 	private:
 		Lexer mLexer;
-		const Token* mToken;
-		const Token* mPToken;
+		std::vector<const Token*> mTokens;
+		size_t mPosition;
 	public:
 		Parser(const char* source = "");
 	private:
+		const Token* Peek(size_t offset = 0);
 		const Token* Next();
 		const Token* Match(Token::Kind kind);
 	public:
-		ExpressionNode* ParseBinaryExpression(int parentPrecedense = 0);
+		ExpressionNode* ParseBinaryExpression(int parentPriority = -1);
 		ExpressionNode* ParsePrimaryExpression();
 	};
 }

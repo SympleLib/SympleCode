@@ -1,103 +1,60 @@
 #include "Parser.h"
 
-#include <vector>
 #include <xhash>
+#include <iostream>
+
+#include "SympleCode/Common/Node/BinaryExpressionNode.h"
+#include "SympleCode/Common/Node/LiteralExpressionNode.h"
+
+#include "SympleCode/Common/Priority.h"
 
 namespace Symple
 {
 	Parser::Parser(const char* source)
-		: mLexer(source), mToken(new Token()), mPToken(new Token())
-	{}
+		: mLexer(source), mPosition(0)
+	{
+		Token* current = new Token;
+		while (!current->Is(Token::Kind::EndOfFile))
+		{
+			current = mLexer.Next();
+			mTokens.push_back(current);
+		}
+	}
+
+	const Token* Parser::Peek(size_t offset)
+	{
+		size_t i = mPosition + offset;
+		if (i >= mTokens.size())
+			return mTokens.back();
+		return mTokens[i];
+	}
 
 	const Token* Parser::Next()
 	{
-		mPToken = mToken;
-		mToken = mLexer.Next();
-		return mPToken;
+		const Token* current = Peek();
+		mPosition++;
+		return current;
 	}
 
 	const Token* Parser::Match(Token::Kind kind)
 	{
-		if (mPToken->Is(kind))
+		if (Peek()->Is(kind))
 			return Next();
 		return new Token(kind);
 	}
 
-	CompilationUnitNode* Parser::ParseCompilationUnit()
-	{
-		const std::list<MemberNode*>& members = ParseMembers();
-
-		return new CompilationUnitNode(members);
-	}
-
-	const std::list<MemberNode*> Parser::ParseMembers()
-	{
-		std::list<MemberNode*> members;
-
-		while (!mToken->Is(Token::Kind::EndOfFile))
-		{
-			const Token* start = mToken;
-
-			MemberNode* member = ParseMember();
-			members.push_back(member);
-
-			if (mToken == start)
-				Next();
-		}
-
-		return members;
-	}
-
-	MemberNode* Parser::ParseMember()
-	{
-		return ParseGlobalStatement();
-	}
-
-	GlobalStatementNode* Parser::ParseGlobalStatement()
-	{
-		return new GlobalStatementNode(ParseStatement());
-	}
-
-	StatementNode* Parser::ParseStatement()
-	{
-		switch (std::hash<std::string_view>()(mToken->GetLex()))
-		{
-		default:
-			return ParseExpresion();
-		}
-	}
-
-	ExpressionNode* Parser::ParseExpresion()
-	{
-		return ParseAssignmentExpresion();
-	}
-
-	ExpressionNode* Parser::ParseAssignmentExpresion()
-	{
-		if (mToken->Is(Token::Kind::Identifier))
-		{
-			Next();
-			switch (mToken->GetKind())
-			{
-			}
-		}
-
-		return ParseBinaryExpression();
-	}
-
-	ExpressionNode* Parser::ParseBinaryExpression(int parentPrecedense)
+	ExpressionNode* Parser::ParseBinaryExpression(int parentPriority)
 	{
 		ExpressionNode* left = ParsePrimaryExpression();
 
 		while (true)
 		{
-			int precedence = 0;
-			if (precedence == -1 || precedence <= parentPrecedense)
-				break;
-
 			const Token* oqerator = Next();
-			ExpressionNode* right = ParseBinaryExpression(precedence);
-			left = new BinaryExpressionNode(oqerator, left, right);
+			int priority = Priority::BinaryOperatorPriority(oqerator);
+			if (priority == -1 || priority <= parentPriority)
+				break;
+			ExpressionNode* right = ParseBinaryExpression(priority);
+			left = new BinaryExpressonNode(oqerator, left, right);
 		}
 
 		return left;
@@ -105,17 +62,6 @@ namespace Symple
 
 	ExpressionNode* Parser::ParsePrimaryExpression()
 	{
-		switch (mToken->GetKind())
-		{
-		case Token::Kind::Number:
-			return ParseNumberLiteral();
-		}
-
-		return new ExpressionNode;
-	}
-
-	LiteralExpressionNode* Parser::ParseNumberLiteral()
-	{
-		return new LiteralExpressionNode(LiteralType::Integer, Match(Token::Kind::Number));
+		return new LiteralExpressionNode(Match(Token::Kind::Number));
 	}
 }

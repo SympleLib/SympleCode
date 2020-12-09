@@ -27,8 +27,10 @@
     <ClInclude Include="src\SympleCode\Parser\Parser.h">
       <Filter>Parser</Filter>
     </ClInclude>
-    <ClInclude Include="src\SympleCode\Common\LiteralType.h" />
     <ClInclude Include="src\SympleCode\Common\Node\ExpressionNode.h" />
+    <ClInclude Include="src\SympleCode\Common\Node\BinaryExpressionNode.h" />
+    <ClInclude Include="src\SympleCode\Common\Node\LiteralExpressionNode.h" />
+    <ClInclude Include="src\SympleCode\Common\Priority.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\SympleCode\Application.cpp" />
@@ -39,5 +41,6 @@
       <Filter>Lexer</Filter>
     </ClCompile>
     <ClCompile Include="src\SympleCode\Parser\Parser.cpp" />
+    <ClCompile Include="src\SympleCode\Common\Priority.cpp" />
   </ItemGroup>
 </Project>

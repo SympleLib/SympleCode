@@ -18,7 +18,7 @@ namespace Symple
 		static bool IsIdentifier(char c);
 		static bool IsNumber(char c);
 
-		char Peek(int step = 0) const;
+		char Peek(int offset = 0) const;
 		char Get();
 
 		Token* Atom(Token::Kind kind);

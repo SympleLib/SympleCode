@@ -2,6 +2,8 @@
 
 #include <list>
 #include <cstdio>
+#include <cassert>
+#include <sstream>
 
 namespace Symple
 {
@@ -14,31 +16,46 @@ namespace Symple
 
 			Expression,
 			BinaryExpression,
+			LiteralExpression,
 		};
 
 		static constexpr const char* KindMap[] = {
-			"Unknown", "CompilationUnit", "BinaryExpression",
-			"LiteralExpression",
+			"Unknown", "Expression", "BinaryExpression", "LiteralExpression",
 		};
 
-		inline static constexpr const char* KindString(Kind kind)
+		static constexpr const char* KindString(Kind kind)
 		{
 			return KindMap[(int)kind];
 		}
 
-		inline virtual Kind GetKind() const
+		template<typename T>
+		bool Is() const
+		{
+			return dynamic_cast<T*>(this);
+		}
+
+		template<typename T>
+		T* TryCast()
+		{
+			return dynamic_cast<T*>(this);
+		}
+
+		template<typename T>
+		const T* TryCast() const
+		{
+			return dynamic_cast<T*>(this);
+		}
+
+		virtual Kind GetKind() const
 		{
 			return Kind::Unknown;
 		}
 
-		inline bool Is(const Node* other) const
+		virtual std::string ToString(const std::string& indent = "") const
 		{
-			return InHeirarchy(other->GetKind());
-		}
-
-		inline virtual bool InHeirarchy(Kind kind) const
-		{
-			return false;
+			std::stringstream ss;
+			ss << indent << " L Node of Kind: " << KindString(GetKind()) << '\n';
+			return ss.str();
 		}
 	};
 }
