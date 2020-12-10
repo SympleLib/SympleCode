@@ -17,10 +17,13 @@ namespace Symple
 			Expression,
 			BinaryExpression,
 			LiteralExpression,
+
+			CompilationUnit,
 		};
 
 		static constexpr const char* KindMap[] = {
 			"Unknown", "Expression", "BinaryExpression", "LiteralExpression",
+			"CompilationUnit",
 		};
 
 		static constexpr const char* KindString(Kind kind)
@@ -51,10 +54,15 @@ namespace Symple
 			return Kind::Unknown;
 		}
 
-		virtual std::string ToString(const std::string& indent = "") const
+		virtual std::string ToString(const std::string& indent = "", bool last = true) const
 		{
 			std::stringstream ss;
-			ss << indent << " L Node of Kind: " << KindString(GetKind()) << '\n';
+			ss << indent;
+			if (last)
+				ss << "L--\t";
+			else
+				ss << "|--\t";
+			ss << "Node of Kind: " << KindString(GetKind()) << '\n';
 			return ss.str();
 		}
 	};

@@ -21,6 +21,16 @@ namespace Symple
 		}
 	}
 
+	CompilationUnitNode* Parser::ParseCompilationUnit()
+	{
+		std::vector<const Node*> expressions;
+		while (!Peek()->Is(Token::Kind::EndOfFile))
+		{
+			expressions.push_back(ParseBinaryExpression());
+		}
+		return new CompilationUnitNode(expressions);
+	}
+
 	const Token* Parser::Peek(size_t offset)
 	{
 		size_t i = mPosition + offset;
@@ -49,10 +59,10 @@ namespace Symple
 
 		while (true)
 		{
-			const Token* oqerator = Next();
-			int priority = Priority::BinaryOperatorPriority(oqerator);
-			if (priority == -1 || priority <= parentPriority)
+			int priority = Priority::BinaryOperatorPriority(Peek());
+			if (priority < 0 || priority <= parentPriority)
 				break;
+			const Token* oqerator = Next();
 			ExpressionNode* right = ParseBinaryExpression(priority);
 			left = new BinaryExpressonNode(oqerator, left, right);
 		}

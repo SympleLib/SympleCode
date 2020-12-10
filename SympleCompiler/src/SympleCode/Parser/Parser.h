@@ -5,6 +5,7 @@
 #include "SympleCode/Lexer/Lexer.h"
 #include "SympleCode/Common/Node/Node.h"
 #include "SympleCode/Common/Node/ExpressionNode.h"
+#include "SympleCode/Common/Node/CompilationUnitNode.h"
 
 namespace Symple
 {
@@ -16,6 +17,8 @@ namespace Symple
 		size_t mPosition;
 	public:
 		Parser(const char* source = "");
+
+		CompilationUnitNode* ParseCompilationUnit();
 	private:
 		const Token* Peek(size_t offset = 0);
 		const Token* Next();

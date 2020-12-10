@@ -29,6 +29,8 @@ namespace Symple
 			return Atom(Token::Kind::Asterisk);
 		case '/':
 			return Atom(Token::Kind::Slash);
+		case '=':
+			return Atom(Token::Kind::Equal);
 		}
 
 		return Atom(Token::Kind::Unknown);

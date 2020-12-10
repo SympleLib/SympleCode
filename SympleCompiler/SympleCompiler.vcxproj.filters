@@ -31,6 +31,7 @@
     <ClInclude Include="src\SympleCode\Common\Node\BinaryExpressionNode.h" />
     <ClInclude Include="src\SympleCode\Common\Node\LiteralExpressionNode.h" />
     <ClInclude Include="src\SympleCode\Common\Priority.h" />
+    <ClInclude Include="src\SympleCode\Common\Node\CompilationUnitNode.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\SympleCode\Application.cpp" />

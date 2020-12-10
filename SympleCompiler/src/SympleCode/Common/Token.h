@@ -17,13 +17,15 @@ namespace Symple
 			Minus,
 			Asterisk,
 			Slash,
+			Equal,
 
 			Unknown = -2,
 			EndOfFile = -1,
 		};
 
 		static constexpr const char* KindMap[] = {
-			"Identifier", "Number"
+			"Identifier", "Number",
+			"Plus", "Minus", "Asterisk", "Slash", "Equal"
 		};
 
 		static constexpr const char* KindString(Kind kind);

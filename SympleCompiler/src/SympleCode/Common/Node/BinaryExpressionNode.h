@@ -20,12 +20,20 @@ namespace Symple
 			return Kind::BinaryExpression;
 		}
 
-		std::string ToString(const std::string& indent = "") const override
+		std::string ToString(const std::string& indent = "", bool last = true) const override
 		{
 			std::stringstream ss;
-			ss << indent << "L Binary Expression [" << mOperator->GetLex() << "]";
-			ss << '\n' << mLeft->ToString(indent + "  ");
-			ss << '\n' << mRight->ToString(indent + "  ");
+			ss << indent;
+			if (last)
+				ss << "L--\t";
+			else
+				ss << "|--\t";
+			ss << "Binary Expression [" << mOperator->GetLex() << "]";
+			const char* newIndent = " \t";
+			if (!last)
+				newIndent = "|\t";
+			ss << '\n' << mLeft->ToString(indent + newIndent, false);
+			ss << '\n' << mRight->ToString(indent + newIndent);
 
 			return ss.str();
 		}
