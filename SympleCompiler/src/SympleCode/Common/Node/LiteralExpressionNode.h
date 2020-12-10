@@ -7,13 +7,18 @@ namespace Symple
 {
 	class LiteralExpressionNode : public ExpressionNode
 	{
-	private:
+	protected:
 		const Token* mLiteral;
 	public:
 		LiteralExpressionNode(const Token* literal)
 			: mLiteral(literal) {}
 
-		std::string ToString(const std::string& indent = "", bool last = true) const override
+		virtual Kind GetKind() const override
+		{
+			return Kind::LiteralExpression;
+		}
+
+		virtual std::string ToString(const std::string& indent = "", bool last = true) const override
 		{
 			std::stringstream ss;
 			ss << indent;

@@ -6,6 +6,9 @@
 #include "SympleCode/Common/Node/Node.h"
 #include "SympleCode/Common/Node/ExpressionNode.h"
 #include "SympleCode/Common/Node/CompilationUnitNode.h"
+#include "SympleCode/Common/Node/LiteralExpressionNode.h"
+#include "SympleCode/Common/Node/NumberLiteralExpressionNode.h"
+#include "SympleCode/Common/Node/BooleanLiteralExpressionNode.h"
 
 namespace Symple
 {
@@ -23,8 +26,11 @@ namespace Symple
 		const Token* Peek(size_t offset = 0);
 		const Token* Next();
 		const Token* Match(Token::Kind kind);
-	public:
+	
 		ExpressionNode* ParseBinaryExpression(int parentPriority = -1);
 		ExpressionNode* ParsePrimaryExpression();
+
+		NumberLiteralExpressionNode* ParseNumberLiteral();
+		BooleanLiteralExpressionNode* ParseBooleanLiteral();
 	};
 }

@@ -4,7 +4,6 @@
 #include <iostream>
 
 #include "SympleCode/Common/Node/BinaryExpressionNode.h"
-#include "SympleCode/Common/Node/LiteralExpressionNode.h"
 
 #include "SympleCode/Common/Priority.h"
 
@@ -56,8 +55,13 @@ namespace Symple
 	ExpressionNode* Parser::ParseBinaryExpression(int parentPriority)
 	{
 		ExpressionNode* left = ParsePrimaryExpression();
+		if (Peek()->Is(Token::Kind::Semicolon))
+		{
+			Next();
+			return left;
+		}
 
-		while (true)
+		while (!Peek()->Is(Token::Kind::EndOfFile))
 		{
 			int priority = Priority::BinaryOperatorPriority(Peek());
 			if (priority < 0 || priority <= parentPriority)
@@ -72,6 +76,25 @@ namespace Symple
 
 	ExpressionNode* Parser::ParsePrimaryExpression()
 	{
-		return new LiteralExpressionNode(Match(Token::Kind::Number));
+		switch (Peek()->GetKind())
+		{
+		case Token::Kind::True:
+		case Token::Kind::False:
+			return ParseBooleanLiteral();
+		case Token::Kind::Number:
+			return ParseNumberLiteral();
+		}
+
+		return new LiteralExpressionNode(Next());
+	}
+
+	NumberLiteralExpressionNode* Parser::ParseNumberLiteral()
+	{
+		return new NumberLiteralExpressionNode(Match(Token::Kind::Number));
+	}
+
+	BooleanLiteralExpressionNode* Parser::ParseBooleanLiteral()
+	{
+		return new BooleanLiteralExpressionNode(Next());
 	}
 }

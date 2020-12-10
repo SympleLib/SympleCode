@@ -31,6 +31,12 @@ namespace Symple
 			return Atom(Token::Kind::Slash);
 		case '=':
 			return Atom(Token::Kind::Equal);
+		case ';':
+			return Atom(Token::Kind::Semicolon);
+		case '{':
+			return Atom(Token::Kind::OpenBracket);
+		case '}':
+			return Atom(Token::Kind::CloseBracket);
 		}
 
 		return Atom(Token::Kind::Unknown);
@@ -74,6 +80,11 @@ namespace Symple
 		Get();
 		while (IsIdentifier(Peek()))
 			Get();
+		std::string_view identifier(beg, std::distance(beg, mCurrent));
+		if (identifier == "true")
+			return new Token(Token::Kind::True, beg, mCurrent);
+		if (identifier == "false")
+			return new Token(Token::Kind::False, beg, mCurrent);
 		return new Token(Token::Kind::Identifier, beg, mCurrent);
 	}
 

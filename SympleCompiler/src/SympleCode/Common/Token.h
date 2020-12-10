@@ -19,13 +19,24 @@ namespace Symple
 			Slash,
 			Equal,
 
+			Semicolon,
+
+			OpenBracket,
+			CloseBracket,
+
+			True,
+			False,
+
 			Unknown = -2,
 			EndOfFile = -1,
 		};
 
 		static constexpr const char* KindMap[] = {
 			"Identifier", "Number",
-			"Plus", "Minus", "Asterisk", "Slash", "Equal"
+			"Plus", "Minus", "Asterisk", "Slash", "Equal",
+			"Semicolon",
+			"OpenBracket", "CloseBracket",
+			"True", "False",
 		};
 
 		static constexpr const char* KindString(Kind kind);

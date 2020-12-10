@@ -32,6 +32,10 @@
     <ClInclude Include="src\SympleCode\Common\Node\LiteralExpressionNode.h" />
     <ClInclude Include="src\SympleCode\Common\Priority.h" />
     <ClInclude Include="src\SympleCode\Common\Node\CompilationUnitNode.h" />
+    <ClInclude Include="src\SympleCode\Common\Node\StatementNode.h" />
+    <ClInclude Include="src\SympleCode\Common\Node\BlockStatementNode.h" />
+    <ClInclude Include="src\SympleCode\Common\Node\NumberLiteralExpressionNode.h" />
+    <ClInclude Include="src\SympleCode\Common\Node\BooleanLiteralExpressionNode.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\SympleCode\Application.cpp" />
@@ -43,5 +47,8 @@
     </ClCompile>
     <ClCompile Include="src\SympleCode\Parser\Parser.cpp" />
     <ClCompile Include="src\SympleCode\Common\Priority.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="sy\Sample.sy" />
   </ItemGroup>
 </Project>

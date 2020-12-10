@@ -17,13 +17,23 @@ namespace Symple
 			Expression,
 			BinaryExpression,
 			LiteralExpression,
+			NumberLiteralExpression,
+			BooleanLiteralExpression,
 
 			CompilationUnit,
+
+			Statement,
+			BlockStatement,
+
+			FunctionDeclaration,
 		};
 
 		static constexpr const char* KindMap[] = {
-			"Unknown", "Expression", "BinaryExpression", "LiteralExpression",
+			"Unknown", "Expression", "BinaryExpression",
+			"LiteralExpression", "NumberLiteralExpression", "BooleanLiteralExpression",
 			"CompilationUnit",
+			"Statement", "BlockStatement",
+			"FunctionDeclaration",
 		};
 
 		static constexpr const char* KindString(Kind kind)
