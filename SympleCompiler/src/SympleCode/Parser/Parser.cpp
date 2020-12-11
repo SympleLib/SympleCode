@@ -4,6 +4,7 @@
 #include <iostream>
 
 #include "SympleCode/Common/Node/BinaryExpressionNode.h"
+#include "SympleCode/Common/Node/ExpressionStatementNode.h"
 
 #include "SympleCode/Common/Priority.h"
 
@@ -22,12 +23,9 @@ namespace Symple
 
 	CompilationUnitNode* Parser::ParseCompilationUnit()
 	{
-		std::vector<const Node*> expressions;
-		while (!Peek()->Is(Token::Kind::EndOfFile))
-		{
-			expressions.push_back(ParseBinaryExpression());
-		}
-		return new CompilationUnitNode(expressions);
+		auto members = ParseMembers();
+		Match(Token::Kind::EndOfFile);
+		return new CompilationUnitNode(members);
 	}
 
 	const Token* Parser::Peek(size_t offset)
@@ -50,6 +48,41 @@ namespace Symple
 		if (Peek()->Is(kind))
 			return Next();
 		return new Token(kind);
+	}
+
+	const std::vector<const MemberNode*> Parser::ParseMembers()
+	{
+		std::vector<const MemberNode*> members;
+		while (!Peek()->Is(Token::Kind::EndOfFile))
+		{
+			const Token* start = Peek();
+			members.push_back(ParseMember());
+
+			if (start == Peek())
+				Next();
+		}
+
+		return members;
+	}
+
+	MemberNode* Parser::ParseMember()
+	{
+		return ParseGlobalStatement();
+	}
+
+	GlobalStatementNode* Parser::ParseGlobalStatement()
+	{
+		return new GlobalStatementNode(ParseStatement());
+	}
+
+	StatementNode* Parser::ParseStatement()
+	{
+		return new ExpressionStatementNode(ParseExpression());
+	}
+
+	ExpressionNode* Parser::ParseExpression()
+	{
+		return ParseBinaryExpression();
 	}
 
 	ExpressionNode* Parser::ParseBinaryExpression(int parentPriority)

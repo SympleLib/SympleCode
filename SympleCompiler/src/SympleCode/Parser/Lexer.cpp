@@ -1,4 +1,4 @@
-#include "SympleCode/Lexer/Lexer.h"
+#include "SympleCode/Parser/Lexer.h"
 
 namespace Symple
 {

@@ -16,6 +16,8 @@ project "SympleCompiler"
 	includedirs {
 		"src"
 	}
+
+	libdirs {}
 	
 	filter "configurations:Debug"
 		defines "_SY_DEBUG"

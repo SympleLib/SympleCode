@@ -2,16 +2,16 @@
 
 #include <vector>
 
-#include "SympleCode/Common/Node/Node.h"
+#include "SympleCode/Common/Node/MemberNode.h"
 
 namespace Symple
 {
 	class CompilationUnitNode : public Node
 	{
 	private:
-		const std::vector<const Node*> mMembers;
+		const std::vector<const MemberNode*> mMembers;
 	public:
-		CompilationUnitNode(const std::vector<const Node*>& members)
+		CompilationUnitNode(const std::vector<const MemberNode*>& members)
 			: mMembers(members) {}
 
 		Kind GetKind() const override
@@ -31,13 +31,13 @@ namespace Symple
 			const char* newIndent = " \t";
 			if (!last)
 				newIndent = "|\t";
-			for (const Node* member : mMembers)
-				ss << '\n' << member->ToString(indent + newIndent);
+			for (const MemberNode* member : mMembers)
+				ss << '\n' << member->ToString(indent + newIndent, member == mMembers.back());
 
 			return ss.str();
 		}
 
-		const std::vector<const Node*>& GetMembers() const
+		const std::vector<const MemberNode*>& GetMembers() const
 		{
 			return mMembers;
 		}

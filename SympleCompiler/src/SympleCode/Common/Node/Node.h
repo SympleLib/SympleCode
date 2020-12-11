@@ -20,10 +20,13 @@ namespace Symple
 			NumberLiteralExpression,
 			BooleanLiteralExpression,
 
+			Member,
 			CompilationUnit,
 
 			Statement,
 			BlockStatement,
+			GlobalStatement,
+			ExpressionStatement,
 
 			FunctionDeclaration,
 		};
@@ -31,8 +34,8 @@ namespace Symple
 		static constexpr const char* KindMap[] = {
 			"Unknown", "Expression", "BinaryExpression",
 			"LiteralExpression", "NumberLiteralExpression", "BooleanLiteralExpression",
-			"CompilationUnit",
-			"Statement", "BlockStatement",
+			"Member", "CompilationUnit",
+			"Statement", "BlockStatement", "GlobalStatement", "ExpressionStatement",
 			"FunctionDeclaration",
 		};
 
@@ -72,7 +75,7 @@ namespace Symple
 				ss << "L--\t";
 			else
 				ss << "|--\t";
-			ss << "Node of Kind: " << KindString(GetKind()) << '\n';
+			ss << "Node of Kind: " << KindString(GetKind());
 			return ss.str();
 		}
 	};

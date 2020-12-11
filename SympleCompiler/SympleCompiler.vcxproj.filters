@@ -7,48 +7,76 @@
     <Filter Include="Common\Node">
       <UniqueIdentifier>{03DEDC28-6F93-551E-F887-4FF5643C4C22}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Lexer">
-      <UniqueIdentifier>{A5B4970D-11C9-BFBE-DA4A-631E461EBCEF}</UniqueIdentifier>
+    <Filter Include="Emit">
+      <UniqueIdentifier>{54C3847C-40FA-850D-E9E6-6B10D5FC010F}</UniqueIdentifier>
     </Filter>
     <Filter Include="Parser">
       <UniqueIdentifier>{D27997C9-BE1B-C29F-A7D6-D5F3931749F0}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="src\SympleCode\Common\Node\BinaryExpressionNode.h">
+      <Filter>Common\Node</Filter>
+    </ClInclude>
+    <ClInclude Include="src\SympleCode\Common\Node\BlockStatementNode.h">
+      <Filter>Common\Node</Filter>
+    </ClInclude>
+    <ClInclude Include="src\SympleCode\Common\Node\BooleanLiteralExpressionNode.h">
+      <Filter>Common\Node</Filter>
+    </ClInclude>
+    <ClInclude Include="src\SympleCode\Common\Node\CompilationUnitNode.h">
+      <Filter>Common\Node</Filter>
+    </ClInclude>
+    <ClInclude Include="src\SympleCode\Common\Node\ExpressionNode.h">
+      <Filter>Common\Node</Filter>
+    </ClInclude>
+    <ClInclude Include="src\SympleCode\Common\Node\LiteralExpressionNode.h">
+      <Filter>Common\Node</Filter>
+    </ClInclude>
     <ClInclude Include="src\SympleCode\Common\Node\Node.h">
       <Filter>Common\Node</Filter>
+    </ClInclude>
+    <ClInclude Include="src\SympleCode\Common\Node\NumberLiteralExpressionNode.h">
+      <Filter>Common\Node</Filter>
+    </ClInclude>
+    <ClInclude Include="src\SympleCode\Common\Node\StatementNode.h">
+      <Filter>Common\Node</Filter>
+    </ClInclude>
+    <ClInclude Include="src\SympleCode\Common\Priority.h">
+      <Filter>Common</Filter>
     </ClInclude>
     <ClInclude Include="src\SympleCode\Common\Token.h">
       <Filter>Common</Filter>
     </ClInclude>
-    <ClInclude Include="src\SympleCode\Lexer\Lexer.h">
-      <Filter>Lexer</Filter>
+    <ClInclude Include="src\SympleCode\Emit\Emitter.h">
+      <Filter>Emit</Filter>
+    </ClInclude>
+    <ClInclude Include="src\SympleCode\Parser\Lexer.h">
+      <Filter>Parser</Filter>
     </ClInclude>
     <ClInclude Include="src\SympleCode\Parser\Parser.h">
       <Filter>Parser</Filter>
     </ClInclude>
-    <ClInclude Include="src\SympleCode\Common\Node\ExpressionNode.h" />
-    <ClInclude Include="src\SympleCode\Common\Node\BinaryExpressionNode.h" />
-    <ClInclude Include="src\SympleCode\Common\Node\LiteralExpressionNode.h" />
-    <ClInclude Include="src\SympleCode\Common\Priority.h" />
-    <ClInclude Include="src\SympleCode\Common\Node\CompilationUnitNode.h" />
-    <ClInclude Include="src\SympleCode\Common\Node\StatementNode.h" />
-    <ClInclude Include="src\SympleCode\Common\Node\BlockStatementNode.h" />
-    <ClInclude Include="src\SympleCode\Common\Node\NumberLiteralExpressionNode.h" />
-    <ClInclude Include="src\SympleCode\Common\Node\BooleanLiteralExpressionNode.h" />
+    <ClInclude Include="src\SympleCode\Common\Node\MemberNode.h" />
+    <ClInclude Include="src\SympleCode\Common\Node\GlobalStatementNode.h" />
+    <ClInclude Include="src\SympleCode\Common\Node\ExpressionStatementNode.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\SympleCode\Application.cpp" />
+    <ClCompile Include="src\SympleCode\Common\Priority.cpp">
+      <Filter>Common</Filter>
+    </ClCompile>
     <ClCompile Include="src\SympleCode\Common\Token.cpp">
       <Filter>Common</Filter>
     </ClCompile>
-    <ClCompile Include="src\SympleCode\Lexer\Lexer.cpp">
-      <Filter>Lexer</Filter>
+    <ClCompile Include="src\SympleCode\Emit\Emitter.cpp">
+      <Filter>Emit</Filter>
     </ClCompile>
-    <ClCompile Include="src\SympleCode\Parser\Parser.cpp" />
-    <ClCompile Include="src\SympleCode\Common\Priority.cpp" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="sy\Sample.sy" />
+    <ClCompile Include="src\SympleCode\Parser\Lexer.cpp">
+      <Filter>Parser</Filter>
+    </ClCompile>
+    <ClCompile Include="src\SympleCode\Parser\Parser.cpp">
+      <Filter>Parser</Filter>
+    </ClCompile>
   </ItemGroup>
 </Project>

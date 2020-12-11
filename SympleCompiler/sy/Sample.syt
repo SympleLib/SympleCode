@@ -1,0 +1,13 @@
+L--	Compilation Unit
+ 	|--	Global Statement
+ 	|	L--	Expression Statement
+ 	|	 	L--	Binary Expression [+]
+ 	|	 	 	|--	Boolean Literal Expression (false)
+ 	|	 	 	L--	Binary Expression [*]
+ 	|	 	 	 	|--	Number Literal Expression (9)
+ 	|	 	 	 	L--	Literal Expression (lol)
+ 	L--	Global Statement
+ 	 	L--	Expression Statement
+ 	 	 	L--	Binary Expression [*]
+ 	 	 	 	|--	Number Literal Expression (6)
+ 	 	 	 	L--	Boolean Literal Expression (true)
