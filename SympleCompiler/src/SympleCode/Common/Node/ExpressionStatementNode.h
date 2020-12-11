@@ -18,6 +18,11 @@ namespace Symple
 			return Kind::ExpressionStatement;
 		}
 
+		const ExpressionNode* GetExpression() const
+		{
+			return mExpression;
+		}
+
 		std::string ToString(const std::string& indent = "", bool last = true) const override
 		{
 			std::stringstream ss;

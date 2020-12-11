@@ -31,6 +31,6 @@ namespace Symple
 			return ss.str();
 		}
 
-        const Token* getLiteral() const { return mLiteral; }
+        const Token* GetLiteral() const { return mLiteral; }
 	};
 }

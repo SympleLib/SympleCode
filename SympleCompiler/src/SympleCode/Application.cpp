@@ -43,6 +43,7 @@ int main()
 		}
 
 		Symple::Emitter emitter("sy/Sample.s");
+		emitter.Emit(tree);
 
 		fclose(sampleFile);
 	}

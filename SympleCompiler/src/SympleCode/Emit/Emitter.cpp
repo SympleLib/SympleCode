@@ -5,6 +5,12 @@
 #include <cstring>
 #include <memory>
 
+#include "SympleCode/Common/Node/GlobalStatementNode.h"
+#include "SympleCode/Common/Node/ExpressionStatementNode.h"
+#include "SympleCode/Common/Node/NumberLiteralExpressionNode.h"
+
+#define Write(fmt, ...) (void)fprintf_s(mFile, fmt, __VA_ARGS__);
+
 namespace Symple
 {
 	Emitter::Emitter(const char* path)
@@ -22,7 +28,64 @@ namespace Symple
 
 	void Emitter::Emit(const CompilationUnitNode* unit)
 	{
-		
+		for (const MemberNode* member : unit->GetMembers())
+			EmitMember(member);
+	}
+
+	void Emitter::EmitMember(const MemberNode* member)
+	{
+		if (member->Is<GlobalStatementNode>())
+			return EmitStatement(member->Cast<GlobalStatementNode>()->GetStatement());
+	}
+
+	void Emitter::EmitStatement(const StatementNode* statement)
+	{
+		if (statement->Is<ExpressionStatementNode>())
+			return EmitExpression(statement->Cast<ExpressionStatementNode>()->GetExpression());
+	}
+
+	void Emitter::EmitExpression(const ExpressionNode* expression)
+	{
+		if (expression->Is<BinaryExpressionNode>())
+			return EmitBinaryExpression(expression->Cast<BinaryExpressionNode>());
+	}
+
+	void Emitter::EmitBinaryExpression(const BinaryExpressionNode* expression)
+	{
+		switch (expression->GetOperator()->GetKind())
+		{
+		case Token::Kind::Plus:
+			if (expression->GetLeft()->Is<BinaryExpressionNode>())
+			{
+				EmitBinaryExpression(expression->GetLeft()->Cast<BinaryExpressionNode>());
+				if (expression->GetRight()->Is<BinaryExpressionNode>())
+				{
+					Write("movl %%eax, %%edx");
+					EmitBinaryExpression(expression->GetRight()->Cast<BinaryExpressionNode>());
+					Write("addl %%edx, %%eax");
+				}
+				else
+				{
+					Write("addl %s, %%eax", std::string(expression->GetLeft()->Cast<NumberLiteralExpressionNode>()->GetLiteral()->GetLex()).c_str());
+				}
+			}
+			else if (expression->GetRight()->Is<BinaryExpressionNode>())
+			{
+				EmitBinaryExpression(expression->GetRight()->Cast<BinaryExpressionNode>());
+
+				if (expression->GetLeft()->Is<BinaryExpressionNode>())
+				{
+					Write("movl %%eax, %%edx");
+					EmitBinaryExpression(expression->GetLeft()->Cast<BinaryExpressionNode>());
+					Write("addl %%edx, %%eax");
+				}
+				else
+				{
+					Write("addl %s, %%eax", std::string(expression->GetRight()->Cast<NumberLiteralExpressionNode>()->GetLiteral()->GetLex()).c_str());
+				}
+			}
+			break;
+		}
 	}
 
 	bool Emitter::OpenFile()

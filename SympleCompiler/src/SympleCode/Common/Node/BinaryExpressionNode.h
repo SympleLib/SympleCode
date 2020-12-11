@@ -5,14 +5,14 @@
 
 namespace Symple
 {
-	class BinaryExpressonNode : public ExpressionNode
+	class BinaryExpressionNode : public ExpressionNode
 	{
 	private:
 		const Token* mOperator;
 		const ExpressionNode* mLeft;
 		const ExpressionNode* mRight;
 	public:
-		BinaryExpressonNode(const Token* oqerator, const ExpressionNode* left, const ExpressionNode* right)
+		BinaryExpressionNode(const Token* oqerator, const ExpressionNode* left, const ExpressionNode* right)
 			: mOperator(oqerator), mLeft(left), mRight(right) {}
 
 		Kind GetKind() const override
@@ -40,8 +40,8 @@ namespace Symple
 
 		const Token* GetOperator() const { return mOperator; }
 		
-        const ExpressionNode* getLeft() const { return mLeft; }
+        const ExpressionNode* GetLeft() const { return mLeft; }
 
-        const ExpressionNode* getRight() const { return mRight; }
+        const ExpressionNode* GetRight() const { return mRight; }
 };
 }

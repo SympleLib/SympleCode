@@ -47,19 +47,19 @@ namespace Symple
 		template<typename T>
 		bool Is() const
 		{
-			return dynamic_cast<T*>(this);
+			return dynamic_cast<const T*>(this);
 		}
 
 		template<typename T>
-		T* TryCast()
+		T* Cast()
 		{
 			return dynamic_cast<T*>(this);
 		}
 
 		template<typename T>
-		const T* TryCast() const
+		const T* Cast() const
 		{
-			return dynamic_cast<T*>(this);
+			return dynamic_cast<const T*>(this);
 		}
 
 		virtual Kind GetKind() const

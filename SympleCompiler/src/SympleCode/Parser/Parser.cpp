@@ -101,7 +101,7 @@ namespace Symple
 				break;
 			const Token* oqerator = Next();
 			ExpressionNode* right = ParseBinaryExpression(priority);
-			left = new BinaryExpressonNode(oqerator, left, right);
+			left = new BinaryExpressionNode(oqerator, left, right);
 		}
 
 		return left;
