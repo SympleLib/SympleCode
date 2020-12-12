@@ -1,13 +1,14 @@
 L--	Compilation Unit
- 	|--	Global Statement
- 	|	L--	Expression Statement
- 	|	 	L--	Binary Expression [+]
- 	|	 	 	|--	Binary Expression [+]
- 	|	 	 	|	|--	Number Literal Expression (14)
- 	|	 	 	|	L--	Number Literal Expression (9)
- 	|	 	 	L--	Number Literal Expression (12)
  	L--	Global Statement
  	 	L--	Expression Statement
- 	 	 	L--	Binary Expression [+]
- 	 	 	 	|--	Number Literal Expression (6)
- 	 	 	 	L--	Number Literal Expression (69)
+ 	 	 	L--	Binary Expression [-]
+ 	 	 	 	|--	Binary Expression [-]
+ 	 	 	 	|	|--	Binary Expression [+]
+ 	 	 	 	|	|	|--	Number Literal Expression (1)
+ 	 	 	 	|	|	L--	Number Literal Expression (2)
+ 	 	 	 	|	L--	Binary Expression [*]
+ 	 	 	 	|	 	|--	Binary Expression [/]
+ 	 	 	 	|	 	|	|--	Number Literal Expression (4)
+ 	 	 	 	|	 	|	L--	Number Literal Expression (4)
+ 	 	 	 	|	 	L--	Number Literal Expression (5)
+ 	 	 	 	L--	Number Literal Expression (5)

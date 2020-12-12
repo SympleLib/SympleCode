@@ -9,7 +9,7 @@
 #include "SympleCode/Common/Node/ExpressionStatementNode.h"
 #include "SympleCode/Common/Node/NumberLiteralExpressionNode.h"
 
-#define Write(fmt, ...) (void)fprintf_s(mFile, fmt, __VA_ARGS__);
+#define Write(fmt, ...) (void)fprintf_s(mFile, fmt "\n", __VA_ARGS__);
 
 namespace Symple
 {
@@ -48,43 +48,32 @@ namespace Symple
 	{
 		if (expression->Is<BinaryExpressionNode>())
 			return EmitBinaryExpression(expression->Cast<BinaryExpressionNode>());
+		if (expression->Is<LiteralExpressionNode>())
+			return EmitLiteralExpression(expression->Cast<LiteralExpressionNode>());
+	}
+
+	void Emitter::EmitLiteralExpression(const LiteralExpressionNode* expression)
+	{
+		if (expression->Is<NumberLiteralExpressionNode>())
+			Write("\tmovl $%s, %%eax", std::string(expression->GetLiteral()->GetLex()).c_str());
 	}
 
 	void Emitter::EmitBinaryExpression(const BinaryExpressionNode* expression)
 	{
+		EmitExpression(expression->GetLeft());
+		Write("\tmovl %%eax, %%edx");
+		EmitExpression(expression->GetRight());
+
 		switch (expression->GetOperator()->GetKind())
 		{
 		case Token::Kind::Plus:
-			if (expression->GetLeft()->Is<BinaryExpressionNode>())
-			{
-				EmitBinaryExpression(expression->GetLeft()->Cast<BinaryExpressionNode>());
-				if (expression->GetRight()->Is<BinaryExpressionNode>())
-				{
-					Write("movl %%eax, %%edx");
-					EmitBinaryExpression(expression->GetRight()->Cast<BinaryExpressionNode>());
-					Write("addl %%edx, %%eax");
-				}
-				else
-				{
-					Write("addl %s, %%eax", std::string(expression->GetLeft()->Cast<NumberLiteralExpressionNode>()->GetLiteral()->GetLex()).c_str());
-				}
-			}
-			else if (expression->GetRight()->Is<BinaryExpressionNode>())
-			{
-				EmitBinaryExpression(expression->GetRight()->Cast<BinaryExpressionNode>());
-
-				if (expression->GetLeft()->Is<BinaryExpressionNode>())
-				{
-					Write("movl %%eax, %%edx");
-					EmitBinaryExpression(expression->GetLeft()->Cast<BinaryExpressionNode>());
-					Write("addl %%edx, %%eax");
-				}
-				else
-				{
-					Write("addl %s, %%eax", std::string(expression->GetRight()->Cast<NumberLiteralExpressionNode>()->GetLiteral()->GetLex()).c_str());
-				}
-			}
-			break;
+			return Write("\taddl %%edx, %%eax");
+		case Token::Kind::Minus:
+			return Write("\tsubl %%edx, %%eax");
+		case Token::Kind::Slash:
+			return Write("\tdivl %%edx, %%eax");
+		case Token::Kind::Asterisk:
+			return Write("\tmull %%edx, %%eax");
 		}
 	}
 

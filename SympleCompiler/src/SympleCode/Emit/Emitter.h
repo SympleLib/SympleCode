@@ -7,6 +7,7 @@
 #include "SympleCode/Common/Node/StatementNode.h"
 #include "SympleCode/Common/Node/ExpressionNode.h"
 #include "SympleCode/Common/Node/BinaryExpressionNode.h"
+#include "SympleCode/Common/Node/LiteralExpressionNode.h"
 
 namespace Symple
 {
@@ -26,6 +27,7 @@ namespace Symple
 		void EmitStatement(const StatementNode* statement);
 
 		void EmitExpression(const ExpressionNode* expression);
+		void EmitLiteralExpression(const LiteralExpressionNode* expression);
 		void EmitBinaryExpression(const BinaryExpressionNode* expression);
 
 		bool OpenFile();
