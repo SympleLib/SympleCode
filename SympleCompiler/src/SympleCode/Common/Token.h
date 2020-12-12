@@ -23,9 +23,15 @@ namespace Symple
 
 			OpenBracket,
 			CloseBracket,
+			OpenParenthesis,
+			CloseParenthesis,
 
 			True,
 			False,
+
+			Void,
+
+			Function,
 
 			Unknown = -2,
 			EndOfFile = -1,
@@ -35,8 +41,10 @@ namespace Symple
 			"Identifier", "Number",
 			"Plus", "Minus", "Asterisk", "Slash", "Equal",
 			"Semicolon",
-			"OpenBracket", "CloseBracket",
+			"OpenBracket", "CloseBracket", "OpenParenthesis", "CloseParenthesis",
 			"True", "False",
+			"Void",
+			"Function",
 		};
 
 		static constexpr const char* KindString(Kind kind);

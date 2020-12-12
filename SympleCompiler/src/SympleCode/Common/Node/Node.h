@@ -22,21 +22,19 @@ namespace Symple
 
 			Member,
 			CompilationUnit,
+			FunctionDeclaration,
 
 			Statement,
 			BlockStatement,
 			GlobalStatement,
 			ExpressionStatement,
-
-			FunctionDeclaration,
 		};
 
 		static constexpr const char* KindMap[] = {
 			"Unknown", "Expression", "BinaryExpression",
 			"LiteralExpression", "NumberLiteralExpression", "BooleanLiteralExpression",
-			"Member", "CompilationUnit",
+			"Member", "CompilationUnit", "FunctionDeclaration",
 			"Statement", "BlockStatement", "GlobalStatement", "ExpressionStatement",
-			"FunctionDeclaration",
 		};
 
 		static constexpr const char* KindString(Kind kind)

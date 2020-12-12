@@ -6,8 +6,10 @@
 #include "SympleCode/Common/Node/Node.h"
 #include "SympleCode/Common/Node/ExpressionNode.h"
 #include "SympleCode/Common/Node/CompilationUnitNode.h"
+#include "SympleCode/Common/Node/BlockStatementNode.h"
 #include "SympleCode/Common/Node/GlobalStatementNode.h"
 #include "SympleCode/Common/Node/LiteralExpressionNode.h"
+#include "SympleCode/Common/Node/FunctionDeclarationNode.h"
 #include "SympleCode/Common/Node/NumberLiteralExpressionNode.h"
 #include "SympleCode/Common/Node/BooleanLiteralExpressionNode.h"
 
@@ -31,7 +33,10 @@ namespace Symple
 		const std::vector<const MemberNode*> ParseMembers();
 		MemberNode* ParseMember();
 
+		FunctionDeclarationNode* ParseFunctionDeclaration();
+
 		GlobalStatementNode* ParseGlobalStatement();
+		BlockStatementNode* ParseBlockStatement();
 		StatementNode* ParseStatement();
 	
 		ExpressionNode* ParseExpression();

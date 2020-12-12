@@ -41,11 +41,15 @@ int main()
 			ShowWindow(GetConsoleWindow(), TRUE);
 			std::cin.get();
 		}
-
-		Symple::Emitter emitter("sy/Sample.s");
-		emitter.Emit(tree);
-
 		fclose(sampleFile);
+
+		{
+			Symple::Emitter emitter("sy/Sample.s");
+			emitter.Emit(tree);
+		}
+
+		system("as -c sy/Sample.s -o sy/Sample.o");
+		system("ld sy/Sample.o -o sy/Sample.exe");
 	}
 	else
 	{

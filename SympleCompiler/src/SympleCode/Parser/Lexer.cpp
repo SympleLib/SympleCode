@@ -37,6 +37,10 @@ namespace Symple
 			return Atom(Token::Kind::OpenBracket);
 		case '}':
 			return Atom(Token::Kind::CloseBracket);
+		case '(':
+			return Atom(Token::Kind::OpenParenthesis);
+		case ')':
+			return Atom(Token::Kind::CloseParenthesis);
 		}
 
 		return Atom(Token::Kind::Unknown);
@@ -85,6 +89,10 @@ namespace Symple
 			return new Token(Token::Kind::True, beg, mCurrent);
 		if (identifier == "false")
 			return new Token(Token::Kind::False, beg, mCurrent);
+		if (identifier == "void")
+			return new Token(Token::Kind::Void, beg, mCurrent);
+		if (identifier == "function")
+			return new Token(Token::Kind::Function, beg, mCurrent);
 		return new Token(Token::Kind::Identifier, beg, mCurrent);
 	}
 

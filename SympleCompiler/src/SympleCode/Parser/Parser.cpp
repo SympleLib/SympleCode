@@ -67,12 +67,44 @@ namespace Symple
 
 	MemberNode* Parser::ParseMember()
 	{
+		if (Peek()->Is(Token::Kind::Function))
+			return ParseFunctionDeclaration();
+
 		return ParseGlobalStatement();
+	}
+
+	FunctionDeclarationNode* Parser::ParseFunctionDeclaration()
+	{
+		Match(Token::Kind::Function);
+		const Token* type = Next();
+		const Token* name = Next();
+		BlockStatementNode* body = ParseBlockStatement();
+		Match(Token::Kind::Semicolon);
+
+		return new FunctionDeclarationNode(type, name, body);
 	}
 
 	GlobalStatementNode* Parser::ParseGlobalStatement()
 	{
 		return new GlobalStatementNode(ParseStatement());
+	}
+
+	BlockStatementNode* Parser::ParseBlockStatement()
+	{
+		const Token* open = Match(Token::Kind::OpenBracket);
+		std::vector<const StatementNode*> statements;
+		while (!Peek()->Is(Token::Kind::CloseBracket))
+		{
+			const Token* start = Peek();
+
+			statements.push_back(ParseStatement());
+
+			if (start == Peek())
+				Next();
+		}
+		const Token* close = Match(Token::Kind::CloseBracket);
+
+		return new BlockStatementNode(open, statements, close);
 	}
 
 	StatementNode* Parser::ParseStatement()

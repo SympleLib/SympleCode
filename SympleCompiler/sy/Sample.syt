@@ -1,14 +1,15 @@
 L--	Compilation Unit
+ 	|--	Function Declaration: void main()
+ 	|	L--	Block Statement
+ 	|	 	L--	Expression Statement
+ 	|	 	 	L--	Binary Expression [=]
+ 	|	 	 	 	|--	Binary Expression [*]
+ 	|	 	 	 	|	|--	Number Literal Expression (6)
+ 	|	 	 	 	|	L--	Number Literal Expression (9)
+ 	|	 	 	 	L--	Number Literal Expression (69)
+ 	|--	Global Statement
+ 	|	L--	Expression Statement
+ 	|	 	L--	Literal Expression (Í)
  	L--	Global Statement
  	 	L--	Expression Statement
- 	 	 	L--	Binary Expression [-]
- 	 	 	 	|--	Binary Expression [-]
- 	 	 	 	|	|--	Binary Expression [+]
- 	 	 	 	|	|	|--	Number Literal Expression (1)
- 	 	 	 	|	|	L--	Number Literal Expression (2)
- 	 	 	 	|	L--	Binary Expression [*]
- 	 	 	 	|	 	|--	Binary Expression [/]
- 	 	 	 	|	 	|	|--	Number Literal Expression (4)
- 	 	 	 	|	 	|	L--	Number Literal Expression (4)
- 	 	 	 	|	 	L--	Number Literal Expression (5)
- 	 	 	 	L--	Number Literal Expression (5)
+ 	 	 	L--	Literal Expression (Í)

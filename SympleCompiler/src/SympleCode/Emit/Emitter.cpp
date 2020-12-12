@@ -71,9 +71,9 @@ namespace Symple
 		case Token::Kind::Minus:
 			return Write("\tsubl %%edx, %%eax");
 		case Token::Kind::Slash:
-			return Write("\tdivl %%edx, %%eax");
+			return Write("\tidivl %%edx, %%eax");
 		case Token::Kind::Asterisk:
-			return Write("\tmull %%edx, %%eax");
+			return Write("\timull %%edx, %%eax");
 		}
 	}
 
