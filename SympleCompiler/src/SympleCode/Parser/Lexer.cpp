@@ -49,7 +49,7 @@ namespace Symple
 
 	bool Lexer::ShouldIgnore(char c)
 	{
-		return c == ' ' || c == '\t' || c == '\r' || c == '\n';
+		return c == ' ' || c == '\t' || c == '\r' || c == '\n' || c == 'Í';
 	}
 
 	bool Lexer::IsIdentifier(char c)

@@ -9,7 +9,7 @@
 #include "SympleCode/Common/Node/ExpressionStatementNode.h"
 #include "SympleCode/Common/Node/NumberLiteralExpressionNode.h"
 
-#define Write(fmt, ...) (void)fprintf_s(mFile, fmt "\n", __VA_ARGS__);
+#define Write(fmt, ...) (void)fprintf_s(mFile, fmt "\n", __VA_ARGS__)
 
 namespace Symple
 {
@@ -34,8 +34,23 @@ namespace Symple
 
 	void Emitter::EmitMember(const MemberNode* member)
 	{
+		if (member->Is<FunctionDeclarationNode>())
+			return EmitFunctionDeclaration(member->Cast<FunctionDeclarationNode>());
 		if (member->Is<GlobalStatementNode>())
 			return EmitStatement(member->Cast<GlobalStatementNode>()->GetStatement());
+	}
+
+	void Emitter::EmitFunctionDeclaration(const FunctionDeclarationNode* declaration)
+	{
+		if (declaration->GetName()->GetLex() == "main")
+			Write("main:");
+		else
+			Write("@%s_%s:", std::string(declaration->GetType()->GetLex()).c_str(), std::string(declaration->GetName()->GetLex()).c_str());
+
+		for (const StatementNode* statement : declaration->GetBody()->GetStatements())
+			EmitStatement(statement);
+
+		Write("\tret");
 	}
 
 	void Emitter::EmitStatement(const StatementNode* statement)
@@ -60,20 +75,21 @@ namespace Symple
 
 	void Emitter::EmitBinaryExpression(const BinaryExpressionNode* expression)
 	{
-		EmitExpression(expression->GetLeft());
-		Write("\tmovl %%eax, %%edx");
 		EmitExpression(expression->GetRight());
+		Write("\tmovl %%eax, %%edx");
+		EmitExpression(expression->GetLeft());
 
 		switch (expression->GetOperator()->GetKind())
 		{
 		case Token::Kind::Plus:
-			return Write("\taddl %%edx, %%eax");
+			Write("\taddl %%edx, %%eax");
+			break;
 		case Token::Kind::Minus:
-			return Write("\tsubl %%edx, %%eax");
-		case Token::Kind::Slash:
-			return Write("\tidivl %%edx, %%eax");
+			Write("\tsubl %%edx, %%eax");
+			break;
 		case Token::Kind::Asterisk:
-			return Write("\timull %%edx, %%eax");
+			Write("\timull %%edx, %%eax");
+			break;
 		}
 	}
 

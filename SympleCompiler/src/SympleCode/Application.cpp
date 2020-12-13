@@ -7,14 +7,14 @@
 
 int main()
 {
-	ShowWindow(GetConsoleWindow(), FALSE);
+	//ShowWindow(GetConsoleWindow(), FALSE);
 	SetConsoleTitle(L"Symple Compiler - Treidex");
 
 	FILE* sampleFile;
 	errno_t err;
-	if (!(err = fopen_s(&sampleFile, "sy/Sample.sy", "r")) && sampleFile)
+	if (!(err = fopen_s(&sampleFile, "sy/Sample.sy", "rb")) && sampleFile)
 	{
-		fseek(sampleFile, 0, SEEK_END);
+		fseek(sampleFile, 0L, SEEK_END);
 		int size = min(ftell(sampleFile), 4096);
 		rewind(sampleFile);
 		char* source = new char[size];
@@ -37,9 +37,6 @@ int main()
 				std::cerr << "[!]: Error opening tree file: " << errMsg << "!\n";
 			else
 				std::cerr << "[!]: Unkown Error opening tree file!\n";
-
-			ShowWindow(GetConsoleWindow(), TRUE);
-			std::cin.get();
 		}
 		fclose(sampleFile);
 
@@ -50,6 +47,7 @@ int main()
 
 		system("as -c sy/Sample.s -o sy/Sample.o");
 		system("ld sy/Sample.o -o sy/Sample.exe");
+		printf("Exit Code: %i\n", system("sy\\Sample"));
 	}
 	else
 	{
@@ -58,8 +56,7 @@ int main()
 			std::cerr << "[!]: Error opening sample file: " << errMsg << "!\n";
 		else
 			std::cerr << "[!]: Unkown Error opening sample file!\n";
-
-		ShowWindow(GetConsoleWindow(), TRUE);
-		std::cin.get();
 	}
+
+	std::cin.get();
 }

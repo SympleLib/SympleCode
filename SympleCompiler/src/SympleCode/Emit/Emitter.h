@@ -3,11 +3,12 @@
 #include <cstdio>
 #include <vector>
 
-#include "SympleCode/Common/Node/CompilationUnitNode.h"
 #include "SympleCode/Common/Node/StatementNode.h"
 #include "SympleCode/Common/Node/ExpressionNode.h"
+#include "SympleCode/Common/Node/CompilationUnitNode.h"
 #include "SympleCode/Common/Node/BinaryExpressionNode.h"
 #include "SympleCode/Common/Node/LiteralExpressionNode.h"
+#include "SympleCode/Common/Node/FunctionDeclarationNode.h"
 
 namespace Symple
 {
@@ -24,6 +25,9 @@ namespace Symple
 		void Emit(const CompilationUnitNode* compilationUnit);
 	private:
 		void EmitMember(const MemberNode* member);
+
+		void EmitFunctionDeclaration(const FunctionDeclarationNode* declaration);
+
 		void EmitStatement(const StatementNode* statement);
 
 		void EmitExpression(const ExpressionNode* expression);
