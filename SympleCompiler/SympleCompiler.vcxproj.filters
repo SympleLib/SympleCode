@@ -61,6 +61,8 @@
     <ClInclude Include="src\SympleCode\Common\Node\GlobalStatementNode.h" />
     <ClInclude Include="src\SympleCode\Common\Node\ExpressionStatementNode.h" />
     <ClInclude Include="src\SympleCode\Common\Node\FunctionDeclarationNode.h" />
+    <ClInclude Include="src\SympleCode\Common\Node\FunctionCallExpressionNode.h" />
+    <ClInclude Include="src\SympleCode\Common\Node\FunctionCallArgumentsNode.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\SympleCode\Application.cpp" />

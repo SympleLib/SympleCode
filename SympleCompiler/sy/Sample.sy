@@ -1,8 +1,4 @@
 function void main
 {
-	5 * 5
-};
-function void notMain
-{
-	1 + 2 * 3
+	69;
 };

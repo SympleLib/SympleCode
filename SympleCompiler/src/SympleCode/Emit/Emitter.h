@@ -9,6 +9,7 @@
 #include "SympleCode/Common/Node/BinaryExpressionNode.h"
 #include "SympleCode/Common/Node/LiteralExpressionNode.h"
 #include "SympleCode/Common/Node/FunctionDeclarationNode.h"
+#include "SympleCode/Common/Node/FunctionCallExpressionNode.h"
 
 namespace Symple
 {
@@ -33,6 +34,7 @@ namespace Symple
 		void EmitExpression(const ExpressionNode* expression);
 		void EmitLiteralExpression(const LiteralExpressionNode* expression);
 		void EmitBinaryExpression(const BinaryExpressionNode* expression);
+		void EmitFunctionCallExpression(const FunctionCallExpressionNode* call);
 
 		bool OpenFile();
 	};

@@ -109,7 +109,9 @@ namespace Symple
 
 	StatementNode* Parser::ParseStatement()
 	{
-		return new ExpressionStatementNode(ParseExpression());
+		ExpressionNode* expression = ParseExpression();
+		Match(Token::Kind::Semicolon);
+		return new ExpressionStatementNode(expression);
 	}
 
 	ExpressionNode* Parser::ParseExpression()
@@ -120,11 +122,6 @@ namespace Symple
 	ExpressionNode* Parser::ParseBinaryExpression(int parentPriority)
 	{
 		ExpressionNode* left = ParsePrimaryExpression();
-		if (Peek()->Is(Token::Kind::Semicolon))
-		{
-			Next();
-			return left;
-		}
 
 		while (!Peek()->Is(Token::Kind::EndOfFile))
 		{
@@ -150,7 +147,42 @@ namespace Symple
 			return ParseNumberLiteral();
 		}
 
-		return new LiteralExpressionNode(Next());
+		return ParseNameOrCallExpression();
+	}
+
+	ExpressionNode* Parser::ParseNameOrCallExpression()
+	{
+		if (Peek(1)->Is(Token::Kind::OpenParenthesis))
+			return ParseFunctionCallExpression();
+		return new ExpressionNode();
+	}
+
+	FunctionCallExpressionNode* Parser::ParseFunctionCallExpression()
+	{
+		const Token* name = Match(Token::Kind::Identifier);
+		FunctionCallArgumentsNode* arguments = ParseFunctionCallArguments();
+
+		return new FunctionCallExpressionNode(name, arguments);
+	}
+
+	FunctionCallArgumentsNode* Parser::ParseFunctionCallArguments()
+	{
+		const Token* open = Match(Token::Kind::OpenParenthesis);
+
+		std::vector<const ExpressionNode*> arguments;
+		while (!Peek()->Is(Token::Kind::CloseParenthesis))
+		{
+			arguments.push_back(ParseExpression());
+
+			if (Peek()->Is(Token::Kind::Comma))
+				Next();
+			else
+				break;
+		}
+
+		const Token* close = Match(Token::Kind::CloseParenthesis);
+
+		return new FunctionCallArgumentsNode(open, arguments, close);
 	}
 
 	NumberLiteralExpressionNode* Parser::ParseNumberLiteral()

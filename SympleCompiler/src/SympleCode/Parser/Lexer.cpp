@@ -41,6 +41,8 @@ namespace Symple
 			return Atom(Token::Kind::OpenParenthesis);
 		case ')':
 			return Atom(Token::Kind::CloseParenthesis);
+		case ',':
+			return Atom(Token::Kind::Comma);
 		}
 
 		return Atom(Token::Kind::Unknown);

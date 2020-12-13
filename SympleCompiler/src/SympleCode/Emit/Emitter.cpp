@@ -42,14 +42,14 @@ namespace Symple
 
 	void Emitter::EmitFunctionDeclaration(const FunctionDeclarationNode* declaration)
 	{
-		if (declaration->GetName()->GetLex() == "main")
-			Write("main:");
-		else
-			Write("@%s_%s:", std::string(declaration->GetType()->GetLex()).c_str(), std::string(declaration->GetName()->GetLex()).c_str());
+		Write("%s:", std::string(declaration->GetName()->GetLex()).c_str());
+		Write("\tpush %%ebp");
+		Write("\tmovl %%esp, %%ebp");
 
 		for (const StatementNode* statement : declaration->GetBody()->GetStatements())
 			EmitStatement(statement);
 
+		Write("\tpop  %%ebp");
 		Write("\tret");
 	}
 
@@ -63,6 +63,8 @@ namespace Symple
 	{
 		if (expression->Is<BinaryExpressionNode>())
 			return EmitBinaryExpression(expression->Cast<BinaryExpressionNode>());
+		if (expression->Is<FunctionCallExpressionNode>())
+			return EmitFunctionCallExpression(expression->Cast<FunctionCallExpressionNode>());
 		if (expression->Is<LiteralExpressionNode>())
 			return EmitLiteralExpression(expression->Cast<LiteralExpressionNode>());
 	}
@@ -88,9 +90,20 @@ namespace Symple
 			Write("\tsubl %%edx, %%eax");
 			break;
 		case Token::Kind::Asterisk:
-			Write("\timull %%edx, %%eax");
+			Write("\timul %%edx, %%eax");
 			break;
 		}
+	}
+
+	void Emitter::EmitFunctionCallExpression(const FunctionCallExpressionNode* call)
+	{
+		for (int i = call->GetArguments()->GetArguments().size() - 1; i >= 0; i--)
+		{
+			EmitExpression(call->GetArguments()->GetArguments()[i]);
+			Write("\tpush %%eax");
+		}
+		Write("\tcall %s", std::string(call->GetName()->GetLex()).c_str());
+		Write("\taddl %i, %%esp", call->GetArguments()->GetArguments().size() * 4);
 	}
 
 	bool Emitter::OpenFile()

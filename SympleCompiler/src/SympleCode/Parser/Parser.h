@@ -4,12 +4,17 @@
 
 #include "SympleCode/Parser/Lexer.h"
 #include "SympleCode/Common/Node/Node.h"
-#include "SympleCode/Common/Node/ExpressionNode.h"
-#include "SympleCode/Common/Node/CompilationUnitNode.h"
+
 #include "SympleCode/Common/Node/BlockStatementNode.h"
 #include "SympleCode/Common/Node/GlobalStatementNode.h"
-#include "SympleCode/Common/Node/LiteralExpressionNode.h"
+#include "SympleCode/Common/Node/CompilationUnitNode.h"
+
 #include "SympleCode/Common/Node/FunctionDeclarationNode.h"
+#include "SympleCode/Common/Node/FunctionCallArgumentsNode.h"
+#include "SympleCode/Common/Node/FunctionCallExpressionNode.h"
+
+#include "SympleCode/Common/Node/ExpressionNode.h"
+#include "SympleCode/Common/Node/LiteralExpressionNode.h"
 #include "SympleCode/Common/Node/NumberLiteralExpressionNode.h"
 #include "SympleCode/Common/Node/BooleanLiteralExpressionNode.h"
 
@@ -43,6 +48,10 @@ namespace Symple
 
 		ExpressionNode* ParseBinaryExpression(int parentPriority = -1);
 		ExpressionNode* ParsePrimaryExpression();
+
+		ExpressionNode* ParseNameOrCallExpression();
+		FunctionCallExpressionNode* ParseFunctionCallExpression();
+		FunctionCallArgumentsNode* ParseFunctionCallArguments();
 
 		NumberLiteralExpressionNode* ParseNumberLiteral();
 		BooleanLiteralExpressionNode* ParseBooleanLiteral();
