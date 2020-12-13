@@ -63,6 +63,8 @@
     <ClInclude Include="src\SympleCode\Common\Node\FunctionDeclarationNode.h" />
     <ClInclude Include="src\SympleCode\Common\Node\FunctionCallExpressionNode.h" />
     <ClInclude Include="src\SympleCode\Common\Node\FunctionCallArgumentsNode.h" />
+    <ClInclude Include="src\SympleCode\Common\Analysis\Type.h" />
+    <ClInclude Include="src\SympleCode\Common\Node\ReturnStatementNode.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\SympleCode\Application.cpp" />
@@ -81,5 +83,6 @@
     <ClCompile Include="src\SympleCode\Parser\Parser.cpp">
       <Filter>Parser</Filter>
     </ClCompile>
+    <ClCompile Include="src\SympleCode\Common\Analysis\Type.cpp" />
   </ItemGroup>
 </Project>

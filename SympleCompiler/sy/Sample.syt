@@ -1,5 +1,5 @@
 L--	Compilation Unit
- 	L--	Function Declaration: void main()
+ 	L--	Function Declaration: int main()
  	 	L--	Block Statement
- 	 	 	L--	Expression Statement
+ 	 	 	L--	Return Statement
  	 	 	 	L--	Number Literal Expression (69)

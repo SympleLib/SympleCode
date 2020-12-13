@@ -5,17 +5,17 @@
 
 namespace Symple
 {
-	class ExpressionStatementNode : public StatementNode
+	class ReturnStatementNode : public StatementNode
 	{
 	private:
 		const ExpressionNode* mExpression;
 	public:
-		ExpressionStatementNode(const ExpressionNode* expression)
+		ReturnStatementNode(const ExpressionNode* expression)
 			: mExpression(expression) {}
 
-		Kind GetKind() const override
+		Kind GetKind() const
 		{
-			return Kind::ExpressionStatement;
+			return Kind::ReturnStatement;
 		}
 
 		std::string ToString(const std::string& indent = "", bool last = true) const override
@@ -26,7 +26,7 @@ namespace Symple
 				ss << "L--\t";
 			else
 				ss << "|--\t";
-			ss << "Expression Statement";
+			ss << "Return Statement";
 
 			const char* newIndent = " \t";
 			if (!last)

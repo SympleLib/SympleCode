@@ -57,6 +57,8 @@ namespace Symple
 	{
 		if (statement->Is<ExpressionStatementNode>())
 			return EmitExpression(statement->Cast<ExpressionStatementNode>()->GetExpression());
+		if (statement->Is<ReturnStatementNode>())
+			return EmitExpression(statement->Cast<ReturnStatementNode>()->GetExpression());
 	}
 
 	void Emitter::EmitExpression(const ExpressionNode* expression)

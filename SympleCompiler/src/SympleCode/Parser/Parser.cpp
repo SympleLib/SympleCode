@@ -11,7 +11,7 @@
 namespace Symple
 {
 	Parser::Parser(const char* source)
-		: mLexer(source), mPosition(0)
+		: mLexer(source), mPosition(0), mTypes(Type::PrimitiveTypes)
 	{
 		Token* current = new Token;
 		while (!current->Is(Token::Kind::EndOfFile))
@@ -50,6 +50,22 @@ namespace Symple
 		return new Token(kind);
 	}
 
+	bool Parser::IsType(const Token* token)
+	{
+		for (const Type* type : mTypes)
+			if (token->GetLex() == type->GetName())
+				return true;
+		return false;
+	}
+
+	const Type* Parser::GetType(const Token* token)
+	{
+		for (const Type* type : mTypes)
+			if (token->GetLex() == type->GetName())
+				return type;
+		return nullptr;
+	}
+
 	const std::vector<const MemberNode*> Parser::ParseMembers()
 	{
 		std::vector<const MemberNode*> members;
@@ -67,7 +83,7 @@ namespace Symple
 
 	MemberNode* Parser::ParseMember()
 	{
-		if (Peek()->Is(Token::Kind::Function))
+		if (IsType(Peek()))
 			return ParseFunctionDeclaration();
 
 		return ParseGlobalStatement();
@@ -75,9 +91,10 @@ namespace Symple
 
 	FunctionDeclarationNode* Parser::ParseFunctionDeclaration()
 	{
-		Match(Token::Kind::Function);
-		const Token* type = Next();
+		const Type* type = GetType(Next());
 		const Token* name = Next();
+		Match(Token::Kind::OpenParenthesis);
+		Match(Token::Kind::CloseParenthesis);
 		BlockStatementNode* body = ParseBlockStatement();
 		Match(Token::Kind::Semicolon);
 
@@ -87,6 +104,14 @@ namespace Symple
 	GlobalStatementNode* Parser::ParseGlobalStatement()
 	{
 		return new GlobalStatementNode(ParseStatement());
+	}
+
+	ReturnStatementNode* Parser::ParseReturnStatement()
+	{
+		Match(Token::Kind::Return);
+		ExpressionNode* expression = ParseExpression();
+		Match(Token::Kind::Semicolon);
+		return new ReturnStatementNode(expression);
 	}
 
 	BlockStatementNode* Parser::ParseBlockStatement()
@@ -109,6 +134,8 @@ namespace Symple
 
 	StatementNode* Parser::ParseStatement()
 	{
+		if (Peek()->Is(Token::Kind::Return))
+			return ParseReturnStatement();
 		ExpressionNode* expression = ParseExpression();
 		Match(Token::Kind::Semicolon);
 		return new ExpressionStatementNode(expression);

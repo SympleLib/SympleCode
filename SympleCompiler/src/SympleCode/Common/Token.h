@@ -29,10 +29,7 @@ namespace Symple
 
 			True,
 			False,
-
-			Void,
-
-			Function,
+			Return,
 
 			Unknown = -2,
 			EndOfFile = -1,
@@ -43,9 +40,7 @@ namespace Symple
 			"Plus", "Minus", "Asterisk", "Slash", "Equal",
 			"Comma", "Semicolon",
 			"OpenBracket", "CloseBracket", "OpenParenthesis", "CloseParenthesis",
-			"True", "False",
-			"Void",
-			"Function",
+			"True", "False", "Return",
 		};
 
 		static constexpr const char* KindString(Kind kind);

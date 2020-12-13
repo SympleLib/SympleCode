@@ -28,6 +28,7 @@ namespace Symple
 			Statement,
 			BlockStatement,
 			GlobalStatement,
+			ReturnStatement,
 			ExpressionStatement,
 
 			FunctionCallArguments,
@@ -37,7 +38,7 @@ namespace Symple
 			"Unknown", "Expression", "BinaryExpression",
 			"LiteralExpression", "FunctionCallExpression", "NumberLiteralExpression", "BooleanLiteralExpression",
 			"Member", "CompilationUnit", "FunctionDeclaration",
-			"Statement", "BlockStatement", "GlobalStatement", "ExpressionStatement",
+			"Statement", "BlockStatement", "GlobalStatement", "ReturnStatement", "ExpressionStatement",
 			"FunctionCallArguments",
 		};
 

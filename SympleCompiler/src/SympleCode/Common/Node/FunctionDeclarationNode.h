@@ -1,5 +1,7 @@
 #pragma once
 
+#include "SympleCode/Common/Analysis/Type.h"
+
 #include "SympleCode/Common/Node/MemberNode.h"
 #include "SympleCode/Common/Node/BlockStatementNode.h"
 
@@ -8,11 +10,11 @@ namespace Symple
 	class FunctionDeclarationNode : public MemberNode
 	{
 	private:
-		const Token* mType;
+		const Type* mType;
 		const Token* mName;
 		const BlockStatementNode* mBody;
 	public:
-		FunctionDeclarationNode(const Token* type, const Token* name, const BlockStatementNode* body)
+		FunctionDeclarationNode(const Type* type, const Token* name, const BlockStatementNode* body)
 			: mType(type), mName(name), mBody(body) {}
 
 		Kind GetKind() const override
@@ -28,7 +30,7 @@ namespace Symple
 				ss << "L--\t";
 			else
 				ss << "|--\t";
-			ss << "Function Declaration: " << mType->GetLex() << ' ' << mName->GetLex() << "()";
+			ss << "Function Declaration: " << mType->GetName() << ' ' << mName->GetLex() << "()";
 			const char* newIndent = " \t";
 			if (!last)
 				newIndent = "|\t";
@@ -42,7 +44,7 @@ namespace Symple
 			return mName;
 		}
 
-		const Token* GetType() const
+		const Type* GetType() const
 		{
 			return mType;
 		}

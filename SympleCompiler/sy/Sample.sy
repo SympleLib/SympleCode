@@ -1,4 +1,4 @@
-function void main
+int main()
 {
-	69;
+	return 69;
 };

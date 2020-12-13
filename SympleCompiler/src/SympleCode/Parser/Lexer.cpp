@@ -91,10 +91,8 @@ namespace Symple
 			return new Token(Token::Kind::True, beg, mCurrent);
 		if (identifier == "false")
 			return new Token(Token::Kind::False, beg, mCurrent);
-		if (identifier == "void")
-			return new Token(Token::Kind::Void, beg, mCurrent);
-		if (identifier == "function")
-			return new Token(Token::Kind::Function, beg, mCurrent);
+		if (identifier == "return")
+			return new Token(Token::Kind::Return, beg, mCurrent);
 		return new Token(Token::Kind::Identifier, beg, mCurrent);
 	}
 

@@ -7,6 +7,7 @@
 
 #include "SympleCode/Common/Node/BlockStatementNode.h"
 #include "SympleCode/Common/Node/GlobalStatementNode.h"
+#include "SympleCode/Common/Node/ReturnStatementNode.h"
 #include "SympleCode/Common/Node/CompilationUnitNode.h"
 
 #include "SympleCode/Common/Node/FunctionDeclarationNode.h"
@@ -18,6 +19,8 @@
 #include "SympleCode/Common/Node/NumberLiteralExpressionNode.h"
 #include "SympleCode/Common/Node/BooleanLiteralExpressionNode.h"
 
+#include "SympleCode/Common/Analysis/Type.h"
+
 namespace Symple
 {
 	class Parser
@@ -25,6 +28,7 @@ namespace Symple
 	private:
 		Lexer mLexer;
 		std::vector<const Token*> mTokens;
+		std::vector<const Type*> mTypes;
 		size_t mPosition;
 	public:
 		Parser(const char* source = "");
@@ -35,12 +39,16 @@ namespace Symple
 		const Token* Next();
 		const Token* Match(Token::Kind kind);
 
+		bool IsType(const Token* token);
+		const Type* GetType(const Token* token);
+
 		const std::vector<const MemberNode*> ParseMembers();
 		MemberNode* ParseMember();
 
 		FunctionDeclarationNode* ParseFunctionDeclaration();
 
 		GlobalStatementNode* ParseGlobalStatement();
+		ReturnStatementNode* ParseReturnStatement();
 		BlockStatementNode* ParseBlockStatement();
 		StatementNode* ParseStatement();
 	
