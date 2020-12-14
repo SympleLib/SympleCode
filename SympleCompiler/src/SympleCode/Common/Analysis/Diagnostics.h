@@ -7,7 +7,6 @@
 
 #define DIAGNOSTIC_LEVEL_ERROR    2
 #define DIAGNOSTIC_LEVEL_WARNING  1
-#define DIAGNOSTIC_LEVEL_MESSAGE  0
 
 namespace Symple
 {
@@ -26,8 +25,6 @@ namespace Symple
 		void ReportError(const Token* token, const char* fmt, ...);
 
 		void ReportWarning(const Token* token, const char* fmt, ...);
-
-		void ReportMessage(const Token* token, const char* fmt, ...);
 
 		const std::vector<const Message*>& GetMessages() const;
 	};

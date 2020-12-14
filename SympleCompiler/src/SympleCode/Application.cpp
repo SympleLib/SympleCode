@@ -25,9 +25,20 @@ int main()
 		Symple::CompilationUnitNode* tree = parser.ParseCompilationUnit();
 		const Symple::Diagnostics* diagnostics = parser.GetDiagnostics();
 
+		unsigned int numberOfMessages = diagnostics->GetMessages().size();
+		printf("Parsed with %i messages!\n", numberOfMessages);
+
+		unsigned int errors = 0;
 		for (const Symple::Message* message : diagnostics->GetMessages())
 		{
-			std::cout << message->Level << ' ' << message->Token->GetLine() << ':' << message->Token->GetColumn() << ' ' << message->Message << '\n';
+			if (message->Level == DIAGNOSTIC_LEVEL_ERROR)
+			{
+				errors++;
+
+				std::cout << "[!]<" << message->Token->GetLine() << ':' << message->Token->GetColumn() << ">: " << message->Message << '\n';
+			}
+			if (message->Level == DIAGNOSTIC_LEVEL_WARNING)
+				std::cout << "[?]<" << message->Token->GetLine() << ':' << message->Token->GetColumn() << ">: " << message->Message << '\n';
 		}
 
 		FILE* treeFile;
@@ -47,14 +58,21 @@ int main()
 		}
 		fclose(sampleFile);
 
+		if (errors)
 		{
-			Symple::Emitter emitter("sy/Sample.s");
-			emitter.Emit(tree);
+			printf("No Code Generated :(\n");
 		}
+		else
+		{
+			{
+				Symple::Emitter emitter("sy/Sample.s");
+				emitter.Emit(tree);
+			}
 
-		system("as -c sy/Sample.s -o sy/Sample.o");
-		system("ld sy/Sample.o -o sy/Sample.exe");
-		printf("Exit Code: %i\n", system("sy\\Sample"));
+			system("as -c sy/Sample.s -o sy/Sample.o");
+			system("ld sy/Sample.o -o sy/Sample.exe");
+			printf("Exit Code: %i\n", system("sy\\Sample"));
+		}
 	}
 	else
 	{

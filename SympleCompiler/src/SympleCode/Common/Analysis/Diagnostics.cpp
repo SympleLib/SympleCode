@@ -26,17 +26,6 @@ namespace Symple
 		mMessages.push_back(new Message{ message, DIAGNOSTIC_LEVEL_WARNING, token });
 	}
 
-	void Diagnostics::ReportMessage(const Token* token, const char* fmt, ...)
-	{
-		char message[128];
-		va_list args;
-		va_start(args, fmt);
-		vsprintf_s(message, fmt, args);
-		va_end(args);
-
-		mMessages.push_back(new Message{ message, DIAGNOSTIC_LEVEL_MESSAGE, token });
-	}
-
 	const std::vector<const Message*>& Diagnostics::GetMessages() const
 	{
 		return mMessages;
