@@ -21,11 +21,15 @@ namespace Symple
 	{
 	private:
 		std::vector<const Message*> mMessages;
+		std::vector<const Message*> mWarnings;
+		std::vector<const Message*> mErrors;
 	public:
 		void ReportError(const Token* token, const char* fmt, ...);
 
 		void ReportWarning(const Token* token, const char* fmt, ...);
 
 		const std::vector<const Message*>& GetMessages() const;
+		const std::vector<const Message*>& GetWarnings() const;
+		const std::vector<const Message*>& GetErrors() const;
 	};
 }

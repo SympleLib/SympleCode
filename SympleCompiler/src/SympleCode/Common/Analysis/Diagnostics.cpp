@@ -13,6 +13,7 @@ namespace Symple
 		va_end(args);
 
 		mMessages.push_back(new Message{ message, DIAGNOSTIC_LEVEL_ERROR, token });
+		mErrors.push_back(mMessages.back());
 	}
 
 	void Diagnostics::ReportWarning(const Token* token, const char* fmt, ...)
@@ -24,10 +25,21 @@ namespace Symple
 		va_end(args);
 
 		mMessages.push_back(new Message{ message, DIAGNOSTIC_LEVEL_WARNING, token });
+		mWarnings.push_back(mMessages.back());
 	}
 
 	const std::vector<const Message*>& Diagnostics::GetMessages() const
 	{
 		return mMessages;
+	}
+
+	const std::vector<const Message*>& Diagnostics::GetErrors() const
+	{
+		return mErrors;
+	}
+
+	const std::vector<const Message*>& Diagnostics::GetWarnings() const
+	{
+		return mWarnings;
 	}
 }

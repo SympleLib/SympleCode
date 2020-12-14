@@ -25,20 +25,17 @@ int main()
 		Symple::CompilationUnitNode* tree = parser.ParseCompilationUnit();
 		const Symple::Diagnostics* diagnostics = parser.GetDiagnostics();
 
-		unsigned int numberOfMessages = diagnostics->GetMessages().size();
-		printf("Parsed with %i messages!\n", numberOfMessages);
+		unsigned int errors = diagnostics->GetErrors().size();
+		printf("Parsed with %i errors, %i warnings (total: %i)\n", errors, diagnostics->GetWarnings().size(), diagnostics->GetMessages().size());
 
-		unsigned int errors = 0;
-		for (const Symple::Message* message : diagnostics->GetMessages())
+		for (const Symple::Message* error : diagnostics->GetErrors())
 		{
-			if (message->Level == DIAGNOSTIC_LEVEL_ERROR)
-			{
-				errors++;
+			std::cout << "[!]<" << error->Token->GetLine() << ':' << error->Token->GetColumn() << ">: " << error->Message << '\n';
+		}
 
-				std::cout << "[!]<" << message->Token->GetLine() << ':' << message->Token->GetColumn() << ">: " << message->Message << '\n';
-			}
-			if (message->Level == DIAGNOSTIC_LEVEL_WARNING)
-				std::cout << "[?]<" << message->Token->GetLine() << ':' << message->Token->GetColumn() << ">: " << message->Message << '\n';
+		for (const Symple::Message* warning : diagnostics->GetWarnings())
+		{
+			std::cout << "[?]<" << warning->Token->GetLine() << ':' << warning->Token->GetColumn() << ">: " << warning->Message << '\n';
 		}
 
 		FILE* treeFile;

@@ -1,7 +1,3 @@
 L--	Compilation Unit
  	L--	Function Declaration: int main()
  	 	L--	Block Statement
- 	 	 	|--	Return Statement
- 	 	 	|	L--	Boolean Literal Expression (true)
- 	 	 	L--	Expression Statement
- 	 	 	 	L--	Node of Kind: Expression
