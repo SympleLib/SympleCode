@@ -3,11 +3,11 @@
 namespace Symple
 {
 	Lexer::Lexer(const char* source)
-		: mSource(source), mCurrent(source) {}
+		: mSource(source), mCurrent(source), mLine(1), mColumn(1) {}
 
 	Token* Lexer::Next()
 	{
-		while (ShouldIgnore(Peek()))
+		while (CheckNewLine(Peek()) || ShouldIgnore(Peek()))
 			Get();
 
 		char c = Peek();
@@ -51,7 +51,20 @@ namespace Symple
 
 	bool Lexer::ShouldIgnore(char c)
 	{
-		return c == ' ' || c == '\t' || c == '\r' || c == '\n' || c == 'Í';
+		return c == ' ' || c == '\t' || c == '\r' || c == 'Í';
+	}
+
+	bool Lexer::CheckNewLine(char c)
+	{
+		if (c == '\n')
+		{
+			mLine++;
+			mColumn = 1;
+
+			return true;
+		}
+
+		return false;
 	}
 
 	bool Lexer::IsIdentifier(char c)
@@ -71,13 +84,14 @@ namespace Symple
 
 	char Lexer::Get()
 	{
+		mColumn++;
 		return *mCurrent++;
 	}
 
 
 	Token* Lexer::Atom(Token::Kind kind)
 	{
-		return new Token(kind, mCurrent++, 1);
+		return new Token(kind, mCurrent++, 1, mLine, mColumn);
 	}
 
 	Token* Lexer::Identifier()
@@ -88,12 +102,12 @@ namespace Symple
 			Get();
 		std::string_view identifier(beg, std::distance(beg, mCurrent));
 		if (identifier == "true")
-			return new Token(Token::Kind::True, beg, mCurrent);
+			return new Token(Token::Kind::True, beg, mCurrent, mLine, mColumn);
 		if (identifier == "false")
-			return new Token(Token::Kind::False, beg, mCurrent);
+			return new Token(Token::Kind::False, beg, mCurrent, mLine, mColumn);
 		if (identifier == "return")
-			return new Token(Token::Kind::Return, beg, mCurrent);
-		return new Token(Token::Kind::Identifier, beg, mCurrent);
+			return new Token(Token::Kind::Return, beg, mCurrent, mLine, mColumn);
+		return new Token(Token::Kind::Identifier, beg, mCurrent, mLine, mColumn);
 	}
 
 	Token* Lexer::Number()
@@ -102,6 +116,6 @@ namespace Symple
 		Get();
 		while (IsNumber(Peek()))
 			Get();
-		return new Token(Token::Kind::Number, beg, mCurrent);
+		return new Token(Token::Kind::Number, beg, mCurrent, mLine, mColumn);
 	}
 }

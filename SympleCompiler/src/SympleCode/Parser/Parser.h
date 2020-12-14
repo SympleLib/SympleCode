@@ -20,6 +20,7 @@
 #include "SympleCode/Common/Node/BooleanLiteralExpressionNode.h"
 
 #include "SympleCode/Common/Analysis/Type.h"
+#include "SympleCode/Common/Analysis/Diagnostics.h"
 
 namespace Symple
 {
@@ -29,11 +30,13 @@ namespace Symple
 		Lexer mLexer;
 		std::vector<const Token*> mTokens;
 		std::vector<const Type*> mTypes;
+		Diagnostics* mDiagnostics;
 		size_t mPosition;
 	public:
 		Parser(const char* source = "");
 
 		CompilationUnitNode* ParseCompilationUnit();
+		const Diagnostics* GetDiagnostics() const;
 	private:
 		const Token* Peek(size_t offset = 0);
 		const Token* Next();

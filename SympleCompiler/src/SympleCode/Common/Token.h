@@ -43,19 +43,23 @@ namespace Symple
 			"True", "False", "Return",
 		};
 
-		static constexpr const char* KindString(Kind kind);
+		static const char* KindString(Kind kind);
 	private:
 		Kind mKind;
 		std::string_view mLex;
+
+		int mLine, mColumn;
 	public:
-		Token(Kind kind = Kind::Unknown);
-		Token(Kind kind, const char* beg, size_t len);
-		Token(Kind kind, const char* beg, const char* end);
+		Token(Kind kind = Kind::Unknown, int line = 0, int column = 0);
+		Token(Kind kind, const char* beg, size_t len, int line = 0, int column = 0);
+		Token(Kind kind, const char* beg, const char* end, int line = 0, int column = 0);
 
 		bool Is(Kind kind) const;
 		bool IsEither(std::initializer_list<Kind> kinds) const;
 
 		const Kind& GetKind() const;
 		const std::string_view& GetLex() const;
+		int GetLine() const;
+		int GetColumn() const;
 	};
 }

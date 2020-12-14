@@ -2,14 +2,14 @@
 
 namespace Symple
 {
-	Token::Token(Kind kind)
-		: mKind(kind) {}
+	Token::Token(Kind kind, int line, int column)
+		: mKind(kind), mLine(line), mColumn(column) {}
 
-	Token::Token(Kind kind, const char* beg, size_t len)
-		: mKind(kind), mLex(beg, len) {}
+	Token::Token(Kind kind, const char* beg, size_t len, int line, int column)
+		: mKind(kind), mLex(beg, len), mLine(line), mColumn(column) {}
 
-	Token::Token(Kind kind, const char* beg, const char* end)
-		: mKind(kind), mLex(beg, std::distance(beg, end)) {}
+	Token::Token(Kind kind, const char* beg, const char* end, int line, int column)
+		: mKind(kind), mLex(beg, std::distance(beg, end)), mLine(line), mColumn(column) {}
 
 	bool Token::Is(Kind kind) const
 	{
@@ -34,7 +34,17 @@ namespace Symple
 		return mLex;
 	}
 
-	constexpr const char* Token::KindString(Kind kind)
+	int Token::GetLine() const
+	{
+		return mLine;
+	}
+
+	int Token::GetColumn() const
+	{
+		return mColumn;
+	}
+
+	const char* Token::KindString(Kind kind)
 	{
 		switch (kind)
 		{

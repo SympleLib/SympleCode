@@ -65,6 +65,7 @@
     <ClInclude Include="src\SympleCode\Common\Node\FunctionCallArgumentsNode.h" />
     <ClInclude Include="src\SympleCode\Common\Analysis\Type.h" />
     <ClInclude Include="src\SympleCode\Common\Node\ReturnStatementNode.h" />
+    <ClInclude Include="src\SympleCode\Common\Analysis\Diagnostics.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\SympleCode\Application.cpp" />
@@ -84,5 +85,6 @@
       <Filter>Parser</Filter>
     </ClCompile>
     <ClCompile Include="src\SympleCode\Common\Analysis\Type.cpp" />
+    <ClCompile Include="src\SympleCode\Common\Analysis\Diagnostics.cpp" />
   </ItemGroup>
 </Project>

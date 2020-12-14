@@ -9,6 +9,8 @@ namespace Symple
 	private:
 		const char* mSource;
 		const char* mCurrent;
+
+		int mLine, mColumn;
 	public:
 		Lexer(const char* source = "");
 
@@ -17,6 +19,8 @@ namespace Symple
 		static bool ShouldIgnore(char c);
 		static bool IsIdentifier(char c);
 		static bool IsNumber(char c);
+
+		bool CheckNewLine(char c);
 
 		char Peek(int offset = 0) const;
 		char Get();

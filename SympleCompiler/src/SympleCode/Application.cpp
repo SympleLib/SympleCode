@@ -15,14 +15,21 @@ int main()
 	if (!(err = fopen_s(&sampleFile, "sy/Sample.sy", "rb")) && sampleFile)
 	{
 		fseek(sampleFile, 0L, SEEK_END);
-		int size = min(ftell(sampleFile), 4096);
+		unsigned int size = min(ftell(sampleFile), 4096);
 		rewind(sampleFile);
-		char* source = new char[size];
+		char* source = new char[size + 1];
 		fread(source, 1, size, sampleFile);
-		source[size - 1] = 0;
+		source[size] = 0;
 
 		Symple::Parser parser(source);
 		Symple::CompilationUnitNode* tree = parser.ParseCompilationUnit();
+		const Symple::Diagnostics* diagnostics = parser.GetDiagnostics();
+
+		for (const Symple::Message* message : diagnostics->GetMessages())
+		{
+			std::cout << message->Level << ' ' << message->Token->GetLine() << ':' << message->Token->GetColumn() << ' ' << message->Message << '\n';
+		}
+
 		FILE* treeFile;
 		errno_t err;
 		if (!(err = fopen_s(&treeFile, "sy/Sample.syt", "w")) && treeFile)

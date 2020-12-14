@@ -11,7 +11,7 @@
 namespace Symple
 {
 	Parser::Parser(const char* source)
-		: mLexer(source), mPosition(0), mTypes(Type::PrimitiveTypes)
+		: mLexer(source), mPosition(0), mTypes(Type::PrimitiveTypes), mDiagnostics(new Diagnostics)
 	{
 		Token* current = new Token;
 		while (!current->Is(Token::Kind::EndOfFile))
@@ -47,7 +47,14 @@ namespace Symple
 	{
 		if (Peek()->Is(kind))
 			return Next();
+		mDiagnostics->ReportError(Peek(), "Unexpected Token '%s' of type <%s>, Expected <%s>", std::string(Peek()->GetLex()).c_str(), Token::KindString(Peek()->GetKind()), Token::KindString(kind));
+		Next();
 		return new Token(kind);
+	}
+
+	const Diagnostics* Parser::GetDiagnostics() const
+	{
+		return mDiagnostics;
 	}
 
 	bool Parser::IsType(const Token* token)
@@ -93,8 +100,6 @@ namespace Symple
 	{
 		const Type* type = GetType(Next());
 		const Token* name = Next();
-		Match(Token::Kind::OpenParenthesis);
-		Match(Token::Kind::CloseParenthesis);
 		BlockStatementNode* body = ParseBlockStatement();
 		Match(Token::Kind::Semicolon);
 
@@ -120,6 +125,12 @@ namespace Symple
 		std::vector<const StatementNode*> statements;
 		while (!Peek()->Is(Token::Kind::CloseBracket))
 		{
+			if (Peek()->Is(Token::Kind::EndOfFile))
+			{
+				mDiagnostics->ReportError(Next(), "Unexpected End Of File");
+				break;
+			}
+
 			const Token* start = Peek();
 
 			statements.push_back(ParseStatement());
@@ -181,6 +192,8 @@ namespace Symple
 	{
 		if (Peek(1)->Is(Token::Kind::OpenParenthesis))
 			return ParseFunctionCallExpression();
+
+		mDiagnostics->ReportWarning(Peek(), "Empty Expression");
 		return new ExpressionNode();
 	}
 
@@ -199,6 +212,12 @@ namespace Symple
 		std::vector<const ExpressionNode*> arguments;
 		while (!Peek()->Is(Token::Kind::CloseParenthesis))
 		{
+			if (Peek()->Is(Token::Kind::EndOfFile))
+			{
+				mDiagnostics->ReportError(Next(), "Unexpected End Of File");
+				break;
+			}
+
 			arguments.push_back(ParseExpression());
 
 			if (Peek()->Is(Token::Kind::Comma))
