@@ -11,6 +11,7 @@
 #include "SympleCode/Common/Node/CompilationUnitNode.h"
 #include "SympleCode/Common/Node/VariableDeclarationNode.h"
 
+#include "SympleCode/Common/Node/FunctionArgumentsNode.h"
 #include "SympleCode/Common/Node/FunctionDeclarationNode.h"
 #include "SympleCode/Common/Node/FunctionCallArgumentsNode.h"
 #include "SympleCode/Common/Node/FunctionCallExpressionNode.h"
@@ -37,7 +38,7 @@ namespace Symple
 		Parser(const char* source = "");
 
 		CompilationUnitNode* ParseCompilationUnit();
-		const Diagnostics* GetDiagnostics() const;
+		Diagnostics* GetDiagnostics() const;
 	private:
 		const Token* Peek(size_t offset = 0);
 		const Token* Next();
@@ -50,6 +51,8 @@ namespace Symple
 		MemberNode* ParseMember();
 
 		FunctionDeclarationNode* ParseFunctionDeclaration();
+		FunctionArgumentsNode* ParseFunctionArguments();
+		FunctionArgumentNode* ParseFunctionArgument();
 
 		StatementNode* ParseStatement();
 		BlockStatementNode* ParseBlockStatement();

@@ -3,7 +3,7 @@
 namespace Symple
 {
 	Lexer::Lexer(const char* source)
-		: mSource(source), mCurrent(source), mLine(1), mColumn(1) {}
+		: mSource(source), mCurrent(source), mLine(1), mColumn(0) {}
 
 	Token* Lexer::Next()
 	{
@@ -59,7 +59,7 @@ namespace Symple
 		if (c == '\n')
 		{
 			mLine++;
-			mColumn = 1;
+			mColumn = 0;
 
 			return true;
 		}

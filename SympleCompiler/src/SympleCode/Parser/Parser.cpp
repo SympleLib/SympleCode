@@ -5,6 +5,7 @@
 
 #include "SympleCode/Common/Node/BinaryExpressionNode.h"
 #include "SympleCode/Common/Node/ExpressionStatementNode.h"
+#include "SympleCode/Common/Node/VariableExpressionNode.h"
 
 #include "SympleCode/Common/Priority.h"
 
@@ -52,7 +53,7 @@ namespace Symple
 		return new Token(kind);
 	}
 
-	const Diagnostics* Parser::GetDiagnostics() const
+	Diagnostics* Parser::GetDiagnostics() const
 	{
 		return mDiagnostics;
 	}
@@ -90,7 +91,7 @@ namespace Symple
 
 	MemberNode* Parser::ParseMember()
 	{
-		if (IsType(Peek()) && Peek(2)->Is(Token::Kind::OpenBracket))
+		if (IsType(Peek()) && Peek(2)->Is(Token::Kind::OpenParenthesis))
 			return ParseFunctionDeclaration();
 
 		return ParseGlobalStatement();
@@ -100,10 +101,47 @@ namespace Symple
 	{
 		const Type* type = GetType(Next());
 		const Token* name = Next();
+		FunctionArgumentsNode* arguments = ParseFunctionArguments();
 		BlockStatementNode* body = ParseBlockStatement();
 		Match(Token::Kind::Semicolon);
 
-		return new FunctionDeclarationNode(type, name, body);
+		FunctionDeclarationNode* declaration = new FunctionDeclarationNode(type, name, arguments, body);
+		mDiagnostics->FunctionDeclaration(declaration);
+		return declaration;
+	}
+
+	FunctionArgumentsNode* Parser::ParseFunctionArguments()
+	{
+		const Token* open = Match(Token::Kind::OpenParenthesis);
+
+		std::vector<const FunctionArgumentNode*> arguments;
+		while (!Peek()->Is(Token::Kind::CloseParenthesis))
+		{
+			if (Peek()->Is(Token::Kind::EndOfFile))
+			{
+				mDiagnostics->ReportError(Next(), "Unexpected End Of File");
+				break;
+			}
+
+			arguments.push_back(ParseFunctionArgument());
+
+			if (Peek()->Is(Token::Kind::Comma))
+				Next();
+			else
+				break;
+		}
+
+		const Token* close = Match(Token::Kind::CloseParenthesis);
+
+		return new FunctionArgumentsNode(open, arguments, close);
+	}
+
+	FunctionArgumentNode* Parser::ParseFunctionArgument()
+	{
+		const Type* type = GetType(Next());
+		const Token* name = Next();
+
+		return new FunctionArgumentNode(type, name);
 	}
 
 	StatementNode* Parser::ParseStatement()
@@ -213,8 +251,7 @@ namespace Symple
 		if (Peek(1)->Is(Token::Kind::OpenParenthesis))
 			return ParseFunctionCallExpression();
 
-		mDiagnostics->ReportWarning(Peek(), "Empty Expression");
-		return new ExpressionNode();
+		return new VariableExpressionNode(Next());
 	}
 
 	FunctionCallExpressionNode* Parser::ParseFunctionCallExpression()

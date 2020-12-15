@@ -29,7 +29,7 @@ namespace Symple
 				ss << "L--\t";
 			else
 				ss << "|--\t";
-			ss << "Function Arguments";
+			ss << "Function Call Arguments";
 			const char* newIndent = " \t";
 			if (!last)
 				newIndent = "|\t";

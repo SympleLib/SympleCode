@@ -8,13 +8,14 @@
 #include "SympleCode/Common/Node/GlobalStatementNode.h"
 #include "SympleCode/Common/Node/ExpressionStatementNode.h"
 #include "SympleCode/Common/Node/NumberLiteralExpressionNode.h"
+#include "SympleCode/Common/Node/BooleanLiteralExpressionNode.h"
 
 #define Write(fmt, ...) (void)fprintf_s(mFile, fmt "\n", __VA_ARGS__)
 
 namespace Symple
 {
-	Emitter::Emitter(const char* path)
-		: mPath(path), mOpen(false)
+	Emitter::Emitter(Diagnostics* diagnostics, const char* path)
+		: mDiagnostics(diagnostics), mPath(path), mOpen(false), mStackPos(0)
 	{
 		while (OpenFile());
 	}
@@ -42,22 +43,42 @@ namespace Symple
 
 	void Emitter::EmitFunctionDeclaration(const FunctionDeclarationNode* declaration)
 	{
+		unsigned int pStackPos = mStackPos;
+		mStackPos = 0;
+
 		Write("%s:", std::string(declaration->GetName()->GetLex()).c_str());
-		Write("\tpush %%ebp");
-		Write("\tmovl %%esp, %%ebp");
-		Write("\txor %%eax, %%eax");
+		Write("\tpush   %%ebp");
+		Write("\tmovl   %%esp, %%ebp");
+		Write("\txorl   %%eax, %%eax");
+
+		unsigned int pos = 0;
+		for (const FunctionArgumentNode* argument : declaration->GetArguments()->GetArguments())
+		{
+			pos += argument->GetType()->GetSize();
+			Write("_%s$ = %i", std::string(argument->GetName()->GetLex()).c_str(), pos);
+		}
 
 		for (const StatementNode* statement : declaration->GetBody()->GetStatements())
 			EmitStatement(statement);
 
-		Write("\tmovl %%ebp, %%esp");
-		Write("\tpop  %%ebp");
+		Write("\tmovl   %%ebp, %%esp");
+		Write("\tpop    %%ebp");
 		Write("\tret");
+
+		mStackPos = pStackPos;
 	}
 
 	void Emitter::EmitVariableDeclaration(const VariableDeclarationNode* declaration)
 	{
-		
+		std::string name = std::string(declaration->GetName()->GetLex());
+		mStackPos += declaration->GetType()->GetSize();
+		Write("_%s$ = -%i", name.c_str(), mStackPos);
+		Write("\tsubl   $%i, %%esp", declaration->GetType()->GetSize());
+		if (declaration->GetInitializer()->GetKind() != Node::Kind::Expression)
+		{
+			EmitExpression(declaration->GetInitializer());
+			Write("\tmovl   %%eax, _%s$(%%ebp)", name.c_str());
+		}
 	}
 
 	void Emitter::EmitStatement(const StatementNode* statement)
@@ -66,6 +87,8 @@ namespace Symple
 			return EmitExpression(statement->Cast<ExpressionStatementNode>()->GetExpression());
 		if (statement->Is<ReturnStatementNode>())
 			return EmitExpression(statement->Cast<ReturnStatementNode>()->GetExpression());
+		if (statement->Is<VariableDeclarationNode>())
+			return EmitVariableDeclaration(statement->Cast<VariableDeclarationNode>());
 	}
 
 	void Emitter::EmitExpression(const ExpressionNode* expression)
@@ -76,32 +99,54 @@ namespace Symple
 			return EmitFunctionCallExpression(expression->Cast<FunctionCallExpressionNode>());
 		if (expression->Is<LiteralExpressionNode>())
 			return EmitLiteralExpression(expression->Cast<LiteralExpressionNode>());
+		if (expression->Is<VariableExpressionNode>())
+			return EmitVariableExpression(expression->Cast<VariableExpressionNode>());
 	}
 
 	void Emitter::EmitLiteralExpression(const LiteralExpressionNode* expression)
 	{
 		if (expression->Is<NumberLiteralExpressionNode>())
-			Write("\tmovl $%s, %%eax", std::string(expression->GetLiteral()->GetLex()).c_str());
+			Write("\tmovl   $%s, %%eax", std::string(expression->GetLiteral()->GetLex()).c_str());
+		if (expression->Is<BooleanLiteralExpressionNode>())
+			Write("\tmovl   $%i, %%eax", expression->GetLiteral()->Is(Token::Kind::True));
 	}
 
 	void Emitter::EmitBinaryExpression(const BinaryExpressionNode* expression)
 	{
+		if (expression->GetOperator()->Is(Token::Kind::Equal))
+		{
+			if (expression->GetLeft()->GetKind() != Node::Kind::VariableExpression)
+			{
+				mDiagnostics->ReportError(expression->GetOperator(), "Expected lvalue");
+				return;
+			}
+
+			EmitExpression(expression->GetRight());
+			Write("\tmovl   %%eax, _%s$(%%ebp)", std::string(expression->GetLeft()->Cast<VariableExpressionNode>()->GetName()->GetLex()).c_str());
+			return;
+		}
+
 		EmitExpression(expression->GetRight());
-		Write("\tmovl %%eax, %%edx");
+		Write("\tmovl   %%eax, %%edx");
 		EmitExpression(expression->GetLeft());
 
 		switch (expression->GetOperator()->GetKind())
 		{
 		case Token::Kind::Plus:
-			Write("\taddl %%edx, %%eax");
+			Write("\taddl   %%edx, %%eax");
 			break;
 		case Token::Kind::Minus:
-			Write("\tsubl %%edx, %%eax");
+			Write("\tsubl   %%edx, %%eax");
 			break;
 		case Token::Kind::Asterisk:
-			Write("\timul %%edx, %%eax");
+			Write("\timul   %%edx, %%eax");
 			break;
 		}
+	}
+
+	void Emitter::EmitVariableExpression(const VariableExpressionNode* expression)
+	{
+		Write("\tmovl   _%s$(%%ebp), %%eax", std::string(expression->GetName()->GetLex()).c_str());
 	}
 
 	void Emitter::EmitFunctionCallExpression(const FunctionCallExpressionNode* call)
@@ -109,10 +154,10 @@ namespace Symple
 		for (int i = call->GetArguments()->GetArguments().size() - 1; i >= 0; i--)
 		{
 			EmitExpression(call->GetArguments()->GetArguments()[i]);
-			Write("\tpush %%eax");
+			Write("\tpush   %%eax");
 		}
-		Write("\tcall %s", std::string(call->GetName()->GetLex()).c_str());
-		Write("\taddl %i, %%esp", call->GetArguments()->GetArguments().size() * 4);
+		Write("\tcall   %s", std::string(call->GetName()->GetLex()).c_str());
+		Write("\taddl   $%i, %%esp", mDiagnostics->GetFunction(call->GetName()->GetLex())->GetArguments()->GetSize());
 	}
 
 	bool Emitter::OpenFile()

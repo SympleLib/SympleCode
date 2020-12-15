@@ -1,2 +1,11 @@
-int myVar = 690;
-int otherVar;
+int main()
+{
+	int c = multiply(5, 5);
+	
+	return c;
+};
+
+int multiply(int a, int b)
+{
+	return a * b;
+};

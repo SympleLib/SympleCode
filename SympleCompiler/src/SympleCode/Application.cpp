@@ -23,20 +23,9 @@ int main()
 
 		Symple::Parser parser(source);
 		Symple::CompilationUnitNode* tree = parser.ParseCompilationUnit();
-		const Symple::Diagnostics* diagnostics = parser.GetDiagnostics();
+		Symple::Diagnostics* diagnostics = parser.GetDiagnostics();
 
-		unsigned int errors = diagnostics->GetErrors().size();
-		printf("Parsed with %i errors, %i warnings (total: %i)\n", errors, diagnostics->GetWarnings().size(), diagnostics->GetMessages().size());
-
-		for (const Symple::Message* error : diagnostics->GetErrors())
-		{
-			std::cout << "[!]<" << error->Token->GetLine() << ':' << error->Token->GetColumn() << ">: " << error->Message << '\n';
-		}
-
-		for (const Symple::Message* warning : diagnostics->GetWarnings())
-		{
-			std::cout << "[?]<" << warning->Token->GetLine() << ':' << warning->Token->GetColumn() << ">: " << warning->Message << '\n';
-		}
+		unsigned int parseErrors = diagnostics->GetErrors().size();
 
 		FILE* treeFile;
 		errno_t err;
@@ -55,20 +44,46 @@ int main()
 		}
 		fclose(sampleFile);
 
-		if (errors)
+		if (parseErrors)
 		{
+			printf("Compiled with %i errors, %i warnings (total: %i)\n", diagnostics->GetErrors().size(), diagnostics->GetWarnings().size(), diagnostics->GetMessages().size());
+
+			for (const Symple::Message* error : diagnostics->GetErrors())
+			{
+				std::cout << "[!]<" << error->Token->GetLine() << ':' << error->Token->GetColumn() << ">: " << error->Message << '\n';
+			}
+
+			for (const Symple::Message* warning : diagnostics->GetWarnings())
+			{
+				std::cout << "[?]<" << warning->Token->GetLine() << ':' << warning->Token->GetColumn() << ">: " << warning->Message << '\n';
+			}
 			printf("No Code Generated :(\n");
 		}
 		else
 		{
 			{
-				Symple::Emitter emitter("sy/Sample.s");
+				Symple::Emitter emitter(diagnostics, "sy/Sample.s");
 				emitter.Emit(tree);
+
+				printf("Compiled with %i errors, %i warnings (total: %i)\n", diagnostics->GetErrors().size(), diagnostics->GetWarnings().size(), diagnostics->GetMessages().size());
+
+				for (const Symple::Message* error : diagnostics->GetErrors())
+				{
+					std::cout << "[!]<" << error->Token->GetLine() << ':' << error->Token->GetColumn() << ">: " << error->Message << '\n';
+				}
+
+				for (const Symple::Message* warning : diagnostics->GetWarnings())
+				{
+					std::cout << "[?]<" << warning->Token->GetLine() << ':' << warning->Token->GetColumn() << ">: " << warning->Message << '\n';
+				}
 			}
 
-			system("as -c sy/Sample.s -o sy/Sample.o");
-			system("ld sy/Sample.o -o sy/Sample.exe");
-			printf("Exit Code: %i\n", system("sy\\Sample"));
+			if (!diagnostics->GetErrors().size())
+			{
+				system("as -c sy/Sample.s -o sy/Sample.o");
+				system("ld sy/Sample.o -o sy/Sample.exe");
+				printf("Exit Code: %i\n", system("sy\\Sample"));
+			}
 		}
 	}
 	else

@@ -67,11 +67,9 @@
     <ClInclude Include="src\SympleCode\Common\Node\ReturnStatementNode.h" />
     <ClInclude Include="src\SympleCode\Common\Analysis\Diagnostics.h" />
     <ClInclude Include="src\SympleCode\Common\Node\VariableDeclarationNode.h" />
-    <ClInclude Include="src\SympleCode\Linker\Linker.h" />
-    <ClInclude Include="src\SympleCode\Linker\Link\Link.h" />
-    <ClInclude Include="src\SympleCode\Linker\Link\StatementLink.h" />
-    <ClInclude Include="src\SympleCode\Linker\Link\ExpressionLink.h" />
-    <ClInclude Include="src\SympleCode\Linker\Link\BinaryExpressionLink.h" />
+    <ClInclude Include="src\SympleCode\Common\Node\VariableExpressionNode.h" />
+    <ClInclude Include="src\SympleCode\Common\Node\FunctionArgumentNode.h" />
+    <ClInclude Include="src\SympleCode\Common\Node\FunctionArgumentsNode.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\SympleCode\Application.cpp" />
@@ -92,6 +90,5 @@
     </ClCompile>
     <ClCompile Include="src\SympleCode\Common\Analysis\Type.cpp" />
     <ClCompile Include="src\SympleCode\Common\Analysis\Diagnostics.cpp" />
-    <ClCompile Include="src\SympleCode\Linker\Linker.cpp" />
   </ItemGroup>
 </Project>

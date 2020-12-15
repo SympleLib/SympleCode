@@ -3,6 +3,8 @@
 #include <cstdio>
 #include <vector>
 
+#include "SympleCode/Common/Analysis/Diagnostics.h"
+
 #include "SympleCode/Common/Node/StatementNode.h"
 #include "SympleCode/Common/Node/ReturnStatementNode.h"
 
@@ -13,6 +15,7 @@
 #include "SympleCode/Common/Node/FunctionDeclarationNode.h"
 #include "SympleCode/Common/Node/FunctionCallExpressionNode.h"
 #include "SympleCode/Common/Node/VariableDeclarationNode.h"
+#include "SympleCode/Common/Node/VariableExpressionNode.h"
 
 namespace Symple
 {
@@ -22,8 +25,11 @@ namespace Symple
 		bool mOpen;
 		const char* mPath;
 		FILE* mFile;
+		Diagnostics* mDiagnostics;
+
+		unsigned int mStackPos;
 	public:
-		Emitter(const char* path);
+		Emitter(Diagnostics* diagnostics, const char* path);
 		~Emitter();
 
 		void Emit(const CompilationUnitNode* compilationUnit);
@@ -36,8 +42,9 @@ namespace Symple
 		void EmitStatement(const StatementNode* statement);
 
 		void EmitExpression(const ExpressionNode* expression);
-		void EmitLiteralExpression(const LiteralExpressionNode* expression);
 		void EmitBinaryExpression(const BinaryExpressionNode* expression);
+		void EmitLiteralExpression(const LiteralExpressionNode* expression);
+		void EmitVariableExpression(const VariableExpressionNode* expression);
 		void EmitFunctionCallExpression(const FunctionCallExpressionNode* call);
 
 		bool OpenFile();

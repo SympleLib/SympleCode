@@ -1,9 +1,10 @@
 #pragma once
 
-#include <vector>
+#include <map>
 #include <string>
 
 #include "SympleCode/Common/Token.h"
+#include "SympleCode/Common/Node/FunctionDeclarationNode.h"
 
 #define DIAGNOSTIC_LEVEL_ERROR    2
 #define DIAGNOSTIC_LEVEL_WARNING  1
@@ -23,13 +24,20 @@ namespace Symple
 		std::vector<const Message*> mMessages;
 		std::vector<const Message*> mWarnings;
 		std::vector<const Message*> mErrors;
+
+		std::map<std::string_view, const FunctionDeclarationNode*> mFunctions;
 	public:
 		void ReportError(const Token* token, const char* fmt, ...);
 
 		void ReportWarning(const Token* token, const char* fmt, ...);
 
+		void FunctionDeclaration(const FunctionDeclarationNode* function);
+
 		const std::vector<const Message*>& GetMessages() const;
 		const std::vector<const Message*>& GetWarnings() const;
 		const std::vector<const Message*>& GetErrors() const;
+
+		const FunctionDeclarationNode* GetFunction(const std::string_view& name) const;
+		const std::map<std::string_view, const FunctionDeclarationNode*>& GetFunctions() const;
 	};
 }

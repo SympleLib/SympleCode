@@ -18,7 +18,7 @@ namespace Symple
 
 		Kind GetKind() const
 		{
-			return Kind::VariebleDeclaration;
+			return Kind::VariableDeclaration;
 		}
 
 		std::string ToString(const std::string& indent = "", bool last = true) const

@@ -1,6 +1,20 @@
 L--	Compilation Unit
- 	|--	Global Statement
- 	|	L--	Variable Declaration (int) myVar
- 	|	 	L--	Number Literal Expression (690)
- 	L--	Global Statement
- 	 	L--	Variable Declaration (int) otherVar
+ 	|--	Function Declaration: int main()
+ 	|	|--	Function Arguments
+ 	|	L--	Block Statement
+ 	|	 	|--	Variable Declaration (int) c
+ 	|	 	|	L--	Function Call Expression multiply()
+ 	|	 	|	 	L--	Function Call Arguments
+ 	|	 	|	 	 	|--	Number Literal Expression (5)
+ 	|	 	|	 	 	L--	Number Literal Expression (5)
+ 	|	 	L--	Return Statement
+ 	|	 	 	L--	Variable Expression c
+ 	L--	Function Declaration: int multiply()
+ 	 	|--	Function Arguments
+ 	 	|	|--	Function Argument (int) a
+ 	 	|	L--	Function Argument (int) b
+ 	 	L--	Block Statement
+ 	 	 	L--	Return Statement
+ 	 	 	 	L--	Binary Expression [*]
+ 	 	 	 	 	|--	Variable Expression a
+ 	 	 	 	 	L--	Variable Expression b

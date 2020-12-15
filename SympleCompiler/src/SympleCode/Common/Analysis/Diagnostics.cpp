@@ -28,6 +28,11 @@ namespace Symple
 		mWarnings.push_back(mMessages.back());
 	}
 
+	void Diagnostics::FunctionDeclaration(const FunctionDeclarationNode* function)
+	{
+		mFunctions.insert({ function->GetName()->GetLex(), function });
+	}
+
 	const std::vector<const Message*>& Diagnostics::GetMessages() const
 	{
 		return mMessages;
@@ -41,5 +46,15 @@ namespace Symple
 	const std::vector<const Message*>& Diagnostics::GetWarnings() const
 	{
 		return mWarnings;
+	}
+
+	const FunctionDeclarationNode* Diagnostics::GetFunction(const std::string_view& name) const
+	{
+		return mFunctions.at(name);
+	}
+
+	const std::map<std::string_view, const FunctionDeclarationNode*>& Diagnostics::GetFunctions() const
+	{
+		return mFunctions;
 	}
 }
