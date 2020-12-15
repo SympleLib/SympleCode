@@ -45,6 +45,8 @@ namespace Symple
 			return Atom(Token::Kind::Comma);
 		case '#':
 			return Comment();
+		case '"':
+			return String();
 		}
 
 		return Atom(Token::Kind::Unknown);
@@ -103,6 +105,8 @@ namespace Symple
 		while (IsIdentifier(Peek()))
 			Get();
 		std::string_view identifier(beg, std::distance(beg, mCurrent));
+		if (identifier == "hint")
+			return new Token(Token::Kind::Hint, beg, mCurrent, mLine, mColumn);
 		if (identifier == "true")
 			return new Token(Token::Kind::True, beg, mCurrent, mLine, mColumn);
 		if (identifier == "false")
@@ -130,5 +134,16 @@ namespace Symple
 		while (IsNumber(Peek()))
 			Get();
 		return new Token(Token::Kind::Number, beg, mCurrent, mLine, mColumn);
+	}
+
+	Token* Lexer::String()
+	{
+		Get();
+		const char* beg = mCurrent;
+		Get();
+		while (Peek() != '"')
+			Get();
+		Get();
+		return new Token(Token::Kind::String, beg, mCurrent - 1, mLine, mColumn);
 	}
 }

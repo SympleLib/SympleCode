@@ -1,21 +1,7 @@
-# Some Comment
+hint _puts(string str);
 
-int main()
+int _main()
 {
-	int c;
-	int other;
-	
-	{
-		int test = multiply(5 # Comment Test #, 5);;
-		other = test;
-	};
-	c = other;
-	
-	return c;
-};
-
-# Function for multiplication
-int multiply(int # This is of type int # a, int b)
-{
-	return #_# a * b;
+	string someString = "Hello, world!";
+	_puts(someString);
 };

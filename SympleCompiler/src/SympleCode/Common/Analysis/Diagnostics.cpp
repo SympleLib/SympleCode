@@ -50,6 +50,8 @@ namespace Symple
 
 	const FunctionDeclarationNode* Diagnostics::GetFunction(const std::string_view& name) const
 	{
+		if (mFunctions.find(name) == mFunctions.end())
+			return nullptr;
 		return mFunctions.at(name);
 	}
 

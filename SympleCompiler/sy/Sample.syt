@@ -1,32 +1,19 @@
 L--	Compilation Unit
- 	|--	Function Declaration: int main()
- 	|	|--	Function Arguments
- 	|	L--	Block Statement
- 	|	 	|--	Variable Declaration (int) c
- 	|	 	|--	Variable Declaration (int) other
- 	|	 	|--	Block Statement
- 	|	 	|	|--	Variable Declaration (int) test
- 	|	 	|	|	L--	Function Call Expression multiply()
- 	|	 	|	|	 	L--	Function Call Arguments
- 	|	 	|	|	 	 	|--	Number Literal Expression (5)
- 	|	 	|	|	 	 	L--	Number Literal Expression (5)
- 	|	 	|	|--	Node of Kind: Statement
- 	|	 	|	L--	Expression Statement
- 	|	 	|	 	L--	Binary Expression [=]
- 	|	 	|	 	 	|--	Variable Expression other
- 	|	 	|	 	 	L--	Variable Expression test
- 	|	 	|--	Expression Statement
- 	|	 	|	L--	Binary Expression [=]
- 	|	 	|	 	|--	Variable Expression c
- 	|	 	|	 	L--	Variable Expression other
- 	|	 	L--	Return Statement
- 	|	 	 	L--	Variable Expression c
- 	L--	Function Declaration: int multiply()
- 	 	|--	Function Arguments
- 	 	|	|--	Function Argument (int) a
- 	 	|	L--	Function Argument (int) b
- 	 	L--	Block Statement
- 	 	 	L--	Return Statement
- 	 	 	 	L--	Binary Expression [*]
- 	 	 	 	 	|--	Variable Expression a
- 	 	 	 	 	L--	Variable Expression b
+ 	|--	Function Hint: error-type (()
+ 	|	L--	Function Arguments
+ 	|	 	L--	Function Argument (error-type) )
+ 	|--	Global Statement
+ 	|	L--	Expression Statement
+ 	|	 	L--	Function Call Expression _main()
+ 	|	 	 	L--	Function Call Arguments
+ 	|--	Global Statement
+ 	|	L--	Variable Declaration (string) someString
+ 	|	 	L--	Variable Expression Hello, world!
+ 	|--	Global Statement
+ 	|	L--	Expression Statement
+ 	|	 	L--	Function Call Expression _puts()
+ 	|	 	 	L--	Function Call Arguments
+ 	|	 	 	 	L--	Variable Expression someString
+ 	L--	Global Statement
+ 	 	L--	Expression Statement
+ 	 	 	L--	Variable Expression }

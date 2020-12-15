@@ -11,6 +11,7 @@
 #include "SympleCode/Common/Node/CompilationUnitNode.h"
 #include "SympleCode/Common/Node/VariableDeclarationNode.h"
 
+#include "SympleCode/Common/Node/FunctionHintNode.h"
 #include "SympleCode/Common/Node/FunctionArgumentsNode.h"
 #include "SympleCode/Common/Node/FunctionDeclarationNode.h"
 #include "SympleCode/Common/Node/FunctionCallArgumentsNode.h"
@@ -18,6 +19,7 @@
 
 #include "SympleCode/Common/Node/ExpressionNode.h"
 #include "SympleCode/Common/Node/LiteralExpressionNode.h"
+#include "SympleCode/Common/Node/ParenthesizedExpressionNode.h"
 #include "SympleCode/Common/Node/NumberLiteralExpressionNode.h"
 #include "SympleCode/Common/Node/BooleanLiteralExpressionNode.h"
 
@@ -53,6 +55,7 @@ namespace Symple
 		FunctionDeclarationNode* ParseFunctionDeclaration();
 		FunctionArgumentsNode* ParseFunctionArguments();
 		FunctionArgumentNode* ParseFunctionArgument();
+		FunctionHintNode* ParseFunctionHint();
 
 		StatementNode* ParseStatement();
 		BlockStatementNode* ParseBlockStatement();
@@ -66,10 +69,11 @@ namespace Symple
 		ExpressionNode* ParsePrimaryExpression();
 
 		ExpressionNode* ParseNameOrCallExpression();
-		FunctionCallExpressionNode* ParseFunctionCallExpression();
 		FunctionCallArgumentsNode* ParseFunctionCallArguments();
 
 		NumberLiteralExpressionNode* ParseNumberLiteral();
 		BooleanLiteralExpressionNode* ParseBooleanLiteral();
+		FunctionCallExpressionNode* ParseFunctionCallExpression();
+		ParenthesizedExpressionNode* ParseParenthesizedExpression();
 	};
 }

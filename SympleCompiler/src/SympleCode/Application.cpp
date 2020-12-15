@@ -81,7 +81,7 @@ int main()
 			if (!diagnostics->GetErrors().size())
 			{
 				system("as -c sy/Sample.s -o sy/Sample.o");
-				system("ld sy/Sample.o -o sy/Sample.exe");
+				system("ld sy/Sample.o -L msvcrt.lib -o sy/Sample.exe");
 				printf("Exit Code: %i\n", system("sy\\Sample"));
 			}
 		}

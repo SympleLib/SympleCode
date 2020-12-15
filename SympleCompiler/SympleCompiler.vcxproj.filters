@@ -70,6 +70,9 @@
     <ClInclude Include="src\SympleCode\Common\Node\VariableExpressionNode.h" />
     <ClInclude Include="src\SympleCode\Common\Node\FunctionArgumentNode.h" />
     <ClInclude Include="src\SympleCode\Common\Node\FunctionArgumentsNode.h" />
+    <ClInclude Include="src\SympleCode\Common\Node\ParenthesizedExpressionNode.h" />
+    <ClInclude Include="src\SympleCode\Common\Node\FunctionHintNode.h" />
+    <ClInclude Include="src\SympleCode\Common\Node\StringLiteralExpressionNode.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\SympleCode\Application.cpp" />

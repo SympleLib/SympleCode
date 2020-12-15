@@ -12,12 +12,13 @@
 #include "SympleCode/Common/Node/CompilationUnitNode.h"
 #include "SympleCode/Common/Node/BinaryExpressionNode.h"
 #include "SympleCode/Common/Node/LiteralExpressionNode.h"
-#include "SympleCode/Common/Node/FunctionDeclarationNode.h"
-#include "SympleCode/Common/Node/FunctionCallExpressionNode.h"
-#include "SympleCode/Common/Node/VariableDeclarationNode.h"
 #include "SympleCode/Common/Node/VariableExpressionNode.h"
+#include "SympleCode/Common/Node/FunctionDeclarationNode.h"
+#include "SympleCode/Common/Node/VariableDeclarationNode.h"
+#include "SympleCode/Common/Node/FunctionCallExpressionNode.h"
+#include "SympleCode/Common/Node/StringLiteralExpressionNode.h"
 
-#define DO_COMMENTS true
+#define DO_COMMENTS false
 
 namespace Symple
 {
@@ -25,11 +26,14 @@ namespace Symple
 	{
 	private:
 		bool mOpen;
+		bool mLiteralOpen;
 		const char* mPath;
 		FILE* mFile;
+		FILE* mLiteralFile;
 		Diagnostics* mDiagnostics;
 
 		unsigned int mStackPos;
+		unsigned int mStringPos;
 
 		std::map<std::string_view, const VariableDeclarationNode*> mDeclaredVariables;
 	public:
@@ -38,6 +42,10 @@ namespace Symple
 
 		void Emit(const CompilationUnitNode* compilationUnit);
 	private:
+		static char* RegAx(int size = 4);
+		static char* RegDx(int size = 4);
+		static char Mod(int size = 4);
+
 		void EmitMember(const MemberNode* member);
 
 		void EmitFunctionDeclaration(const FunctionDeclarationNode* declaration);
@@ -46,14 +54,16 @@ namespace Symple
 		void EmitStatement(const StatementNode* statement);
 		void EmitBlockStatement(const BlockStatementNode* statement);
 
-		void EmitExpression(const ExpressionNode* expression);
-		void EmitBinaryExpression(const BinaryExpressionNode* expression);
-		void EmitLiteralExpression(const LiteralExpressionNode* expression);
-		void EmitVariableExpression(const VariableExpressionNode* expression);
-		void EmitFunctionCallExpression(const FunctionCallExpressionNode* call);
+		void EmitExpression(const ExpressionNode* expression, int size = 4);
+		void EmitBinaryExpression(const BinaryExpressionNode* expression, int size = 4);
+		void EmitLiteralExpression(const LiteralExpressionNode* expression, int size = 4);
+		void EmitVariableExpression(const VariableExpressionNode* expression, int size = 4);
+		void EmitFunctionCallExpression(const FunctionCallExpressionNode* call, int size = 4);
+		void EmitStringLiteralExpression(const StringLiteralExpressionNode* expression, int size = 4);
 
 		bool VariableDefined(const std::string_view& name);
 
 		bool OpenFile();
+		bool OpenLiteralFile();
 	};
 }

@@ -12,5 +12,9 @@ namespace Symple
 		new Type("bool", 1),
 		new Type("char", 1),
 		new Type("wchar", 2),
+		new Type("string", 4),
+		new Type("wstring", 4),
+
+		new Type("error-type", 0), // Error Type
 	};
 }

@@ -10,7 +10,7 @@ namespace Symple
 {
 	class FunctionDeclarationNode : public MemberNode
 	{
-	private:
+	protected:
 		const Type* mType;
 		const Token* mName;
 		const FunctionArgumentsNode* mArguments;
@@ -19,7 +19,7 @@ namespace Symple
 		FunctionDeclarationNode(const Type* type, const Token* name, const FunctionArgumentsNode* arguments, const BlockStatementNode* body)
 			: mType(type), mName(name),mArguments(arguments), mBody(body) {}
 
-		Kind GetKind() const override
+		virtual Kind GetKind() const override
 		{
 			return Kind::FunctionDeclaration;
 		}

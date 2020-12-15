@@ -29,5 +29,6 @@ namespace Symple
 		Token* Identifier();
 		Token* Comment();
 		Token* Number();
+		Token* String();
 	};
 }

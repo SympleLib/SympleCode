@@ -73,7 +73,8 @@ namespace Symple
 		for (const Type* type : mTypes)
 			if (token->GetLex() == type->GetName())
 				return type;
-		return nullptr;
+		mDiagnostics->ReportError(token, "'%s' is not a Type", std::string(token->GetLex()).c_str());
+		return mTypes.back();
 	}
 
 	const std::vector<const MemberNode*> Parser::ParseMembers()
@@ -95,6 +96,8 @@ namespace Symple
 	{
 		if (IsType(Peek()) && Peek(2)->Is(Token::Kind::OpenParenthesis))
 			return ParseFunctionDeclaration();
+		if (Peek()->Is(Token::Kind::Hint))
+			return ParseFunctionHint();
 
 		return ParseGlobalStatement();
 	}
@@ -130,7 +133,11 @@ namespace Symple
 			if (Peek()->Is(Token::Kind::Comma))
 				Next();
 			else
+			{
+				if (!Peek()->Is(Token::Kind::CloseParenthesis))
+					mDiagnostics->ReportError(Peek(), "Expected Comma");
 				break;
+			}
 		}
 
 		const Token* close = Match(Token::Kind::CloseParenthesis);
@@ -144,6 +151,19 @@ namespace Symple
 		const Token* name = Next();
 
 		return new FunctionArgumentNode(type, name);
+	}
+
+	FunctionHintNode* Parser::ParseFunctionHint()
+	{
+		Match(Token::Kind::Hint);
+		const Type* type = GetType(Next());
+		const Token* name = Next();
+		FunctionArgumentsNode* arguments = ParseFunctionArguments();
+		Match(Token::Kind::Semicolon);
+
+		FunctionHintNode* hint = new FunctionHintNode(type, name, arguments);
+		mDiagnostics->FunctionDeclaration(hint);
+		return hint;
 	}
 
 	StatementNode* Parser::ParseStatement()
@@ -246,6 +266,8 @@ namespace Symple
 	{
 		switch (Peek()->GetKind())
 		{
+		case Token::Kind::OpenParenthesis:
+			return ParseParenthesizedExpression();
 		case Token::Kind::True:
 		case Token::Kind::False:
 			return ParseBooleanLiteral();
@@ -306,5 +328,14 @@ namespace Symple
 	BooleanLiteralExpressionNode* Parser::ParseBooleanLiteral()
 	{
 		return new BooleanLiteralExpressionNode(Next());
+	}
+
+	ParenthesizedExpressionNode* Parser::ParseParenthesizedExpression()
+	{
+		const Token* open = Match(Token::Kind::OpenParenthesis);
+		ExpressionNode* expression = ParseExpression();
+		const Token* close = Match(Token::Kind::CloseParenthesis);
+
+		return new ParenthesizedExpressionNode(open, expression, close);
 	}
 }
