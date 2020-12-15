@@ -43,6 +43,8 @@ namespace Symple
 			return Atom(Token::Kind::CloseParenthesis);
 		case ',':
 			return Atom(Token::Kind::Comma);
+		case '#':
+			return Comment();
 		}
 
 		return Atom(Token::Kind::Unknown);
@@ -108,6 +110,17 @@ namespace Symple
 		if (identifier == "return")
 			return new Token(Token::Kind::Return, beg, mCurrent, mLine, mColumn);
 		return new Token(Token::Kind::Identifier, beg, mCurrent, mLine, mColumn);
+	}
+
+	Token* Lexer::Comment()
+	{
+		Get();
+		const char* beg = mCurrent;
+		Get();
+		while (!(Peek() == '\n' || Peek() == '#'))
+			Get();
+		Get();
+		return new Token(Token::Kind::Comment, beg, mCurrent - 1, mLine, mColumn);
 	}
 
 	Token* Lexer::Number()

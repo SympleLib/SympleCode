@@ -31,6 +31,8 @@ namespace Symple
 			False,
 			Return,
 
+			Comment,
+
 			Unknown = -2,
 			EndOfFile = -1,
 		};
@@ -41,6 +43,7 @@ namespace Symple
 			"Comma", "Semicolon",
 			"OpenBracket", "CloseBracket", "OpenParenthesis", "CloseParenthesis",
 			"True", "False", "Return",
+			"Comment",
 		};
 
 		static const char* KindString(Kind kind);

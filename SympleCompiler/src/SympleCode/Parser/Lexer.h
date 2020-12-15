@@ -27,6 +27,7 @@ namespace Symple
 
 		Token* Atom(Token::Kind kind);
 		Token* Identifier();
+		Token* Comment();
 		Token* Number();
 	};
 }

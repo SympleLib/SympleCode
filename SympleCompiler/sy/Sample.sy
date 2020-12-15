@@ -1,11 +1,14 @@
+# Some Comment
+
 int main()
 {
-	int c = multiply(5, 5);
+	int c = multiply(5 # Comment Test #, 5);
 	
 	return c;
 };
 
-int multiply(int a, int b)
+# Function for multiplication
+int multiply(int # This is of type int # a, int b)
 {
-	return a * b;
+	return #_# a * b;
 };

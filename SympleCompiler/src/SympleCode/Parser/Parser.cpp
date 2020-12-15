@@ -18,7 +18,9 @@ namespace Symple
 		while (!current->Is(Token::Kind::EndOfFile))
 		{
 			current = mLexer.Next();
-			mTokens.push_back(current);
+			std::cout << Token::KindString(current->GetKind()) << " | " << current->GetLex() << '\n';
+			if (!current->Is(Token::Kind::Comment))
+				mTokens.push_back(current);
 		}
 	}
 
