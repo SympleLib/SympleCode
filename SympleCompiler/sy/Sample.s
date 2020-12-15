@@ -1,30 +1,43 @@
+# Function Declaration
 main:
-	push   %ebp
-	movl   %esp, %ebp
-	xorl   %eax, %eax
+# 	Push Stack
+	push    %ebp
+	movl    %esp, %ebp
+	xorl    %eax, %eax
+# 	Function Arguments
 _c$ = -4
-	subl   $4, %esp
-	movl   $5, %eax
-	push   %eax
-	movl   $5, %eax
-	push   %eax
-	call   multiply
-	addl   $8, %esp
-	movl   %eax, _c$(%ebp)
-	movl   _c$(%ebp), %eax
-	movl   %ebp, %esp
-	pop    %ebp
+	subl    $4, %esp
+# Function Call
+# 	Push Arguments
+	movl    $5, %eax
+	push    %eax
+	movl    $5, %eax
+	push    %eax
+# 	Call Function
+	call    multiply
+# 	Pop Arguments
+	addl    $8, %esp
+	movl    %eax, _c$(%ebp)
+	movl    _c$(%ebp), %eax
+# 	Pop Stack and Return
+	movl    %ebp, %esp
+	pop     %ebp
 	ret
+# Function Declaration
 multiply:
-	push   %ebp
-	movl   %esp, %ebp
-	xorl   %eax, %eax
+# 	Push Stack
+	push    %ebp
+	movl    %esp, %ebp
+	xorl    %eax, %eax
+# 	Function Arguments
 _a$ = 4
 _b$ = 8
-	movl   _b$(%ebp), %eax
-	movl   %eax, %edx
-	movl   _a$(%ebp), %eax
-	imul   %edx, %eax
-	movl   %ebp, %esp
-	pop    %ebp
+# Binary Expression [*]
+	movl    _b$(%ebp), %eax
+	movl    %eax, %edx
+	movl    _a$(%ebp), %eax
+	imul    %edx, %eax
+# 	Pop Stack and Return
+	movl    %ebp, %esp
+	pop     %ebp
 	ret
