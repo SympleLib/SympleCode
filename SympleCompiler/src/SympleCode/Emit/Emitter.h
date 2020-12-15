@@ -17,7 +17,7 @@
 #include "SympleCode/Common/Node/VariableDeclarationNode.h"
 #include "SympleCode/Common/Node/VariableExpressionNode.h"
 
-#define DO_COMMENTS false
+#define DO_COMMENTS true
 
 namespace Symple
 {

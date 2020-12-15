@@ -3,13 +3,6 @@ int main()
 	int c = multiply(5, 5);
 	
 	return c;
-	
-	return 5 * 5;
-	
-	int a = 5;
-	int b = 5;
-	
-	return c = a * b;
 };
 
 int multiply(int a, int b)

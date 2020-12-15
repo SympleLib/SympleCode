@@ -59,7 +59,7 @@ namespace Symple
 		Write("\txorl    %%eax, %%eax");
 
 		Comment("\tFunction Arguments");
-		unsigned int pos = 0;
+		unsigned int pos = 4;
 		for (const FunctionArgumentNode* argument : declaration->GetArguments()->GetArguments())
 		{
 			pos += argument->GetType()->GetSize();
