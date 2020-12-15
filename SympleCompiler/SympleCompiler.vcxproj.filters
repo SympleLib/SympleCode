@@ -73,6 +73,8 @@
     <ClInclude Include="src\SympleCode\Common\Node\ParenthesizedExpressionNode.h" />
     <ClInclude Include="src\SympleCode\Common\Node\FunctionHintNode.h" />
     <ClInclude Include="src\SympleCode\Common\Node\StringLiteralExpressionNode.h" />
+    <ClInclude Include="src\SympleCode\Common\Node\ExternFunctionNode.h" />
+    <ClInclude Include="src\SympleCode\Common\Node\WhileStatementNode.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\SympleCode\Application.cpp" />

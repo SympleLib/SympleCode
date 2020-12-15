@@ -9,6 +9,7 @@
 #include "SympleCode/Common/Node/ReturnStatementNode.h"
 
 #include "SympleCode/Common/Node/ExpressionNode.h"
+#include "SympleCode/Common/Node/WhileStatementNode.h"
 #include "SympleCode/Common/Node/CompilationUnitNode.h"
 #include "SympleCode/Common/Node/BinaryExpressionNode.h"
 #include "SympleCode/Common/Node/LiteralExpressionNode.h"
@@ -25,8 +26,6 @@ namespace Symple
 	class Emitter
 	{
 	private:
-		bool mOpen;
-		bool mLiteralOpen;
 		const char* mPath;
 		FILE* mFile;
 		FILE* mLiteralFile;
@@ -34,6 +33,7 @@ namespace Symple
 
 		unsigned int mStackPos;
 		unsigned int mStringPos;
+		unsigned int mJumpPos;
 
 		std::map<std::string_view, const VariableDeclarationNode*> mDeclaredVariables;
 	public:
@@ -53,6 +53,7 @@ namespace Symple
 
 		void EmitStatement(const StatementNode* statement);
 		void EmitBlockStatement(const BlockStatementNode* statement);
+		void EmitWhileStatement(const WhileStatementNode* statement);
 
 		void EmitExpression(const ExpressionNode* expression, int size = 4);
 		void EmitBinaryExpression(const BinaryExpressionNode* expression, int size = 4);

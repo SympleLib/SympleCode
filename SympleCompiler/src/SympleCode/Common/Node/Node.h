@@ -29,12 +29,14 @@ namespace Symple
 
 			Statement,
 			BlockStatement,
+			WhileStatement,
 			GlobalStatement,
 			ReturnStatement,
 			VariableDeclaration,
 			ExpressionStatement,
 
 			FunctionHint,
+			ExternFunction,
 			FunctionArgument,
 			FunctionArguments,
 			FunctionCallArguments,
@@ -44,8 +46,8 @@ namespace Symple
 			"Unknown", "Expression", "BinaryExpression",
 			"LiteralExpression", "VariableExpression", "FunctionCallExpression", "StringLiteralExpression", "NumberLiteralExpression", "BooleanLiteralExpression",
 			"Member", "CompilationUnit", "FunctionDeclaration",
-			"Statement", "BlockStatement", "GlobalStatement", "ReturnStatement", "VariableDeclaration", "ExpressionStatement",
-			"FunctionHint", "FunctionArgument", "FunctionArguments", "FunctionCallArguments",
+			"Statement", "BlockStatement", "WhileStatement", "GlobalStatement", "ReturnStatement", "VariableDeclaration", "ExpressionStatement",
+			"FunctionHint", "ExternFunction", "FunctionArgument", "FunctionArguments", "FunctionCallArguments",
 		};
 
 		static constexpr const char* KindString(Kind kind)

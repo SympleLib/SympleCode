@@ -6,6 +6,7 @@
 #include <memory>
 
 #include "SympleCode/Common/Node/FunctionHintNode.h"
+#include "SympleCode/Common/Node/ExternFunctionNode.h"
 #include "SympleCode/Common/Node/GlobalStatementNode.h"
 #include "SympleCode/Common/Node/ExpressionStatementNode.h"
 #include "SympleCode/Common/Node/ParenthesizedExpressionNode.h"
@@ -23,7 +24,7 @@
 namespace Symple
 {
 	Emitter::Emitter(Diagnostics* diagnostics, const char* path)
-		: mDiagnostics(diagnostics), mPath(path), mOpen(false), mLiteralOpen(false), mStackPos(0), mStringPos(0), mDeclaredVariables()
+		: mDiagnostics(diagnostics), mPath(path), mStackPos(0), mStringPos(0), mJumpPos(0), mDeclaredVariables()
 	{
 		while (OpenFile());
 		while (OpenLiteralFile());
@@ -31,21 +32,14 @@ namespace Symple
 
 	Emitter::~Emitter()
 	{
-		if (mLiteralOpen)
-		{
-			rewind(mLiteralFile);
+		rewind(mLiteralFile);
 
-			char c;
-			while ((c = fgetc(mLiteralFile)) != EOF)
-				fputc(c, mFile);
+		char c;
+		while ((c = fgetc(mLiteralFile)) != EOF)
+			fputc(c, mFile);
 
-			fclose(mLiteralFile);
-		}
-		mLiteralOpen = false;
-
-		if (mOpen)
-			fclose(mFile);
-		mOpen = false;
+		fclose(mLiteralFile);
+		fclose(mFile);
 	}
 
 	void Emitter::Emit(const CompilationUnitNode* unit)
@@ -99,6 +93,8 @@ namespace Symple
 	{
 		if (declaration->Is<FunctionHintNode>())
 			return;
+		if (declaration->Is<ExternFunctionNode>())
+			return Write(".extern _%s", std::string(declaration->GetName()->GetLex()).c_str());
 
 		unsigned int pStackPos = mStackPos;
 		mStackPos = 0;
@@ -157,6 +153,8 @@ namespace Symple
 			return EmitExpression(statement->Cast<ExpressionStatementNode>()->GetExpression());
 		if (statement->Is<ReturnStatementNode>())
 			EmitExpression(statement->Cast<ReturnStatementNode>()->GetExpression());
+		if (statement->Is<WhileStatementNode>())
+			return EmitWhileStatement(statement->Cast<WhileStatementNode>());
 		if (statement->Is<VariableDeclarationNode>())
 			return EmitVariableDeclaration(statement->Cast<VariableDeclarationNode>());
 		if (statement->Is<BlockStatementNode>())
@@ -170,6 +168,26 @@ namespace Symple
 
 		for (const auto& variable : statement->GetVariables())
 			mDeclaredVariables.erase(mDeclaredVariables.find(variable.first));
+	}
+
+	void Emitter::EmitWhileStatement(const WhileStatementNode* statement)
+	{
+		unsigned int pJumpPos = mJumpPos;
+		mJumpPos++;
+		unsigned int aJumpPos = mJumpPos;
+		mJumpPos++;
+
+		Write("..Jump.%i:", pJumpPos);
+
+		EmitExpression(statement->GetCondition());
+		Write("\tcmp%c    $0, %s", Mod(), RegAx());
+		Write("\tje ..Jump.%i", aJumpPos);
+
+		for (const StatementNode* statement : statement->GetBody()->GetStatements())
+			EmitStatement(statement);
+
+		Write("\tjmp ..Jump.%i", pJumpPos);
+		Write("..Jump.%i:", aJumpPos);
 	}
 
 	void Emitter::EmitExpression(const ExpressionNode* expression, int size)
@@ -236,6 +254,30 @@ namespace Symple
 		case Token::Kind::Asterisk:
 			Write("\timu%c    %s, %s", Mod(), RegDx(), RegAx());
 			break;
+		case Token::Kind::EqualEqual:
+		{
+			unsigned int jumpPos = mJumpPos;
+			mJumpPos++;
+
+			Write("\tcmp%c    %s, %s", Mod(), RegDx(), RegAx());
+			Write("\tmov%c    $1, %s", Mod(), RegAx());
+			Write("\tje      ..Jump.%i", jumpPos);
+			Write("\tmov%c    $0, %s", Mod(), RegAx());
+			Write("..Jump.%i:", jumpPos);
+			break;
+		}
+		case Token::Kind::NotEqual:
+		{
+			unsigned int jumpPos = mJumpPos;
+			mJumpPos++;
+
+			Write("\tcmp%c    %s, %s", Mod(), RegDx(), RegAx());
+			Write("\tmov%c    $0, %s", Mod(), RegAx());
+			Write("\tje      ..Jump.%i", jumpPos);
+			Write("\tmov%c    $1, %s", Mod(), RegAx());
+			Write("..Jump.%i:", jumpPos);
+			break;
+		}
 		}
 	}
 
@@ -282,8 +324,8 @@ namespace Symple
 			char msg[32];
 			if (!strerror_s(msg, err))
 			{
-				char realMsg[157];
-				sprintf_s(realMsg, "[!]: Error opening file '%.100s%.3s': %.25s", mPath, strlen(mPath) > 100 ? "..." : "", msg);
+				char realMsg[56];
+				sprintf_s(realMsg, "[!]: Error opening temp file: %.25s", msg);
 				MessageBeep(MB_ICONSTOP);
 				int instruct = MessageBoxA(NULL, realMsg, "Error Opening File!", MB_ABORTRETRYIGNORE);
 				if (instruct == IDABORT)
@@ -295,8 +337,7 @@ namespace Symple
 			}
 			else
 			{
-				char msg[138];
-				sprintf_s(msg, "[!]: Unknown error opening file '%.100s%.3s'", mPath, strlen(mPath) > 100 ? "..." : "");
+				char msg[37] = "[!]: Unknown error opening temp file";
 				MessageBeep(MB_ICONSTOP);
 				int instruct = MessageBoxA(NULL, msg, "Error Opening File!", MB_ABORTRETRYIGNORE);
 				if (instruct == IDABORT)
@@ -309,7 +350,6 @@ namespace Symple
 		}
 		else
 		{
-			mOpen = true;
 			return false;
 		}
 
@@ -350,7 +390,6 @@ namespace Symple
 		}
 		else
 		{
-			mLiteralOpen = true;
 			return false;
 		}
 

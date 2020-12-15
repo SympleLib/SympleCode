@@ -1,0 +1,29 @@
+L--	Compilation Unit
+ 	|--	Function Hint: int Add()
+ 	|	L--	Function Arguments
+ 	|	 	|--	Function Argument (int) left
+ 	|	 	L--	Function Argument (int) right
+ 	|--	Function Hint: int Sub()
+ 	|	L--	Function Arguments
+ 	|	 	|--	Function Argument (int) left
+ 	|	 	L--	Function Argument (int) right
+ 	|--	Function Hint: int Mul()
+ 	|	L--	Function Arguments
+ 	|	 	|--	Function Argument (int) left
+ 	|	 	L--	Function Argument (int) right
+ 	|--	Function Hint: int Div()
+ 	|	L--	Function Arguments
+ 	|	 	|--	Function Argument (int) left
+ 	|	 	L--	Function Argument (int) right
+ 	|--	Function Hint: int Pow()
+ 	|	L--	Function Arguments
+ 	|	 	|--	Function Argument (int) left
+ 	|	 	L--	Function Argument (int) right
+ 	L--	Function Declaration: int main()
+ 	 	|--	Function Arguments
+ 	 	L--	Block Statement
+ 	 	 	L--	Return Statement
+ 	 	 	 	L--	Function Call Expression Pow()
+ 	 	 	 	 	L--	Function Call Arguments
+ 	 	 	 	 	 	|--	Number Literal Expression (3)
+ 	 	 	 	 	 	L--	Number Literal Expression (3)

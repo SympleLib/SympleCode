@@ -101,6 +101,8 @@ namespace Symple
 			return ParseFunctionDeclaration();
 		if (Peek()->Is(Token::Kind::Hint))
 			return ParseFunctionHint();
+		if (Peek()->Is(Token::Kind::Extern))
+			return ParseExternFunction();
 
 		return ParseGlobalStatement();
 	}
@@ -169,12 +171,27 @@ namespace Symple
 		return hint;
 	}
 
+	ExternFunctionNode* Parser::ParseExternFunction()
+	{
+		Match(Token::Kind::Extern);
+		const Type* type = GetType(Next());
+		const Token* name = Next();
+		FunctionArgumentsNode* arguments = ParseFunctionArguments();
+		Match(Token::Kind::Semicolon);
+
+		ExternFunctionNode* hint = new ExternFunctionNode(type, name, arguments);
+		mDiagnostics->FunctionDeclaration(hint);
+		return hint;
+	}
+
 	StatementNode* Parser::ParseStatement()
 	{
 		if (Peek()->Is(Token::Kind::Semicolon))
 			return new StatementNode; // Empty Statement;
 		if (Peek()->Is(Token::Kind::Return))
 			return ParseReturnStatement();
+		if (Peek()->Is(Token::Kind::While))
+			return ParseWhileStatement();
 		if (IsType(Peek()))
 			return ParseVariableDeclaration();
 		if (Peek()->Is(Token::Kind::OpenBracket))
@@ -186,6 +203,16 @@ namespace Symple
 		ExpressionNode* expression = ParseExpression();
 		Match(Token::Kind::Semicolon);
 		return new ExpressionStatementNode(expression);
+	}
+
+	WhileStatementNode* Parser::ParseWhileStatement()
+	{
+		const Token* open = Match(Token::Kind::While);
+		ExpressionNode* condition = ParseExpression();
+		BlockStatementNode* body = ParseBlockStatement();
+		Match(Token::Kind::Semicolon);
+
+		return new WhileStatementNode(open, condition, body);
 	}
 
 	BlockStatementNode* Parser::ParseBlockStatement()

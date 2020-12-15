@@ -1,7 +1,0 @@
-hint void puts(string str);
-
-int main()
-{
-	string someString = "Hello, world!\n";
-	puts(someString);
-};

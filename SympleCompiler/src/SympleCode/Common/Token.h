@@ -20,6 +20,9 @@ namespace Symple
 			Slash,
 			Equal,
 
+			EqualEqual,
+			NotEqual,
+
 			Comma,
 			Semicolon,
 
@@ -31,7 +34,9 @@ namespace Symple
 			Hint,
 			True,
 			False,
+			While,
 			Return,
+			Extern,
 
 			Comment,
 
@@ -42,9 +47,10 @@ namespace Symple
 		static constexpr const char* KindMap[] = {
 			"Identifier", "Number", "String",
 			"Plus", "Minus", "Asterisk", "Slash", "Equal",
+			"EqualEqual", "NotEqual"
 			"Comma", "Semicolon",
 			"OpenBracket", "CloseBracket", "OpenParenthesis", "CloseParenthesis",
-			"Hint", "True", "False", "Return",
+			"Hint", "True", "False", "While", "Return", "Extern",
 			"Comment",
 		};
 

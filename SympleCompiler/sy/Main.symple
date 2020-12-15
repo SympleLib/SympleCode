@@ -1,0 +1,11 @@
+hint int Add(int left, int right);
+hint int Sub(int left, int right);
+hint int Mul(int left, int right);
+hint int Div(int left, int right);
+
+hint int Pow(int left, int right);
+
+int main()
+{
+	return Pow(3, 3);
+};

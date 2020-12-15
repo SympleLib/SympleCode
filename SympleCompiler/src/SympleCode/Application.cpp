@@ -5,48 +5,36 @@
 #include "SympleCode/Parser/Parser.h"
 #include "SympleCode/Emit/Emitter.h"
 
-int main()
+bool CompileFile(const char* path, const char* syt, const char* asmS, const char* obj)
 {
-	//ShowWindow(GetConsoleWindow(), FALSE);
-	SetConsoleTitle(L"Symple Compiler - Treidex");
-
-	FILE* sampleFile;
+	FILE* file;
 	errno_t err;
-	if (!(err = fopen_s(&sampleFile, "sy/Sample.sy", "rb")) && sampleFile)
+	if (!(err = fopen_s(&file, path, "rb")) && file)
 	{
-		fseek(sampleFile, 0L, SEEK_END);
-		unsigned int size = min(ftell(sampleFile), 4096);
-		rewind(sampleFile);
+		fseek(file, 0L, SEEK_END);
+		unsigned int size = min(ftell(file), 4096);
+		rewind(file);
 		char* source = new char[size + 1];
-		fread(source, 1, size, sampleFile);
+		fread(source, 1, size, file);
 		source[size] = 0;
+		fclose(file);
 
 		Symple::Parser parser(source);
 		Symple::CompilationUnitNode* tree = parser.ParseCompilationUnit();
 		Symple::Diagnostics* diagnostics = parser.GetDiagnostics();
 
-		unsigned int parseErrors = diagnostics->GetErrors().size();
-
-		FILE* treeFile;
+		FILE* treef;
 		errno_t err;
-		if (!(err = fopen_s(&treeFile, "sy/Sample.syt", "w")) && treeFile)
+		if (!(err = fopen_s(&treef, syt, "w")) && treef)
 		{
-			fprintf(treeFile, tree->ToString().c_str());
-			fclose(treeFile);
+			fputs(tree->ToString().c_str(), treef);
+			fclose(treef);
 		}
-		else
-		{
-			char errMsg[32];
-			if (!strerror_s(errMsg, err))
-				std::cerr << "[!]: Error opening tree file: " << errMsg << "!\n";
-			else
-				std::cerr << "[!]: Unkown Error opening tree file!\n";
-		}
-		fclose(sampleFile);
 
+		unsigned int parseErrors = diagnostics->GetErrors().size();
 		if (parseErrors)
 		{
-			printf("Compiled with %i errors, %i warnings (total: %i)\n", diagnostics->GetErrors().size(), diagnostics->GetWarnings().size(), diagnostics->GetMessages().size());
+			printf("Compiled %s with %i errors, %i warnings (total: %i)\n", path, diagnostics->GetErrors().size(), diagnostics->GetWarnings().size(), diagnostics->GetMessages().size());
 
 			for (const Symple::Message* error : diagnostics->GetErrors())
 			{
@@ -62,10 +50,10 @@ int main()
 		else
 		{
 			{
-				Symple::Emitter emitter(diagnostics, "sy/Sample.s");
+				Symple::Emitter emitter(diagnostics, asmS);
 				emitter.Emit(tree);
 
-				printf("Compiled with %i errors, %i warnings (total: %i)\n", diagnostics->GetErrors().size(), diagnostics->GetWarnings().size(), diagnostics->GetMessages().size());
+				printf("Compiled %s with %i errors, %i warnings (total: %i)\n", path, diagnostics->GetErrors().size(), diagnostics->GetWarnings().size(), diagnostics->GetMessages().size());
 
 				for (const Symple::Message* error : diagnostics->GetErrors())
 				{
@@ -80,9 +68,11 @@ int main()
 
 			if (!diagnostics->GetErrors().size())
 			{
-				system("vender\\clang sy/Sample.s -o sy/Sample.exe");
-				printf("Executing Program...\n");
-				printf("Program Exited with Code %i\n", system("sy\\Sample"));
+				char command[128];
+				sprintf_s(command, "vender\\clang -c %s -o %s", asmS, obj);
+				system(command);
+
+				return true;
 			}
 		}
 	}
@@ -93,6 +83,23 @@ int main()
 			std::cerr << "[!]: Error opening sample file: " << errMsg << "!\n";
 		else
 			std::cerr << "[!]: Unkown Error opening sample file!\n";
+	}
+
+	return false;
+}
+
+int main()
+{
+	//ShowWindow(GetConsoleWindow(), FALSE);
+	SetConsoleTitle(L"Symple Compiler - Treidex");
+
+	if (CompileFile("sy/Main.symple", "sy/Main.syt", "sy/Main.s", "sy/Main.obj") &&
+		CompileFile("sy/Math.symple", "sy/Math.syt", "sy/Math.s", "sy/Math.obj"))
+	{
+		system("vender\\clang sy/Main.obj sy/Math.obj -llegacy_stdio_definitions.lib -lgdi32.lib -luser32.lib --optimize -o sy/Sample.exe");
+
+		printf("Executing Program...\n");
+		printf("Program Exited with Code %i\n", system("sy\\Sample"));
 	}
 
 	std::cin.get();

@@ -14,7 +14,7 @@ namespace Symple
 		if (!c)
 			return Atom(Token::Kind::EndOfFile);
 
-		if (IsNumber(c))
+		if (IsStartDigit(c))
 			return Number();
 		if (IsIdentifier(c))
 			return Identifier();
@@ -29,8 +29,10 @@ namespace Symple
 			return Atom(Token::Kind::Asterisk);
 		case '/':
 			return Atom(Token::Kind::Slash);
+		case '!':
+			return Equal();
 		case '=':
-			return Atom(Token::Kind::Equal);
+			return Equal();
 		case ';':
 			return Atom(Token::Kind::Semicolon);
 		case '{':
@@ -73,12 +75,17 @@ namespace Symple
 
 	bool Lexer::IsIdentifier(char c)
 	{
-		return (c >= 'a' && c <= 'z') || (c >= 'A' && c <= 'Z') || c == '_' || c == '$' || (c >= '0' && c <= '9');
+		return (c >= 'a' && c <= 'z') || (c >= 'A' && c <= 'Z') || c == '_' || c == '$' || (c >= '0' && c <= '9')|| c == '@';
 	}
 
-	bool Lexer::IsNumber(char c)
+	bool Lexer::IsStartDigit(char c)
 	{
-		return (c >= '0' && c <= '9') || c == '.';
+		return (c >= '0' && c <= '9');
+	}
+
+	bool Lexer::IsDigit(char c)
+	{
+		return (c >= '0' && c <= '9') || c == 'x' || (c >= 'A' && c <= 'F') || (c >= 'a' && c <= 'f');
 	}
 
 	char Lexer::Peek(int offset) const
@@ -113,6 +120,10 @@ namespace Symple
 			return new Token(Token::Kind::False, beg, mCurrent, mLine, mColumn);
 		if (identifier == "return")
 			return new Token(Token::Kind::Return, beg, mCurrent, mLine, mColumn);
+		if (identifier == "while")
+			return new Token(Token::Kind::While, beg, mCurrent, mLine, mColumn);
+		if (identifier == "extern")
+			return new Token(Token::Kind::Extern, beg, mCurrent, mLine, mColumn);
 		return new Token(Token::Kind::Identifier, beg, mCurrent, mLine, mColumn);
 	}
 
@@ -120,7 +131,6 @@ namespace Symple
 	{
 		Get();
 		const char* beg = mCurrent;
-		Get();
 		while (!(Peek() == '\n' || Peek() == '#'))
 			Get();
 		Get();
@@ -131,7 +141,7 @@ namespace Symple
 	{
 		const char* beg = mCurrent;
 		Get();
-		while (IsNumber(Peek()))
+		while (IsDigit(Peek()))
 			Get();
 		return new Token(Token::Kind::Number, beg, mCurrent, mLine, mColumn);
 	}
@@ -140,10 +150,30 @@ namespace Symple
 	{
 		Get();
 		const char* beg = mCurrent;
-		Get();
 		while (Peek() != '"')
 			Get();
 		Get();
 		return new Token(Token::Kind::String, beg, mCurrent - 1, mLine, mColumn);
+	}
+
+	Token* Lexer::Equal()
+	{
+		const char* beg = mCurrent;
+		Get();
+		if (Peek() == '=')
+		{
+			if (*beg == '=')
+			{
+				Get();
+				return new Token(Token::Kind::EqualEqual, beg, mCurrent, mLine, mColumn);
+			}
+			if (*beg == '!')
+			{
+				Get();
+				return new Token(Token::Kind::NotEqual, beg, mCurrent, mLine, mColumn);
+			}
+		}
+
+		return new Token(Token::Kind::Equal, beg, mCurrent, mLine, mColumn);
 	}
 }

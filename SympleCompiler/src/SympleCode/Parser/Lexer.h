@@ -18,7 +18,8 @@ namespace Symple
 	private:
 		static bool ShouldIgnore(char c);
 		static bool IsIdentifier(char c);
-		static bool IsNumber(char c);
+		static bool IsStartDigit(char c);
+		static bool IsDigit(char c);
 
 		bool CheckNewLine(char c);
 
@@ -30,5 +31,6 @@ namespace Symple
 		Token* Comment();
 		Token* Number();
 		Token* String();
+		Token* Equal();
 	};
 }

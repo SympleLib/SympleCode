@@ -6,12 +6,14 @@
 #include "SympleCode/Common/Node/Node.h"
 
 #include "SympleCode/Common/Node/BlockStatementNode.h"
+#include "SympleCode/Common/Node/WhileStatementNode.h"
 #include "SympleCode/Common/Node/GlobalStatementNode.h"
 #include "SympleCode/Common/Node/ReturnStatementNode.h"
 #include "SympleCode/Common/Node/CompilationUnitNode.h"
 #include "SympleCode/Common/Node/VariableDeclarationNode.h"
 
 #include "SympleCode/Common/Node/FunctionHintNode.h"
+#include "SympleCode/Common/Node/ExternFunctionNode.h"
 #include "SympleCode/Common/Node/FunctionArgumentsNode.h"
 #include "SympleCode/Common/Node/FunctionDeclarationNode.h"
 #include "SympleCode/Common/Node/FunctionCallArgumentsNode.h"
@@ -53,9 +55,11 @@ namespace Symple
 		FunctionDeclarationNode* ParseFunctionDeclaration();
 		FunctionArgumentsNode* ParseFunctionArguments();
 		FunctionArgumentNode* ParseFunctionArgument();
+		ExternFunctionNode* ParseExternFunction();
 		FunctionHintNode* ParseFunctionHint();
 
 		StatementNode* ParseStatement();
+		WhileStatementNode* ParseWhileStatement();
 		BlockStatementNode* ParseBlockStatement();
 		ReturnStatementNode* ParseReturnStatement();
 		GlobalStatementNode* ParseGlobalStatement();
