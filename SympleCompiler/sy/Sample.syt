@@ -1,3 +1,6 @@
 L--	Compilation Unit
- 	L--	Function Declaration: int main()
- 	 	L--	Block Statement
+ 	|--	Global Statement
+ 	|	L--	Variable Declaration (int) myVar
+ 	|	 	L--	Number Literal Expression (690)
+ 	L--	Global Statement
+ 	 	L--	Variable Declaration (int) otherVar

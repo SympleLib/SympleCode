@@ -9,6 +9,7 @@
 #include "SympleCode/Common/Node/GlobalStatementNode.h"
 #include "SympleCode/Common/Node/ReturnStatementNode.h"
 #include "SympleCode/Common/Node/CompilationUnitNode.h"
+#include "SympleCode/Common/Node/VariableDeclarationNode.h"
 
 #include "SympleCode/Common/Node/FunctionDeclarationNode.h"
 #include "SympleCode/Common/Node/FunctionCallArgumentsNode.h"
@@ -50,10 +51,11 @@ namespace Symple
 
 		FunctionDeclarationNode* ParseFunctionDeclaration();
 
-		GlobalStatementNode* ParseGlobalStatement();
-		ReturnStatementNode* ParseReturnStatement();
-		BlockStatementNode* ParseBlockStatement();
 		StatementNode* ParseStatement();
+		BlockStatementNode* ParseBlockStatement();
+		ReturnStatementNode* ParseReturnStatement();
+		GlobalStatementNode* ParseGlobalStatement();
+		VariableDeclarationNode* ParseVariableDeclaration();
 	
 		ExpressionNode* ParseExpression();
 

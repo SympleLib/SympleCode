@@ -12,6 +12,7 @@
 #include "SympleCode/Common/Node/LiteralExpressionNode.h"
 #include "SympleCode/Common/Node/FunctionDeclarationNode.h"
 #include "SympleCode/Common/Node/FunctionCallExpressionNode.h"
+#include "SympleCode/Common/Node/VariableDeclarationNode.h"
 
 namespace Symple
 {
@@ -30,6 +31,7 @@ namespace Symple
 		void EmitMember(const MemberNode* member);
 
 		void EmitFunctionDeclaration(const FunctionDeclarationNode* declaration);
+		void EmitVariableDeclaration(const VariableDeclarationNode* declaration);
 
 		void EmitStatement(const StatementNode* statement);
 

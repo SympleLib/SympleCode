@@ -90,7 +90,7 @@ namespace Symple
 
 	MemberNode* Parser::ParseMember()
 	{
-		if (IsType(Peek()))
+		if (IsType(Peek()) && Peek(2)->Is(Token::Kind::OpenBracket))
 			return ParseFunctionDeclaration();
 
 		return ParseGlobalStatement();
@@ -106,17 +106,15 @@ namespace Symple
 		return new FunctionDeclarationNode(type, name, body);
 	}
 
-	GlobalStatementNode* Parser::ParseGlobalStatement()
+	StatementNode* Parser::ParseStatement()
 	{
-		return new GlobalStatementNode(ParseStatement());
-	}
-
-	ReturnStatementNode* Parser::ParseReturnStatement()
-	{
-		Match(Token::Kind::Return);
+		if (Peek()->Is(Token::Kind::Return))
+			return ParseReturnStatement();
+		if (IsType(Peek()))
+			return ParseVariableDeclaration();
 		ExpressionNode* expression = ParseExpression();
 		Match(Token::Kind::Semicolon);
-		return new ReturnStatementNode(expression);
+		return new ExpressionStatementNode(expression);
 	}
 
 	BlockStatementNode* Parser::ParseBlockStatement()
@@ -143,13 +141,35 @@ namespace Symple
 		return new BlockStatementNode(open, statements, close);
 	}
 
-	StatementNode* Parser::ParseStatement()
+	ReturnStatementNode* Parser::ParseReturnStatement()
 	{
-		if (Peek()->Is(Token::Kind::Return))
-			return ParseReturnStatement();
+		Match(Token::Kind::Return);
 		ExpressionNode* expression = ParseExpression();
 		Match(Token::Kind::Semicolon);
-		return new ExpressionStatementNode(expression);
+		return new ReturnStatementNode(expression);
+	}
+
+	GlobalStatementNode* Parser::ParseGlobalStatement()
+	{
+		return new GlobalStatementNode(ParseStatement());
+	}
+
+	VariableDeclarationNode* Parser::ParseVariableDeclaration()
+	{
+		const Type* type = GetType(Next());
+		const Token* name = Next();
+		if (Peek()->Is(Token::Kind::Equal))
+		{
+			Next();
+			ExpressionNode* expression = ParseExpression();
+			Match(Token::Kind::Semicolon);
+
+			return new VariableDeclarationNode(name, type, expression);
+		}
+
+		Match(Token::Kind::Semicolon);
+
+		return new VariableDeclarationNode(name, type, new ExpressionNode);
 	}
 
 	ExpressionNode* Parser::ParseExpression()

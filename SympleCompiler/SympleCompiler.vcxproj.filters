@@ -66,6 +66,7 @@
     <ClInclude Include="src\SympleCode\Common\Analysis\Type.h" />
     <ClInclude Include="src\SympleCode\Common\Node\ReturnStatementNode.h" />
     <ClInclude Include="src\SympleCode\Common\Analysis\Diagnostics.h" />
+    <ClInclude Include="src\SympleCode\Common\Node\VariableDeclarationNode.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\SympleCode\Application.cpp" />

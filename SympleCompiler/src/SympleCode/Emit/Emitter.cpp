@@ -45,12 +45,19 @@ namespace Symple
 		Write("%s:", std::string(declaration->GetName()->GetLex()).c_str());
 		Write("\tpush %%ebp");
 		Write("\tmovl %%esp, %%ebp");
+		Write("\txor %%eax, %%eax");
 
 		for (const StatementNode* statement : declaration->GetBody()->GetStatements())
 			EmitStatement(statement);
 
+		Write("\tmovl %%ebp, %%esp");
 		Write("\tpop  %%ebp");
 		Write("\tret");
+	}
+
+	void Emitter::EmitVariableDeclaration(const VariableDeclarationNode* declaration)
+	{
+		
 	}
 
 	void Emitter::EmitStatement(const StatementNode* statement)
