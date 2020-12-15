@@ -10,7 +10,11 @@
 #include "SympleCode/Common/Node/NumberLiteralExpressionNode.h"
 #include "SympleCode/Common/Node/BooleanLiteralExpressionNode.h"
 
+#if DO_COMMENTS
 #define Comment(fmt, ...) (void)fprintf_s(mFile, "# " fmt "\n", __VA_ARGS__)
+#else
+#define Comment(fmt, ...)
+#endif
 #define Write(fmt, ...) (void)fprintf_s(mFile, fmt "\n", __VA_ARGS__)
 
 namespace Symple
@@ -91,7 +95,7 @@ namespace Symple
 		if (statement->Is<ExpressionStatementNode>())
 			return EmitExpression(statement->Cast<ExpressionStatementNode>()->GetExpression());
 		if (statement->Is<ReturnStatementNode>())
-			return EmitExpression(statement->Cast<ReturnStatementNode>()->GetExpression());
+			EmitExpression(statement->Cast<ReturnStatementNode>()->GetExpression());
 		if (statement->Is<VariableDeclarationNode>())
 			return EmitVariableDeclaration(statement->Cast<VariableDeclarationNode>());
 	}

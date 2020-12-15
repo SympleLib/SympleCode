@@ -7,8 +7,22 @@ L--	Compilation Unit
  	|	 	|	 	L--	Function Call Arguments
  	|	 	|	 	 	|--	Number Literal Expression (5)
  	|	 	|	 	 	L--	Number Literal Expression (5)
+ 	|	 	|--	Return Statement
+ 	|	 	|	L--	Variable Expression c
+ 	|	 	|--	Return Statement
+ 	|	 	|	L--	Binary Expression [*]
+ 	|	 	|	 	|--	Number Literal Expression (5)
+ 	|	 	|	 	L--	Number Literal Expression (5)
+ 	|	 	|--	Variable Declaration (int) a
+ 	|	 	|	L--	Number Literal Expression (5)
+ 	|	 	|--	Variable Declaration (int) b
+ 	|	 	|	L--	Number Literal Expression (5)
  	|	 	L--	Return Statement
- 	|	 	 	L--	Variable Expression c
+ 	|	 	 	L--	Binary Expression [=]
+ 	|	 	 	 	|--	Variable Expression c
+ 	|	 	 	 	L--	Binary Expression [*]
+ 	|	 	 	 	 	|--	Variable Expression a
+ 	|	 	 	 	 	L--	Variable Expression b
  	L--	Function Declaration: int multiply()
  	 	|--	Function Arguments
  	 	|	|--	Function Argument (int) a
