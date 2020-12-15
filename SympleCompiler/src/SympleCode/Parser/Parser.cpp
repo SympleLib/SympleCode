@@ -4,8 +4,11 @@
 #include <iostream>
 
 #include "SympleCode/Common/Node/BinaryExpressionNode.h"
-#include "SympleCode/Common/Node/ExpressionStatementNode.h"
 #include "SympleCode/Common/Node/VariableExpressionNode.h"
+#include "SympleCode/Common/Node/ExpressionStatementNode.h"
+#include "SympleCode/Common/Node/StringLiteralExpressionNode.h"
+#include "SympleCode/Common/Node/NumberLiteralExpressionNode.h"
+#include "SympleCode/Common/Node/BooleanLiteralExpressionNode.h"
 
 #include "SympleCode/Common/Priority.h"
 
@@ -18,7 +21,7 @@ namespace Symple
 		while (!current->Is(Token::Kind::EndOfFile))
 		{
 			current = mLexer.Next();
-			std::cout << Token::KindString(current->GetKind()) << " | " << current->GetLex() << '\n';
+			//std::cout << Token::KindString(current->GetKind()) << " | " << current->GetLex() << '\n';
 			if (!current->Is(Token::Kind::Comment))
 				mTokens.push_back(current);
 		}
@@ -270,9 +273,11 @@ namespace Symple
 			return ParseParenthesizedExpression();
 		case Token::Kind::True:
 		case Token::Kind::False:
-			return ParseBooleanLiteral();
+			return new BooleanLiteralExpressionNode(Next());
 		case Token::Kind::Number:
-			return ParseNumberLiteral();
+			return new NumberLiteralExpressionNode(Next());
+		case Token::Kind::String:
+			return new StringLiteralExpressionNode(Next());
 		}
 
 		return ParseNameOrCallExpression();
@@ -318,16 +323,6 @@ namespace Symple
 		const Token* close = Match(Token::Kind::CloseParenthesis);
 
 		return new FunctionCallArgumentsNode(open, arguments, close);
-	}
-
-	NumberLiteralExpressionNode* Parser::ParseNumberLiteral()
-	{
-		return new NumberLiteralExpressionNode(Match(Token::Kind::Number));
-	}
-
-	BooleanLiteralExpressionNode* Parser::ParseBooleanLiteral()
-	{
-		return new BooleanLiteralExpressionNode(Next());
 	}
 
 	ParenthesizedExpressionNode* Parser::ParseParenthesizedExpression()

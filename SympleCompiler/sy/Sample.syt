@@ -1,19 +1,13 @@
 L--	Compilation Unit
- 	|--	Function Hint: error-type (()
+ 	|--	Function Hint: void puts()
  	|	L--	Function Arguments
- 	|	 	L--	Function Argument (error-type) )
- 	|--	Global Statement
- 	|	L--	Expression Statement
- 	|	 	L--	Function Call Expression _main()
- 	|	 	 	L--	Function Call Arguments
- 	|--	Global Statement
- 	|	L--	Variable Declaration (string) someString
- 	|	 	L--	Variable Expression Hello, world!
- 	|--	Global Statement
- 	|	L--	Expression Statement
- 	|	 	L--	Function Call Expression _puts()
- 	|	 	 	L--	Function Call Arguments
- 	|	 	 	 	L--	Variable Expression someString
- 	L--	Global Statement
- 	 	L--	Expression Statement
- 	 	 	L--	Variable Expression }
+ 	|	 	L--	Function Argument (string) str
+ 	L--	Function Declaration: int main()
+ 	 	|--	Function Arguments
+ 	 	L--	Block Statement
+ 	 	 	|--	Variable Declaration (string) someString
+ 	 	 	|	L--	String Literal Expression (Hello, world!\n)
+ 	 	 	L--	Expression Statement
+ 	 	 	 	L--	Function Call Expression puts()
+ 	 	 	 	 	L--	Function Call Arguments
+ 	 	 	 	 	 	L--	Variable Expression someString

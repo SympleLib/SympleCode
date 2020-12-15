@@ -1,7 +1,7 @@
-hint _puts(string str);
+hint void puts(string str);
 
-int _main()
+int main()
 {
-	string someString = "Hello, world!";
-	_puts(someString);
+	string someString = "Hello, world!\n";
+	puts(someString);
 };

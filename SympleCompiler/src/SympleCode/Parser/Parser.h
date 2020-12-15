@@ -20,8 +20,6 @@
 #include "SympleCode/Common/Node/ExpressionNode.h"
 #include "SympleCode/Common/Node/LiteralExpressionNode.h"
 #include "SympleCode/Common/Node/ParenthesizedExpressionNode.h"
-#include "SympleCode/Common/Node/NumberLiteralExpressionNode.h"
-#include "SympleCode/Common/Node/BooleanLiteralExpressionNode.h"
 
 #include "SympleCode/Common/Analysis/Type.h"
 #include "SympleCode/Common/Analysis/Diagnostics.h"
@@ -71,8 +69,6 @@ namespace Symple
 		ExpressionNode* ParseNameOrCallExpression();
 		FunctionCallArgumentsNode* ParseFunctionCallArguments();
 
-		NumberLiteralExpressionNode* ParseNumberLiteral();
-		BooleanLiteralExpressionNode* ParseBooleanLiteral();
 		FunctionCallExpressionNode* ParseFunctionCallExpression();
 		ParenthesizedExpressionNode* ParseParenthesizedExpression();
 	};

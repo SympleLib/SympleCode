@@ -17,8 +17,8 @@
 #else
 #define Comment(fmt, ...)
 #endif
-#define Write(fmt, ...) (void)fprintf_s(mFile, fmt "\n", __VA_ARGS__)
-#define WriteLiteral(fmt, ...) (void)fprintf_s(mLiteralFile, fmt "\n", __VA_ARGS__)
+#define Write(fmt, ...) ((void)fprintf_s(mFile, fmt "\n", __VA_ARGS__))
+#define WriteLiteral(fmt, ...) ((void)fprintf_s(mLiteralFile, fmt "\n", __VA_ARGS__))
 
 namespace Symple
 {
@@ -31,14 +31,16 @@ namespace Symple
 
 	Emitter::~Emitter()
 	{
-		rewind(mLiteralFile);
-
-		char c;
-		while ((c = fgetc(mLiteralFile)) != EOF)
-			fputc(c, mFile);
-
 		if (mLiteralOpen)
+		{
+			rewind(mLiteralFile);
+
+			char c;
+			while ((c = fgetc(mLiteralFile)) != EOF)
+				fputc(c, mFile);
+
 			fclose(mLiteralFile);
+		}
 		mLiteralOpen = false;
 
 		if (mOpen)
@@ -102,7 +104,8 @@ namespace Symple
 		mStackPos = 0;
 
 		Comment("Function Declaration");
-		Write("%s:", std::string(declaration->GetName()->GetLex()).c_str());
+		Write(".global _%s", std::string(declaration->GetName()->GetLex()).c_str());
+		Write("_%s:", std::string(declaration->GetName()->GetLex()).c_str());
 		Comment("\tPush Stack");
 		Write("\tpush    %%ebp");
 		Write("\tmovl    %%esp, %%ebp");
@@ -186,11 +189,11 @@ namespace Symple
 	void Emitter::EmitLiteralExpression(const LiteralExpressionNode* expression, int size)
 	{
 		if (expression->Is<NumberLiteralExpressionNode>())
-			Write("\tmov%c    $%s, %s", Mod(), std::string(expression->GetLiteral()->GetLex()).c_str(), RegAx());
+			return Write("\tmov%c    $%s, %s", Mod(), std::string(expression->GetLiteral()->GetLex()).c_str(), RegAx());
 		if (expression->Is<StringLiteralExpressionNode>())
-			
+			return EmitStringLiteralExpression(expression->Cast<StringLiteralExpressionNode>());
 		if (expression->Is<BooleanLiteralExpressionNode>())
-			Write("\tmov%c    $%i, %s", Mod(), expression->GetLiteral()->Is(Token::Kind::True), RegAx());
+			return Write("\tmov%c    $%i, %s", Mod(), expression->GetLiteral()->Is(Token::Kind::True), RegAx());
 	}
 
 	void Emitter::EmitStringLiteralExpression(const StringLiteralExpressionNode* literal, int size)
@@ -261,7 +264,7 @@ namespace Symple
 			Write("\tpush    %s", RegAx());
 		}
 		Comment("\tCall Function");
-		Write("\tcall    %s", std::string(call->GetName()->GetLex()).c_str());
+		Write("\tcall    _%s", std::string(call->GetName()->GetLex()).c_str());
 		Comment("\tPop Arguments");
 		Write("\taddl    $%i, %%esp", 4);
 	}
@@ -274,7 +277,7 @@ namespace Symple
 	bool Emitter::OpenFile()
 	{
 		errno_t err = fopen_s(&mFile, mPath, "w");
-		if (err)
+		if (err && !mFile)
 		{
 			char msg[32];
 			if (!strerror_s(msg, err))
@@ -316,7 +319,7 @@ namespace Symple
 	bool Emitter::OpenLiteralFile()
 	{
 		errno_t err = tmpfile_s(&mLiteralFile);
-		if (err)
+		if (err && !mLiteralFile)
 		{
 			char msg[32];
 			if (!strerror_s(msg, err))
