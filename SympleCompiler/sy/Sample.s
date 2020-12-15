@@ -7,6 +7,10 @@ main:
 # 	Function Arguments
 _c$ = -4
 	subl    $4, %esp
+_other$ = -8
+	subl    $4, %esp
+_test$ = -12
+	subl    $4, %esp
 # Function Call
 # 	Push Arguments
 	movl    $5, %eax
@@ -17,6 +21,12 @@ _c$ = -4
 	call    multiply
 # 	Pop Arguments
 	addl    $8, %esp
+	movl    %eax, _test$(%ebp)
+# Binary Expression [=]
+	movl    _test$(%ebp), %eax
+	movl    %eax, _other$(%ebp)
+# Binary Expression [=]
+	movl    _other$(%ebp), %eax
 	movl    %eax, _c$(%ebp)
 	movl    _c$(%ebp), %eax
 # 	Pop Stack and Return

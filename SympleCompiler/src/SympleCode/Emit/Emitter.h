@@ -1,7 +1,7 @@
 #pragma once
 
 #include <cstdio>
-#include <vector>
+#include <map>
 
 #include "SympleCode/Common/Analysis/Diagnostics.h"
 
@@ -30,6 +30,8 @@ namespace Symple
 		Diagnostics* mDiagnostics;
 
 		unsigned int mStackPos;
+
+		std::map<std::string_view, const VariableDeclarationNode*> mDeclaredVariables;
 	public:
 		Emitter(Diagnostics* diagnostics, const char* path);
 		~Emitter();
@@ -42,12 +44,15 @@ namespace Symple
 		void EmitVariableDeclaration(const VariableDeclarationNode* declaration);
 
 		void EmitStatement(const StatementNode* statement);
+		void EmitBlockStatement(const BlockStatementNode* statement);
 
 		void EmitExpression(const ExpressionNode* expression);
 		void EmitBinaryExpression(const BinaryExpressionNode* expression);
 		void EmitLiteralExpression(const LiteralExpressionNode* expression);
 		void EmitVariableExpression(const VariableExpressionNode* expression);
 		void EmitFunctionCallExpression(const FunctionCallExpressionNode* call);
+
+		bool VariableDefined(const std::string_view& name);
 
 		bool OpenFile();
 	};

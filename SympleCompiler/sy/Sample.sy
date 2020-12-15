@@ -2,7 +2,14 @@
 
 int main()
 {
-	int c = multiply(5 # Comment Test #, 5);
+	int c;
+	int other;
+	
+	{
+		int test = multiply(5 # Comment Test #, 5);;
+		other = test;
+	};
+	c = other;
 	
 	return c;
 };

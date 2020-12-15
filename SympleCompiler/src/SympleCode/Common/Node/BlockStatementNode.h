@@ -1,9 +1,10 @@
 #pragma once
 
-#include <vector>
+#include <map>
 
 #include "SympleCode/Common/Token.h"
 #include "SympleCode/Common/Node/StatementNode.h"
+#include "SympleCode/Common/Node/VariableDeclarationNode.h"
 
 namespace Symple
 {
@@ -13,9 +14,16 @@ namespace Symple
 		const Token* mOpen;
 		const std::vector<const StatementNode*> mStatements;
 		const Token* mClose;
+
+		std::map<std::string_view, const VariableDeclarationNode*> mVariables;
 	public:
 		BlockStatementNode(const Token* open, const std::vector<const StatementNode*>& statements, const Token* close)
-			: mOpen(open), mStatements(statements), mClose(close) {}
+			: mOpen(open), mStatements(statements), mClose(close)
+		{
+			for (const StatementNode* statement : mStatements)
+				if (statement->Is<VariableDeclarationNode>())
+					mVariables.insert({ statement->Cast<VariableDeclarationNode>()->GetName()->GetLex(), statement->Cast<VariableDeclarationNode>() });
+		}
 
 		Kind GetKind() const override
 		{
@@ -35,6 +43,11 @@ namespace Symple
 		const Token* GetClose() const
 		{
 			return mClose;
+		}
+
+		const std::map<std::string_view, const VariableDeclarationNode*>& GetVariables() const
+		{
+			return mVariables;
 		}
 
 		std::string ToString(const std::string& indent = "", bool last = true) const override

@@ -148,10 +148,18 @@ namespace Symple
 
 	StatementNode* Parser::ParseStatement()
 	{
+		if (Peek()->Is(Token::Kind::Semicolon))
+			return new StatementNode; // Empty Statement;
 		if (Peek()->Is(Token::Kind::Return))
 			return ParseReturnStatement();
 		if (IsType(Peek()))
 			return ParseVariableDeclaration();
+		if (Peek()->Is(Token::Kind::OpenBracket))
+		{
+			StatementNode* statement = ParseBlockStatement();
+			Match(Token::Kind::Semicolon);
+			return statement;
+		}
 		ExpressionNode* expression = ParseExpression();
 		Match(Token::Kind::Semicolon);
 		return new ExpressionStatementNode(expression);

@@ -20,7 +20,7 @@
 namespace Symple
 {
 	Emitter::Emitter(Diagnostics* diagnostics, const char* path)
-		: mDiagnostics(diagnostics), mPath(path), mOpen(false), mStackPos(0)
+		: mDiagnostics(diagnostics), mPath(path), mOpen(false), mStackPos(0), mDeclaredVariables()
 	{
 		while (OpenFile());
 	}
@@ -64,6 +64,7 @@ namespace Symple
 		{
 			pos += argument->GetType()->GetSize();
 			Write("_%s$ = %i", std::string(argument->GetName()->GetLex()).c_str(), pos);
+			mDeclaredVariables.insert({ argument->GetName()->GetLex(), nullptr });
 		}
 
 		for (const StatementNode* statement : declaration->GetBody()->GetStatements())
@@ -74,6 +75,11 @@ namespace Symple
 		Write("\tpop     %%ebp");
 		Write("\tret");
 
+		for (const auto& variable : declaration->GetBody()->GetVariables())
+			mDeclaredVariables.erase(mDeclaredVariables.find(variable.first));
+		for (const FunctionArgumentNode* argument : declaration->GetArguments()->GetArguments())
+			mDeclaredVariables.erase(mDeclaredVariables.find(argument->GetName()->GetLex()));
+
 		mStackPos = pStackPos;
 	}
 
@@ -81,6 +87,9 @@ namespace Symple
 	{
 		std::string name = std::string(declaration->GetName()->GetLex());
 		mStackPos += declaration->GetType()->GetSize();
+
+		mDeclaredVariables.insert({ declaration->GetName()->GetLex(), declaration });
+
 		Write("_%s$ = -%i", name.c_str(), mStackPos);
 		Write("\tsubl    $%i, %%esp", declaration->GetType()->GetSize());
 		if (declaration->GetInitializer()->GetKind() != Node::Kind::Expression)
@@ -98,6 +107,17 @@ namespace Symple
 			EmitExpression(statement->Cast<ReturnStatementNode>()->GetExpression());
 		if (statement->Is<VariableDeclarationNode>())
 			return EmitVariableDeclaration(statement->Cast<VariableDeclarationNode>());
+		if (statement->Is<BlockStatementNode>())
+			return EmitBlockStatement(statement->Cast<BlockStatementNode>());
+	}
+
+	void Emitter::EmitBlockStatement(const BlockStatementNode* statement)
+	{
+		for (const StatementNode* statement : statement->GetStatements())
+			EmitStatement(statement);
+
+		for (const auto& variable : statement->GetVariables())
+			mDeclaredVariables.erase(mDeclaredVariables.find(variable.first));
 	}
 
 	void Emitter::EmitExpression(const ExpressionNode* expression)
@@ -156,6 +176,9 @@ namespace Symple
 
 	void Emitter::EmitVariableExpression(const VariableExpressionNode* expression)
 	{
+		if (!VariableDefined(expression->GetName()->GetLex()))
+			mDiagnostics->ReportError(expression->GetName(), "'%s' is not a Variable", std::string(expression->GetName()->GetLex()).c_str());
+
 		Write("\tmovl    _%s$(%%ebp), %%eax", std::string(expression->GetName()->GetLex()).c_str());
 	}
 
@@ -172,6 +195,11 @@ namespace Symple
 		Write("\tcall    %s", std::string(call->GetName()->GetLex()).c_str());
 		Comment("\tPop Arguments");
 		Write("\taddl    $%i, %%esp", mDiagnostics->GetFunction(call->GetName()->GetLex())->GetArguments()->GetSize());
+	}
+
+	bool Emitter::VariableDefined(const std::string_view& name)
+	{
+		return mDeclaredVariables.find(name) != mDeclaredVariables.end();
 	}
 
 	bool Emitter::OpenFile()
