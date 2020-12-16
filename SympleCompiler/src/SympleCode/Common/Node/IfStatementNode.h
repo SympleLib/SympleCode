@@ -35,8 +35,9 @@ namespace Symple
 			if (!last)
 				newIndent = "|\t";
 			ss << '\n' << mCondition->ToString(indent + newIndent, false);
-			ss << "\nThen\n" << mThen->ToString(indent + newIndent, false);
-			ss << "\nElse\n" << mElse->ToString(indent + newIndent);
+			ss << "\nThen\n" << mThen->ToString(indent + newIndent, !mElse);
+			if (mElse)
+				ss << "\nElse\n" << mElse->ToString(indent + newIndent);
 
 			return ss.str();
 		}

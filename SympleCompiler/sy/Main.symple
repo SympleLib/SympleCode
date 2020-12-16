@@ -9,13 +9,5 @@ extern void puts(string str);
 
 int main()
 {
-	bool myBool = false;
-	if myBool
-	{
-		puts("True");
-	}
-	else
-	{
-		puts("False");
-	};
+	
 };
