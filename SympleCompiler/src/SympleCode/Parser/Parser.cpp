@@ -3,6 +3,7 @@
 #include <xhash>
 #include <iostream>
 
+#include "SympleCode/Common/Node/BreakStatementNode.h"
 #include "SympleCode/Common/Node/BinaryExpressionNode.h"
 #include "SympleCode/Common/Node/VariableExpressionNode.h"
 #include "SympleCode/Common/Node/ExpressionStatementNode.h"
@@ -192,6 +193,8 @@ namespace Symple
 			return ParseReturnStatement();
 		if (Peek()->Is(Token::Kind::While))
 			return ParseWhileStatement();
+		if (Peek()->Is(Token::Kind::Break))
+			return new BreakStatementNode(Next());
 		if (IsType(Peek()))
 			return ParseVariableDeclaration();
 		if (Peek()->Is(Token::Kind::OpenBracket))

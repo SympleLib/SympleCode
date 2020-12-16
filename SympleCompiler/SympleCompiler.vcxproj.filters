@@ -75,6 +75,7 @@
     <ClInclude Include="src\SympleCode\Common\Node\StringLiteralExpressionNode.h" />
     <ClInclude Include="src\SympleCode\Common\Node\ExternFunctionNode.h" />
     <ClInclude Include="src\SympleCode\Common\Node\WhileStatementNode.h" />
+    <ClInclude Include="src\SympleCode\Common\Node\BreakStatementNode.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\SympleCode\Application.cpp" />

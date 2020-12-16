@@ -120,6 +120,8 @@ namespace Symple
 			return new Token(Token::Kind::False, beg, mCurrent, mLine, mColumn);
 		if (identifier == "return")
 			return new Token(Token::Kind::Return, beg, mCurrent, mLine, mColumn);
+		if (identifier == "break")
+			return new Token(Token::Kind::Break, beg, mCurrent, mLine, mColumn);
 		if (identifier == "while")
 			return new Token(Token::Kind::While, beg, mCurrent, mLine, mColumn);
 		if (identifier == "extern")

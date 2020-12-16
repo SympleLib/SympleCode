@@ -35,6 +35,7 @@ namespace Symple
 			True,
 			False,
 			While,
+			Break,
 			Return,
 			Extern,
 
@@ -50,7 +51,7 @@ namespace Symple
 			"EqualEqual", "NotEqual"
 			"Comma", "Semicolon",
 			"OpenBracket", "CloseBracket", "OpenParenthesis", "CloseParenthesis",
-			"Hint", "True", "False", "While", "Return", "Extern",
+			"Hint", "True", "False", "While", "Break", "Return", "Extern",
 			"Comment",
 		};
 

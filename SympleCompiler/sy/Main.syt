@@ -19,11 +19,31 @@ L--	Compilation Unit
  	|	L--	Function Arguments
  	|	 	|--	Function Argument (int) left
  	|	 	L--	Function Argument (int) right
+ 	|--	External Function: void puts()
+ 	|	L--	Function Arguments
+ 	|	 	L--	Function Argument (string) str
  	L--	Function Declaration: int main()
  	 	|--	Function Arguments
  	 	L--	Block Statement
- 	 	 	L--	Return Statement
- 	 	 	 	L--	Function Call Expression Pow()
- 	 	 	 	 	L--	Function Call Arguments
- 	 	 	 	 	 	|--	Number Literal Expression (3)
- 	 	 	 	 	 	L--	Number Literal Expression (3)
+ 	 	 	|--	Variable Declaration (bool) myBool
+ 	 	 	|	L--	Boolean Literal Expression (true)
+ 	 	 	|--	While Statement:
+ 	 	 	|	|--	Variable Expression myBool
+ 	 	 	|	L--	Block Statement
+ 	 	 	|	 	|--	Expression Statement
+ 	 	 	|	 	|	L--	Function Call Expression puts()
+ 	 	 	|	 	|	 	L--	Function Call Arguments
+ 	 	 	|	 	|	 	 	L--	String Literal Expression (True)
+ 	 	 	|	 	|--	Break Statement
+ 	 	 	|	 	L--	Node of Kind: Statement
+ 	 	 	L--	While Statement:
+ 	 	 	 	|--	Binary Expression [!=]
+ 	 	 	 	|	|--	Variable Expression myBool
+ 	 	 	 	|	L--	Boolean Literal Expression (true)
+ 	 	 	 	L--	Block Statement
+ 	 	 	 	 	|--	Expression Statement
+ 	 	 	 	 	|	L--	Function Call Expression puts()
+ 	 	 	 	 	|	 	L--	Function Call Arguments
+ 	 	 	 	 	|	 	 	L--	String Literal Expression (False)
+ 	 	 	 	 	|--	Break Statement
+ 	 	 	 	 	L--	Node of Kind: Statement

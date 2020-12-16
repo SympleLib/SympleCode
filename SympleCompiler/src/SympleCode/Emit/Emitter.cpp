@@ -159,6 +159,15 @@ namespace Symple
 			return EmitVariableDeclaration(statement->Cast<VariableDeclarationNode>());
 		if (statement->Is<BlockStatementNode>())
 			return EmitBlockStatement(statement->Cast<BlockStatementNode>());
+		if (statement->Is<BreakStatementNode>())
+			return EmitBreakStatement(statement->Cast<BreakStatementNode>());
+	}
+
+	void Emitter::EmitBreakStatement(const BreakStatementNode* statement)
+	{
+		if (!mJumpPos)
+			return mDiagnostics->ReportError(statement->GetStatement(), "There is Nothing to Break");
+		Write("\tjmp     ..Jump.%i", mJumpPos - 1);
 	}
 
 	void Emitter::EmitBlockStatement(const BlockStatementNode* statement)
@@ -181,12 +190,12 @@ namespace Symple
 
 		EmitExpression(statement->GetCondition());
 		Write("\tcmp%c    $0, %s", Mod(), RegAx());
-		Write("\tje ..Jump.%i", aJumpPos);
+		Write("\tje      ..Jump.%i", aJumpPos);
 
 		for (const StatementNode* statement : statement->GetBody()->GetStatements())
 			EmitStatement(statement);
 
-		Write("\tjmp ..Jump.%i", pJumpPos);
+		Write("\tjmp     ..Jump.%i", pJumpPos);
 		Write("..Jump.%i:", aJumpPos);
 	}
 
@@ -229,10 +238,7 @@ namespace Symple
 		if (expression->GetOperator()->Is(Token::Kind::Equal))
 		{
 			if (expression->GetLeft()->GetKind() != Node::Kind::VariableExpression)
-			{
-				mDiagnostics->ReportError(expression->GetOperator(), "Expected lvalue");
-				return;
-			}
+				return mDiagnostics->ReportError(expression->GetOperator(), "Expected lvalue");
 
 			EmitExpression(expression->GetRight(), size);
 			Write("\tmov%c    %s, _%s$(%%ebp)", Mod(), RegAx(), std::string(expression->GetLeft()->Cast<VariableExpressionNode>()->GetName()->GetLex()).c_str());
@@ -284,7 +290,7 @@ namespace Symple
 	void Emitter::EmitVariableExpression(const VariableExpressionNode* expression, int size)
 	{
 		if (!VariableDefined(expression->GetName()->GetLex()))
-			mDiagnostics->ReportError(expression->GetName(), "'%s' is not a Variable", std::string(expression->GetName()->GetLex()).c_str());
+			return mDiagnostics->ReportError(expression->GetName(), "'%s' is not a Variable", std::string(expression->GetName()->GetLex()).c_str());
 
 		Write("\tmov%c    _%s$(%%ebp), %s", Mod(), std::string(expression->GetName()->GetLex()).c_str(), RegAx());
 	}
@@ -293,10 +299,7 @@ namespace Symple
 	{
 		const FunctionDeclarationNode* function = mDiagnostics->GetFunction(call->GetName()->GetLex());
 		if (!function)
-		{
-			mDiagnostics->ReportError(call->GetName(), "Function does not exist!");
-			return;
-		}
+			return mDiagnostics->ReportError(call->GetName(), "Function does not exist!");
 
 		Comment("Function Call");
 		Comment("\tPush Arguments");

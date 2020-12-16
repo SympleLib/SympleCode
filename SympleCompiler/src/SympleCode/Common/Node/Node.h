@@ -29,6 +29,7 @@ namespace Symple
 
 			Statement,
 			BlockStatement,
+			BreakStatement,
 			WhileStatement,
 			GlobalStatement,
 			ReturnStatement,
@@ -46,7 +47,7 @@ namespace Symple
 			"Unknown", "Expression", "BinaryExpression",
 			"LiteralExpression", "VariableExpression", "FunctionCallExpression", "StringLiteralExpression", "NumberLiteralExpression", "BooleanLiteralExpression",
 			"Member", "CompilationUnit", "FunctionDeclaration",
-			"Statement", "BlockStatement", "WhileStatement", "GlobalStatement", "ReturnStatement", "VariableDeclaration", "ExpressionStatement",
+			"Statement", "BlockStatement", "BreakStatement", "WhileStatement", "GlobalStatement", "ReturnStatement", "VariableDeclaration", "ExpressionStatement",
 			"FunctionHint", "ExternFunction", "FunctionArgument", "FunctionArguments", "FunctionCallArguments",
 		};
 

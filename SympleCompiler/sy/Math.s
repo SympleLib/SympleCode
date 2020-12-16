@@ -50,7 +50,7 @@ _numTimes$ = -4
 ..Jump.0:
 	movl    _left$(%ebp), %eax
 	cmpl    $0, %eax
-	je ..Jump.1
+	je      ..Jump.1
 	movl    _right$(%ebp), %eax
 	movl    %eax, %edx
 	movl    _left$(%ebp), %eax
@@ -61,7 +61,7 @@ _numTimes$ = -4
 	movl    _numTimes$(%ebp), %eax
 	addl    %edx, %eax
 	movl    %eax, _numTimes$(%ebp)
-	jmp ..Jump.0
+	jmp     ..Jump.0
 ..Jump.1:
 	movl    _numTimes$(%ebp), %eax
 	movl    %ebp, %esp
@@ -91,7 +91,7 @@ _out$ = -8
 	movl    $1, %eax
 ..Jump.4:
 	cmpl    $0, %eax
-	je ..Jump.3
+	je      ..Jump.3
 	movl    _left$(%ebp), %eax
 	movl    %eax, %edx
 	movl    _out$(%ebp), %eax
@@ -102,7 +102,7 @@ _out$ = -8
 	movl    _numTimes$(%ebp), %eax
 	addl    %edx, %eax
 	movl    %eax, _numTimes$(%ebp)
-	jmp ..Jump.2
+	jmp     ..Jump.2
 ..Jump.3:
 	movl    _out$(%ebp), %eax
 	movl    %ebp, %esp
