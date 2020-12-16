@@ -39,11 +39,12 @@ namespace Symple
 		size_t mPosition;
 	public:
 		Parser(const char* source = "");
-		Parser(const std::vector<const Token*>& tokens);
 
 		CompilationUnitNode* ParseCompilationUnit();
 		Diagnostics* GetDiagnostics() const;
 	private:
+		void Preprocess(const Token* cmd);
+
 		const Token* Peek(size_t offset = 0);
 		const Token* Next();
 		const Token* Match(Token::Kind kind);

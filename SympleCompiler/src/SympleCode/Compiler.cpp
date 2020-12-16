@@ -20,59 +20,42 @@ namespace Symple
 		const char* asmS = asmSStr.c_str();
 		const char* obj = objStr.c_str();
 
-		printf("Preprocessing...\n");
-		auto preprocessedSource = mPreprocessor.Preprocess(path);
-
-		for (const Token* token : preprocessedSource)
-		{
-			std::cout << Token::KindString(token->GetKind()) << " | " << token->GetLex() << '\n';
-		}
-
-		printf("Parsing...\n");
-		//Parser parser(preprocessedSource);
-		Parser parser(path);
-		CompilationUnitNode* tree = parser.ParseCompilationUnit();
-		Diagnostics* diagnostics = parser.GetDiagnostics();
-
-		FILE* treef;
+		FILE* file;
 		errno_t err;
-		if (!(err = fopen_s(&treef, syt, "w")) && treef)
+		if (!(err = fopen_s(&file, path, "rb")) && file)
 		{
-			fputs(tree->ToString().c_str(), treef);
-			fclose(treef);
-		}
-		else
-		{
-			char errMsg[32];
-			if (!strerror_s(errMsg, err))
-				std::cerr << "[!]: Error opening file '" << syt << "': " << errMsg << "!\n";
+			fseek(file, 0L, SEEK_END);
+			unsigned int size = std::min(ftell(file), 4096L);
+			rewind(file);
+			char* source = new char[size + 1];
+			fread(source, 1, size, file);
+			source[size] = 0;
+			fclose(file);
+
+			printf("Parsing...\n");
+			Parser parser(source);
+			CompilationUnitNode* tree = parser.ParseCompilationUnit();
+			Diagnostics* diagnostics = parser.GetDiagnostics();
+
+			FILE* treef;
+			errno_t err;
+			if (!(err = fopen_s(&treef, syt, "w")) && treef)
+			{
+				fputs(tree->ToString().c_str(), treef);
+				fclose(treef);
+			}
 			else
-				std::cerr << "[!]: Unkown Error opening file '" << syt << "'!\n";
-		}
-
-		unsigned int parseErrors = diagnostics->GetErrors().size();
-		if (parseErrors)
-		{
-			printf("Compiled %s with %i errors, %i warnings (total: %i)\n", path, diagnostics->GetErrors().size(), diagnostics->GetWarnings().size(), diagnostics->GetMessages().size());
-
-			for (const Message* error : diagnostics->GetErrors())
 			{
-				std::cout << "[!]<" << error->Token->GetLine() << ':' << error->Token->GetColumn() << ">: " << error->Message << '\n';
+				char errMsg[32];
+				if (!strerror_s(errMsg, err))
+					std::cerr << "[!]: Error opening file '" << syt << "': " << errMsg << "!\n";
+				else
+					std::cerr << "[!]: Unkown Error opening file '" << syt << "'!\n";
 			}
 
-			for (const Message* warning : diagnostics->GetWarnings())
+			unsigned int parseErrors = diagnostics->GetErrors().size();
+			if (parseErrors)
 			{
-				std::cout << "[?]<" << warning->Token->GetLine() << ':' << warning->Token->GetColumn() << ">: " << warning->Message << '\n';
-			}
-			printf("No Code Generated :(\n");
-		}
-		else
-		{
-			{
-				printf("Generating...\n");
-				Emitter emitter(diagnostics, asmS);
-				emitter.Emit(tree);
-
 				printf("Compiled %s with %i errors, %i warnings (total: %i)\n", path, diagnostics->GetErrors().size(), diagnostics->GetWarnings().size(), diagnostics->GetMessages().size());
 
 				for (const Message* error : diagnostics->GetErrors())
@@ -84,19 +67,45 @@ namespace Symple
 				{
 					std::cout << "[?]<" << warning->Token->GetLine() << ':' << warning->Token->GetColumn() << ">: " << warning->Message << '\n';
 				}
+				printf("No Code Generated :(\n");
 			}
-
-			if (!diagnostics->GetErrors().size())
+			else
 			{
-				char command[128];
-				sprintf_s(command, "clang -c %s -o %s", asmS, obj);
-				system(command);
+				{
+					printf("Generating...\n");
+					Emitter emitter(diagnostics, asmS);
+					emitter.Emit(tree);
 
-				mObjectFiles.push_back(objStr);
+					printf("Compiled %s with %i errors, %i warnings (total: %i)\n", path, diagnostics->GetErrors().size(), diagnostics->GetWarnings().size(), diagnostics->GetMessages().size());
 
-				return true;
+					for (const Message* error : diagnostics->GetErrors())
+					{
+						std::cout << "[!]<" << error->Token->GetLine() << ':' << error->Token->GetColumn() << ">: " << error->Message << '\n';
+					}
+
+					for (const Message* warning : diagnostics->GetWarnings())
+					{
+						std::cout << "[?]<" << warning->Token->GetLine() << ':' << warning->Token->GetColumn() << ">: " << warning->Message << '\n';
+					}
+				}
+
+				if (!diagnostics->GetErrors().size())
+				{
+					char command[128];
+					sprintf_s(command, "clang -c %s -o %s", asmS, obj);
+					system(command);
+
+					mObjectFiles.push_back(objStr);
+
+					return true;
+				}
 			}
 		}
+		char errMsg[32];
+		if (!strerror_s(errMsg, err))
+			std::cerr << "[!]: Error opening file '" << path << "': " << errMsg << "!\n";
+		else
+			std::cerr << "[!]: Unkown Error opening file '" << path << "'!\n";
 
 		return false;
 	}

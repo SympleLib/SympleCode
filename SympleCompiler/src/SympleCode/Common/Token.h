@@ -34,11 +34,12 @@ namespace Symple
 			LeftArrow,
 			RightArrow,
 
-			Hint,
 			True,
 			False,
 			While,
 			Break,
+
+			Hint,
 			Return,
 			Extern,
 
@@ -54,11 +55,12 @@ namespace Symple
 		static constexpr const char* KindMap[] = {
 			"Identifier", "Number", "String",
 			"Plus", "Minus", "Asterisk", "Slash", "Equal",
-			"EqualEqual", "NotEqual"
+			"EqualEqual", "NotEqual",
 			"Comma", "Semicolon",
 			"OpenBracket", "CloseBracket", "OpenParenthesis", "CloseParenthesis",
 			"LeftArrow", "RightArrow",
-			"Hint", "True", "False", "While", "Break", "Return", "Extern",
+			"True", "False", "While", "Break",
+			"Hint", "Return", "Extern",
 			"If", "Else",
 			"Comment",
 		};
@@ -70,6 +72,8 @@ namespace Symple
 
 		int mLine, mColumn;
 	public:
+		static const Token* const Default;
+
 		Token(Kind kind = Kind::Unknown, int line = 0, int column = 0);
 		Token(Kind kind, const char* beg, size_t len, int line = 0, int column = 0);
 		Token(Kind kind, const char* beg, const char* end, int line = 0, int column = 0);

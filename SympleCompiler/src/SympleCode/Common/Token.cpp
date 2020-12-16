@@ -11,6 +11,8 @@ namespace Symple
 	Token::Token(Kind kind, const char* beg, const char* end, int line, int column)
 		: mKind(kind), mLex(beg, std::distance(beg, end)), mLine(line), mColumn(column) {}
 
+	const Token* const Token::Default = new Token;
+
 	bool Token::Is(Kind kind) const
 	{
 		return mKind == kind;

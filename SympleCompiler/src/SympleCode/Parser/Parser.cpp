@@ -19,26 +19,52 @@ namespace Symple
 	Parser::Parser(const char* source)
 		: mLexer(source), mPosition(0), mTypes(Type::PrimitiveTypes), mDiagnostics(new Diagnostics)
 	{
-		Token* current = new Token;
+		const Token* current = Token::Default;
 		while (!current->Is(Token::Kind::EndOfFile))
 		{
 			current = mLexer.Next();
 			std::cout << Token::KindString(current->GetKind()) << " | " << current->GetLex() << '\n';
-			if (!current->Is(Token::Kind::Comment))
+			if (current->Is(Token::Kind::Comment))
+				Preprocess(current);
+			else
 				mTokens.push_back(current);
 		}
 	}
 
-	Parser::Parser(const std::vector<const Token*>& tokens)
-		: mPosition(0), mTypes(Type::PrimitiveTypes), mDiagnostics(new Diagnostics)
+	void Parser::Preprocess(const Token* cmd)
 	{
-		for (const Token* token : tokens)
+		std::string scmd(cmd->GetLex());
+		Lexer prepoLexer = scmd.c_str();
+		Token* rcmd = prepoLexer.Next();
+		std::cout << rcmd->GetLex() << '\n';
+
+		if (rcmd->GetLex() == "include")
 		{
-			//std::cout << Token::KindString(token->GetKind()) << " | " << token->GetLex() << '\n';
-			std::cout << (int)token->GetKind() << " | " << token->GetLex() << '\n';
-			std::cout << token->GetLex() << '\n';
-			if (!token->Is(Token::Kind::Comment))
-				mTokens.push_back(token);
+			Token* includeDir = prepoLexer.Next();
+
+			FILE* file;
+			errno_t err;
+			if (!(err = fopen_s(&file, std::string(includeDir->GetLex()).c_str(), "rb")) && file)
+			{
+				fseek(file, 0L, SEEK_END);
+				unsigned int size = std::min(ftell(file), 4096L);
+				rewind(file);
+				char* source = new char[size + 1];
+				fread(source, 1, size, file);
+				source[size] = 0;
+				fclose(file);
+
+				prepoLexer = source;
+				const Token* iCurrent;
+				while (!(iCurrent = prepoLexer.Next())->Is(Token::Kind::EndOfFile))
+				{
+					std::cout << Token::KindString(iCurrent->GetKind()) << " | " << iCurrent->GetLex() << '\n';
+					if (iCurrent->Is(Token::Kind::Comment))
+						Preprocess(iCurrent);
+					else
+						mTokens.push_back(iCurrent);
+				}
+			}
 		}
 	}
 

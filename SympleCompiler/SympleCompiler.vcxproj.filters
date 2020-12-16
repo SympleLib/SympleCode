@@ -130,7 +130,6 @@
       <Filter>Common\Node\Statement</Filter>
     </ClInclude>
     <ClInclude Include="src\SympleCode\Compiler.h" />
-    <ClInclude Include="src\SympleCode\Preprocessor\Preprocessor.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\SympleCode\Common\Analysis\Diagnostics.cpp">
@@ -156,6 +155,5 @@
     </ClCompile>
     <ClCompile Include="src\SympleCode\Main.cpp" />
     <ClCompile Include="src\SympleCode\Compiler.cpp" />
-    <ClCompile Include="src\SympleCode\Preprocessor\Preprocessor.cpp" />
   </ItemGroup>
 </Project>
