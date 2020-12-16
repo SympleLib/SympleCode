@@ -1,8 +1,0 @@
-#include "stdio.sy"
-
-int main()
-{
-	int test_txt = fopen("sy/Test.txt", "w");
-	fputs("This test works!", test_txt);
-	fclose(test_txt);
-};

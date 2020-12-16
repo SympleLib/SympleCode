@@ -1,3 +1,0 @@
-extern int fopen(string path, string mode);
-extern int fputs(string str, int fs);
-extern int fclose(int fs);

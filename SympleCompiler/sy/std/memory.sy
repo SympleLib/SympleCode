@@ -1,0 +1,8 @@
+extern int malloc(int size);
+extern int calloc(int size);
+extern int free(int ptr);
+
+extern int memset(int ptr, byte val, int size);
+
+extern int strcmp(string l, string r);
+extern int strncmp(string l, string r, int count);

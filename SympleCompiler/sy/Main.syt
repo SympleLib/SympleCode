@@ -1,1 +1,42 @@
 L--	Compilation Unit
+ 	|--	External Function: int fopen()
+ 	|	L--	Function Arguments
+ 	|	 	|--	Function Argument (string) path
+ 	|	 	L--	Function Argument (string) mode
+ 	|--	External Function: int fputs()
+ 	|	L--	Function Arguments
+ 	|	 	|--	Function Argument (string) str
+ 	|	 	L--	Function Argument (int) fs
+ 	|--	External Function: int fprintf()
+ 	|	L--	Function Arguments
+ 	|	 	|--	Function Argument (int) fs
+ 	|	 	L--	Function Argument (string) str
+ 	|--	External Function: int fclose()
+ 	|	L--	Function Arguments
+ 	|	 	L--	Function Argument (int) fs
+ 	|--	External Function: int printf()
+ 	|	L--	Function Arguments
+ 	|	 	L--	Function Argument (string) str
+ 	|--	External Function: int puts()
+ 	|	L--	Function Arguments
+ 	|	 	L--	Function Argument (string) str
+ 	|--	External Function: int putc()
+ 	|	L--	Function Arguments
+ 	|	 	L--	Function Argument (char) c
+ 	L--	Function Declaration: int main()
+ 	 	|--	Function Arguments
+ 	 	L--	Block Statement
+ 	 	 	|--	Variable Declaration (int) test_txt
+ 	 	 	|	L--	Function Call Expression fopen()
+ 	 	 	|	 	L--	Function Call Arguments
+ 	 	 	|	 	 	|--	String Literal Expression (sy/Test.txt)
+ 	 	 	|	 	 	L--	String Literal Expression (w)
+ 	 	 	|--	Expression Statement
+ 	 	 	|	L--	Function Call Expression fputs()
+ 	 	 	|	 	L--	Function Call Arguments
+ 	 	 	|	 	 	|--	String Literal Expression (My Name or something!)
+ 	 	 	|	 	 	L--	Variable Expression test_txt
+ 	 	 	L--	Expression Statement
+ 	 	 	 	L--	Function Call Expression fclose()
+ 	 	 	 	 	L--	Function Call Arguments
+ 	 	 	 	 	 	L--	Variable Expression test_txt
