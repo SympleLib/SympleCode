@@ -1,6 +1,6 @@
 #pragma once
 
-#include "SympleCode/Common/Node/FunctionDeclarationNode.h"
+#include "SympleCode/Common/Node/Member/FunctionDeclarationNode.h"
 
 namespace Symple
 {

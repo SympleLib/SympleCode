@@ -3,13 +3,14 @@
 #include <xhash>
 #include <iostream>
 
-#include "SympleCode/Common/Node/BreakStatementNode.h"
-#include "SympleCode/Common/Node/BinaryExpressionNode.h"
-#include "SympleCode/Common/Node/VariableExpressionNode.h"
-#include "SympleCode/Common/Node/ExpressionStatementNode.h"
-#include "SympleCode/Common/Node/StringLiteralExpressionNode.h"
-#include "SympleCode/Common/Node/NumberLiteralExpressionNode.h"
-#include "SympleCode/Common/Node/BooleanLiteralExpressionNode.h"
+#include "SympleCode/Common/Node/Statement/BreakStatementNode.h"
+#include "SympleCode/Common/Node/Statement/ExpressionStatementNode.h"
+
+#include "SympleCode/Common/Node/Expression/BinaryExpressionNode.h"
+#include "SympleCode/Common/Node/Expression/VariableExpressionNode.h"
+#include "SympleCode/Common/Node/Expression/StringLiteralExpressionNode.h"
+#include "SympleCode/Common/Node/Expression/NumberLiteralExpressionNode.h"
+#include "SympleCode/Common/Node/Expression/BooleanLiteralExpressionNode.h"
 
 #include "SympleCode/Common/Priority.h"
 

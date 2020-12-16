@@ -4,8 +4,20 @@
     <Filter Include="Common">
       <UniqueIdentifier>{8EEA3EAC-7A8C-6982-6347-7DD64F88F0D2}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Common\Analysis">
+      <UniqueIdentifier>{019EC395-6D29-315A-763A-B44EE2448D5A}</UniqueIdentifier>
+    </Filter>
     <Filter Include="Common\Node">
       <UniqueIdentifier>{03DEDC28-6F93-551E-F887-4FF5643C4C22}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Common\Node\Expression">
+      <UniqueIdentifier>{42AA9ACA-2EA4-C31C-1711-5A2D03AA2989}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Common\Node\Member">
+      <UniqueIdentifier>{0A1BACD1-F6FE-6C27-5F5F-677A4B6257A9}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Common\Node\Statement">
+      <UniqueIdentifier>{A7D606B2-1343-C2AC-DC36-5A0A4862E414}</UniqueIdentifier>
     </Filter>
     <Filter Include="Emit">
       <UniqueIdentifier>{54C3847C-40FA-850D-E9E6-6B10D5FC010F}</UniqueIdentifier>
@@ -15,32 +27,89 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="src\SympleCode\Common\Node\BinaryExpressionNode.h">
-      <Filter>Common\Node</Filter>
+    <ClInclude Include="src\SympleCode\Common\Analysis\Diagnostics.h">
+      <Filter>Common\Analysis</Filter>
     </ClInclude>
-    <ClInclude Include="src\SympleCode\Common\Node\BlockStatementNode.h">
-      <Filter>Common\Node</Filter>
-    </ClInclude>
-    <ClInclude Include="src\SympleCode\Common\Node\BooleanLiteralExpressionNode.h">
-      <Filter>Common\Node</Filter>
+    <ClInclude Include="src\SympleCode\Common\Analysis\Type.h">
+      <Filter>Common\Analysis</Filter>
     </ClInclude>
     <ClInclude Include="src\SympleCode\Common\Node\CompilationUnitNode.h">
       <Filter>Common\Node</Filter>
     </ClInclude>
-    <ClInclude Include="src\SympleCode\Common\Node\ExpressionNode.h">
+    <ClInclude Include="src\SympleCode\Common\Node\Expression\BinaryExpressionNode.h">
+      <Filter>Common\Node\Expression</Filter>
+    </ClInclude>
+    <ClInclude Include="src\SympleCode\Common\Node\Expression\BooleanLiteralExpressionNode.h">
+      <Filter>Common\Node\Expression</Filter>
+    </ClInclude>
+    <ClInclude Include="src\SympleCode\Common\Node\Expression\ExpressionNode.h">
+      <Filter>Common\Node\Expression</Filter>
+    </ClInclude>
+    <ClInclude Include="src\SympleCode\Common\Node\Expression\FunctionCallExpressionNode.h">
+      <Filter>Common\Node\Expression</Filter>
+    </ClInclude>
+    <ClInclude Include="src\SympleCode\Common\Node\Expression\LiteralExpressionNode.h">
+      <Filter>Common\Node\Expression</Filter>
+    </ClInclude>
+    <ClInclude Include="src\SympleCode\Common\Node\Expression\NumberLiteralExpressionNode.h">
+      <Filter>Common\Node\Expression</Filter>
+    </ClInclude>
+    <ClInclude Include="src\SympleCode\Common\Node\Expression\ParenthesizedExpressionNode.h">
+      <Filter>Common\Node\Expression</Filter>
+    </ClInclude>
+    <ClInclude Include="src\SympleCode\Common\Node\Expression\StringLiteralExpressionNode.h">
+      <Filter>Common\Node\Expression</Filter>
+    </ClInclude>
+    <ClInclude Include="src\SympleCode\Common\Node\Expression\VariableExpressionNode.h">
+      <Filter>Common\Node\Expression</Filter>
+    </ClInclude>
+    <ClInclude Include="src\SympleCode\Common\Node\FunctionArgumentNode.h">
       <Filter>Common\Node</Filter>
     </ClInclude>
-    <ClInclude Include="src\SympleCode\Common\Node\LiteralExpressionNode.h">
+    <ClInclude Include="src\SympleCode\Common\Node\FunctionArgumentsNode.h">
       <Filter>Common\Node</Filter>
+    </ClInclude>
+    <ClInclude Include="src\SympleCode\Common\Node\FunctionCallArgumentsNode.h">
+      <Filter>Common\Node</Filter>
+    </ClInclude>
+    <ClInclude Include="src\SympleCode\Common\Node\Member\ExternFunctionNode.h">
+      <Filter>Common\Node\Member</Filter>
+    </ClInclude>
+    <ClInclude Include="src\SympleCode\Common\Node\Member\FunctionDeclarationNode.h">
+      <Filter>Common\Node\Member</Filter>
+    </ClInclude>
+    <ClInclude Include="src\SympleCode\Common\Node\Member\FunctionHintNode.h">
+      <Filter>Common\Node\Member</Filter>
+    </ClInclude>
+    <ClInclude Include="src\SympleCode\Common\Node\Member\MemberNode.h">
+      <Filter>Common\Node\Member</Filter>
     </ClInclude>
     <ClInclude Include="src\SympleCode\Common\Node\Node.h">
       <Filter>Common\Node</Filter>
     </ClInclude>
-    <ClInclude Include="src\SympleCode\Common\Node\NumberLiteralExpressionNode.h">
-      <Filter>Common\Node</Filter>
+    <ClInclude Include="src\SympleCode\Common\Node\Statement\BlockStatementNode.h">
+      <Filter>Common\Node\Statement</Filter>
     </ClInclude>
-    <ClInclude Include="src\SympleCode\Common\Node\StatementNode.h">
-      <Filter>Common\Node</Filter>
+    <ClInclude Include="src\SympleCode\Common\Node\Statement\BreakStatementNode.h">
+      <Filter>Common\Node\Statement</Filter>
+    </ClInclude>
+    <ClInclude Include="src\SympleCode\Common\Node\Statement\ExpressionStatementNode.h">
+      <Filter>Common\Node\Statement</Filter>
+    </ClInclude>
+    <ClInclude Include="src\SympleCode\Common\Node\Statement\IfStatementNode.h">
+      <Filter>Common\Node\Statement</Filter>
+    </ClInclude>
+    <ClInclude Include="src\SympleCode\Common\Node\Statement\ReturnStatementNode.h">
+      <Filter>Common\Node\Statement</Filter>
+    </ClInclude>
+    <ClInclude Include="src\SympleCode\Common\Node\Statement\StatementNode.h">
+      <Filter>Common\Node\Statement</Filter>
+    </ClInclude>
+    <ClInclude Include="src\SympleCode\Common\Node\Statement\VariableDeclarationNode.h">
+      <Filter>Common\Node\Statement</Filter>
+    </ClInclude>
+    <ClInclude Include="src\SympleCode\Common\Node\Statement\WhileStatementNode.h">
+      <Filter>Common\Node\Statement</Filter>
     </ClInclude>
     <ClInclude Include="src\SympleCode\Common\Priority.h">
       <Filter>Common</Filter>
@@ -57,29 +126,18 @@
     <ClInclude Include="src\SympleCode\Parser\Parser.h">
       <Filter>Parser</Filter>
     </ClInclude>
-    <ClInclude Include="src\SympleCode\Common\Node\MemberNode.h" />
-    <ClInclude Include="src\SympleCode\Common\Node\GlobalStatementNode.h" />
-    <ClInclude Include="src\SympleCode\Common\Node\ExpressionStatementNode.h" />
-    <ClInclude Include="src\SympleCode\Common\Node\FunctionDeclarationNode.h" />
-    <ClInclude Include="src\SympleCode\Common\Node\FunctionCallExpressionNode.h" />
-    <ClInclude Include="src\SympleCode\Common\Node\FunctionCallArgumentsNode.h" />
-    <ClInclude Include="src\SympleCode\Common\Analysis\Type.h" />
-    <ClInclude Include="src\SympleCode\Common\Node\ReturnStatementNode.h" />
-    <ClInclude Include="src\SympleCode\Common\Analysis\Diagnostics.h" />
-    <ClInclude Include="src\SympleCode\Common\Node\VariableDeclarationNode.h" />
-    <ClInclude Include="src\SympleCode\Common\Node\VariableExpressionNode.h" />
-    <ClInclude Include="src\SympleCode\Common\Node\FunctionArgumentNode.h" />
-    <ClInclude Include="src\SympleCode\Common\Node\FunctionArgumentsNode.h" />
-    <ClInclude Include="src\SympleCode\Common\Node\ParenthesizedExpressionNode.h" />
-    <ClInclude Include="src\SympleCode\Common\Node\FunctionHintNode.h" />
-    <ClInclude Include="src\SympleCode\Common\Node\StringLiteralExpressionNode.h" />
-    <ClInclude Include="src\SympleCode\Common\Node\ExternFunctionNode.h" />
-    <ClInclude Include="src\SympleCode\Common\Node\WhileStatementNode.h" />
-    <ClInclude Include="src\SympleCode\Common\Node\BreakStatementNode.h" />
-    <ClInclude Include="src\SympleCode\Common\Node\IfStatementNode.h" />
+    <ClInclude Include="src\SympleCode\Common\Node\Member\GlobalStatementNode.h">
+      <Filter>Common\Node\Statement</Filter>
+    </ClInclude>
+    <ClInclude Include="src\SympleCode\Compiler.h" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="src\SympleCode\Application.cpp" />
+    <ClCompile Include="src\SympleCode\Common\Analysis\Diagnostics.cpp">
+      <Filter>Common\Analysis</Filter>
+    </ClCompile>
+    <ClCompile Include="src\SympleCode\Common\Analysis\Type.cpp">
+      <Filter>Common\Analysis</Filter>
+    </ClCompile>
     <ClCompile Include="src\SympleCode\Common\Priority.cpp">
       <Filter>Common</Filter>
     </ClCompile>
@@ -95,7 +153,7 @@
     <ClCompile Include="src\SympleCode\Parser\Parser.cpp">
       <Filter>Parser</Filter>
     </ClCompile>
-    <ClCompile Include="src\SympleCode\Common\Analysis\Type.cpp" />
-    <ClCompile Include="src\SympleCode\Common\Analysis\Diagnostics.cpp" />
+    <ClCompile Include="src\SympleCode\Main.cpp" />
+    <ClCompile Include="src\SympleCode\Compiler.cpp" />
   </ItemGroup>
 </Project>

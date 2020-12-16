@@ -2,9 +2,9 @@
 
 #include "SympleCode/Common/Analysis/Type.h"
 
-#include "SympleCode/Common/Node/MemberNode.h"
-#include "SympleCode/Common/Node/BlockStatementNode.h"
+#include "SympleCode/Common/Node/Member/MemberNode.h"
 #include "SympleCode/Common/Node/FunctionArgumentsNode.h"
+#include "SympleCode/Common/Node/Statement/BlockStatementNode.h"
 
 namespace Symple
 {

@@ -2,8 +2,8 @@
 
 #include "SympleCode/Common/Token.h"
 #include "SympleCode/Common/Analysis/Type.h"
-#include "SympleCode/Common/Node/StatementNode.h"
-#include "SympleCode/Common/Node/ExpressionNode.h"
+#include "SympleCode/Common/Node/Statement/StatementNode.h"
+#include "SympleCode/Common/Node/Expression/ExpressionNode.h"
 
 namespace Symple
 {

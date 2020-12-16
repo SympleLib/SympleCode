@@ -5,13 +5,15 @@
 #include <cstring>
 #include <memory>
 
-#include "SympleCode/Common/Node/FunctionHintNode.h"
-#include "SympleCode/Common/Node/ExternFunctionNode.h"
-#include "SympleCode/Common/Node/GlobalStatementNode.h"
-#include "SympleCode/Common/Node/ExpressionStatementNode.h"
-#include "SympleCode/Common/Node/ParenthesizedExpressionNode.h"
-#include "SympleCode/Common/Node/NumberLiteralExpressionNode.h"
-#include "SympleCode/Common/Node/BooleanLiteralExpressionNode.h"
+#include "SympleCode/Common/Node/Member/FunctionHintNode.h"
+#include "SympleCode/Common/Node/Member/ExternFunctionNode.h"
+#include "SympleCode/Common/Node/Member/GlobalStatementNode.h"
+
+#include "SympleCode/Common/Node/Statement/ExpressionStatementNode.h"
+
+#include "SympleCode/Common/Node/Expression/ParenthesizedExpressionNode.h"
+#include "SympleCode/Common/Node/Expression/NumberLiteralExpressionNode.h"
+#include "SympleCode/Common/Node/Expression/BooleanLiteralExpressionNode.h"
 
 #if DO_COMMENTS
 #define Comment(fmt, ...) (void)fprintf_s(mFile, "# " fmt "\n", __VA_ARGS__)
@@ -329,6 +331,8 @@ namespace Symple
 
 		Comment("Function Call");
 		Comment("\tPush Arguments");
+
+		//for (unsigned int i = 0; i < call->GetArguments()->GetArguments().size(); i++)
 		for (int i = call->GetArguments()->GetArguments().size() - 1; i >= 0; i--)
 		{
 			EmitExpression(call->GetArguments()->GetArguments()[i]);

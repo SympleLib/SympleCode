@@ -2,7 +2,7 @@
 
 #include <vector>
 
-#include "SympleCode/Common/Node/MemberNode.h"
+#include "SympleCode/Common/Node/Member/MemberNode.h"
 
 namespace Symple
 {

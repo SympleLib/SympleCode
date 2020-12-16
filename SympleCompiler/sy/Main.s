@@ -1,30 +1,35 @@
-.extern _puts
+.extern _fopen
+.extern _fputs
+.extern _fclose
 .global _main
 _main:
 	push    %ebp
 	movl    %esp, %ebp
-_myBool$ = -1
+_test_txt$ = -4
 	subl    $4, %esp
-	movl    $0, %eax
-	movl    %eax, _myBool$(%ebp)
-	movl    _myBool$(%ebp), %eax
-	cmpl    $0, %eax
-	je      ..Jump.1
 	movl    $..String.0, %eax
 	push    %eax
-	call    _puts
-	addl    $4, %esp
-	jmp     ..Jump.0
-..Jump.1:
 	movl    $..String.1, %eax
 	push    %eax
-	call    _puts
+	call    _fopen
 	addl    $4, %esp
-..Jump.0:
+	movl    %eax, _test_txt$(%ebp)
+	movl    _test_txt$(%ebp), %eax
+	push    %eax
+	movl    $..String.2, %eax
+	push    %eax
+	call    _fputs
+	addl    $4, %esp
+	movl    _test_txt$(%ebp), %eax
+	push    %eax
+	call    _fclose
+	addl    $4, %esp
 	movl    %ebp, %esp
 	pop     %ebp
 	ret
 ..String.0:
-	.string "True"
+	.string "w"
 ..String.1:
-	.string "False"
+	.string "sy/Test.txt"
+..String.2:
+	.string "This test works!"

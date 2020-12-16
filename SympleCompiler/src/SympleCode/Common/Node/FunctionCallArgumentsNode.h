@@ -2,7 +2,7 @@
 
 #include <vector>
 
-#include "SympleCode/Common/Node/ExpressionNode.h"
+#include "SympleCode/Common/Node/Expression/ExpressionNode.h"
 
 namespace Symple
 {

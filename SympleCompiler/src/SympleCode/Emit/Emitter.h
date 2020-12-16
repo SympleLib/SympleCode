@@ -5,21 +5,24 @@
 
 #include "SympleCode/Common/Analysis/Diagnostics.h"
 
-#include "SympleCode/Common/Node/StatementNode.h"
-#include "SympleCode/Common/Node/ReturnStatementNode.h"
+#include "SympleCode/Common/Node/Statement/StatementNode.h"
+#include "SympleCode/Common/Node/Statement/ReturnStatementNode.h"
 
-#include "SympleCode/Common/Node/ExpressionNode.h"
-#include "SympleCode/Common/Node/IfStatementNode.h"
-#include "SympleCode/Common/Node/WhileStatementNode.h"
-#include "SympleCode/Common/Node/BreakStatementNode.h"
+#include "SympleCode/Common/Node/Statement/IfStatementNode.h"
+#include "SympleCode/Common/Node/Statement/WhileStatementNode.h"
+#include "SympleCode/Common/Node/Statement/BreakStatementNode.h"
+#include "SympleCode/Common/Node/Statement/VariableDeclarationNode.h"
+
+#include "SympleCode/Common/Node/Expression/ExpressionNode.h"
+#include "SympleCode/Common/Node/Expression/BinaryExpressionNode.h"
+#include "SympleCode/Common/Node/Expression/LiteralExpressionNode.h"
+#include "SympleCode/Common/Node/Expression/VariableExpressionNode.h"
+#include "SympleCode/Common/Node/Expression/FunctionCallExpressionNode.h"
+#include "SympleCode/Common/Node/Expression/StringLiteralExpressionNode.h"
+
 #include "SympleCode/Common/Node/CompilationUnitNode.h"
-#include "SympleCode/Common/Node/BinaryExpressionNode.h"
-#include "SympleCode/Common/Node/LiteralExpressionNode.h"
-#include "SympleCode/Common/Node/VariableExpressionNode.h"
-#include "SympleCode/Common/Node/FunctionDeclarationNode.h"
-#include "SympleCode/Common/Node/VariableDeclarationNode.h"
-#include "SympleCode/Common/Node/FunctionCallExpressionNode.h"
-#include "SympleCode/Common/Node/StringLiteralExpressionNode.h"
+
+#include "SympleCode/Common/Node/Member/FunctionDeclarationNode.h"
 
 #define DO_COMMENTS false
 

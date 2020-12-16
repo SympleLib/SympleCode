@@ -1,18 +1,18 @@
 #pragma once
 
-#include "SympleCode/Common/Node/LiteralExpressionNode.h"
+#include "SympleCode/Common/Node/Expression/LiteralExpressionNode.h"
 
 namespace Symple
 {
-	class BooleanLiteralExpressionNode : public LiteralExpressionNode
+	class NumberLiteralExpressionNode : public LiteralExpressionNode
 	{
 	public:
-		BooleanLiteralExpressionNode(const Token* literal)
+		NumberLiteralExpressionNode(const Token* literal)
 			: LiteralExpressionNode(literal) {}
 
 		Kind GetKind() const override
 		{
-			return Kind::BooleanLiteralExpression;
+			return Kind::NumberLiteralExpression;
 		}
 
 		std::string ToString(const std::string& indent = "", bool last = true) const override
@@ -23,7 +23,7 @@ namespace Symple
 				ss << "L--\t";
 			else
 				ss << "|--\t";
-			ss << "Boolean Literal Expression (" << mLiteral->GetLex() << ")";
+			ss << "Number Literal Expression (" << mLiteral->GetLex() << ")";
 
 			return ss.str();
 		}

@@ -4,25 +4,25 @@
 
 #include "SympleCode/Parser/Lexer.h"
 #include "SympleCode/Common/Node/Node.h"
-
-#include "SympleCode/Common/Node/IfStatementNode.h"
-#include "SympleCode/Common/Node/BlockStatementNode.h"
-#include "SympleCode/Common/Node/WhileStatementNode.h"
-#include "SympleCode/Common/Node/GlobalStatementNode.h"
-#include "SympleCode/Common/Node/ReturnStatementNode.h"
 #include "SympleCode/Common/Node/CompilationUnitNode.h"
-#include "SympleCode/Common/Node/VariableDeclarationNode.h"
-
-#include "SympleCode/Common/Node/FunctionHintNode.h"
-#include "SympleCode/Common/Node/ExternFunctionNode.h"
 #include "SympleCode/Common/Node/FunctionArgumentsNode.h"
-#include "SympleCode/Common/Node/FunctionDeclarationNode.h"
 #include "SympleCode/Common/Node/FunctionCallArgumentsNode.h"
-#include "SympleCode/Common/Node/FunctionCallExpressionNode.h"
 
-#include "SympleCode/Common/Node/ExpressionNode.h"
-#include "SympleCode/Common/Node/LiteralExpressionNode.h"
-#include "SympleCode/Common/Node/ParenthesizedExpressionNode.h"
+#include "SympleCode/Common/Node/Statement/IfStatementNode.h"
+#include "SympleCode/Common/Node/Statement/BlockStatementNode.h"
+#include "SympleCode/Common/Node/Statement/WhileStatementNode.h"
+#include "SympleCode/Common/Node/Statement/ReturnStatementNode.h"
+#include "SympleCode/Common/Node/Statement/VariableDeclarationNode.h"
+
+#include "SympleCode/Common/Node/Member/FunctionDeclarationNode.h"
+#include "SympleCode/Common/Node/Member/ExternFunctionNode.h"
+#include "SympleCode/Common/Node/Member/FunctionHintNode.h"
+#include "SympleCode/Common/Node/Member/GlobalStatementNode.h"
+
+#include "SympleCode/Common/Node/Expression/ExpressionNode.h"
+#include "SympleCode/Common/Node/Expression/LiteralExpressionNode.h"
+#include "SympleCode/Common/Node/Expression/FunctionCallExpressionNode.h"
+#include "SympleCode/Common/Node/Expression/ParenthesizedExpressionNode.h"
 
 #include "SympleCode/Common/Analysis/Type.h"
 #include "SympleCode/Common/Analysis/Diagnostics.h"

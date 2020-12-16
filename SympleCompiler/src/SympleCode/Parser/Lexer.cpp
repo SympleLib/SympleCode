@@ -157,7 +157,7 @@ namespace Symple
 	{
 		Get();
 		const char* beg = mCurrent;
-		while (Peek() != '"')
+		while (Peek() != '"' || Peek(-1) == '\\')
 			Get();
 		Get();
 		return new Token(Token::Kind::String, beg, mCurrent - 1, mLine, mColumn);

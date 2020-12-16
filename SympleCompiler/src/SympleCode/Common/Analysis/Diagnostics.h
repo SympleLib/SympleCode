@@ -4,7 +4,7 @@
 #include <string>
 
 #include "SympleCode/Common/Token.h"
-#include "SympleCode/Common/Node/FunctionDeclarationNode.h"
+#include "SympleCode/Common/Node/Member/FunctionDeclarationNode.h"
 
 #define DIAGNOSTIC_LEVEL_ERROR    2
 #define DIAGNOSTIC_LEVEL_WARNING  1

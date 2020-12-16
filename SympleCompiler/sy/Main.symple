@@ -1,13 +1,10 @@
-hint int Add(int left, int right);
-hint int Sub(int left, int right);
-hint int Mul(int left, int right);
-hint int Div(int left, int right);
-
-hint int Pow(int left, int right);
-
-extern void puts(string str);
+extern int fopen(string path, string mode);
+extern int fputs(string str, int fs);
+extern int fclose(int fs);
 
 int main()
 {
-	
+	int test_txt = fopen("sy/Test.txt", "w");
+	fputs("This test works!", test_txt);
+	fclose(test_txt);
 };

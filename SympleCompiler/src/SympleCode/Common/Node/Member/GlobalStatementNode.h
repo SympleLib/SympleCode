@@ -1,7 +1,7 @@
 #pragma once
 
-#include "SympleCode/Common/Node/StatementNode.h"
-#include "SympleCode/Common/Node/MemberNode.h"
+#include "SympleCode/Common/Node/Statement/StatementNode.h"
+#include "SympleCode/Common/Node/Member/MemberNode.h"
 
 namespace Symple
 {

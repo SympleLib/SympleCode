@@ -3,8 +3,8 @@
 #include <map>
 
 #include "SympleCode/Common/Token.h"
-#include "SympleCode/Common/Node/StatementNode.h"
-#include "SympleCode/Common/Node/VariableDeclarationNode.h"
+#include "SympleCode/Common/Node/Statement/StatementNode.h"
+#include "SympleCode/Common/Node/Statement/VariableDeclarationNode.h"
 
 namespace Symple
 {
