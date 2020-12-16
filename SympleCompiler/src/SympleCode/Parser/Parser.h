@@ -5,6 +5,7 @@
 #include "SympleCode/Parser/Lexer.h"
 #include "SympleCode/Common/Node/Node.h"
 
+#include "SympleCode/Common/Node/IfStatementNode.h"
 #include "SympleCode/Common/Node/BlockStatementNode.h"
 #include "SympleCode/Common/Node/WhileStatementNode.h"
 #include "SympleCode/Common/Node/GlobalStatementNode.h"
@@ -59,6 +60,7 @@ namespace Symple
 		FunctionHintNode* ParseFunctionHint();
 
 		StatementNode* ParseStatement();
+		IfStatementNode* ParseIfStatement();
 		WhileStatementNode* ParseWhileStatement();
 		BlockStatementNode* ParseBlockStatement();
 		ReturnStatementNode* ParseReturnStatement();

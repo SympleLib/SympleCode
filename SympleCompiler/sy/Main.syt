@@ -26,24 +26,18 @@ L--	Compilation Unit
  	 	|--	Function Arguments
  	 	L--	Block Statement
  	 	 	|--	Variable Declaration (bool) myBool
- 	 	 	|	L--	Boolean Literal Expression (true)
- 	 	 	|--	While Statement:
- 	 	 	|	|--	Variable Expression myBool
- 	 	 	|	L--	Block Statement
- 	 	 	|	 	|--	Expression Statement
- 	 	 	|	 	|	L--	Function Call Expression puts()
- 	 	 	|	 	|	 	L--	Function Call Arguments
- 	 	 	|	 	|	 	 	L--	String Literal Expression (True)
- 	 	 	|	 	|--	Break Statement
- 	 	 	|	 	L--	Node of Kind: Statement
- 	 	 	L--	While Statement:
- 	 	 	 	|--	Binary Expression [!=]
- 	 	 	 	|	|--	Variable Expression myBool
- 	 	 	 	|	L--	Boolean Literal Expression (true)
+ 	 	 	|	L--	Boolean Literal Expression (false)
+ 	 	 	L--	If Statement:
+ 	 	 	 	|--	Variable Expression myBool
+Then
+ 	 	 	 	|--	Block Statement
+ 	 	 	 	|	L--	Expression Statement
+ 	 	 	 	|	 	L--	Function Call Expression puts()
+ 	 	 	 	|	 	 	L--	Function Call Arguments
+ 	 	 	 	|	 	 	 	L--	String Literal Expression (True)
+Else
  	 	 	 	L--	Block Statement
- 	 	 	 	 	|--	Expression Statement
- 	 	 	 	 	|	L--	Function Call Expression puts()
- 	 	 	 	 	|	 	L--	Function Call Arguments
- 	 	 	 	 	|	 	 	L--	String Literal Expression (False)
- 	 	 	 	 	|--	Break Statement
- 	 	 	 	 	L--	Node of Kind: Statement
+ 	 	 	 	 	L--	Expression Statement
+ 	 	 	 	 	 	L--	Function Call Expression puts()
+ 	 	 	 	 	 	 	L--	Function Call Arguments
+ 	 	 	 	 	 	 	 	L--	String Literal Expression (False)

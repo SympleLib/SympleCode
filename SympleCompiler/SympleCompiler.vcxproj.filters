@@ -76,6 +76,7 @@
     <ClInclude Include="src\SympleCode\Common\Node\ExternFunctionNode.h" />
     <ClInclude Include="src\SympleCode\Common\Node\WhileStatementNode.h" />
     <ClInclude Include="src\SympleCode\Common\Node\BreakStatementNode.h" />
+    <ClInclude Include="src\SympleCode\Common\Node\IfStatementNode.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\SympleCode\Application.cpp" />

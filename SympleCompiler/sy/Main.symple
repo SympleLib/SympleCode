@@ -9,16 +9,13 @@ extern void puts(string str);
 
 int main()
 {
-	bool myBool = true;
-	while myBool
+	bool myBool = false;
+	if myBool
 	{
 		puts("True");
-		break;
-	};
-	
-	while myBool != true
+	}
+	else
 	{
 		puts("False");
-		break;
 	};
 };

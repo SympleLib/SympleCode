@@ -153,6 +153,8 @@ namespace Symple
 			return EmitExpression(statement->Cast<ExpressionStatementNode>()->GetExpression());
 		if (statement->Is<ReturnStatementNode>())
 			EmitExpression(statement->Cast<ReturnStatementNode>()->GetExpression());
+		if (statement->Is<IfStatementNode>())
+			return EmitIfStatement(statement->Cast<IfStatementNode>());
 		if (statement->Is<WhileStatementNode>())
 			return EmitWhileStatement(statement->Cast<WhileStatementNode>());
 		if (statement->Is<VariableDeclarationNode>())
@@ -161,6 +163,30 @@ namespace Symple
 			return EmitBlockStatement(statement->Cast<BlockStatementNode>());
 		if (statement->Is<BreakStatementNode>())
 			return EmitBreakStatement(statement->Cast<BreakStatementNode>());
+	}
+
+	void Emitter::EmitIfStatement(const IfStatementNode* statement)
+	{
+		unsigned int afterJumpPos = mJumpPos;
+		mJumpPos++;
+		unsigned int elseJumpPos = mJumpPos;
+		mJumpPos++;
+
+
+		EmitExpression(statement->GetCondition());
+		Write("\tcmp%c    $0, %s", Mod(), RegAx());
+		Write("\tje      ..Jump.%i", elseJumpPos);
+
+		for (const StatementNode* statement : statement->GetThen()->GetStatements())
+			EmitStatement(statement);
+
+		Write("\tjmp     ..Jump.%i", afterJumpPos);
+		Write("..Jump.%i:", elseJumpPos);
+
+		for (const StatementNode* statement : statement->GetElse()->GetStatements())
+			EmitStatement(statement);
+
+		Write("..Jump.%i:", afterJumpPos);
 	}
 
 	void Emitter::EmitBreakStatement(const BreakStatementNode* statement)

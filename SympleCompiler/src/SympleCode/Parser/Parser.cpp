@@ -193,6 +193,8 @@ namespace Symple
 			return ParseReturnStatement();
 		if (Peek()->Is(Token::Kind::While))
 			return ParseWhileStatement();
+		if (Peek()->Is(Token::Kind::If))
+			return ParseIfStatement();
 		if (Peek()->Is(Token::Kind::Break))
 			return new BreakStatementNode(Next());
 		if (IsType(Peek()))
@@ -206,6 +208,22 @@ namespace Symple
 		ExpressionNode* expression = ParseExpression();
 		Match(Token::Kind::Semicolon);
 		return new ExpressionStatementNode(expression);
+	}
+
+	IfStatementNode* Parser::ParseIfStatement()
+	{
+		const Token* open = Match(Token::Kind::If);
+		ExpressionNode* condition = ParseExpression();
+		BlockStatementNode* then = ParseBlockStatement();
+		BlockStatementNode* elze = nullptr;
+		if (Peek()->Is(Token::Kind::Else))
+		{
+			Next();
+			elze = ParseBlockStatement();
+		}
+		Match(Token::Kind::Semicolon);
+
+		return new IfStatementNode(open, condition, then, elze);
 	}
 
 	WhileStatementNode* Parser::ParseWhileStatement()

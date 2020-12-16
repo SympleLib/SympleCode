@@ -9,6 +9,7 @@
 #include "SympleCode/Common/Node/ReturnStatementNode.h"
 
 #include "SympleCode/Common/Node/ExpressionNode.h"
+#include "SympleCode/Common/Node/IfStatementNode.h"
 #include "SympleCode/Common/Node/WhileStatementNode.h"
 #include "SympleCode/Common/Node/BreakStatementNode.h"
 #include "SympleCode/Common/Node/CompilationUnitNode.h"
@@ -53,6 +54,7 @@ namespace Symple
 		void EmitVariableDeclaration(const VariableDeclarationNode* declaration);
 
 		void EmitStatement(const StatementNode* statement);
+		void EmitIfStatement(const IfStatementNode* statement);
 		void EmitBreakStatement(const BreakStatementNode* statement);
 		void EmitBlockStatement(const BlockStatementNode* statement);
 		void EmitWhileStatement(const WhileStatementNode* statement);

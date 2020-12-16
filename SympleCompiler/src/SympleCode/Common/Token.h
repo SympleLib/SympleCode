@@ -39,6 +39,9 @@ namespace Symple
 			Return,
 			Extern,
 
+			If,
+			Else,
+
 			Comment,
 
 			Unknown = -2,
@@ -52,6 +55,7 @@ namespace Symple
 			"Comma", "Semicolon",
 			"OpenBracket", "CloseBracket", "OpenParenthesis", "CloseParenthesis",
 			"Hint", "True", "False", "While", "Break", "Return", "Extern",
+			"If", "Else",
 			"Comment",
 		};
 

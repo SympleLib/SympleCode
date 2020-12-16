@@ -126,6 +126,11 @@ namespace Symple
 			return new Token(Token::Kind::While, beg, mCurrent, mLine, mColumn);
 		if (identifier == "extern")
 			return new Token(Token::Kind::Extern, beg, mCurrent, mLine, mColumn);
+
+		if (identifier == "if")
+			return new Token(Token::Kind::If, beg, mCurrent, mLine, mColumn);
+		if (identifier == "else")
+			return new Token(Token::Kind::Else, beg, mCurrent, mLine, mColumn);
 		return new Token(Token::Kind::Identifier, beg, mCurrent, mLine, mColumn);
 	}
 
