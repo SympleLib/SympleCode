@@ -7,9 +7,9 @@ int main(unsigned int argc, const char* argv[])
 	SetConsoleTitleA("SympleCode Compiler - Treidex");
 
 	Symple::Compiler compiler;
-	if (compiler.CompileFile("sy\\Main.symple"))
+	if (compiler.CompileFile("Main.symple"))
 	{
-		compiler.Link("sy\\Main.exe");
+		compiler.Link("Main.exe");
 		compiler.Run();
 	}
 

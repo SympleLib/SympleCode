@@ -43,6 +43,10 @@ namespace Symple
 			return Atom(Token::Kind::OpenParenthesis);
 		case ')':
 			return Atom(Token::Kind::CloseParenthesis);
+		case '<':
+			return Atom(Token::Kind::LeftArrow);
+		case '>':
+			return Atom(Token::Kind::RightArrow);
 		case ',':
 			return Atom(Token::Kind::Comma);
 		case '#':
@@ -159,6 +163,8 @@ namespace Symple
 		const char* beg = mCurrent;
 		while (Peek() != '"' || Peek(-1) == '\\')
 			Get();
+		if (CheckNewLine(Peek()))
+			return new Token(Token::Kind::String, beg, mCurrent - 1, mLine, mColumn);
 		Get();
 		return new Token(Token::Kind::String, beg, mCurrent - 1, mLine, mColumn);
 	}

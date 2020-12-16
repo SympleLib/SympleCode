@@ -23,9 +23,22 @@ namespace Symple
 		while (!current->Is(Token::Kind::EndOfFile))
 		{
 			current = mLexer.Next();
-			//std::cout << Token::KindString(current->GetKind()) << " | " << current->GetLex() << '\n';
+			std::cout << Token::KindString(current->GetKind()) << " | " << current->GetLex() << '\n';
 			if (!current->Is(Token::Kind::Comment))
 				mTokens.push_back(current);
+		}
+	}
+
+	Parser::Parser(const std::vector<const Token*>& tokens)
+		: mPosition(0), mTypes(Type::PrimitiveTypes), mDiagnostics(new Diagnostics)
+	{
+		for (const Token* token : tokens)
+		{
+			//std::cout << Token::KindString(token->GetKind()) << " | " << token->GetLex() << '\n';
+			std::cout << (int)token->GetKind() << " | " << token->GetLex() << '\n';
+			std::cout << token->GetLex() << '\n';
+			if (!token->Is(Token::Kind::Comment))
+				mTokens.push_back(token);
 		}
 	}
 
