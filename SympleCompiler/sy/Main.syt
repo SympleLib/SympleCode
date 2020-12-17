@@ -26,17 +26,7 @@ L--	Compilation Unit
  	L--	Function Declaration: int main()
  	 	|--	Function Arguments
  	 	L--	Block Statement
- 	 	 	|--	Variable Declaration (int) test_txt
- 	 	 	|	L--	Function Call Expression fopen()
- 	 	 	|	 	L--	Function Call Arguments
- 	 	 	|	 	 	|--	String Literal Expression (sy/Test.txt)
- 	 	 	|	 	 	L--	String Literal Expression (w)
- 	 	 	|--	Expression Statement
- 	 	 	|	L--	Function Call Expression fputs()
- 	 	 	|	 	L--	Function Call Arguments
- 	 	 	|	 	 	|--	String Literal Expression (My Name or something!)
- 	 	 	|	 	 	L--	Variable Expression test_txt
- 	 	 	L--	Expression Statement
- 	 	 	 	L--	Function Call Expression fclose()
- 	 	 	 	 	L--	Function Call Arguments
- 	 	 	 	 	 	L--	Variable Expression test_txt
+ 	 	 	|--	Variable Declaration (short) num
+ 	 	 	|	L--	Number Literal Expression (45)
+ 	 	 	L--	Variable Declaration (int) num2
+ 	 	 	 	L--	Variable Expression num

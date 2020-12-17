@@ -51,6 +51,8 @@ namespace Symple
 		static char* RegDx(int size = 4);
 		static char Mod(int size = 4);
 
+		void EmitCast(int from, int to = 4);
+
 		void EmitMember(const MemberNode* member);
 
 		void EmitFunctionDeclaration(const FunctionDeclarationNode* declaration);

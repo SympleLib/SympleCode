@@ -2,7 +2,6 @@
 
 int main()
 {
-	int test_txt = fopen("sy/Test.txt", "w");
-	fputs("My Name or something!", test_txt);
-	fclose(test_txt);
+	short num = 45;
+	int num2 = num;
 };

@@ -18,7 +18,7 @@
 #if DO_COMMENTS
 #define Comment(fmt, ...) (void)fprintf_s(mFile, "# " fmt "\n", __VA_ARGS__)
 #else
-#define Comment(fmt, ...)
+#define Comment(fmt, ...) (void())
 #endif
 #define Write(fmt, ...) ((void)fprintf_s(mFile, fmt "\n", __VA_ARGS__))
 #define WriteLiteral(fmt, ...) ((void)fprintf_s(mLiteralFile, fmt "\n", __VA_ARGS__))
@@ -83,6 +83,13 @@ namespace Symple
 		return ' ';
 	}
 
+	void Emitter::EmitCast(int from, int to)
+	{
+		if (from == to)
+			return;
+		return Write("\tmovs%c%c  %s, %s", Mod(from), Mod(to), RegAx(from), RegAx(to));
+	}
+
 	void Emitter::EmitMember(const MemberNode* member)
 	{
 		if (member->Is<FunctionDeclarationNode>())
@@ -101,12 +108,15 @@ namespace Symple
 		unsigned int pStackPos = mStackPos;
 		mStackPos = 0;
 
+		std::string name = std::string(declaration->GetName()->GetLex());
 		Comment("Function Declaration");
-		Write(".global _%s", std::string(declaration->GetName()->GetLex()).c_str());
-		Write("_%s:", std::string(declaration->GetName()->GetLex()).c_str());
+		Write(".global _%s", name.c_str());
+		Write("_%s:", name.c_str());
 		Comment("\tPush Stack");
 		Write("\tpush    %%ebp");
 		Write("\tmovl    %%esp, %%ebp");
+		if (name == "main")
+			Write("xorl    %%eax, %%eax");
 
 		Comment("\tFunction Arguments");
 		unsigned int pos = 4;
@@ -136,16 +146,17 @@ namespace Symple
 	void Emitter::EmitVariableDeclaration(const VariableDeclarationNode* declaration)
 	{
 		std::string name = std::string(declaration->GetName()->GetLex());
-		mStackPos += declaration->GetType()->GetSize();
+		unsigned int size = declaration->GetType()->GetSize();
+		mStackPos += size;
 
 		mDeclaredVariables.insert({ declaration->GetName()->GetLex(), declaration });
 
 		Write("_%s$ = -%i", name.c_str(), mStackPos);
-		Write("\tsubl    $%i, %%esp", 4);
+		Write("\tsubl    $%i, %%esp", size);
 		if (declaration->GetInitializer()->GetKind() != Node::Kind::Expression)
 		{
-			EmitExpression(declaration->GetInitializer());
-			Write("\tmov%c    %s, _%s$(%%ebp)", Mod(), RegAx(), name.c_str());
+			EmitExpression(declaration->GetInitializer(), size);
+			Write("\tmov%c    %s, _%s$(%%ebp)", Mod(size), RegAx(size), name.c_str());
 		}
 	}
 
@@ -243,12 +254,13 @@ namespace Symple
 
 	void Emitter::EmitLiteralExpression(const LiteralExpressionNode* expression, int size)
 	{
-		if (expression->Is<NumberLiteralExpressionNode>())
-			return Write("\tmov%c    $%s, %s", Mod(), std::string(expression->GetLiteral()->GetLex()).c_str(), RegAx());
 		if (expression->Is<StringLiteralExpressionNode>())
 			return EmitStringLiteralExpression(expression->Cast<StringLiteralExpressionNode>());
+
+		if (expression->Is<NumberLiteralExpressionNode>())
+			Write("\tmov%c    $%s, %s", Mod(size), std::string(expression->GetLiteral()->GetLex()).c_str(), RegAx(size));
 		if (expression->Is<BooleanLiteralExpressionNode>())
-			return Write("\tmov%c    $%i, %s", Mod(), expression->GetLiteral()->Is(Token::Kind::True), RegAx());
+			Write("\tmov%c    $%i, %s", Mod(size), expression->GetLiteral()->Is(Token::Kind::True), RegAx(size));
 	}
 
 	void Emitter::EmitStringLiteralExpression(const StringLiteralExpressionNode* literal, int size)
@@ -317,10 +329,13 @@ namespace Symple
 
 	void Emitter::EmitVariableExpression(const VariableExpressionNode* expression, int size)
 	{
+		std::string name = std::string(expression->GetName()->GetLex());
+		int varSize = mDeclaredVariables[name]->GetType()->GetSize();
 		if (!VariableDefined(expression->GetName()->GetLex()))
-			return mDiagnostics->ReportError(expression->GetName(), "'%s' is not a Variable", std::string(expression->GetName()->GetLex()).c_str());
+			return mDiagnostics->ReportError(expression->GetName(), "'%s' is not a Variable", name.c_str());
 
-		Write("\tmov%c    _%s$(%%ebp), %s", Mod(), std::string(expression->GetName()->GetLex()).c_str(), RegAx());
+		Write("\tmov%c    _%s$(%%ebp), %s", Mod(varSize), name.c_str(), RegAx(varSize));
+		EmitCast(varSize);
 	}
 
 	void Emitter::EmitFunctionCallExpression(const FunctionCallExpressionNode* call, int size)
