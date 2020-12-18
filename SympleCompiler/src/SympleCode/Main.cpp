@@ -38,9 +38,10 @@ static void FindFiles(const std::string& dir)
 	{
 		if (fdata.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY)
 		{
-			printf("dir: %s\n", dir + '/' + fdata.cFileName);
+			std::string newDir = dir + '/' + fdata.cFileName;
+			printf("dir: %s\n", newDir.c_str());
 
-			FindFiles(fdata.cFileName);
+			FindFiles(newDir);
 		}
 		else
 		{
