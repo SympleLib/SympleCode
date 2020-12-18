@@ -72,6 +72,21 @@ namespace Symple
 		return "%eax";
 	}
 
+	char* Emitter::RegCx()
+	{
+		return "%ecx";
+	}
+
+	char* Emitter::RegSp()
+	{
+		return "%esp";
+	}
+
+	char* Emitter::RegBp()
+	{
+		return "%ebp";
+	}
+
 	char Emitter::Mod(int size)
 	{
 		if (size <= 1)
@@ -113,8 +128,8 @@ namespace Symple
 		Write(".global _%s", name.c_str());
 		Write("_%s:", name.c_str());
 		Comment("\tPush Stack");
-		Write("\tpush    %%ebp");
-		Write("\tmovl    %%esp, %%ebp");
+		Write("\tpush    %s", RegBp());
+		Write("\tmovl    %s, %s", RegSp(), RegBp());
 		if (name == "main")
 			Write("\txorl    %%eax, %%eax");
 
@@ -131,8 +146,8 @@ namespace Symple
 			EmitStatement(statement);
 
 		Comment("\tPop Stack and Return");
-		Write("\tmovl    %%ebp, %%esp");
-		Write("\tpop     %%ebp");
+		Write("\tmovl    %s, %s", RegBp(), RegSp());
+		Write("\tpop     %s", RegBp());
 		Write("\tret");
 
 		for (const auto& variable : declaration->GetBody()->GetVariables())
@@ -152,11 +167,11 @@ namespace Symple
 		mDeclaredVariables.insert({ declaration->GetName()->GetLex(), declaration });
 
 		Write("_%s$ = -%i", name.c_str(), mStackPos);
-		Write("\tsubl    $%i, %%esp", size);
+		Write("\tsubl    $%i, %s", size, RegSp());
 		if (declaration->GetInitializer()->GetKind() != Node::Kind::Expression)
 		{
 			EmitExpression(declaration->GetInitializer(), size);
-			Write("\tmov%c    %s, _%s$(%%ebp)", Mod(size), RegAx(size), name.c_str());
+			Write("\tmov%c    %s, _%s$(%s)", Mod(size), RegAx(size), name.c_str(), RegBp());
 		}
 	}
 
@@ -276,7 +291,7 @@ namespace Symple
 			if (expression->GetValue()->GetKind() == Node::Kind::VariableExpression)
 			{
 				std::string name(expression->GetValue()->Cast<VariableExpressionNode>()->GetName()->GetLex());
-				return Write("\tlea%c    _%s$(%%esp), %s", Mod(mDeclaredVariables[name]->GetType()->GetSize()), name.c_str(), RegAx());
+				return Write("\tlea%c    _%s$(%s), %s", Mod(mDeclaredVariables[name]->GetType()->GetSize()), name.c_str(), RegBp(), RegAx());
 			}
 			if (expression->GetValue()->GetKind() == Node::Kind::PointerIndexExpression)
 			{
@@ -285,7 +300,7 @@ namespace Symple
 
 				EmitExpression(expr->GetIndex());
 				Write("\tmov%c    %s, %s", Mod(), RegAx(), RegDx());
-				Write("\tlea%c    _%s$(%%esp), %s", Mod(mDeclaredVariables[name]->GetType()->GetSize()), name.c_str(), RegAx());
+				Write("\tlea%c    _%s$(%s), %s", Mod(mDeclaredVariables[name]->GetType()->GetSize()), name.c_str(), RegBp(), RegAx());
 				return Write("\tadd%c    %s, %s", Mod(), RegDx(), RegAx());
 			}
 
@@ -312,7 +327,7 @@ namespace Symple
 			if (expression->GetLeft()->GetKind() == Node::Kind::VariableExpression)
 			{
 				EmitExpression(expression->GetRight(), size);
-				return Write("\tmov%c    %s, _%s$(%%ebp)", Mod(), RegAx(), std::string(expression->GetLeft()->Cast<VariableExpressionNode>()->GetName()->GetLex()).c_str());
+				return Write("\tmov%c    %s, _%s$(%s)", Mod(), RegAx(), std::string(expression->GetLeft()->Cast<VariableExpressionNode>()->GetName()->GetLex()).c_str(), RegBp());
 			}
 			if (expression->GetLeft()->GetKind() == Node::Kind::PointerIndexExpression)
 			{
@@ -322,7 +337,7 @@ namespace Symple
 				Write("\tpush%c    %s", Mod(), RegAx());
 				EmitExpression(expr->GetIndex());
 				Write("\tpush%c   %s", Mod(), RegAx());
-				Write("\tmov%c    _%s$(%%ebp), %s", Mod(), std::string(expr->GetExpression()->GetName()->GetLex()).c_str(), RegAx());
+				Write("\tmov%c    _%s$(%s), %s", Mod(), std::string(expr->GetExpression()->GetName()->GetLex()).c_str(), RegBp(), RegAx());
 				Write("\tpop%c    %s", Mod(), RegDx());
 				Write("\tadd%c    %s, %s", Mod(), RegDx(), RegAx());
 				Write("\tpop%c    %s", Mod(), RegDx());
@@ -384,7 +399,7 @@ namespace Symple
 		if (!VariableDefined(expression->GetName()->GetLex()))
 			return mDiagnostics->ReportError(expression->GetName(), "'%s' is not a Variable", name.c_str());
 
-		Write("\tmov%c    _%s$(%%ebp), %s", Mod(varSize), name.c_str(), RegAx(varSize));
+		Write("\tmov%c    _%s$(%s), %s", Mod(varSize), name.c_str(), RegBp(), RegAx(varSize));
 		EmitCast(varSize);
 	}
 
@@ -408,14 +423,14 @@ namespace Symple
 		Comment("\tCall Function");
 		Write("\tcall    _%s", std::string(call->GetName()->GetLex()).c_str());
 		Comment("\tPop Arguments");
-		Write("\taddl    $%i, %%esp", pushedSize);
+		Write("\taddl    $%i, %s", pushedSize, RegSp());
 	}
 
 	void Emitter::EmitPointerIndexExpression(const PointerIndexExpressionNode* expression, int size)
 	{
 		EmitExpression(expression->GetIndex());
 		Write("\tmov%c    %s, %s", Mod(), RegAx(), RegDx());
-		Write("\tmov%c    _%s$(%%ebp), %s", Mod(), std::string(expression->GetExpression()->GetName()->GetLex()).c_str(), RegAx());
+		Write("\tmov%c    _%s$(%s), %s", Mod(), std::string(expression->GetExpression()->GetName()->GetLex()).c_str(), RegBp(), RegAx());
 		Write("\tadd%c    %s, %s", Mod(), RegDx(), RegAx());
 		Write("\tmov%c    (%s), %s", Mod(), RegAx(), RegAx());
 	}

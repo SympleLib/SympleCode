@@ -57,7 +57,7 @@ _size$ = 12
 _sz$ = -4
 	subl    $4, %esp
 
-	leal    _size$(%esp), %eax
+	leal    _size$(%ebp), %eax
 	movl    %eax, _sz$(%ebp)
 _rvec$ = -8
 	subl    $4, %esp
@@ -146,20 +146,6 @@ _rvec$ = -8
 	movb    %dl, (%eax)
 	movb    %dl, %al
 	movsbl  %al, %eax
-
-
-	movl    _size$(%ebp), %eax
-	pushl   %eax
-
-
-	movl    _sz$(%ebp), %eax
-	movl    (%eax), %eax
-	pushl   %eax
-
-	movl    $..String.0, %eax
-	pushl   %eax
-	call    _printf
-	addl    $12, %esp
 	movl    %ebp, %esp
 	pop     %ebp
 	ret
@@ -176,7 +162,7 @@ _vec$ = -4
 	movl    %eax, _vec$(%ebp)
 
 
-	movl    $1337, %eax
+	movl    $0x1337, %eax
 	pushl   %eax
 
 	movl    _vec$(%ebp), %eax
@@ -192,5 +178,3 @@ _vec$ = -4
 	movl    %ebp, %esp
 	pop     %ebp
 	ret
-..String.0:
-	.string "size = %i, rsize = %i\n"

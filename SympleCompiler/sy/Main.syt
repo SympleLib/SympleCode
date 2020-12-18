@@ -9,8 +9,7 @@ L--	Compilation Unit
  	|	 	L--	Function Argument (int) count
  	|--	External Function: ptr printf()
  	|	L--	Function Arguments
- 	|	 	|--	Function Argument (string) fmt
- 	|	 	L--	Function Argument (int) size
+ 	|	 	L--	Function Argument (string) fmt
  	|--	Function Declaration: ptr Vector__New()
  	|	|--	Function Arguments
  	|	L--	Block Statement
@@ -69,21 +68,14 @@ L--	Compilation Unit
  	|	 	|	 	L--	Pointer Index Expression
  	|	 	|	 	 	|--	Variable Expression sz
  	|	 	|	 	 	L--	Number Literal Expression (2)
- 	|	 	|--	Expression Statement
- 	|	 	|	L--	Binary Expression [=]
- 	|	 	|	 	|--	Pointer Index Expression
- 	|	 	|	 	|	|--	Variable Expression rvec
- 	|	 	|	 	|	L--	Number Literal Expression (3)
- 	|	 	|	 	L--	Pointer Index Expression
- 	|	 	|	 	 	|--	Variable Expression sz
- 	|	 	|	 	 	L--	Number Literal Expression (3)
  	|	 	L--	Expression Statement
- 	|	 	 	L--	Function Call Expression printf()
- 	|	 	 	 	L--	Function Call Arguments
- 	|	 	 	 	 	|--	String Literal Expression (size = %i, rsize = %i\n)
- 	|	 	 	 	 	|--	UnaryExpression Expression [*]
- 	|	 	 	 	 	|	L--	Variable Expression sz
- 	|	 	 	 	 	L--	Variable Expression size
+ 	|	 	 	L--	Binary Expression [=]
+ 	|	 	 	 	|--	Pointer Index Expression
+ 	|	 	 	 	|	|--	Variable Expression rvec
+ 	|	 	 	 	|	L--	Number Literal Expression (3)
+ 	|	 	 	 	L--	Pointer Index Expression
+ 	|	 	 	 	 	|--	Variable Expression sz
+ 	|	 	 	 	 	L--	Number Literal Expression (3)
  	L--	Function Declaration: int main()
  	 	|--	Function Arguments
  	 	L--	Block Statement
@@ -94,7 +86,7 @@ L--	Compilation Unit
  	 	 	|	L--	Function Call Expression Vector__SetSize()
  	 	 	|	 	L--	Function Call Arguments
  	 	 	|	 	 	|--	Variable Expression vec
- 	 	 	|	 	 	L--	Number Literal Expression (1337)
+ 	 	 	|	 	 	L--	Number Literal Expression (0x1337)
  	 	 	L--	Expression Statement
  	 	 	 	L--	Function Call Expression Vector__GetSize()
  	 	 	 	 	L--	Function Call Arguments

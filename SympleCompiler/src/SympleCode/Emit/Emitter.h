@@ -52,6 +52,9 @@ namespace Symple
 	private:
 		static char* RegAx(int size = 4);
 		static char* RegDx(int size = 4);
+		static char* RegCx();
+		static char* RegSp();
+		static char* RegBp();
 		static char Mod(int size = 4);
 
 		void EmitCast(int from, int to = 4);
