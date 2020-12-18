@@ -1,5 +1,6 @@
 extern ptr calloc(int size);
 extern ptr memset(ptr obj, byte val, int count);
+extern ptr printf(string fmt, int size);
 
 #
 #	----- Vector -----
@@ -21,12 +22,14 @@ int Vector__GetSize(ptr vector)
 
 void Vector__SetSize(ptr vector, int size)
 {
-	# ptr sz = @size;
-	# ptr rvec = vector - VECTOR__METADATA_SIZE;
-	# rvec[0] = sz[0];
-	# rvec[1] = sz[1];
-	# rvec[2] = sz[2];
-	# rvec[3] = sz[3];
+	ptr sz = @size;
+	ptr rvec = vector - VECTOR__METADATA_SIZE;
+	rvec[0] = sz[0];
+	rvec[1] = sz[1];
+	rvec[2] = sz[2];
+	rvec[3] = sz[3];
+	
+	printf("size = %i, rsize = %i\n", *sz, size);
 };
 
 #

@@ -7,6 +7,10 @@ L--	Compilation Unit
  	|	 	|--	Function Argument (ptr) obj
  	|	 	|--	Function Argument (byte) val
  	|	 	L--	Function Argument (int) count
+ 	|--	External Function: ptr printf()
+ 	|	L--	Function Arguments
+ 	|	 	|--	Function Argument (string) fmt
+ 	|	 	L--	Function Argument (int) size
  	|--	Function Declaration: ptr Vector__New()
  	|	|--	Function Arguments
  	|	L--	Block Statement
@@ -34,6 +38,52 @@ L--	Compilation Unit
  	|	|	|--	Function Argument (ptr) vector
  	|	|	L--	Function Argument (int) size
  	|	L--	Block Statement
+ 	|	 	|--	Variable Declaration (ptr) sz
+ 	|	 	|	L--	UnaryExpression Expression [@]
+ 	|	 	|	 	L--	Variable Expression size
+ 	|	 	|--	Variable Declaration (ptr) rvec
+ 	|	 	|	L--	Binary Expression [-]
+ 	|	 	|	 	|--	Variable Expression vector
+ 	|	 	|	 	L--	Number Literal Expression (8)
+ 	|	 	|--	Expression Statement
+ 	|	 	|	L--	Binary Expression [=]
+ 	|	 	|	 	|--	Pointer Index Expression
+ 	|	 	|	 	|	|--	Variable Expression rvec
+ 	|	 	|	 	|	L--	Number Literal Expression (0)
+ 	|	 	|	 	L--	Pointer Index Expression
+ 	|	 	|	 	 	|--	Variable Expression sz
+ 	|	 	|	 	 	L--	Number Literal Expression (0)
+ 	|	 	|--	Expression Statement
+ 	|	 	|	L--	Binary Expression [=]
+ 	|	 	|	 	|--	Pointer Index Expression
+ 	|	 	|	 	|	|--	Variable Expression rvec
+ 	|	 	|	 	|	L--	Number Literal Expression (1)
+ 	|	 	|	 	L--	Pointer Index Expression
+ 	|	 	|	 	 	|--	Variable Expression sz
+ 	|	 	|	 	 	L--	Number Literal Expression (1)
+ 	|	 	|--	Expression Statement
+ 	|	 	|	L--	Binary Expression [=]
+ 	|	 	|	 	|--	Pointer Index Expression
+ 	|	 	|	 	|	|--	Variable Expression rvec
+ 	|	 	|	 	|	L--	Number Literal Expression (2)
+ 	|	 	|	 	L--	Pointer Index Expression
+ 	|	 	|	 	 	|--	Variable Expression sz
+ 	|	 	|	 	 	L--	Number Literal Expression (2)
+ 	|	 	|--	Expression Statement
+ 	|	 	|	L--	Binary Expression [=]
+ 	|	 	|	 	|--	Pointer Index Expression
+ 	|	 	|	 	|	|--	Variable Expression rvec
+ 	|	 	|	 	|	L--	Number Literal Expression (3)
+ 	|	 	|	 	L--	Pointer Index Expression
+ 	|	 	|	 	 	|--	Variable Expression sz
+ 	|	 	|	 	 	L--	Number Literal Expression (3)
+ 	|	 	L--	Expression Statement
+ 	|	 	 	L--	Function Call Expression printf()
+ 	|	 	 	 	L--	Function Call Arguments
+ 	|	 	 	 	 	|--	String Literal Expression (size = %i, rsize = %i\n)
+ 	|	 	 	 	 	|--	UnaryExpression Expression [*]
+ 	|	 	 	 	 	|	L--	Variable Expression sz
+ 	|	 	 	 	 	L--	Variable Expression size
  	L--	Function Declaration: int main()
  	 	|--	Function Arguments
  	 	L--	Block Statement

@@ -1,5 +1,6 @@
 .extern _calloc
 .extern _memset
+.extern _printf
 .global _Vector__New
 _Vector__New:
 	push    %ebp
@@ -53,6 +54,112 @@ _Vector__SetSize:
 	movl    %esp, %ebp
 _vector$ = 8
 _size$ = 12
+_sz$ = -4
+	subl    $4, %esp
+
+	leal    _size$(%esp), %eax
+	movl    %eax, _sz$(%ebp)
+_rvec$ = -8
+	subl    $4, %esp
+
+
+	movl    $8, %eax
+	pushl   %eax
+
+	movl    _vector$(%ebp), %eax
+	popl    %edx
+	subl    %edx, %eax
+	movl    %eax, _rvec$(%ebp)
+
+
+
+	movl    $0, %eax
+	movl    %eax, %edx
+	movl    _sz$(%ebp), %eax
+	addl    %edx, %eax
+	movl    (%eax), %eax
+	pushl    %eax
+
+	movl    $0, %eax
+	pushl   %eax
+	movl    _rvec$(%ebp), %eax
+	popl    %edx
+	addl    %edx, %eax
+	popl    %edx
+	movb    %dl, (%eax)
+	movb    %dl, %al
+	movsbl  %al, %eax
+
+
+
+	movl    $1, %eax
+	movl    %eax, %edx
+	movl    _sz$(%ebp), %eax
+	addl    %edx, %eax
+	movl    (%eax), %eax
+	pushl    %eax
+
+	movl    $1, %eax
+	pushl   %eax
+	movl    _rvec$(%ebp), %eax
+	popl    %edx
+	addl    %edx, %eax
+	popl    %edx
+	movb    %dl, (%eax)
+	movb    %dl, %al
+	movsbl  %al, %eax
+
+
+
+	movl    $2, %eax
+	movl    %eax, %edx
+	movl    _sz$(%ebp), %eax
+	addl    %edx, %eax
+	movl    (%eax), %eax
+	pushl    %eax
+
+	movl    $2, %eax
+	pushl   %eax
+	movl    _rvec$(%ebp), %eax
+	popl    %edx
+	addl    %edx, %eax
+	popl    %edx
+	movb    %dl, (%eax)
+	movb    %dl, %al
+	movsbl  %al, %eax
+
+
+
+	movl    $3, %eax
+	movl    %eax, %edx
+	movl    _sz$(%ebp), %eax
+	addl    %edx, %eax
+	movl    (%eax), %eax
+	pushl    %eax
+
+	movl    $3, %eax
+	pushl   %eax
+	movl    _rvec$(%ebp), %eax
+	popl    %edx
+	addl    %edx, %eax
+	popl    %edx
+	movb    %dl, (%eax)
+	movb    %dl, %al
+	movsbl  %al, %eax
+
+
+	movl    _size$(%ebp), %eax
+	pushl   %eax
+
+
+	movl    _sz$(%ebp), %eax
+	movl    (%eax), %eax
+	pushl   %eax
+
+	movl    $..String.0, %eax
+	pushl   %eax
+	call    _printf
+	addl    $12, %esp
 	movl    %ebp, %esp
 	pop     %ebp
 	ret
@@ -65,7 +172,7 @@ _vec$ = -4
 	subl    $4, %esp
 
 	call    _Vector__New
-	addl    $4, %esp
+	addl    $0, %esp
 	movl    %eax, _vec$(%ebp)
 
 
@@ -75,7 +182,7 @@ _vec$ = -4
 	movl    _vec$(%ebp), %eax
 	pushl   %eax
 	call    _Vector__SetSize
-	addl    $4, %esp
+	addl    $8, %esp
 
 
 	movl    _vec$(%ebp), %eax
@@ -85,3 +192,5 @@ _vec$ = -4
 	movl    %ebp, %esp
 	pop     %ebp
 	ret
+..String.0:
+	.string "size = %i, rsize = %i\n"

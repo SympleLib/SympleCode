@@ -397,15 +397,18 @@ namespace Symple
 		Comment("Function Call");
 		Comment("\tPush Arguments");
 
+		unsigned int pushedSize = 0;
 		for (int i = call->GetArguments()->GetArguments().size() - 1; i >= 0; i--)
 		{
 			EmitExpression(call->GetArguments()->GetArguments()[i]);
 			Write("\tpush%c   %s", Mod(), RegAx());
+
+			pushedSize += 4;
 		}
 		Comment("\tCall Function");
 		Write("\tcall    _%s", std::string(call->GetName()->GetLex()).c_str());
 		Comment("\tPop Arguments");
-		Write("\taddl    $%i, %%esp", 4);
+		Write("\taddl    $%i, %%esp", pushedSize);
 	}
 
 	void Emitter::EmitPointerIndexExpression(const PointerIndexExpressionNode* expression, int size)
