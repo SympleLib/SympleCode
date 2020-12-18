@@ -1,56 +1,161 @@
 <?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
-    <Filter Include="CodeGen">
-      <UniqueIdentifier>{DA517433-4631-F3CE-4F49-7EA5BBA75930}</UniqueIdentifier>
+    <Filter Include="Common">
+      <UniqueIdentifier>{8EEA3EAC-7A8C-6982-6347-7DD64F88F0D2}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Tree">
-      <UniqueIdentifier>{B5118D7C-A148-8E0D-4A35-7410364B0A0F}</UniqueIdentifier>
+    <Filter Include="Common\Analysis">
+      <UniqueIdentifier>{019EC395-6D29-315A-763A-B44EE2448D5A}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Util">
-      <UniqueIdentifier>{23A78D7C-0FDE-8E0D-B8CA-7410A4E00A0F}</UniqueIdentifier>
+    <Filter Include="Common\Node">
+      <UniqueIdentifier>{03DEDC28-6F93-551E-F887-4FF5643C4C22}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Common\Node\Expression">
+      <UniqueIdentifier>{42AA9ACA-2EA4-C31C-1711-5A2D03AA2989}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Common\Node\Member">
+      <UniqueIdentifier>{0A1BACD1-F6FE-6C27-5F5F-677A4B6257A9}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Common\Node\Statement">
+      <UniqueIdentifier>{A7D606B2-1343-C2AC-DC36-5A0A4862E414}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Emit">
+      <UniqueIdentifier>{54C3847C-40FA-850D-E9E6-6B10D5FC010F}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Parser">
+      <UniqueIdentifier>{D27997C9-BE1B-C29F-A7D6-D5F3931749F0}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="src\SympleCode\CodeGen\CodeGenerator.hpp">
-      <Filter>CodeGen</Filter>
+    <ClInclude Include="src\SympleCode\Common\Analysis\Diagnostics.h">
+      <Filter>Common\Analysis</Filter>
     </ClInclude>
-    <ClInclude Include="src\SympleCode\CodeGen\Generator.hpp">
-      <Filter>CodeGen</Filter>
+    <ClInclude Include="src\SympleCode\Common\Analysis\Type.h">
+      <Filter>Common\Analysis</Filter>
     </ClInclude>
-    <ClInclude Include="src\SympleCode\Lexer.hpp" />
-    <ClInclude Include="src\SympleCode\Parser.hpp" />
-    <ClInclude Include="src\SympleCode\Token.hpp" />
-    <ClInclude Include="src\SympleCode\Tree\AST.hpp">
-      <Filter>Tree</Filter>
+    <ClInclude Include="src\SympleCode\Common\Node\CompilationUnitNode.h">
+      <Filter>Common\Node</Filter>
     </ClInclude>
-    <ClInclude Include="src\SympleCode\Tree\Tree.hpp">
-      <Filter>Tree</Filter>
+    <ClInclude Include="src\SympleCode\Common\Node\Expression\BinaryExpressionNode.h">
+      <Filter>Common\Node\Expression</Filter>
     </ClInclude>
-    <ClInclude Include="src\SympleCode\Type.hpp" />
-    <ClInclude Include="src\SympleCode\Util\Util.hpp">
-      <Filter>Util</Filter>
+    <ClInclude Include="src\SympleCode\Common\Node\Expression\BooleanLiteralExpressionNode.h">
+      <Filter>Common\Node\Expression</Filter>
     </ClInclude>
+    <ClInclude Include="src\SympleCode\Common\Node\Expression\ExpressionNode.h">
+      <Filter>Common\Node\Expression</Filter>
+    </ClInclude>
+    <ClInclude Include="src\SympleCode\Common\Node\Expression\FunctionCallExpressionNode.h">
+      <Filter>Common\Node\Expression</Filter>
+    </ClInclude>
+    <ClInclude Include="src\SympleCode\Common\Node\Expression\LiteralExpressionNode.h">
+      <Filter>Common\Node\Expression</Filter>
+    </ClInclude>
+    <ClInclude Include="src\SympleCode\Common\Node\Expression\NumberLiteralExpressionNode.h">
+      <Filter>Common\Node\Expression</Filter>
+    </ClInclude>
+    <ClInclude Include="src\SympleCode\Common\Node\Expression\ParenthesizedExpressionNode.h">
+      <Filter>Common\Node\Expression</Filter>
+    </ClInclude>
+    <ClInclude Include="src\SympleCode\Common\Node\Expression\StringLiteralExpressionNode.h">
+      <Filter>Common\Node\Expression</Filter>
+    </ClInclude>
+    <ClInclude Include="src\SympleCode\Common\Node\Expression\VariableExpressionNode.h">
+      <Filter>Common\Node\Expression</Filter>
+    </ClInclude>
+    <ClInclude Include="src\SympleCode\Common\Node\FunctionArgumentNode.h">
+      <Filter>Common\Node</Filter>
+    </ClInclude>
+    <ClInclude Include="src\SympleCode\Common\Node\FunctionArgumentsNode.h">
+      <Filter>Common\Node</Filter>
+    </ClInclude>
+    <ClInclude Include="src\SympleCode\Common\Node\FunctionCallArgumentsNode.h">
+      <Filter>Common\Node</Filter>
+    </ClInclude>
+    <ClInclude Include="src\SympleCode\Common\Node\Member\ExternFunctionNode.h">
+      <Filter>Common\Node\Member</Filter>
+    </ClInclude>
+    <ClInclude Include="src\SympleCode\Common\Node\Member\FunctionDeclarationNode.h">
+      <Filter>Common\Node\Member</Filter>
+    </ClInclude>
+    <ClInclude Include="src\SympleCode\Common\Node\Member\FunctionHintNode.h">
+      <Filter>Common\Node\Member</Filter>
+    </ClInclude>
+    <ClInclude Include="src\SympleCode\Common\Node\Member\MemberNode.h">
+      <Filter>Common\Node\Member</Filter>
+    </ClInclude>
+    <ClInclude Include="src\SympleCode\Common\Node\Node.h">
+      <Filter>Common\Node</Filter>
+    </ClInclude>
+    <ClInclude Include="src\SympleCode\Common\Node\Statement\BlockStatementNode.h">
+      <Filter>Common\Node\Statement</Filter>
+    </ClInclude>
+    <ClInclude Include="src\SympleCode\Common\Node\Statement\BreakStatementNode.h">
+      <Filter>Common\Node\Statement</Filter>
+    </ClInclude>
+    <ClInclude Include="src\SympleCode\Common\Node\Statement\ExpressionStatementNode.h">
+      <Filter>Common\Node\Statement</Filter>
+    </ClInclude>
+    <ClInclude Include="src\SympleCode\Common\Node\Statement\IfStatementNode.h">
+      <Filter>Common\Node\Statement</Filter>
+    </ClInclude>
+    <ClInclude Include="src\SympleCode\Common\Node\Statement\ReturnStatementNode.h">
+      <Filter>Common\Node\Statement</Filter>
+    </ClInclude>
+    <ClInclude Include="src\SympleCode\Common\Node\Statement\StatementNode.h">
+      <Filter>Common\Node\Statement</Filter>
+    </ClInclude>
+    <ClInclude Include="src\SympleCode\Common\Node\Statement\VariableDeclarationNode.h">
+      <Filter>Common\Node\Statement</Filter>
+    </ClInclude>
+    <ClInclude Include="src\SympleCode\Common\Node\Statement\WhileStatementNode.h">
+      <Filter>Common\Node\Statement</Filter>
+    </ClInclude>
+    <ClInclude Include="src\SympleCode\Common\Priority.h">
+      <Filter>Common</Filter>
+    </ClInclude>
+    <ClInclude Include="src\SympleCode\Common\Token.h">
+      <Filter>Common</Filter>
+    </ClInclude>
+    <ClInclude Include="src\SympleCode\Emit\Emitter.h">
+      <Filter>Emit</Filter>
+    </ClInclude>
+    <ClInclude Include="src\SympleCode\Parser\Lexer.h">
+      <Filter>Parser</Filter>
+    </ClInclude>
+    <ClInclude Include="src\SympleCode\Parser\Parser.h">
+      <Filter>Parser</Filter>
+    </ClInclude>
+    <ClInclude Include="src\SympleCode\Common\Node\Member\GlobalStatementNode.h">
+      <Filter>Common\Node\Statement</Filter>
+    </ClInclude>
+    <ClInclude Include="src\SympleCode\Compiler.h" />
+    <ClInclude Include="src\SympleCode\Common\Node\Expression\UnaryExpressionNode.h" />
+    <ClInclude Include="src\SympleCode\Common\Node\Expression\PointerIndexExpressionNode.h" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="src\SympleCode\Application.cpp" />
-    <ClCompile Include="src\SympleCode\CodeGen\CodeGenerator.cpp">
-      <Filter>CodeGen</Filter>
+    <ClCompile Include="src\SympleCode\Common\Analysis\Diagnostics.cpp">
+      <Filter>Common\Analysis</Filter>
     </ClCompile>
-    <ClCompile Include="src\SympleCode\CodeGen\Generator.cpp">
-      <Filter>CodeGen</Filter>
+    <ClCompile Include="src\SympleCode\Common\Analysis\Type.cpp">
+      <Filter>Common\Analysis</Filter>
     </ClCompile>
-    <ClCompile Include="src\SympleCode\Lexer.cpp" />
-    <ClCompile Include="src\SympleCode\Parser.cpp" />
-    <ClCompile Include="src\SympleCode\Tree\AST.cpp">
-      <Filter>Tree</Filter>
+    <ClCompile Include="src\SympleCode\Common\Priority.cpp">
+      <Filter>Common</Filter>
     </ClCompile>
-    <ClCompile Include="src\SympleCode\Tree\Tree.cpp">
-      <Filter>Tree</Filter>
+    <ClCompile Include="src\SympleCode\Common\Token.cpp">
+      <Filter>Common</Filter>
     </ClCompile>
-    <ClCompile Include="src\SympleCode\Type.cpp" />
-    <ClCompile Include="src\SympleCode\Util\Util.cpp">
-      <Filter>Util</Filter>
+    <ClCompile Include="src\SympleCode\Emit\Emitter.cpp">
+      <Filter>Emit</Filter>
     </ClCompile>
+    <ClCompile Include="src\SympleCode\Parser\Lexer.cpp">
+      <Filter>Parser</Filter>
+    </ClCompile>
+    <ClCompile Include="src\SympleCode\Parser\Parser.cpp">
+      <Filter>Parser</Filter>
+    </ClCompile>
+    <ClCompile Include="src\SympleCode\Main.cpp" />
+    <ClCompile Include="src\SympleCode\Compiler.cpp" />
   </ItemGroup>
 </Project>

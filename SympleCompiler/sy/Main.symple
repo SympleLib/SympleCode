@@ -1,0 +1,18 @@
+#include "sy/std/io.sy"
+#include "sy/std/memory.sy"
+
+int main()
+{
+	# 8 bytes
+	# struct Human
+	# {
+	# 	string name;
+	# 	int age;
+	# };
+
+	ptr me = malloc(8);
+	me[0] = "Teddy";
+	me[4] = 12;
+	
+	printf("Name %s, Age %i", me[0], me[4]);
+};

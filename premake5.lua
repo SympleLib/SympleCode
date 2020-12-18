@@ -1,5 +1,5 @@
 workspace "SympleCode"
-	architecture "x64"
+	architecture "x86"
 
 	configurations {
 		"Debug",
@@ -10,4 +10,3 @@ workspace "SympleCode"
 outputdir = "%{cfg.buildcfg}-%{cfg.system}-%{cfg.architecture}"
 
 include "SympleCompiler"
-include "SympleRuntime"

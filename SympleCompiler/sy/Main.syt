@@ -1,0 +1,73 @@
+L--	Compilation Unit
+ 	|--	External Function: ptr fopen()
+ 	|	L--	Function Arguments
+ 	|	 	|--	Function Argument (string) path
+ 	|	 	L--	Function Argument (string) mode
+ 	|--	External Function: int fputs()
+ 	|	L--	Function Arguments
+ 	|	 	|--	Function Argument (string) str
+ 	|	 	L--	Function Argument (ptr) fs
+ 	|--	External Function: int fprintf()
+ 	|	L--	Function Arguments
+ 	|	 	|--	Function Argument (ptr) fs
+ 	|	 	L--	Function Argument (string) str
+ 	|--	External Function: int fclose()
+ 	|	L--	Function Arguments
+ 	|	 	L--	Function Argument (ptr) fs
+ 	|--	External Function: int printf()
+ 	|	L--	Function Arguments
+ 	|	 	L--	Function Argument (string) str
+ 	|--	External Function: int puts()
+ 	|	L--	Function Arguments
+ 	|	 	L--	Function Argument (string) str
+ 	|--	External Function: int putc()
+ 	|	L--	Function Arguments
+ 	|	 	L--	Function Argument (char) c
+ 	|--	External Function: ptr malloc()
+ 	|	L--	Function Arguments
+ 	|	 	L--	Function Argument (int) size
+ 	|--	External Function: ptr calloc()
+ 	|	L--	Function Arguments
+ 	|	 	L--	Function Argument (int) size
+ 	|--	External Function: int free()
+ 	|	L--	Function Arguments
+ 	|	 	L--	Function Argument (ptr) $ptr
+ 	|--	External Function: int memset()
+ 	|	L--	Function Arguments
+ 	|	 	|--	Function Argument (ptr) $ptr
+ 	|	 	|--	Function Argument (byte) val
+ 	|	 	L--	Function Argument (int) size
+ 	|--	External Function: int strcmp()
+ 	|	L--	Function Arguments
+ 	|	 	|--	Function Argument (string) l
+ 	|	 	L--	Function Argument (string) r
+ 	|--	External Function: int strncmp()
+ 	|	L--	Function Arguments
+ 	|	 	|--	Function Argument (string) l
+ 	|	 	|--	Function Argument (string) r
+ 	|	 	L--	Function Argument (int) count
+ 	L--	Function Declaration: int main()
+ 	 	|--	Function Arguments
+ 	 	L--	Block Statement
+ 	 	 	|--	Variable Declaration (ptr) me
+ 	 	 	|	L--	Function Call Expression malloc()
+ 	 	 	|	 	L--	Function Call Arguments
+ 	 	 	|	 	 	L--	Number Literal Expression (8)
+ 	 	 	|--	Expression Statement
+ 	 	 	|	L--	Binary Expression [=]
+ 	 	 	|	 	|--	Pointer Index Expression [0]
+ 	 	 	|	 	|	L--	Variable Expression me
+ 	 	 	|	 	L--	String Literal Expression (Teddy)
+ 	 	 	|--	Expression Statement
+ 	 	 	|	L--	Binary Expression [=]
+ 	 	 	|	 	|--	Pointer Index Expression [4]
+ 	 	 	|	 	|	L--	Variable Expression me
+ 	 	 	|	 	L--	Number Literal Expression (12)
+ 	 	 	L--	Expression Statement
+ 	 	 	 	L--	Function Call Expression printf()
+ 	 	 	 	 	L--	Function Call Arguments
+ 	 	 	 	 	 	|--	String Literal Expression (Name %s, Age %i)
+ 	 	 	 	 	 	|--	Pointer Index Expression [0]
+ 	 	 	 	 	 	|	L--	Variable Expression me
+ 	 	 	 	 	 	L--	Pointer Index Expression [4]
+ 	 	 	 	 	 	 	L--	Variable Expression me
