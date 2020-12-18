@@ -36,8 +36,12 @@ namespace Symple
 		case ';':
 			return Atom(Token::Kind::Semicolon);
 		case '{':
-			return Atom(Token::Kind::OpenBracket);
+			return Atom(Token::Kind::OpenBrace);
 		case '}':
+			return Atom(Token::Kind::CloseBrace);
+		case '[':
+			return Atom(Token::Kind::OpenBracket);
+		case ']':
 			return Atom(Token::Kind::CloseBracket);
 		case '(':
 			return Atom(Token::Kind::OpenParenthesis);
@@ -49,6 +53,8 @@ namespace Symple
 			return Atom(Token::Kind::RightArrow);
 		case ',':
 			return Atom(Token::Kind::Comma);
+		case '@':
+			return Atom(Token::Kind::At);
 		case '#':
 			return Comment();
 		case '"':
@@ -79,7 +85,7 @@ namespace Symple
 
 	bool Lexer::IsIdentifier(char c)
 	{
-		return (c >= 'a' && c <= 'z') || (c >= 'A' && c <= 'Z') || c == '_' || c == '$' || (c >= '0' && c <= '9')|| c == '@';
+		return (c >= 'a' && c <= 'z') || (c >= 'A' && c <= 'Z') || c == '_' || c == '$' || (c >= '0' && c <= '9');
 	}
 
 	bool Lexer::IsStartDigit(char c)
@@ -142,9 +148,12 @@ namespace Symple
 	{
 		Get();
 		const char* beg = mCurrent;
-		while (!(Peek() == '\n' || Peek() == '#'))
+		while (Peek() != '#')
+		{
 			Get();
-		Get();
+			if (CheckNewLine(Peek(-1)))
+				break;
+		}
 		return new Token(Token::Kind::Comment, beg, mCurrent - 1, mLine, mColumn);
 	}
 
@@ -163,8 +172,6 @@ namespace Symple
 		const char* beg = mCurrent;
 		while (Peek() != '"' || Peek(-1) == '\\')
 			Get();
-		if (CheckNewLine(Peek()))
-			return new Token(Token::Kind::String, beg, mCurrent - 1, mLine, mColumn);
 		Get();
 		return new Token(Token::Kind::String, beg, mCurrent - 1, mLine, mColumn);
 	}

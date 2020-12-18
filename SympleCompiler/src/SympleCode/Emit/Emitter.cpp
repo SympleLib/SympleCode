@@ -116,15 +116,15 @@ namespace Symple
 		Write("\tpush    %%ebp");
 		Write("\tmovl    %%esp, %%ebp");
 		if (name == "main")
-			Write("xorl    %%eax, %%eax");
+			Write("\txorl    %%eax, %%eax");
 
 		Comment("\tFunction Arguments");
 		unsigned int pos = 4;
 		for (const FunctionArgumentNode* argument : declaration->GetArguments()->GetArguments())
 		{
-			pos += argument->GetType()->GetSize();
+			pos += 4;
 			Write("_%s$ = %i", std::string(argument->GetName()->GetLex()).c_str(), pos);
-			mDeclaredVariables.insert({ argument->GetName()->GetLex(), nullptr });
+			mDeclaredVariables.insert({ argument->GetName()->GetLex(), new VariableDeclarationNode(argument->GetName(), argument->GetType(), nullptr) });
 		}
 
 		for (const StatementNode* statement : declaration->GetBody()->GetStatements())
@@ -242,6 +242,8 @@ namespace Symple
 	{
 		if (expression->Is<ParenthesizedExpressionNode>())
 			return EmitExpression(expression->Cast<ParenthesizedExpressionNode>()->GetExpression(), size);
+		if (expression->Is<UnaryExpressionNode>())
+			return EmitUnaryExpression(expression->Cast<UnaryExpressionNode>(), size);
 		if (expression->Is<BinaryExpressionNode>())
 			return EmitBinaryExpression(expression->Cast<BinaryExpressionNode>(), size);
 		if (expression->Is<FunctionCallExpressionNode>())
@@ -250,6 +252,8 @@ namespace Symple
 			return EmitLiteralExpression(expression->Cast<LiteralExpressionNode>(), size);
 		if (expression->Is<VariableExpressionNode>())
 			return EmitVariableExpression(expression->Cast<VariableExpressionNode>(), size);
+		if (expression->Is<PointerIndexExpressionNode>())
+			return EmitPointerIndexExpression(expression->Cast<PointerIndexExpressionNode>(), size);
 	}
 
 	void Emitter::EmitLiteralExpression(const LiteralExpressionNode* expression, int size)
@@ -263,13 +267,21 @@ namespace Symple
 			Write("\tmov%c    $%i, %s", Mod(size), expression->GetLiteral()->Is(Token::Kind::True), RegAx(size));
 	}
 
-	void Emitter::EmitStringLiteralExpression(const StringLiteralExpressionNode* literal, int size)
+	void Emitter::EmitUnaryExpression(const UnaryExpressionNode* expression, int size)
 	{
-		WriteLiteral("..String.%i:", mStringPos);
-		WriteLiteral("\t.string \"%s\"", std::string(literal->GetLiteral()->GetLex()).c_str());
-		Write("\tmov%c    $..String.%i, %s", Mod(), mStringPos, RegAx());
+		Comment("Unary Expression [%s]", std::string(expression->GetOperator()->GetLex()).c_str());
 
-		mStringPos++;
+		EmitExpression(expression->GetValue());
+
+		switch (expression->GetOperator()->GetKind())
+		{
+		case Token::Kind::Asterisk:
+			Write("\tmov%c (%s), %s", Mod(), RegAx(), RegAx());
+			break;
+		case Token::Kind::Minus:
+			Write("\tneg%c %s", Mod(), RegAx());
+			break;
+		}
 	}
 
 	void Emitter::EmitBinaryExpression(const BinaryExpressionNode* expression, int size)
@@ -277,17 +289,29 @@ namespace Symple
 		Comment("Binary Expression [%s]", std::string(expression->GetOperator()->GetLex()).c_str());
 		if (expression->GetOperator()->Is(Token::Kind::Equal))
 		{
-			if (expression->GetLeft()->GetKind() != Node::Kind::VariableExpression)
-				return mDiagnostics->ReportError(expression->GetOperator(), "Expected lvalue");
+			if (expression->GetLeft()->GetKind() == Node::Kind::VariableExpression)
+			{
+				EmitExpression(expression->GetRight(), size);
+				return Write("\tmov%c    %s, _%s$(%%ebp)", Mod(), RegAx(), std::string(expression->GetLeft()->Cast<VariableExpressionNode>()->GetName()->GetLex()).c_str());
+			}
+			if (expression->GetLeft()->GetKind() == Node::Kind::PointerIndexExpression)
+			{
+				const PointerIndexExpressionNode* expr = expression->GetLeft()->Cast<PointerIndexExpressionNode>();
 
-			EmitExpression(expression->GetRight(), size);
-			Write("\tmov%c    %s, _%s$(%%ebp)", Mod(), RegAx(), std::string(expression->GetLeft()->Cast<VariableExpressionNode>()->GetName()->GetLex()).c_str());
-			return;
+				EmitExpression(expression->GetRight());
+				Write("\tmov%c    %s, %s", Mod(), RegAx(), RegDx());
+				Write("\tmov%c    _%s$(%%ebp), %s", Mod(), std::string(expr->GetExpression()->GetName()->GetLex()).c_str(), RegAx());
+				Write("\tadd%c    $%i, %s", Mod(), expr->GetIndex(), RegAx());
+				return Write("\tmov%c    %s, (%s)", Mod(), RegDx(), RegAx());
+			}
+			
+			return mDiagnostics->ReportError(expression->GetOperator(), "Expected lvalue");
 		}
 
 		EmitExpression(expression->GetRight());
-		Write("\tmov%c    %s, %s", Mod(), RegAx(), RegDx());
+		Write("\tpush%c   %s", Mod(), RegAx());
 		EmitExpression(expression->GetLeft());
+		Write("\tpop%c    %s", Mod(), RegDx());
 
 		switch (expression->GetOperator()->GetKind())
 		{
@@ -347,7 +371,6 @@ namespace Symple
 		Comment("Function Call");
 		Comment("\tPush Arguments");
 
-		//for (unsigned int i = 0; i < call->GetArguments()->GetArguments().size(); i++)
 		for (int i = call->GetArguments()->GetArguments().size() - 1; i >= 0; i--)
 		{
 			EmitExpression(call->GetArguments()->GetArguments()[i]);
@@ -357,6 +380,22 @@ namespace Symple
 		Write("\tcall    _%s", std::string(call->GetName()->GetLex()).c_str());
 		Comment("\tPop Arguments");
 		Write("\taddl    $%i, %%esp", 4);
+	}
+
+	void Emitter::EmitPointerIndexExpression(const PointerIndexExpressionNode* expression, int size)
+	{
+		Write("\tmov%c    _%s$(%%ebp), %s", Mod(), std::string(expression->GetExpression()->GetName()->GetLex()).c_str(), RegAx());
+		Write("\tadd%c    $%i, %s", Mod(), expression->GetIndex(), RegAx());
+		Write("\tmov%c    (%s), %s", Mod(), RegAx(), RegAx());
+	}
+
+	void Emitter::EmitStringLiteralExpression(const StringLiteralExpressionNode* literal, int size)
+	{
+		WriteLiteral("..String.%i:", mStringPos);
+		WriteLiteral("\t.string \"%s\"", std::string(literal->GetLiteral()->GetLex()).c_str());
+		Write("\tmov%c    $..String.%i, %s", Mod(), mStringPos, RegAx());
+
+		mStringPos++;
 	}
 
 	bool Emitter::VariableDefined(const std::string_view& name)

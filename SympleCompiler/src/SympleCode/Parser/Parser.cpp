@@ -6,8 +6,10 @@
 #include "SympleCode/Common/Node/Statement/BreakStatementNode.h"
 #include "SympleCode/Common/Node/Statement/ExpressionStatementNode.h"
 
+#include "SympleCode/Common/Node/Expression/UnaryExpressionNode.h"
 #include "SympleCode/Common/Node/Expression/BinaryExpressionNode.h"
 #include "SympleCode/Common/Node/Expression/VariableExpressionNode.h"
+#include "SympleCode/Common/Node/Expression/PointerIndexExpressionNode.h"
 #include "SympleCode/Common/Node/Expression/StringLiteralExpressionNode.h"
 #include "SympleCode/Common/Node/Expression/NumberLiteralExpressionNode.h"
 #include "SympleCode/Common/Node/Expression/BooleanLiteralExpressionNode.h"
@@ -23,7 +25,7 @@ namespace Symple
 		while (!current->Is(Token::Kind::EndOfFile))
 		{
 			current = mLexer.Next();
-			std::cout << Token::KindString(current->GetKind()) << " | " << current->GetLex() << '\n';
+			//std::cout << Token::KindString(current->GetKind()) << " | " << current->GetLex() << '\n';
 			if (current->Is(Token::Kind::Comment))
 				Preprocess(current);
 			else
@@ -36,7 +38,7 @@ namespace Symple
 		std::string scmd(cmd->GetLex());
 		Lexer prepoLexer = scmd.c_str();
 		Token* rcmd = prepoLexer.Next();
-		std::cout << rcmd->GetLex() << '\n';
+		//std::cout << rcmd->GetLex() << '\n';
 
 		if (rcmd->GetLex() == "include")
 		{
@@ -58,7 +60,7 @@ namespace Symple
 				const Token* iCurrent;
 				while (!(iCurrent = prepoLexer.Next())->Is(Token::Kind::EndOfFile))
 				{
-					std::cout << Token::KindString(iCurrent->GetKind()) << " | " << iCurrent->GetLex() << '\n';
+					//std::cout << Token::KindString(iCurrent->GetKind()) << " | " << iCurrent->GetLex() << '\n';
 					if (iCurrent->Is(Token::Kind::Comment))
 						Preprocess(iCurrent);
 					else
@@ -239,7 +241,7 @@ namespace Symple
 			return new BreakStatementNode(Next());
 		if (IsType(Peek()))
 			return ParseVariableDeclaration();
-		if (Peek()->Is(Token::Kind::OpenBracket))
+		if (Peek()->Is(Token::Kind::OpenBrace))
 		{
 			StatementNode* statement = ParseBlockStatement();
 			Match(Token::Kind::Semicolon);
@@ -278,9 +280,9 @@ namespace Symple
 
 	BlockStatementNode* Parser::ParseBlockStatement()
 	{
-		const Token* open = Match(Token::Kind::OpenBracket);
+		const Token* open = Match(Token::Kind::OpenBrace);
 		std::vector<const StatementNode*> statements;
-		while (!Peek()->Is(Token::Kind::CloseBracket))
+		while (!Peek()->Is(Token::Kind::CloseBrace))
 		{
 			if (Peek()->Is(Token::Kind::EndOfFile))
 			{
@@ -295,7 +297,7 @@ namespace Symple
 			if (start == Peek())
 				Next();
 		}
-		const Token* close = Match(Token::Kind::CloseBracket);
+		const Token* close = Match(Token::Kind::CloseBrace);
 
 		return new BlockStatementNode(open, statements, close);
 	}
@@ -333,6 +335,19 @@ namespace Symple
 
 	ExpressionNode* Parser::ParseExpression()
 	{
+		return 	ParseUnaryExpression();
+	}
+
+	ExpressionNode* Parser::ParseUnaryExpression(int parentPriority)
+	{
+		int priority = Priority::UnaryOperatorPriority(Peek());
+		if (priority >= 0 && priority >= parentPriority)
+		{
+			const Token* oqerator = Next();
+			ExpressionNode* value = ParseBinaryExpression(parentPriority);
+			return new UnaryExpressionNode(oqerator, value);
+		}
+
 		return ParseBinaryExpression();
 	}
 
@@ -347,6 +362,12 @@ namespace Symple
 				break;
 			const Token* oqerator = Next();
 			ExpressionNode* right = ParseBinaryExpression(priority);
+			if (oqerator->Is(Token::Kind::OpenBracket))
+			{
+				Match(Token::Kind::CloseBracket);
+				left = new PointerIndexExpressionNode(left->Cast<VariableExpressionNode>(), std::stoi(std::string(right->Cast<NumberLiteralExpressionNode>()->GetLiteral()->GetLex())));
+				continue;
+			}
 			left = new BinaryExpressionNode(oqerator, left, right);
 		}
 

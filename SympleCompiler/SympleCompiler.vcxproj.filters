@@ -130,6 +130,8 @@
       <Filter>Common\Node\Statement</Filter>
     </ClInclude>
     <ClInclude Include="src\SympleCode\Compiler.h" />
+    <ClInclude Include="src\SympleCode\Common\Node\Expression\UnaryExpressionNode.h" />
+    <ClInclude Include="src\SympleCode\Common\Node\Expression\PointerIndexExpressionNode.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\SympleCode\Common\Analysis\Diagnostics.cpp">

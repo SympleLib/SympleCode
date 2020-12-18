@@ -71,6 +71,7 @@ namespace Symple
 	
 		ExpressionNode* ParseExpression();
 
+		ExpressionNode* ParseUnaryExpression(int parentPriority = -1);
 		ExpressionNode* ParseBinaryExpression(int parentPriority = -1);
 		ExpressionNode* ParsePrimaryExpression();
 

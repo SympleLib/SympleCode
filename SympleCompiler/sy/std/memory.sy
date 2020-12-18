@@ -1,8 +1,8 @@
-extern int malloc(int size);
-extern int calloc(int size);
-extern int free(int ptr);
+extern ptr malloc(int size);
+extern ptr calloc(int size);
+extern int free(ptr $ptr);
 
-extern int memset(int ptr, byte val, int size);
+extern int memset(ptr $ptr, byte val, int size);
 
 extern int strcmp(string l, string r);
 extern int strncmp(string l, string r, int count);

@@ -1,7 +1,7 @@
-extern int fopen(string path, string mode);
-extern int fputs(string str, int fs);
-extern int fprintf(int fs, string str);
-extern int fclose(int fs);
+extern ptr fopen(string path, string mode);
+extern int fputs(string str, ptr fs);
+extern int fprintf(ptr fs, string str);
+extern int fclose(ptr fs);
 
 extern int printf(string str);
 extern int puts(string str);

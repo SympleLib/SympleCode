@@ -9,6 +9,7 @@ namespace Symple
 	private:
 		Priority();
 	public:
+		static int UnaryOperatorPriority(const Token* token);
 		static int BinaryOperatorPriority(const Token* token);
 	};
 }

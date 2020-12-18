@@ -28,11 +28,15 @@ namespace Symple
 
 			OpenBracket,
 			CloseBracket,
+			OpenBrace,
+			CloseBrace,
 			OpenParenthesis,
 			CloseParenthesis,
 
 			LeftArrow,
 			RightArrow,
+
+			At,
 
 			True,
 			False,
@@ -57,8 +61,9 @@ namespace Symple
 			"Plus", "Minus", "Asterisk", "Slash", "Equal",
 			"EqualEqual", "NotEqual",
 			"Comma", "Semicolon",
-			"OpenBracket", "CloseBracket", "OpenParenthesis", "CloseParenthesis",
+			"OpenBrace", "CloseBrace", "OpenParenthesis", "CloseParenthesis",
 			"LeftArrow", "RightArrow",
+			"At",
 			"True", "False", "While", "Break",
 			"Hint", "Return", "Extern",
 			"If", "Else",

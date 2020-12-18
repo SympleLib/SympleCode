@@ -14,10 +14,12 @@
 #include "SympleCode/Common/Node/Statement/VariableDeclarationNode.h"
 
 #include "SympleCode/Common/Node/Expression/ExpressionNode.h"
+#include "SympleCode/Common/Node/Expression/UnaryExpressionNode.h"
 #include "SympleCode/Common/Node/Expression/BinaryExpressionNode.h"
 #include "SympleCode/Common/Node/Expression/LiteralExpressionNode.h"
 #include "SympleCode/Common/Node/Expression/VariableExpressionNode.h"
 #include "SympleCode/Common/Node/Expression/FunctionCallExpressionNode.h"
+#include "SympleCode/Common/Node/Expression/PointerIndexExpressionNode.h"
 #include "SympleCode/Common/Node/Expression/StringLiteralExpressionNode.h"
 
 #include "SympleCode/Common/Node/CompilationUnitNode.h"
@@ -65,10 +67,12 @@ namespace Symple
 		void EmitWhileStatement(const WhileStatementNode* statement);
 
 		void EmitExpression(const ExpressionNode* expression, int size = 4);
+		void EmitUnaryExpression(const UnaryExpressionNode* expression, int size = 4);
 		void EmitBinaryExpression(const BinaryExpressionNode* expression, int size = 4);
 		void EmitLiteralExpression(const LiteralExpressionNode* expression, int size = 4);
 		void EmitVariableExpression(const VariableExpressionNode* expression, int size = 4);
 		void EmitFunctionCallExpression(const FunctionCallExpressionNode* call, int size = 4);
+		void EmitPointerIndexExpression(const PointerIndexExpressionNode* expression, int size = 4);
 		void EmitStringLiteralExpression(const StringLiteralExpressionNode* expression, int size = 4);
 
 		bool VariableDefined(const std::string_view& name);
