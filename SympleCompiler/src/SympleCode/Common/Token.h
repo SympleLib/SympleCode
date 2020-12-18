@@ -25,6 +25,7 @@ namespace Symple
 
 			Comma,
 			Semicolon,
+			Period,
 
 			OpenBracket,
 			CloseBracket,
@@ -46,6 +47,9 @@ namespace Symple
 			Hint,
 			Return,
 			Extern,
+			Struct,
+
+			SizeOf,
 
 			If,
 			Else,
@@ -60,12 +64,13 @@ namespace Symple
 			"Identifier", "Number", "String",
 			"Plus", "Minus", "Asterisk", "Slash", "Equal",
 			"EqualEqual", "NotEqual",
-			"Comma", "Semicolon",
+			"Comma", "Semicolon", "Period",
 			"OpenBrace", "CloseBrace", "OpenParenthesis", "CloseParenthesis",
 			"LeftArrow", "RightArrow",
 			"At",
 			"True", "False", "While", "Break",
-			"Hint", "Return", "Extern",
+			"Hint", "Return", "Extern", "Struct",
+			"SizeOf",
 			"If", "Else",
 			"Comment",
 		};

@@ -67,7 +67,6 @@ namespace Symple
 				{
 					std::cout << "[?]<" << warning->Token->GetLine() << ':' << warning->Token->GetColumn() << ">: " << warning->Message << '\n';
 				}
-				printf("No Code Generated :(\n");
 			}
 			else
 			{
@@ -93,13 +92,16 @@ namespace Symple
 				{
 					char command[128];
 					sprintf_s(command, "clang -c %s -o %s", asmS, obj);
-					system(command);
+					int compileStatis = system(command);
 
 					mObjectFiles.push_back(objStr);
 
-					return true;
+					return !compileStatis;
 				}
 			}
+			printf("No Code Generated :(\n");
+
+			return false;
 		}
 		char errMsg[32];
 		if (!strerror_s(errMsg, err))
@@ -129,7 +131,7 @@ namespace Symple
 	{
 		puts("Running Program...");
 		int exitCode = system(mOutput.c_str());
-		printf("\nProgram Exited with Code %i\n", exitCode);
+		printf("\nProgram Exited with Code %i (0x%x)\n", exitCode, exitCode);
 
 		return exitCode;
 	}

@@ -132,6 +132,9 @@
     <ClInclude Include="src\SympleCode\Compiler.h" />
     <ClInclude Include="src\SympleCode\Common\Node\Expression\UnaryExpressionNode.h" />
     <ClInclude Include="src\SympleCode\Common\Node\Expression\PointerIndexExpressionNode.h" />
+    <ClInclude Include="src\SympleCode\Common\Node\Expression\FieldExpressionNode.h" />
+    <ClInclude Include="src\SympleCode\Common\Analysis\Struct.h" />
+    <ClInclude Include="src\SympleCode\Common\Node\Statement\StructDeclarationNode.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\SympleCode\Common\Analysis\Diagnostics.cpp">

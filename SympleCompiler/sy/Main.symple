@@ -1,18 +1,41 @@
-#include "sy/std/io.sy"
-#include "sy/std/memory.sy"
+extern ptr calloc(int size);
+extern ptr memset(ptr obj, byte val, int count);
+
+#
+#	----- Vector -----
+#
+
+#define VECTOR__METADATA_SIZE 8
+
+ptr Vector__New()
+{
+	ptr rvec = calloc(VECTOR__METADATA_SIZE);
+	return rvec + VECTOR__METADATA_SIZE;
+};
+
+int Vector__GetSize(ptr vector)
+{
+	ptr rvec = vector - VECTOR__METADATA_SIZE;
+	return *rvec;
+};
+
+void Vector__SetSize(ptr vector, int size)
+{
+	# ptr sz = @size;
+	# ptr rvec = vector - VECTOR__METADATA_SIZE;
+	# rvec[0] = sz[0];
+	# rvec[1] = sz[1];
+	# rvec[2] = sz[2];
+	# rvec[3] = sz[3];
+};
+
+#
+#	===== Vector =====
+#
 
 int main()
 {
-	# 8 bytes
-	# struct Human
-	# {
-	# 	string name;
-	# 	int age;
-	# };
-
-	ptr me = malloc(8);
-	me[0] = "Teddy";
-	me[4] = 12;
-	
-	printf("Name %s, Age %i", me[0], me[4]);
+	ptr vec = Vector__New();
+	Vector__SetSize(vec, 1337);
+	Vector__GetSize(vec);
 };

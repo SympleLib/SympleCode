@@ -8,9 +8,9 @@ namespace Symple
 	{
 	private:
 		const VariableExpressionNode* mVariable;
-		int mIndex;
+		const ExpressionNode* mIndex;
 	public:
-		PointerIndexExpressionNode(const VariableExpressionNode* variable, int index)
+		PointerIndexExpressionNode(const VariableExpressionNode* variable, const ExpressionNode* index)
 			: mVariable(variable), mIndex(index) {}
 
 		Kind GetKind() const override
@@ -26,11 +26,12 @@ namespace Symple
 				ss << "L--\t";
 			else
 				ss << "|--\t";
-			ss << "Pointer Index Expression [" << mIndex << "]";
+			ss << "Pointer Index Expression";
 			const char* newIndent = " \t";
 			if (!last)
 				newIndent = "|\t";
-			ss << '\n' << mVariable->ToString(indent + newIndent);
+			ss << '\n' << mVariable->ToString(indent + newIndent, false);
+			ss << '\n' << mIndex->ToString(indent + newIndent);
 
 			return ss.str();
 		}
@@ -40,7 +41,7 @@ namespace Symple
 			return mVariable;
 		}
 
-		int GetIndex() const
+		const ExpressionNode* GetIndex() const
 		{
 			return mIndex;
 		}

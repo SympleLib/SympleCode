@@ -1,73 +1,51 @@
 L--	Compilation Unit
- 	|--	External Function: ptr fopen()
- 	|	L--	Function Arguments
- 	|	 	|--	Function Argument (string) path
- 	|	 	L--	Function Argument (string) mode
- 	|--	External Function: int fputs()
- 	|	L--	Function Arguments
- 	|	 	|--	Function Argument (string) str
- 	|	 	L--	Function Argument (ptr) fs
- 	|--	External Function: int fprintf()
- 	|	L--	Function Arguments
- 	|	 	|--	Function Argument (ptr) fs
- 	|	 	L--	Function Argument (string) str
- 	|--	External Function: int fclose()
- 	|	L--	Function Arguments
- 	|	 	L--	Function Argument (ptr) fs
- 	|--	External Function: int printf()
- 	|	L--	Function Arguments
- 	|	 	L--	Function Argument (string) str
- 	|--	External Function: int puts()
- 	|	L--	Function Arguments
- 	|	 	L--	Function Argument (string) str
- 	|--	External Function: int putc()
- 	|	L--	Function Arguments
- 	|	 	L--	Function Argument (char) c
- 	|--	External Function: ptr malloc()
- 	|	L--	Function Arguments
- 	|	 	L--	Function Argument (int) size
  	|--	External Function: ptr calloc()
  	|	L--	Function Arguments
  	|	 	L--	Function Argument (int) size
- 	|--	External Function: int free()
+ 	|--	External Function: ptr memset()
  	|	L--	Function Arguments
- 	|	 	L--	Function Argument (ptr) $ptr
- 	|--	External Function: int memset()
- 	|	L--	Function Arguments
- 	|	 	|--	Function Argument (ptr) $ptr
+ 	|	 	|--	Function Argument (ptr) obj
  	|	 	|--	Function Argument (byte) val
- 	|	 	L--	Function Argument (int) size
- 	|--	External Function: int strcmp()
- 	|	L--	Function Arguments
- 	|	 	|--	Function Argument (string) l
- 	|	 	L--	Function Argument (string) r
- 	|--	External Function: int strncmp()
- 	|	L--	Function Arguments
- 	|	 	|--	Function Argument (string) l
- 	|	 	|--	Function Argument (string) r
  	|	 	L--	Function Argument (int) count
+ 	|--	Function Declaration: ptr Vector__New()
+ 	|	|--	Function Arguments
+ 	|	L--	Block Statement
+ 	|	 	|--	Variable Declaration (ptr) rvec
+ 	|	 	|	L--	Function Call Expression calloc()
+ 	|	 	|	 	L--	Function Call Arguments
+ 	|	 	|	 	 	L--	Number Literal Expression (8)
+ 	|	 	L--	Return Statement
+ 	|	 	 	L--	Binary Expression [+]
+ 	|	 	 	 	|--	Variable Expression rvec
+ 	|	 	 	 	L--	Number Literal Expression (8)
+ 	|--	Function Declaration: int Vector__GetSize()
+ 	|	|--	Function Arguments
+ 	|	|	L--	Function Argument (ptr) vector
+ 	|	L--	Block Statement
+ 	|	 	|--	Variable Declaration (ptr) rvec
+ 	|	 	|	L--	Binary Expression [-]
+ 	|	 	|	 	|--	Variable Expression vector
+ 	|	 	|	 	L--	Number Literal Expression (8)
+ 	|	 	L--	Return Statement
+ 	|	 	 	L--	UnaryExpression Expression [*]
+ 	|	 	 	 	L--	Variable Expression rvec
+ 	|--	Function Declaration: void Vector__SetSize()
+ 	|	|--	Function Arguments
+ 	|	|	|--	Function Argument (ptr) vector
+ 	|	|	L--	Function Argument (int) size
+ 	|	L--	Block Statement
  	L--	Function Declaration: int main()
  	 	|--	Function Arguments
  	 	L--	Block Statement
- 	 	 	|--	Variable Declaration (ptr) me
- 	 	 	|	L--	Function Call Expression malloc()
+ 	 	 	|--	Variable Declaration (ptr) vec
+ 	 	 	|	L--	Function Call Expression Vector__New()
  	 	 	|	 	L--	Function Call Arguments
- 	 	 	|	 	 	L--	Number Literal Expression (8)
  	 	 	|--	Expression Statement
- 	 	 	|	L--	Binary Expression [=]
- 	 	 	|	 	|--	Pointer Index Expression [0]
- 	 	 	|	 	|	L--	Variable Expression me
- 	 	 	|	 	L--	String Literal Expression (Teddy)
- 	 	 	|--	Expression Statement
- 	 	 	|	L--	Binary Expression [=]
- 	 	 	|	 	|--	Pointer Index Expression [4]
- 	 	 	|	 	|	L--	Variable Expression me
- 	 	 	|	 	L--	Number Literal Expression (12)
+ 	 	 	|	L--	Function Call Expression Vector__SetSize()
+ 	 	 	|	 	L--	Function Call Arguments
+ 	 	 	|	 	 	|--	Variable Expression vec
+ 	 	 	|	 	 	L--	Number Literal Expression (1337)
  	 	 	L--	Expression Statement
- 	 	 	 	L--	Function Call Expression printf()
+ 	 	 	 	L--	Function Call Expression Vector__GetSize()
  	 	 	 	 	L--	Function Call Arguments
- 	 	 	 	 	 	|--	String Literal Expression (Name %s, Age %i)
- 	 	 	 	 	 	|--	Pointer Index Expression [0]
- 	 	 	 	 	 	|	L--	Variable Expression me
- 	 	 	 	 	 	L--	Pointer Index Expression [4]
- 	 	 	 	 	 	 	L--	Variable Expression me
+ 	 	 	 	 	 	L--	Variable Expression vec

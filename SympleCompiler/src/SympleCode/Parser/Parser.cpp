@@ -29,14 +29,20 @@ namespace Symple
 			if (current->Is(Token::Kind::Comment))
 				Preprocess(current);
 			else
-				mTokens.push_back(current);
+			{
+				std::string lex(current->GetLex());
+				if (mDefines.find(lex) == mDefines.end())
+					mTokens.push_back(current);
+				else
+					mTokens.push_back(mDefines.at(lex));
+			}
 		}
 	}
 
 	void Parser::Preprocess(const Token* cmd)
 	{
-		std::string scmd(cmd->GetLex());
-		Lexer prepoLexer = scmd.c_str();
+		std::string* scmd = new std::string(cmd->GetLex());
+		Lexer prepoLexer = scmd->c_str();
 		Token* rcmd = prepoLexer.Next();
 		//std::cout << rcmd->GetLex() << '\n';
 
@@ -67,6 +73,13 @@ namespace Symple
 						mTokens.push_back(iCurrent);
 				}
 			}
+		}
+		else if (rcmd->GetLex() == "define")
+		{
+			std::string set(prepoLexer.Next()->GetLex());
+			const Token* def = prepoLexer.Next();
+			//std::cout << set << " = " << def->GetLex() << '\n';
+			mDefines.insert({ set, def });
 		}
 	}
 
@@ -214,6 +227,36 @@ namespace Symple
 		return hint;
 	}
 
+	StructDeclarationNode* Parser::ParseStruct()
+	{
+		Match(Token::Kind::Struct);
+		const Token* name = Match(Token::Kind::Identifier);
+		const Token* open = Match(Token::Kind::OpenBrace);
+		std::vector<const VariableDeclarationNode*> statements;
+		while (!Peek()->Is(Token::Kind::CloseBrace))
+		{
+			if (Peek()->Is(Token::Kind::EndOfFile))
+			{
+				mDiagnostics->ReportError(Next(), "Unexpected End Of File");
+				break;
+			}
+
+			const Token* start = Peek();
+
+			statements.push_back(ParseVariableDeclaration());
+
+			if (start == Peek())
+				Next();
+		}
+		const Token* close = Match(Token::Kind::CloseBrace);
+		Match(Token::Kind::Semicolon);
+
+		StructDeclarationNode* ztruct = new StructDeclarationNode(name, open, statements, close);
+		mTypes.push_back(new Type(std::string(name->GetLex()), ztruct->GetSize()));
+
+		return ztruct;
+	}
+
 	ExternFunctionNode* Parser::ParseExternFunction()
 	{
 		Match(Token::Kind::Extern);
@@ -231,6 +274,8 @@ namespace Symple
 	{
 		if (Peek()->Is(Token::Kind::Semicolon))
 			return new StatementNode; // Empty Statement;
+		if (Peek()->Is(Token::Kind::Struct))
+			return ParseStruct();
 		if (Peek()->Is(Token::Kind::Return))
 			return ParseReturnStatement();
 		if (Peek()->Is(Token::Kind::While))
@@ -335,7 +380,7 @@ namespace Symple
 
 	ExpressionNode* Parser::ParseExpression()
 	{
-		return 	ParseUnaryExpression();
+		return 	ParseBinaryExpression();
 	}
 
 	ExpressionNode* Parser::ParseUnaryExpression(int parentPriority)
@@ -344,16 +389,16 @@ namespace Symple
 		if (priority >= 0 && priority >= parentPriority)
 		{
 			const Token* oqerator = Next();
-			ExpressionNode* value = ParseBinaryExpression(parentPriority);
+			ExpressionNode* value = ParseUnaryExpression(parentPriority);
 			return new UnaryExpressionNode(oqerator, value);
 		}
 
-		return ParseBinaryExpression();
+		return ParsePrimaryExpression();
 	}
 
 	ExpressionNode* Parser::ParseBinaryExpression(int parentPriority)
 	{
-		ExpressionNode* left = ParsePrimaryExpression();
+		ExpressionNode* left = ParseUnaryExpression();
 
 		while (!Peek()->Is(Token::Kind::EndOfFile))
 		{
@@ -365,7 +410,7 @@ namespace Symple
 			if (oqerator->Is(Token::Kind::OpenBracket))
 			{
 				Match(Token::Kind::CloseBracket);
-				left = new PointerIndexExpressionNode(left->Cast<VariableExpressionNode>(), std::stoi(std::string(right->Cast<NumberLiteralExpressionNode>()->GetLiteral()->GetLex())));
+				left = new PointerIndexExpressionNode(left->Cast<VariableExpressionNode>(), right);
 				continue;
 			}
 			left = new BinaryExpressionNode(oqerator, left, right);

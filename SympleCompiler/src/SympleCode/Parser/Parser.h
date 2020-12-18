@@ -1,6 +1,8 @@
 #pragma once
 
+#include <string>
 #include <vector>
+#include <map>
 
 #include "SympleCode/Parser/Lexer.h"
 #include "SympleCode/Common/Node/Node.h"
@@ -12,12 +14,13 @@
 #include "SympleCode/Common/Node/Statement/BlockStatementNode.h"
 #include "SympleCode/Common/Node/Statement/WhileStatementNode.h"
 #include "SympleCode/Common/Node/Statement/ReturnStatementNode.h"
+#include "SympleCode/Common/Node/Statement/StructDeclarationNode.h"
 #include "SympleCode/Common/Node/Statement/VariableDeclarationNode.h"
 
-#include "SympleCode/Common/Node/Member/FunctionDeclarationNode.h"
-#include "SympleCode/Common/Node/Member/ExternFunctionNode.h"
 #include "SympleCode/Common/Node/Member/FunctionHintNode.h"
+#include "SympleCode/Common/Node/Member/ExternFunctionNode.h"
 #include "SympleCode/Common/Node/Member/GlobalStatementNode.h"
+#include "SympleCode/Common/Node/Member/FunctionDeclarationNode.h"
 
 #include "SympleCode/Common/Node/Expression/ExpressionNode.h"
 #include "SympleCode/Common/Node/Expression/LiteralExpressionNode.h"
@@ -37,6 +40,8 @@ namespace Symple
 		std::vector<const Type*> mTypes;
 		Diagnostics* mDiagnostics;
 		size_t mPosition;
+
+		std::map<std::string, const Token*> mDefines;
 	public:
 		Parser(const char* source = "");
 
@@ -60,6 +65,7 @@ namespace Symple
 		FunctionArgumentNode* ParseFunctionArgument();
 		ExternFunctionNode* ParseExternFunction();
 		FunctionHintNode* ParseFunctionHint();
+		StructDeclarationNode* ParseStruct();
 
 		StatementNode* ParseStatement();
 		IfStatementNode* ParseIfStatement();

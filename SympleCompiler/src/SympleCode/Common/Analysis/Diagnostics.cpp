@@ -33,6 +33,11 @@ namespace Symple
 		mFunctions.insert({ function->GetName()->GetLex(), function });
 	}
 
+	void Diagnostics::StructDeclaration(const StructDeclarationNode* ztruct)
+	{
+		mStructs.insert({ ztruct->GetName()->GetLex(), ztruct });
+	}
+
 	const std::vector<const Message*>& Diagnostics::GetMessages() const
 	{
 		return mMessages;
@@ -58,5 +63,17 @@ namespace Symple
 	const std::map<std::string_view, const FunctionDeclarationNode*>& Diagnostics::GetFunctions() const
 	{
 		return mFunctions;
+	}
+
+	const StructDeclarationNode* Diagnostics::GetStruct(const std::string_view& name) const
+	{
+		if (mStructs.find(name) == mStructs.end())
+			return nullptr;
+		return mStructs.at(name);
+	}
+
+	const std::map<std::string_view, const StructDeclarationNode*>& Diagnostics::GetStructs() const
+	{
+		return mStructs;
 	}
 }

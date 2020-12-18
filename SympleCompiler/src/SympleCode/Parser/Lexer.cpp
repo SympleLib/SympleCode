@@ -53,6 +53,8 @@ namespace Symple
 			return Atom(Token::Kind::RightArrow);
 		case ',':
 			return Atom(Token::Kind::Comma);
+		case '.':
+			return Atom(Token::Kind::Period);
 		case '@':
 			return Atom(Token::Kind::At);
 		case '#':
@@ -136,6 +138,10 @@ namespace Symple
 			return new Token(Token::Kind::While, beg, mCurrent, mLine, mColumn);
 		if (identifier == "extern")
 			return new Token(Token::Kind::Extern, beg, mCurrent, mLine, mColumn);
+		if (identifier == "struct")
+			return new Token(Token::Kind::Struct, beg, mCurrent, mLine, mColumn);
+		if (identifier == "sizeof")
+			return new Token(Token::Kind::SizeOf, beg, mCurrent, mLine, mColumn);
 
 		if (identifier == "if")
 			return new Token(Token::Kind::If, beg, mCurrent, mLine, mColumn);

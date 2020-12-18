@@ -24,6 +24,7 @@
 
 #include "SympleCode/Common/Node/CompilationUnitNode.h"
 
+#include "SympleCode/Common/Node/Statement/StructDeclarationNode.h"
 #include "SympleCode/Common/Node/Member/FunctionDeclarationNode.h"
 
 #define DO_COMMENTS false
