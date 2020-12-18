@@ -2,41 +2,11 @@ extern ptr calloc(int size);
 extern ptr memset(ptr obj, byte val, int count);
 extern ptr printf(string fmt);
 
-#
-#	----- Vector -----
-#
-
-#define VECTOR__METADATA_SIZE 8
-
-ptr Vector__New()
-{
-	ptr rvec = calloc(VECTOR__METADATA_SIZE);
-	return rvec + VECTOR__METADATA_SIZE;
-};
-
-int Vector__GetSize(ptr vector)
-{
-	ptr rvec = vector - VECTOR__METADATA_SIZE;
-	return *rvec;
-};
-
-void Vector__SetSize(ptr vector, int size)
-{
-	ptr sz = @size;
-	ptr rvec = vector - VECTOR__METADATA_SIZE;
-	rvec[0] = sz[0];
-	rvec[1] = sz[1];
-	rvec[2] = sz[2];
-	rvec[3] = sz[3];
-};
-
-#
-#	===== Vector =====
-#
+#include "Vector.sy"
 
 int main()
 {
 	ptr vec = Vector__New();
-	Vector__SetSize(vec, 0x1337);
+	_Vector__SetSize(vec, 0x1337);
 	Vector__GetSize(vec);
 };

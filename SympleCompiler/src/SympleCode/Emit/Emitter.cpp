@@ -125,7 +125,8 @@ namespace Symple
 
 		std::string name = std::string(declaration->GetName()->GetLex());
 		Comment("Function Declaration");
-		Write(".global _%s", name.c_str());
+		if (name[0] != '_')
+			Write(".global _%s", name.c_str());
 		Write("_%s:", name.c_str());
 		Comment("\tPush Stack");
 		Write("\tpush    %s", RegBp());
