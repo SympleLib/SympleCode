@@ -1,3 +1,5 @@
+#include "libc/memory.sy"
+
 #define VECTOR__METADATA_SIZE 8
 
 ptr Vector__New()
@@ -12,7 +14,7 @@ int Vector__GetSize(ptr vector)
 	return *rvec;
 };
 
-void _Vector__SetSize(ptr vector, int size)
+void $Vector__SetSize(ptr vector, int size)
 {
 	ptr sz = @size;
 	ptr rvec = vector - VECTOR__METADATA_SIZE;

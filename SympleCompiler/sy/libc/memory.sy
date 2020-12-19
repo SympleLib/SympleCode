@@ -1,0 +1,2 @@
+extern ptr calloc(int size);
+extern ptr memset(ptr obj, byte val, int count);

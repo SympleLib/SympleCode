@@ -7,13 +7,20 @@
 #include <iostream>
 #include <sstream>
 
+#define NOMINMAX
+#include <Windows.h>
+
 namespace Symple
 {
 	bool Compiler::CompileFile(const std::string& pathStr)
 	{
-		std::string sytStr = pathStr.substr(0, pathStr.find_last_of('.')) + ".syt";
-		std::string asmSStr = pathStr.substr(0, pathStr.find_last_of('.')) + ".s";
-		std::string objStr = pathStr.substr(0, pathStr.find_last_of('.')) + ".o";
+		std::string dir = "bin\\" + pathStr.substr(0, pathStr.find_last_of('\\'));
+		std::string cmd = "mkdir " + dir;
+		system(cmd.c_str());
+
+		std::string sytStr = "bin\\" + pathStr.substr(0, pathStr.find_last_of('.')) + ".syt";
+		std::string asmSStr = "bin\\" + pathStr.substr(0, pathStr.find_last_of('.')) + ".s";
+		std::string objStr = "bin\\" + pathStr.substr(0, pathStr.find_last_of('.')) + ".o";
 
 		const char* path = pathStr.c_str();
 		const char* syt = sytStr.c_str();

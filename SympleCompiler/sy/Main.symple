@@ -1,12 +1,11 @@
-extern ptr calloc(int size);
-extern ptr memset(ptr obj, byte val, int count);
-extern ptr printf(string fmt);
-
+#include "libc/io.sy"
+#include "libc/memory.sy"
 #include "Vector.sy"
 
 int main()
 {
 	ptr vec = Vector__New();
-	_Vector__SetSize(vec, 0x1337);
 	Vector__GetSize(vec);
+	
+	42;
 };

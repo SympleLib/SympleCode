@@ -40,6 +40,7 @@ namespace Symple
 		std::vector<const Type*> mTypes;
 		Diagnostics* mDiagnostics;
 		size_t mPosition;
+		bool mIgnore;
 
 		std::map<std::string, const Token*> mDefines;
 	public:

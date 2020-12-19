@@ -49,7 +49,7 @@ namespace Symple
 			Extern,
 			Struct,
 
-			SizeOf,
+			//SizeOf,
 
 			If,
 			Else,
@@ -70,7 +70,7 @@ namespace Symple
 			"At",
 			"True", "False", "While", "Break",
 			"Hint", "Return", "Extern", "Struct",
-			"SizeOf",
+			//"SizeOf",
 			"If", "Else",
 			"Comment",
 		};

@@ -1,0 +1,28 @@
+#ifndef _SY__STD__IO
+#define _SY__STD__IO 1
+
+#define EOF (-1)
+
+#define SEEK_CUR 1
+#define SEEK_END 2
+#define SEEK_SET 0
+
+#define FILENAME_MAX 260
+#define FOPEN_MAX    20
+#define _SYS_OPEN    20
+
+#define FILE ptr
+#define FILE_REF ptr
+
+#define errno int
+
+extern errno clearerr_s(FILE stream);
+
+extern errno fopen_s(FILE_REF stream, string path, string mode);
+extern errno fread_s(ptr buffer, int bufferSize, int elementSize, int elementCount, FILE stream);
+extern errno freopen_s(FILE_REF stream, string path, string mode, FILE oldStream);
+extern string gets_s(ptr buffer, int size);
+extern errno tmpfile_s(FILE_REF stream);
+extern errno tmpnam_s(ptr buffer, int size);
+
+#endif
