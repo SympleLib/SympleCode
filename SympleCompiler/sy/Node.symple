@@ -1,0 +1,27 @@
+#include "Node.sy"
+
+#include "libc/memory.sy"
+
+Node Node__New(ptr data, Node previous, Node next)
+{
+	Node this = malloc(NODE_SIZE);
+	
+	memcpy(this + 0, @data, 4);
+	memcpy(this + 4, @previous, 4);
+	memcpy(this + 8, @next, 4);
+};
+
+Node Node__Previous(Node this)
+{
+	return this + 4;
+};
+
+Node Node__Next(Node this)
+{
+	return this + 8;
+};
+
+Node Node__Delete(Node this)
+{
+	free(this);
+};

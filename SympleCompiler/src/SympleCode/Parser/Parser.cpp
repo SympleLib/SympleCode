@@ -19,104 +19,10 @@
 namespace Symple
 {
 	Parser::Parser(const char* source)
-		: mLexer(source), mPosition(0), mTypes(Type::PrimitiveTypes), mDiagnostics(new Diagnostics), mIgnore(false)
+		: mPreprocessor(source), mPosition(0), mTokens(mPreprocessor.GetTokens()), mTypes(Type::PrimitiveTypes), mDiagnostics(new Diagnostics), mIgnore(false)
 	{
-		const Token* current = Token::Default;
-		while (!current->Is(Token::Kind::EndOfFile))
-		{
-			current = mLexer.Next();
-			//std::cout << Token::KindString(current->GetKind()) << " | " << current->GetLex() << '\n';
-			if (current->Is(Token::Kind::Comment))
-				Preprocess(current);
-			else if (!mIgnore)
-			{
-				std::string lex(current->GetLex());
-				if (mDefines.find(lex) == mDefines.end())
-					mTokens.push_back(current);
-				else
-					mTokens.push_back(mDefines.at(lex));
-			}
-		}
-	}
-
-	void Parser::Preprocess(const Token* cmd)
-	{
-		std::string* scmd = new std::string(cmd->GetLex());
-		Lexer prepoLexer = scmd->c_str();
-		Token* rcmd = prepoLexer.Next();
-		//std::cout << rcmd->GetLex() << '\n';
-
-		if (rcmd->GetLex() == "include" && !mIgnore)
-		{
-			Token* includeDir = prepoLexer.Next();
-
-			FILE* file;
-			errno_t err;
-			if (!(err = fopen_s(&file, ("sy\\" + std::string(includeDir->GetLex())).c_str(), "rb")) && file)
-			{
-				fseek(file, 0L, SEEK_END);
-				unsigned int size = std::min(ftell(file), 4096L);
-				rewind(file);
-				char* source = new char[size + 1];
-				fread(source, 1, size, file);
-				source[size] = 0;
-				fclose(file);
-
-				prepoLexer = source;
-				const Token* iCurrent;
-				while (!(iCurrent = prepoLexer.Next())->Is(Token::Kind::EndOfFile))
-				{
-					//std::cout << Token::KindString(iCurrent->GetKind()) << " | " << iCurrent->GetLex() << '\n';
-					if (iCurrent->Is(Token::Kind::Comment))
-						Preprocess(iCurrent);
-					else if (!mIgnore)
-					{
-						std::string lex(iCurrent->GetLex());
-						if (mDefines.find(lex) == mDefines.end())
-							mTokens.push_back(iCurrent);
-						else
-							mTokens.push_back(mDefines.at(lex));
-					}
-				}
-			}
-		}
-		else if (rcmd->GetLex() == "define" && !mIgnore)
-		{
-			std::string set(prepoLexer.Next()->GetLex());
-			const Token* def = prepoLexer.Next();
-			//std::cout << set << " = " << def->GetLex() << '\n';
-			mDefines.insert({ set, def });
-		}
-		else if (rcmd->GetLex() == "if")
-		{
-			const Token* condition = prepoLexer.Next();
-
-			std::string lex(condition->GetLex());
-			if (mDefines.find(lex) != mDefines.end())
-				condition = mDefines.at(lex);
-
-			mIgnore = condition->GetLex() == "true" || condition->GetLex() == "1";
-		}
-		else if (rcmd->GetLex() == "ifdef")
-		{
-			const Token* condition = prepoLexer.Next();
-
-			mIgnore = mDefines.find(std::string(condition->GetLex())) != mDefines.end();
-		}
-		else if (rcmd->GetLex() == "ifndef")
-		{
-			const Token* condition = prepoLexer.Next();
-
-			mIgnore = mDefines.find(std::string(condition->GetLex())) == mDefines.end();
-		}
-		else if (rcmd->GetLex() == "else")
-		{
-			mIgnore = !mIgnore;
-		}
-		else if (rcmd->GetLex() == "endif")
-		{
-			mIgnore = false;
-		}
+		//for (auto tok : mTokens)
+		//	std::cout << Token::KindString(tok->GetKind()) << '|' << tok->GetLex() << '\n';
 	}
 
 	CompilationUnitNode* Parser::ParseCompilationUnit()

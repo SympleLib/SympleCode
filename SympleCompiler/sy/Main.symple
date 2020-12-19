@@ -1,11 +1,15 @@
-#include "libc/io.sy"
-#include "libc/memory.sy"
-#include "Vector.sy"
+#include "Node.sy"
+
+extern int puts(string str);
+
+hint int main();
 
 int main()
 {
-	ptr vec = Vector__New();
-	Vector__GetSize(vec);
+	string name = "my name is teddy";
+
+	Node node = Node__New(name, null, null);
+	Node__Delete(node);
 	
-	42;
+	puts(*node);
 };

@@ -135,6 +135,7 @@
     <ClInclude Include="src\SympleCode\Common\Node\Expression\FieldExpressionNode.h" />
     <ClInclude Include="src\SympleCode\Common\Analysis\Struct.h" />
     <ClInclude Include="src\SympleCode\Common\Node\Statement\StructDeclarationNode.h" />
+    <ClInclude Include="src\SympleCode\Parser\Preprocessor.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\SympleCode\Common\Analysis\Diagnostics.cpp">
@@ -160,5 +161,6 @@
     </ClCompile>
     <ClCompile Include="src\SympleCode\Main.cpp" />
     <ClCompile Include="src\SympleCode\Compiler.cpp" />
+    <ClCompile Include="src\SympleCode\Parser\Preprocessor.cpp" />
   </ItemGroup>
 </Project>

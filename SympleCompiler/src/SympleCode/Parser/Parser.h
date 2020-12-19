@@ -2,9 +2,9 @@
 
 #include <string>
 #include <vector>
-#include <map>
 
-#include "SympleCode/Parser/Lexer.h"
+#include "SympleCode/Parser/Preprocessor.h"
+
 #include "SympleCode/Common/Node/Node.h"
 #include "SympleCode/Common/Node/CompilationUnitNode.h"
 #include "SympleCode/Common/Node/FunctionArgumentsNode.h"
@@ -35,22 +35,19 @@ namespace Symple
 	class Parser
 	{
 	private:
-		Lexer mLexer;
+		Preprocessor mPreprocessor;
+
 		std::vector<const Token*> mTokens;
 		std::vector<const Type*> mTypes;
 		Diagnostics* mDiagnostics;
 		size_t mPosition;
 		bool mIgnore;
-
-		std::map<std::string, const Token*> mDefines;
 	public:
 		Parser(const char* source = "");
 
 		CompilationUnitNode* ParseCompilationUnit();
 		Diagnostics* GetDiagnostics() const;
 	private:
-		void Preprocess(const Token* cmd);
-
 		const Token* Peek(size_t offset = 0);
 		const Token* Next();
 		const Token* Match(Token::Kind kind);

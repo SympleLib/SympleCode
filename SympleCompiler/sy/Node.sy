@@ -1,0 +1,8 @@
+#define Node ptr
+
+#define NODE_SIZE 12
+
+hint Node Node__New(ptr data, Node previous, Node next);
+hint Node Node__Previous(Node this);
+hint Node Node__Next(Node this);
+hint Node Node__Delete(Node this);

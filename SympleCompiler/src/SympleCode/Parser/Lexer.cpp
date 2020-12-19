@@ -28,7 +28,7 @@ namespace Symple
 		case '*':
 			return Atom(Token::Kind::Asterisk);
 		case '/':
-			return Atom(Token::Kind::Slash);
+			return Comment();
 		case '!':
 			return Equal();
 		case '=':
@@ -58,7 +58,7 @@ namespace Symple
 		case '@':
 			return Atom(Token::Kind::At);
 		case '#':
-			return Comment();
+			return Preprocess();
 		case '"':
 			return String();
 		}
@@ -140,8 +140,8 @@ namespace Symple
 			return new Token(Token::Kind::Extern, beg, mCurrent, mLine, mColumn);
 		if (identifier == "struct")
 			return new Token(Token::Kind::Struct, beg, mCurrent, mLine, mColumn);
-		//if (identifier == "sizeof")
-		//	return new Token(Token::Kind::SizeOf, beg, mCurrent, mLine, mColumn);
+		if (identifier == "sizeof")
+			return new Token(Token::Kind::SizeOf, beg, mCurrent, mLine, mColumn);
 
 		if (identifier == "if")
 			return new Token(Token::Kind::If, beg, mCurrent, mLine, mColumn);
@@ -150,17 +150,44 @@ namespace Symple
 		return new Token(Token::Kind::Identifier, beg, mCurrent, mLine, mColumn);
 	}
 
-	Token* Lexer::Comment()
+	Token* Lexer::Preprocess()
 	{
 		Get();
 		const char* beg = mCurrent;
-		while (Peek() != '#')
+		while (!(CheckNewLine(Peek()) || Peek() == 0))
 		{
 			Get();
-			if (CheckNewLine(Peek(-1)))
-				break;
 		}
-		return new Token(Token::Kind::Comment, beg, mCurrent - 1, mLine, mColumn);
+		Get();
+		return new Token(Token::Kind::Preprocess, beg, mCurrent - 1, mLine, mColumn);
+	}
+
+	Token* Lexer::Comment()
+	{
+		const char* beg = mCurrent;
+		Get();
+		if (Peek() == '/')
+		{
+			Get();
+			while (!(CheckNewLine(Peek()) || Peek() == 0))
+			{
+				Get();
+			}
+			Get();
+			return new Token(Token::Kind::Comment, beg + 2, mCurrent - 1, mLine, mColumn);
+		}
+		else if (Peek() == '*')
+		{
+			Get();
+			while (Peek() != 0)
+			{
+				if (Get() == '*' && Get() == '/')
+					return new Token(Token::Kind::Comment, beg + 2, mCurrent - 2, mLine, mColumn);
+			}
+			return new Token(Token::Kind::Comment, beg + 2, mCurrent - 1, mLine, mColumn);
+		}
+		else
+			return new Token(Token::Kind::Slash, beg, 1, mLine, mColumn);
 	}
 
 	Token* Lexer::Number()

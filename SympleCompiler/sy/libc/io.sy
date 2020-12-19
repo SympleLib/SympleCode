@@ -1,6 +1,3 @@
-#ifndef _SY__STD__IO
-#define _SY__STD__IO 1
-
 #define EOF (-1)
 
 #define SEEK_CUR 1
@@ -24,5 +21,3 @@ extern errno freopen_s(FILE_REF stream, string path, string mode, FILE oldStream
 extern string gets_s(ptr buffer, int size);
 extern errno tmpfile_s(FILE_REF stream);
 extern errno tmpnam_s(ptr buffer, int size);
-
-#endif

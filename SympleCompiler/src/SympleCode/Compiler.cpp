@@ -16,7 +16,8 @@ namespace Symple
 	{
 		std::string dir = "bin\\" + pathStr.substr(0, pathStr.find_last_of('\\'));
 		std::string cmd = "mkdir " + dir;
-		system(cmd.c_str());
+		if (GetFileAttributesA(dir.c_str()) == INVALID_FILE_ATTRIBUTES)
+			system(cmd.c_str());
 
 		std::string sytStr = "bin\\" + pathStr.substr(0, pathStr.find_last_of('.')) + ".syt";
 		std::string asmSStr = "bin\\" + pathStr.substr(0, pathStr.find_last_of('.')) + ".s";

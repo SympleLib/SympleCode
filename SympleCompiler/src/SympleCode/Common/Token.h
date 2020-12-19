@@ -49,12 +49,13 @@ namespace Symple
 			Extern,
 			Struct,
 
-			//SizeOf,
+			SizeOf,
 
 			If,
 			Else,
 
 			Comment,
+			Preprocess,
 
 			Unknown = -2,
 			EndOfFile = -1,
@@ -65,14 +66,14 @@ namespace Symple
 			"Plus", "Minus", "Asterisk", "Slash", "Equal",
 			"EqualEqual", "NotEqual",
 			"Comma", "Semicolon", "Period",
-			"OpenBrace", "CloseBrace", "OpenParenthesis", "CloseParenthesis",
+			"OpenBrace", "CloseBrace", "OpenBracket", "CloseBracket", "OpenParenthesis", "CloseParenthesis",
 			"LeftArrow", "RightArrow",
 			"At",
 			"True", "False", "While", "Break",
 			"Hint", "Return", "Extern", "Struct",
-			//"SizeOf",
+			"SizeOf",
 			"If", "Else",
-			"Comment",
+			"Comment", "Preprocess",
 		};
 
 		static const char* KindString(Kind kind);

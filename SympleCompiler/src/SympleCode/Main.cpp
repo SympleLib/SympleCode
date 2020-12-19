@@ -44,14 +44,14 @@ static void FindFiles(const std::string& dir)
 			if (fdata.cFileName[0] != '.')
 			{
 				std::string newDir = dir + fdata.cFileName + "\\";
-				printf("dir: %s\n", newDir.c_str());
+				//printf("dir: %s\n", newDir.c_str());
 
 				FindFiles(newDir);
 			}
 		}
 		else
 		{
-			printf("file: %s\n", fdata.cFileName);
+			//printf("file: %s\n", fdata.cFileName);
 
 			std::string name = dir + fdata.cFileName;
 			if (name.substr(name.find_last_of('.')) == ".symple")

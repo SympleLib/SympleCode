@@ -1,3 +1,0 @@
-hint ptr Vector__New();
-hint int Vector__GetSize(ptr vector);
-hint void _Vector__SetSize(ptr vector, int size);
