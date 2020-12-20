@@ -1,0 +1,25 @@
+#include <libc/memory.h>
+
+string StringNumber(int num)
+{
+    int pnum = num;
+    int numDigits = 0;
+    while (num)
+    {
+        ++numDigits;
+        num %= 10;
+        num /= 10;
+    }
+    ++numDigits;
+    num = pnum;
+
+    string out = malloc(numDigits);
+    int oIndex = numDigits;
+    while oIndex
+    {
+        out[--oIndex] = (num % 10) + '0';
+        num /= 10;
+    }
+
+    return out;
+}
