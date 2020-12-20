@@ -51,6 +51,7 @@ namespace Symple
 				fclose(file);
 
 				Preprocessor includePreprocessor(source, mIncludedFiles, mDefines);
+				mDefines = includePreprocessor.mDefines;
 				for (const Token* token : includePreprocessor.GetTokens())
 					if (token != includePreprocessor.GetTokens().back())
 					{
@@ -68,7 +69,6 @@ namespace Symple
 			Token* with = prepoLexer.Next();
 
 			mDefines.insert({ replace, with });
-			mDefines.rend();
 		}
 	}
 }
