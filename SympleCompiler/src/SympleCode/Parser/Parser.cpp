@@ -322,7 +322,17 @@ namespace Symple
 
 	ExpressionNode* Parser::ParseExpression()
 	{
-		return 	ParseBinaryExpression();
+		return ParseAssignmentExpression();
+	}
+
+	ExpressionNode* Parser::ParseAssignmentExpression()
+	{
+		switch (Peek(1)->GetKind())
+		{
+
+		}
+
+		return ParseBinaryExpression();
 	}
 
 	ExpressionNode* Parser::ParseUnaryExpression(int parentPriority)

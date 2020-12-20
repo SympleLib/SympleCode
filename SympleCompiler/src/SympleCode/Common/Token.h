@@ -14,14 +14,24 @@ namespace Symple
 			Number,
 			String,
 
+			Equal,
+			Exclamation,
 			Plus,
 			Minus,
 			Asterisk,
 			Slash,
-			Equal,
+			Percentage,
+
+			PlusPlus,
+			MinusMinus,
 
 			EqualEqual,
-			NotEqual,
+			ExclamationEqual,
+			PlusEqual,
+			MinusEqual,
+			AsteriskEqual,
+			SlashEqual,
+			PercentageEqual,
 
 			Comma,
 			Semicolon,
@@ -63,8 +73,8 @@ namespace Symple
 
 		static constexpr const char* KindMap[] = {
 			"Identifier", "Number", "String",
-			"Plus", "Minus", "Asterisk", "Slash", "Equal",
-			"EqualEqual", "NotEqual",
+			"Exclamation", "Equal", "Plus", "Minus", "Asterisk", "Slash", "Percentage",
+			"EqualEqual", "ExclamationEqual", "PlusEqual", "MinusEqual", "AsteriskEqual", "SlashEqual", "PercentageEqual",
 			"Comma", "Semicolon", "Period",
 			"OpenBrace", "CloseBrace", "OpenBracket", "CloseBracket", "OpenParenthesis", "CloseParenthesis",
 			"LeftArrow", "RightArrow",

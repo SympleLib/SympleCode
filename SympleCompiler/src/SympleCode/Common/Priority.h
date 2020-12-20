@@ -11,5 +11,6 @@ namespace Symple
 	public:
 		static int UnaryOperatorPriority(const Token* token);
 		static int BinaryOperatorPriority(const Token* token);
+		static int AssignmentOperatorPriority(const Token* token);
 	};
 }

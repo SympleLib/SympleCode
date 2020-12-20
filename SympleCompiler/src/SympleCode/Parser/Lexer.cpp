@@ -21,17 +21,19 @@ namespace Symple
 
 		switch (c)
 		{
-		case '+':
-			return Atom(Token::Kind::Plus);
-		case '-':
-			return Atom(Token::Kind::Minus);
-		case '*':
-			return Atom(Token::Kind::Asterisk);
-		case '/':
-			return Comment();
+		case '=':
+			return Equal();
 		case '!':
 			return Equal();
-		case '=':
+		case '+':
+			return Equal();
+		case '-':
+			return Equal();
+		case '*':
+			return Equal();
+		case '/':
+			return Equal();
+		case '%':
 			return Equal();
 		case ';':
 			return Atom(Token::Kind::Semicolon);
@@ -215,18 +217,51 @@ namespace Symple
 		Get();
 		if (Peek() == '=')
 		{
-			if (*beg == '=')
+			switch (*beg)
 			{
-				Get();
-				return new Token(Token::Kind::EqualEqual, beg, mCurrent, mLine, mColumn);
+			case '=':
+				return new Token(Token::Kind::EqualEqual, mLine, mColumn);
+			case '!':
+				return new Token(Token::Kind::ExclamationEqual, mLine, mColumn);
+			case '+':
+				return new Token(Token::Kind::PlusEqual, mLine, mColumn);
+			case '-':
+				return new Token(Token::Kind::MinusEqual, mLine, mColumn);
+			case '*':
+				return new Token(Token::Kind::AsteriskEqual, mLine, mColumn);
+			case '/':
+				return new Token(Token::Kind::SlashEqual, mLine, mColumn);
+			case '%':
+				return new Token(Token::Kind::PercentageEqual, mLine, mColumn);
 			}
-			if (*beg == '!')
+		}
+		if (Peek() == *beg)
+		{
+			switch (*beg)
 			{
-				Get();
-				return new Token(Token::Kind::NotEqual, beg, mCurrent, mLine, mColumn);
+			case '+':
+				return new Token(Token::Kind::PlusPlus, mLine, mColumn);
+			case '-':
+				return new Token(Token::Kind::MinusMinus, mLine, mColumn);
 			}
 		}
 
-		return new Token(Token::Kind::Equal, beg, mCurrent, mLine, mColumn);
+		switch (*beg)
+		{
+		case '=':
+			return new Token(Token::Kind::Equal, mLine, mColumn);
+		case '!':
+			return new Token(Token::Kind::Exclamation, mLine, mColumn);
+		case '+':
+			return new Token(Token::Kind::Plus, mLine, mColumn);
+		case '-':
+			return new Token(Token::Kind::Minus, mLine, mColumn);
+		case '*':
+			return new Token(Token::Kind::Asterisk, mLine, mColumn);
+		case '/':
+			return new Token(Token::Kind::Slash, mLine, mColumn);
+		case '%':
+			return new Token(Token::Kind::Percentage, mLine, mColumn);
+		}
 	}
 }

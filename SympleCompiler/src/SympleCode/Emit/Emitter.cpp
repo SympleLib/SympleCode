@@ -378,7 +378,7 @@ namespace Symple
 			Write("..Jump.%i:", jumpPos);
 			break;
 		}
-		case Token::Kind::NotEqual:
+		case Token::Kind::ExclamationEqual:
 		{
 			unsigned int jumpPos = mJumpPos;
 			mJumpPos++;

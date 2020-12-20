@@ -4,10 +4,10 @@
 
 namespace Symple
 {
-	class PointerIndexExpressionNode : public ExpressionNode
+	class PointerIndexExpressionNode : public ModifiableExpressionNode
 	{
 	private:
-		const VariableExpressionNode* mVariable;
+		const ModifiableExpressionNode* mVariable;
 		const ExpressionNode* mIndex;
 	public:
 		PointerIndexExpressionNode(const VariableExpressionNode* variable, const ExpressionNode* index)
@@ -36,7 +36,7 @@ namespace Symple
 			return ss.str();
 		}
 
-		const VariableExpressionNode* GetExpression() const
+		const ModifiableExpressionNode* GetExpression() const
 		{
 			return mVariable;
 		}

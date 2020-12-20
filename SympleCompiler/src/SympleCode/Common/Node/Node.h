@@ -20,6 +20,8 @@ namespace Symple
 			BinaryExpression,
 			LiteralExpression,
 			VariableExpression,
+			AssignmentExpression,
+			ModifiableExpression,
 			FunctionCallExpression,
 			PointerIndexExpression,
 			NumberLiteralExpression,
@@ -49,7 +51,8 @@ namespace Symple
 		static constexpr const char* KindMap[] = {
 			"Unknown", "Expression", "UnaryExpression", "BinaryExpression",
 			"FieldExpression",
-			"LiteralExpression", "VariableExpression", "FunctionCallExpression", "PointerIndexExpression",
+			"LiteralExpression", "VariableExpression", "AssignmentExpression", "ModifiableExpression",
+			"FunctionCallExpression", "PointerIndexExpression",
 			"StringLiteralExpression", "NumberLiteralExpression", "BooleanLiteralExpression",
 			"Member", "CompilationUnit", "FunctionDeclaration",
 			"Statement", "BlockStatement", "BreakStatement", "WhileStatement", "GlobalStatement", "ReturnStatement", "VariableDeclaration", "ExpressionStatement",

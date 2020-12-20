@@ -11,7 +11,7 @@ int main(unsigned int argc, const char* argv[])
 {
 	SetConsoleTitleA("SympleCode Compiler - Treidex");
 
-	FindFiles("sy\\");
+	FindFiles("sy\\random\\");
 
 	Symple::Compiler compiler;
 	bool compiledGood = true;

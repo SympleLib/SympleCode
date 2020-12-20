@@ -1,11 +1,11 @@
 #pragma once
 
 #include "SympleCode/Common/Token.h"
-#include "SympleCode/Common/Node/Expression/ExpressionNode.h"
+#include "SympleCode/Common/Node/Expression/ModifiableExpressionNode.h"
 
 namespace Symple
 {
-	class VariableExpressionNode : public ExpressionNode
+	class VariableExpressionNode : public ModifiableExpressionNode
 	{
 	private:
 		const Token* mName;

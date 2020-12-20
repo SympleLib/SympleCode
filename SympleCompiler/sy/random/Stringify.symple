@@ -1,4 +1,5 @@
-#include <libc/memory.h>
+#include "libc/memory.sy"
+#include "libc/io.sy"
 
 string StringNumber(int num)
 {
@@ -15,11 +16,15 @@ string StringNumber(int num)
 
     string out = malloc(numDigits);
     int oIndex = numDigits;
-    while oIndex
+    while (oIndex)
     {
         out[--oIndex] = (num % 10) + '0';
         num /= 10;
-    }
+    };
 
     return out;
-}
+};
+
+int main()
+{
+};
