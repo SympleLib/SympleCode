@@ -359,12 +359,6 @@ namespace Symple
 				break;
 			const Token* oqerator = Next();
 			ExpressionNode* right = ParseBinaryExpression(priority);
-			if (oqerator->Is(Token::Kind::OpenBracket))
-			{
-				Match(Token::Kind::CloseBracket);
-				left = new PointerIndexExpressionNode(left->Cast<VariableExpressionNode>(), right);
-				continue;
-			}
 			left = new BinaryExpressionNode(oqerator, left, right);
 		}
 
@@ -394,7 +388,27 @@ namespace Symple
 		if (Peek(1)->Is(Token::Kind::OpenParenthesis))
 			return ParseFunctionCallExpression();
 
+		return ParseModifiableExpression();
+	}
+
+	ModifiableExpressionNode* Parser::ParseModifiableExpression()
+	{
+		if (Peek()->Is(Token::Kind::OpenBracket))
+			return ParsePointerIndexExpression();
+
 		return new VariableExpressionNode(Next());
+	}
+
+	ModifiableExpressionNode* Parser::ParsePointerIndexExpression()
+	{
+		ModifiableExpressionNode* left = ParseModifiableExpression();
+		while (Peek()->Is(Token::Kind::OpenBracket))
+		{
+			ExpressionNode* right = ParseExpression();
+			left = new PointerIndexExpressionNode(left, right);
+		}
+
+		return left;
 	}
 
 	FunctionCallExpressionNode* Parser::ParseFunctionCallExpression()

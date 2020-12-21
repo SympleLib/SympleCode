@@ -24,6 +24,7 @@
 
 #include "SympleCode/Common/Node/Expression/ExpressionNode.h"
 #include "SympleCode/Common/Node/Expression/LiteralExpressionNode.h"
+#include "SympleCode/Common/Node/Expression/ModifiableExpressionNode.h"
 #include "SympleCode/Common/Node/Expression/FunctionCallExpressionNode.h"
 #include "SympleCode/Common/Node/Expression/ParenthesizedExpressionNode.h"
 
@@ -81,6 +82,8 @@ namespace Symple
 		ExpressionNode* ParsePrimaryExpression();
 
 		ExpressionNode* ParseNameOrCallExpression();
+		ModifiableExpressionNode* ParseModifiableExpression();
+		ModifiableExpressionNode* ParsePointerIndexExpression();
 		FunctionCallArgumentsNode* ParseFunctionCallArguments();
 
 		FunctionCallExpressionNode* ParseFunctionCallExpression();

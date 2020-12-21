@@ -10,7 +10,7 @@ namespace Symple
 		const ModifiableExpressionNode* mVariable;
 		const ExpressionNode* mIndex;
 	public:
-		PointerIndexExpressionNode(const VariableExpressionNode* variable, const ExpressionNode* index)
+		PointerIndexExpressionNode(const ModifiableExpressionNode* variable, const ExpressionNode* index)
 			: mVariable(variable), mIndex(index) {}
 
 		Kind GetKind() const override
