@@ -161,6 +161,52 @@ namespace Symple
 		return left;
 	}
 
+	char* Emitter::Neg(char* val)
+	{
+		Write("\tneg%c    %s", Rep(), val);
+		return val;
+	}
+
+	char* Emitter::Cmp(char* right = RegDx(), char* left = RegDx())
+	{
+		Write("\tcmp%c    %s, %s", right, left);
+		return left;
+	}
+
+	char* Emitter::CmpOp(const Token* oqerator)
+	{
+		switch (oqerator->GetKind())
+		{
+		case Token::Kind::EqualEqual:
+			return "e";
+		case Token::Kind::ExclamationEqual:
+			return "ne";
+		case Token::Kind::LeftArrow:
+			return "l";
+		case Token::Kind::RightArrow:
+			return "g";
+		}
+
+		return nullptr;
+	}
+
+	char* Emitter::CmpNOp(const Token* oqerator)
+	{
+		switch (oqerator->GetKind())
+		{
+		case Token::Kind::EqualEqual:
+			return "ne";
+		case Token::Kind::ExclamationEqual:
+			return "e";
+		case Token::Kind::LeftArrow:
+			return "ge";
+		case Token::Kind::RightArrow:
+			return "le";
+		}
+
+		return nullptr;
+	}
+
 	void Emitter::Emit(const CompilationUnitNode* unit)
 	{
 		for (const MemberNode* member : unit->GetMembers())
@@ -223,12 +269,27 @@ namespace Symple
 
 	char* Emitter::EmitStatement(const StatementNode* statement)
 	{
+		Write("");
+		if (statement->Is<IfStatementNode>())
+			return EmitIfStatement(statement->Cast<IfStatementNode>());
 		if (statement->Is<ReturnStatementNode>())
 			return EmitReturnStatement(statement->Cast<ReturnStatementNode>());
 		if (statement->Is<ExpressionStatementNode>())
 			return EmitExpressionStatement(statement->Cast<ExpressionStatementNode>());
 		if (statement->Is<VariableDeclarationNode>())
 			return EmitVariableDeclaration(statement->Cast<VariableDeclarationNode>());
+
+		return nullptr;
+	}
+
+	char* Emitter::EmitIfStatement(const IfStatementNode* declaration)
+	{
+		unsigned int elsePos = mDataPos++, endPos = mDataPos++;
+
+
+		Write("..%i:", elsePos);
+
+		Write("..%i:", endPos);
 
 		return nullptr;
 	}
@@ -290,7 +351,7 @@ namespace Symple
 		{
 		case Token::Kind::Minus:
 			Move(EmitExpression(expression->GetValue()), RegAx());
-			Write("\tneg%c    %s", Rep(), RegAx());
+			Neg(RegAx());
 			return RegAx();
 		}
 
@@ -318,6 +379,11 @@ namespace Symple
 			return RegAx();
 		case Token::Kind::Percentage:
 			Mod(RegAx());
+			return RegAx();
+
+		case Token::Kind::EqualEqual:
+			Cmp(Pop(RegDx()), RegAx());
+			Write("");
 			return RegAx();
 		}
 

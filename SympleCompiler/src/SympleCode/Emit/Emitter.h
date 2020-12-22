@@ -11,6 +11,7 @@
 #include "SympleCode/Common/Node/Member/GlobalStatementNode.h"
 #include "SympleCode/Common/Node/Member/FunctionDeclarationNode.h"
 
+#include "SympleCode/Common/Node/Statement/IfStatementNode.h"
 #include "SympleCode/Common/Node/Statement/ReturnStatementNode.h"
 #include "SympleCode/Common/Node/Statement/ExpressionStatementNode.h"
 
@@ -62,11 +63,18 @@ namespace Symple
 		char* Div(char* left = RegAx());
 		char* Mod(char* left = RegAx());
 
+		char* Neg(char* val = RegAx());
+
+		char* Cmp(char* right = RegDx(), char* left = RegDx());
+		char* CmpOp(const Token* oqerator);
+		char* CmpNOp(const Token* oqerator);
+
 		char* EmitMember(const MemberNode* member);
 
 		char* EmitFunctionDeclaration(const FunctionDeclarationNode* declaration);
 
 		char* EmitStatement(const StatementNode* statement);
+		char* EmitIfStatement(const IfStatementNode* declaration);
 		char* EmitReturnStatement(const ReturnStatementNode* statement);
 		char* EmitExpressionStatement(const ExpressionStatementNode* statement);
 		char* EmitVariableDeclaration(const VariableDeclarationNode* declaration);
