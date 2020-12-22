@@ -44,7 +44,7 @@ namespace Symple
 		fclose(mFile);
 	}
 
-	char Emitter::Mod(int size)
+	char Emitter::Rep(int size)
 	{
 		if (size <= 1)
 			return 'b';
@@ -91,14 +91,14 @@ namespace Symple
 
 	char* Emitter::Push(char* reg)
 	{
-		Write("\tpush%c   %s", Mod(), reg);
+		Write("\tpush%c   %s", Rep(), reg);
 
 		return reg;
 	}
 
 	char* Emitter::Pop(char* reg)
 	{
-		Write("\tpop%c    %s", Mod(), reg);
+		Write("\tpop%c    %s", Rep(), reg);
 
 		return reg;
 	}
@@ -106,7 +106,7 @@ namespace Symple
 	char* Emitter::Move(char* from, char* to, int size)
 	{
 		if (strcmp(from, to))
-			Write("\tmov%c    %s, %s", Mod(size), from, to);
+			Write("\tmov%c    %s, %s", Rep(size), from, to);
 
 		return to;
 	}
@@ -118,14 +118,46 @@ namespace Symple
 		else if (!strcmp(reg, RegAx(to)));
 		else if (to < from && !strcmp(reg, RegAx(from)));
 		else
-			Write("\tmovs%c%c  %s, %s", Mod(from), Mod(to), reg, RegAx(to));
+			Write("\tmovs%c%c  %s, %s", Rep(from), Rep(to), reg, RegAx(to));
 
 		return RegAx(to);
 	}
 
 	char* Emitter::Add(char* right, char* left)
 	{
-		Write("\tadd%c    %s, %s", Mod(), right, left);
+		Write("\tadd%c    %s, %s", Rep(), right, left);
+		return left;
+	}
+
+	char* Emitter::Sub(char* right, char* left)
+	{
+		Write("\tsub%c    %s, %s", Rep(), right, left);
+		return left;
+	}
+
+	char* Emitter::Mul(char* right, char* left)
+	{
+		Write("\timul%c   %s, %s", Rep(), right, left);
+		return left;
+	}
+
+	char* Emitter::Div(char* left)
+	{
+		if (strcmp(left, RegCx))
+			Move(left, RegCx);
+		if (strcmp(left, RegAx()))
+			Move(RegCx, RegAx());
+		Write("\tcltd");
+		Pop(RegCx);
+		Write("\tidiv%c   %s", Rep(), RegCx);
+		return left;
+	}
+
+	char* Emitter::Mod(char* left)
+	{
+		Div(left);
+		if (strcmp(left, RegDx()))
+			Move(RegDx(), left);
 		return left;
 	}
 
@@ -158,7 +190,7 @@ namespace Symple
 			Write(".global _%s", name.c_str());
 
 		Write("_%s:", name.c_str());
-		Write("\tpush%c   %s", Mod(), RegBp);
+		Write("\tpush%c   %s", Rep(), RegBp);
 		Move(RegSp, RegBp);
 
 		const std::map<std::string_view, const VariableDeclarationNode*> pDeclaredVariables = mDeclaredVariables;
@@ -178,8 +210,8 @@ namespace Symple
 
 		Write("..%i:", mReturnPos);
 		Move(RegBp, RegSp);
-		Write("\tpop%c    %s", Mod(), RegBp);
-		Write("\tret%c", Mod());
+		Write("\tpop%c    %s", Rep(), RegBp);
+		Write("\tret%c", Rep());
 
 		mReturnPos = pReturnPos;
 
@@ -225,7 +257,7 @@ namespace Symple
 		mDeclaredVariables.insert({ declaration->GetName()->GetLex(), declaration });
 
 		Write("_%s$ = -%i", name.c_str(), mStackPos);
-		Write("\tsub%c    $%i, %s", Mod(), size, RegSp);
+		Write("\tsub%c    $%i, %s", Rep(), size, RegSp);
 		if (declaration->GetInitializer()->GetKind() != Node::Kind::Expression)
 			Move(Cast(EmitExpression(declaration->GetInitializer()), 4, size), Format("_%s$(%s)", name.c_str(), RegBp), size);
 
@@ -258,7 +290,7 @@ namespace Symple
 		{
 		case Token::Kind::Minus:
 			Move(EmitExpression(expression->GetValue()), RegAx());
-			Write("\tneg%c    %s", Mod(), RegAx());
+			Write("\tneg%c    %s", Rep(), RegAx());
 			return RegAx();
 		}
 
@@ -267,28 +299,25 @@ namespace Symple
 
 	char* Emitter::EmitBinaryExpression(const BinaryExpressionNode* expression)
 	{
+		Push(EmitExpression(expression->GetRight()));
+		Move(EmitExpression(expression->GetLeft()), RegAx());
+
 		switch (expression->GetOperator()->GetKind())
 		{
 		case Token::Kind::Plus:
-			Push(EmitExpression(expression->GetRight()));
-			Move(EmitExpression(expression->GetLeft()), RegAx());
 			Add(Pop(RegDx()), RegAx());
 			return RegAx();
 		case Token::Kind::Minus:
-			Push(EmitExpression(expression->GetRight()));
-			Move(EmitExpression(expression->GetLeft()), RegAx());
-			Write("\tsub%c    %s, %s", Mod(), Pop(RegDx()), RegAx());
+			Sub(Pop(RegDx()), RegAx());
 			return RegAx();
 		case Token::Kind::Asterisk:
-			Push(EmitExpression(expression->GetRight()));
-			Move(EmitExpression(expression->GetLeft()), RegAx());
-			Write("\timul%c   %s, %s", Mod(), Pop(RegDx()), RegAx());
+			Mul(Pop(RegDx()), RegAx());
 			return RegAx();
 		case Token::Kind::Slash:
-			Move(EmitExpression(expression->GetLeft()), RegAx());
-			Write("\tcltd");
-			Move(EmitExpression(expression->GetLeft()), RegCx);
-			Write("\tidiv%c   %s", Mod(), RegCx);
+			Div(RegAx());
+			return RegAx();
+		case Token::Kind::Percentage:
+			Mod(RegAx());
 			return RegAx();
 		}
 
@@ -331,12 +360,12 @@ namespace Symple
 			return RegErr;
 		}
 
-		unsigned int pushedSize = call->GetArguments()->GetArguments().size();
+		unsigned int pushedSize = call->GetArguments()->GetArguments().size() * 4;
 		for (int i = call->GetArguments()->GetArguments().size() - 1; i >= 0; i--)
-			Write("\tpush%c   %s", Mod(), EmitExpression(call->GetArguments()->GetArguments()[i]));
+			Write("\tpush%c   %s", Rep(), EmitExpression(call->GetArguments()->GetArguments()[i]));
 
-		Write("\tcall%c   _%s", Mod(), std::string(call->GetName()->GetLex()).c_str());
-		Write("\tadd%c    $%i, %s", Mod(), pushedSize, RegSp);
+		Write("\tcall%c   _%s", Rep(), std::string(call->GetName()->GetLex()).c_str());
+		Write("\tadd%c    $%i, %s", Rep(), pushedSize, RegSp);
 
 		return RegAx();
 	}
@@ -388,19 +417,27 @@ namespace Symple
 		switch (expression->GetOperator()->GetKind())
 		{
 		case Token::Kind::Equal:
-			Write("");
 			Move(Cast(EmitExpression(expression->GetRight()), 4, size), modifiableExpression.Emit, size);
-			Write("");
 			return modifiableExpression;
 		case Token::Kind::PlusEqual:
-			Write("");
-			char* lval = modifiableExpression.Emit;
 			Push(EmitExpression(expression->GetRight()));
-			char* left = EmitExpression(expression->GetLeft());
-			char* right = Pop(RegDx());
-			char* rval = Add(right, left);
-			Move(Cast(rval, 4, size), lval);
-			Write("");
+			Move(Cast(Add(Pop(RegDx()), EmitExpression(expression->GetLeft())), 4, size), modifiableExpression.Emit);
+			return modifiableExpression;
+		case Token::Kind::MinusEqual:
+			Push(EmitExpression(expression->GetRight()));
+			Move(Cast(Sub(Pop(RegDx()), EmitExpression(expression->GetLeft())), 4, size), modifiableExpression.Emit);
+			return modifiableExpression;
+		case Token::Kind::AsteriskEqual:
+			Push(EmitExpression(expression->GetRight()));
+			Move(Cast(Mul(Pop(RegDx()), EmitExpression(expression->GetLeft())), 4, size), modifiableExpression.Emit);
+			return modifiableExpression;
+		case Token::Kind::SlashEqual:
+			Push(EmitExpression(expression->GetRight()));
+			Move(Cast(Div(EmitExpression(expression->GetLeft())), 4, size), modifiableExpression.Emit);
+			return modifiableExpression;
+		case Token::Kind::PercentageEqual:
+			Push(EmitExpression(expression->GetRight()));
+			Move(Cast(Mod(EmitExpression(expression->GetLeft())), 4, size), modifiableExpression.Emit);
 			return modifiableExpression;
 		}
 

@@ -44,7 +44,7 @@ namespace Symple
 
 		void Emit(const CompilationUnitNode* unit);
 	private:
-		static char  Mod(int size = 4);
+		static char  Rep(int size = 4);
 		static char* RegAx(int size = 4);
 		static char* RegDx(int size = 4);
 
@@ -57,6 +57,10 @@ namespace Symple
 		char* Cast(char* reg = RegAx(), int from = 4, int to = 4);
 
 		char* Add(char* right = RegDx(), char* left = RegAx());
+		char* Sub(char* right = RegDx(), char* left = RegAx());
+		char* Mul(char* right = RegDx(), char* left = RegAx());
+		char* Div(char* left = RegAx());
+		char* Mod(char* left = RegAx());
 
 		char* EmitMember(const MemberNode* member);
 
