@@ -11,6 +11,7 @@
 
 #include "SympleCode/Common/Node/Statement/ExpressionStatementNode.h"
 
+#include "SympleCode/Common/Node/Expression/PointerIndexExpressionNode.h"
 #include "SympleCode/Common/Node/Expression/ParenthesizedExpressionNode.h"
 #include "SympleCode/Common/Node/Expression/NumberLiteralExpressionNode.h"
 #include "SympleCode/Common/Node/Expression/BooleanLiteralExpressionNode.h"
@@ -85,6 +86,38 @@ namespace Symple
 	char* Emitter::RegBp()
 	{
 		return "%ebp";
+	}
+
+	std::string Emitter::EmitModifiableExpression(const ModifiableExpressionNode* expression, int size)
+	{
+		std::stringstream ss;
+
+		if (expression->Is<VariableExpressionNode>())
+		{
+			ss << "_" << expression->Cast<VariableExpressionNode>()->GetName()->GetLex() << "(" << RegBp() << ")";
+		}
+		else if (expression->Is<PointerIndexExpressionNode>())
+		{
+			PointerIndexExpressionNode* expr = expression->Cast<PointerIndexExpressionNode>();
+
+			Write("\tpush%c    %s", Mod(), RegAx());
+			EmitExpression(expr->GetIndex());
+			Write("\tpush%c   %s", Mod(), RegAx());
+			Write("\tmov%c    _%s$(%s), %s", Mod(), std::string(expr->GetExpression()->GetName()->GetLex()).c_str(), RegBp(), RegAx());
+			Write("\tpop%c    %s", Mod(), RegDx());
+			Write("\tadd%c    %s, %s", Mod(), RegDx(), RegAx());
+			Write("\tpop%c    %s", Mod(), RegDx());
+			Write("\tmov%c    %s, (%s)", Mod(1), RegDx(1), RegAx());
+			Write("\tmov%c    %s, %s", Mod(1), RegDx(1), RegAx(1));
+			return EmitCast(1);
+			ss << "(" << RegAx() << ")";
+		}
+		else if (expression->Is<AssignmentExpressionNode>())
+		{
+			ss << EmitModifiableExpression(expression->Cast<AssignmentExpressionNode>()->GetLeft());
+		}
+
+		return ss.str();
 	}
 
 	char Emitter::Mod(int size)
@@ -425,6 +458,18 @@ namespace Symple
 		Write("\tcall    _%s", std::string(call->GetName()->GetLex()).c_str());
 		Comment("\tPop Arguments");
 		Write("\taddl    $%i, %s", pushedSize, RegSp());
+	}
+
+	void Emitter::EmitAssignmentExpression(const AssignmentExpressionNode* expression, int size = 4)
+	{
+		switch (expression->GetOperator()->GetKind())
+		{
+		case Token::Kind::Equal:
+			Write("mov%c %s, %s");
+			break;
+		}
+
+		Write("mov%c %s, %s", Mod(), RegAx(), ModifiableExpression(expression).c_str());
 	}
 
 	void Emitter::EmitPointerIndexExpression(const PointerIndexExpressionNode* expression, int size)

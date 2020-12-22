@@ -1,19 +1,18 @@
 #pragma once
 
 #include "SympleCode/Common/Token.h"
-#include "SympleCode/Common/Node/Expression/ExpressionNode.h"
+#include "SympleCode/Common/Node/Expression/OperatorExpressionNode.h"
 
 namespace Symple
 {
-	class BinaryExpressionNode : public ExpressionNode
+	class BinaryExpressionNode : public OperatorExpressionNode
 	{
 	private:
-		const Token* mOperator;
 		const ExpressionNode* mLeft;
 		const ExpressionNode* mRight;
 	public:
 		BinaryExpressionNode(const Token* oqerator, const ExpressionNode* left, const ExpressionNode* right)
-			: mOperator(oqerator), mLeft(left), mRight(right) {}
+			: OperatorExpressionNode(oqerator), mLeft(left), mRight(right) {}
 
 		Kind GetKind() const override
 		{
@@ -37,8 +36,6 @@ namespace Symple
 
 			return ss.str();
 		}
-
-		const Token* GetOperator() const { return mOperator; }
 		
         const ExpressionNode* GetLeft() const { return mLeft; }
 

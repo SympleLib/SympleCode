@@ -138,6 +138,7 @@
     <ClInclude Include="src\SympleCode\Parser\Preprocessor.h" />
     <ClInclude Include="src\SympleCode\Common\Node\Expression\AssignmentExpressionNode.h" />
     <ClInclude Include="src\SympleCode\Common\Node\Expression\ModifiableExpressionNode.h" />
+    <ClInclude Include="src\SympleCode\Common\Node\Expression\OperatorExpressionNode.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\SympleCode\Common\Analysis\Diagnostics.cpp">

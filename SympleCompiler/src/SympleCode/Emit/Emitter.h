@@ -18,6 +18,7 @@
 #include "SympleCode/Common/Node/Expression/BinaryExpressionNode.h"
 #include "SympleCode/Common/Node/Expression/LiteralExpressionNode.h"
 #include "SympleCode/Common/Node/Expression/VariableExpressionNode.h"
+#include "SympleCode/Common/Node/Expression/AssignmentExpressionNode.h"
 #include "SympleCode/Common/Node/Expression/FunctionCallExpressionNode.h"
 #include "SympleCode/Common/Node/Expression/PointerIndexExpressionNode.h"
 #include "SympleCode/Common/Node/Expression/StringLiteralExpressionNode.h"
@@ -57,6 +58,7 @@ namespace Symple
 		static char* RegBp();
 		static char Mod(int size = 4);
 
+		std::string EmitModifiableExpression(const ModifiableExpressionNode* expression, int size = 4);
 		void EmitCast(int from, int to = 4);
 
 		void EmitMember(const MemberNode* member);
@@ -76,6 +78,7 @@ namespace Symple
 		void EmitLiteralExpression(const LiteralExpressionNode* expression, int size = 4);
 		void EmitVariableExpression(const VariableExpressionNode* expression, int size = 4);
 		void EmitFunctionCallExpression(const FunctionCallExpressionNode* call, int size = 4);
+		void EmitAssignmentExpression(const AssignmentExpressionNode* expression, int size = 4);
 		void EmitPointerIndexExpression(const PointerIndexExpressionNode* expression, int size = 4);
 		void EmitStringLiteralExpression(const StringLiteralExpressionNode* expression, int size = 4);
 
