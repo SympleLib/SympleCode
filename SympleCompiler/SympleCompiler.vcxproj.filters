@@ -117,9 +117,6 @@
     <ClInclude Include="src\SympleCode\Common\Token.h">
       <Filter>Common</Filter>
     </ClInclude>
-    <ClInclude Include="src\SympleCode\Emit\Emitter.h">
-      <Filter>Emit</Filter>
-    </ClInclude>
     <ClInclude Include="src\SympleCode\Parser\Lexer.h">
       <Filter>Parser</Filter>
     </ClInclude>
@@ -139,6 +136,7 @@
     <ClInclude Include="src\SympleCode\Common\Node\Expression\AssignmentExpressionNode.h" />
     <ClInclude Include="src\SympleCode\Common\Node\Expression\ModifiableExpressionNode.h" />
     <ClInclude Include="src\SympleCode\Common\Node\Expression\OperatorExpressionNode.h" />
+    <ClInclude Include="src\SympleCode\Emit\Emitter.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\SympleCode\Common\Analysis\Diagnostics.cpp">
@@ -153,9 +151,6 @@
     <ClCompile Include="src\SympleCode\Common\Token.cpp">
       <Filter>Common</Filter>
     </ClCompile>
-    <ClCompile Include="src\SympleCode\Emit\Emitter.cpp">
-      <Filter>Emit</Filter>
-    </ClCompile>
     <ClCompile Include="src\SympleCode\Parser\Lexer.cpp">
       <Filter>Parser</Filter>
     </ClCompile>
@@ -165,5 +160,6 @@
     <ClCompile Include="src\SympleCode\Main.cpp" />
     <ClCompile Include="src\SympleCode\Compiler.cpp" />
     <ClCompile Include="src\SympleCode\Parser\Preprocessor.cpp" />
+    <ClCompile Include="src\SympleCode\Emit\Emitter.cpp" />
   </ItemGroup>
 </Project>
