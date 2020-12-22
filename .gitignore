@@ -30,6 +30,7 @@ Generated\ Files/
 
 *.sln
 *.vcxproj
+*.vcxproj.filters
 
 # NUnit
 *.VisualState.xml
