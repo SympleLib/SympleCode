@@ -68,11 +68,18 @@ namespace Symple
 		char* EmitUnaryExpression(const UnaryExpressionNode* expression);
 		char* EmitBinaryExpression(const BinaryExpressionNode* expression);
 		char* EmitLiteralExpression(const LiteralExpressionNode* expression);
-		char* EmitVariableExpression(const VariableExpressionNode* expression, bool set = false);
+		char* EmitVariableExpression(const VariableExpressionNode* expression);
 		char* EmitFunctionCallExpression(const FunctionCallExpressionNode* call);
-		char* EmitStringLiteralExpression(const StringLiteralExpressionNode* call);
-		char* EmitModifiableExpression(const ModifiableExpressionNode* expression);
+		char* EmitStringLiteralExpression(const StringLiteralExpressionNode* expression);
 		char* EmitAssignmentExpression(const AssignmentExpressionNode* expression);
+
+
+		struct ModifiableExpression
+		{
+			char* Emit;
+			int Size;
+		} EmitModifiableExpression(const ModifiableExpressionNode* expression);
+		ModifiableExpression EmitModifiableVariableExpression(const VariableExpressionNode* expression);
 
 		bool VariableDefined(const std::string_view& name);
 

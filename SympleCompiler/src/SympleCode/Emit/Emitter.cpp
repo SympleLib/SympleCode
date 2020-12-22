@@ -294,7 +294,7 @@ namespace Symple
 		return nullptr;
 	}
 
-	char* Emitter::EmitVariableExpression(const VariableExpressionNode* expression, bool set)
+	char* Emitter::EmitVariableExpression(const VariableExpressionNode* expression)
 	{
 		std::string name(expression->GetName()->GetLex());
 		if (!VariableDefined(name))
@@ -304,8 +304,6 @@ namespace Symple
 		}
 
 		int size = mDeclaredVariables[name]->GetType()->GetSize();
-		if (set)
-			return Format("_%s$(%s)", Mod(), name.c_str(), RegBp);
 
 		return Cast(Format("_%s$(%s)", name.c_str(), RegBp), size);
 	}
@@ -332,19 +330,14 @@ namespace Symple
 		return RegAx();
 	}
 
-	char* Emitter::EmitStringLiteralExpression(const StringLiteralExpressionNode* call)
+	char* Emitter::EmitStringLiteralExpression(const StringLiteralExpressionNode* expression)
 	{
 		unsigned int dataPos = mDataPos++;
 
 		WriteLiteral("..%i:", dataPos);
-		WriteLiteral("\t.string \"%s\"", std::string(call->GetLiteral()->GetLex()).c_str());
+		WriteLiteral("\t.string \"%s\"", std::string(expression->GetLiteral()->GetLex()).c_str());
 
 		return Format("$..%i", dataPos);
-	}
-
-	char* Emitter::EmitModifiableExpression(const ModifiableExpressionNode* expression)
-	{
-		
 	}
 
 	char* Emitter::EmitAssignmentExpression(const AssignmentExpressionNode* expression)
@@ -352,9 +345,32 @@ namespace Symple
 		switch (expression->GetOperator()->GetKind())
 		{
 		case Token::Kind::Equal:
-			Write("\t");
-			return RegAx();
+			Write("\tmov%c    %s, %s", Mod(), Cast(EmitExpression(expression->GetRight()), 4, EmitModifiableExpression(expression->GetLeft()).Size), EmitModifiableExpression(expression->GetLeft()).Emit);
+			return EmitModifiableExpression(expression->GetLeft()).Emit;
 		}
+
+		return nullptr;
+	}
+
+	Emitter::ModifiableExpression Emitter::EmitModifiableExpression(const ModifiableExpressionNode* expression)
+	{
+		if (expression->Is<VariableExpressionNode>())
+			return EmitModifiableVariableExpression(expression->Cast<VariableExpressionNode>());
+
+		return { nullptr, 0 };
+	}
+
+	Emitter::ModifiableExpression Emitter::EmitModifiableVariableExpression(const VariableExpressionNode* expression)
+	{
+		std::string name(expression->GetName()->GetLex());
+		if (!VariableDefined(name))
+		{
+			mDiagnostics->ReportError(expression->GetName(), "'%s' is not a Variable", name.c_str());
+			return { RegErr, 0 };
+		}
+
+		int size = mDeclaredVariables[name]->GetType()->GetSize();
+		return { Format("_%s$(%s)", name.c_str(), RegBp), size };
 	}
 
 	bool Emitter::VariableDefined(const std::string_view& name)

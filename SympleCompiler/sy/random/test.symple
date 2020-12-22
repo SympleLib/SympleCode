@@ -7,5 +7,9 @@ int main()
 	
 	printf("%i\n", -myInt + myByte);
 	
+	myInt = myByte;
+	
+	printf("%i\n", myInt);
+	
 	0;
 };

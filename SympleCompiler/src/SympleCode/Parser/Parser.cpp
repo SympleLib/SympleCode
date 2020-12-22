@@ -9,6 +9,7 @@
 #include "SympleCode/Common/Node/Expression/UnaryExpressionNode.h"
 #include "SympleCode/Common/Node/Expression/BinaryExpressionNode.h"
 #include "SympleCode/Common/Node/Expression/VariableExpressionNode.h"
+#include "SympleCode/Common/Node/Expression/AssignmentExpressionNode.h"
 #include "SympleCode/Common/Node/Expression/PointerIndexExpressionNode.h"
 #include "SympleCode/Common/Node/Expression/StringLiteralExpressionNode.h"
 #include "SympleCode/Common/Node/Expression/NumberLiteralExpressionNode.h"
@@ -329,7 +330,11 @@ namespace Symple
 	{
 		switch (Peek(1)->GetKind())
 		{
-
+		case Token::Kind::Equal:
+			ModifiableExpressionNode* left = ParseModifiableExpression();
+			const Token* oqerator = Next();
+			ExpressionNode* right = ParseExpression();
+			return new AssignmentExpressionNode(oqerator, left, right);
 		}
 
 		return ParseBinaryExpression();
