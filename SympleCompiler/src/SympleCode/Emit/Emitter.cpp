@@ -103,15 +103,22 @@ namespace Symple
 		return reg;
 	}
 
+	char* Emitter::Move(char* from, char* to, int size)
+	{
+		if (strcmp(from, to))
+			Write("\tmov%c    %s, %s", Mod(size), from, to);
+
+		return to;
+	}
+
 	char* Emitter::Cast(char* reg, int from, int to)
 	{
 		if (from == to)
-			Write("\tmov%c    %s, %s", Mod(to), reg, RegAx(to));
-		else if (reg == RegAx(from));
+			Move(reg, RegAx(to), to);
+		else if (!strcmp(reg, RegAx(to)));
+		else if (to < from && !strcmp(reg, RegAx(from)));
 		else
-		{
 			Write("\tmovs%c%c  %s, %s", Mod(from), Mod(to), reg, RegAx(to));
-		}
 
 		return RegAx(to);
 	}
@@ -146,7 +153,7 @@ namespace Symple
 
 		Write("_%s:", name.c_str());
 		Write("\tpush%c   %s", Mod(), RegBp);
-		Write("\tmov%c    %s, %s", Mod(), RegSp, RegBp);
+		Move(RegSp, RegBp);
 
 		const std::map<std::string_view, const VariableDeclarationNode*> pDeclaredVariables = mDeclaredVariables;
 
@@ -164,7 +171,7 @@ namespace Symple
 			EmitStatement(statement);
 
 		Write("..%i:", mReturnPos);
-		Write("\tmov%c    %s, %s", Mod(), RegBp, RegSp);
+		Move(RegBp, RegSp);
 		Write("\tpop%c    %s", Mod(), RegBp);
 		Write("\tret%c", Mod());
 
@@ -190,7 +197,7 @@ namespace Symple
 
 	char* Emitter::EmitReturnStatement(const ReturnStatementNode* statement)
 	{
-		Write("\tmov%c    %s, %s", Mod(), EmitExpression(statement->GetExpression()), RegAx());
+		Move(EmitExpression(statement->GetExpression()), RegAx());
 		Write("\tjmp     ..%i", mReturnPos);
 
 		return nullptr;
@@ -198,7 +205,7 @@ namespace Symple
 
 	char* Emitter::EmitExpressionStatement(const ExpressionStatementNode* statement)
 	{
-		Write("\tmov%c    %s, %s", Mod(), EmitExpression(statement->GetExpression()), RegAx());
+		Move(EmitExpression(statement->GetExpression()), RegAx());
 
 		return nullptr;
 	}
@@ -214,9 +221,7 @@ namespace Symple
 		Write("_%s$ = -%i", name.c_str(), mStackPos);
 		Write("\tsub%c    $%i, %s", Mod(), size, RegSp);
 		if (declaration->GetInitializer()->GetKind() != Node::Kind::Expression)
-		{
-			Write("\tmov%c    %s, _%s$(%s)", Mod(size), Cast(EmitExpression(declaration->GetInitializer()), 4, size), name.c_str(), RegBp);
-		}
+			Move(Cast(EmitExpression(declaration->GetInitializer()), 4, size), Format("_%s$(%s)", name.c_str(), RegBp), size);
 
 		return Format("_%s$(%s)", name.c_str(), RegBp);
 	}
@@ -235,6 +240,8 @@ namespace Symple
 			return EmitVariableExpression(expression->Cast<VariableExpressionNode>());
 		if (expression->Is<FunctionCallExpressionNode>())
 			return EmitFunctionCallExpression(expression->Cast<FunctionCallExpressionNode>());
+		if (expression->Is<AssignmentExpressionNode>())
+			return EmitAssignmentExpression(expression->Cast<AssignmentExpressionNode>());
 		
 		return nullptr;
 	}
@@ -244,7 +251,7 @@ namespace Symple
 		switch (expression->GetOperator()->GetKind())
 		{
 		case Token::Kind::Minus:
-			Write("\tmov%c    %s, %s", Mod(), EmitExpression(expression->GetValue()), RegAx());
+			Move(EmitExpression(expression->GetValue()), RegAx());
 			Write("\tneg%c    %s", Mod(), RegAx());
 			return RegAx();
 		}
@@ -258,23 +265,23 @@ namespace Symple
 		{
 		case Token::Kind::Plus:
 			Push(EmitExpression(expression->GetRight()));
-			Write("\tmov%c    %s, %s", Mod(), EmitExpression(expression->GetLeft()), RegAx());
+			Move(EmitExpression(expression->GetLeft()), RegAx());
 			Write("\tadd%c    %s, %s", Mod(), Pop(RegDx()), RegAx());
 			return RegAx();
 		case Token::Kind::Minus:
 			Push(EmitExpression(expression->GetRight()));
-			Write("\tmov%c    %s, %s", Mod(), EmitExpression(expression->GetLeft()), RegAx());
+			Move(EmitExpression(expression->GetLeft()), RegAx());
 			Write("\tsub%c    %s, %s", Mod(), Pop(RegDx()), RegAx());
 			return RegAx();
 		case Token::Kind::Asterisk:
 			Push(EmitExpression(expression->GetRight()));
-			Write("\tmov%c    %s, %s", Mod(), EmitExpression(expression->GetLeft()), RegAx());
+			Move(EmitExpression(expression->GetLeft()), RegAx());
 			Write("\timul%c   %s, %s", Mod(), Pop(RegDx()), RegAx());
 			return RegAx();
 		case Token::Kind::Slash:
-			Write("\tmov%c    %s, %s", Mod(), EmitExpression(expression->GetLeft()), RegAx());
+			Move(EmitExpression(expression->GetLeft()), RegAx());
 			Write("\tcltd");
-			Write("\tmov%c    %s, %s", Mod(), EmitExpression(expression->GetLeft()), RegCx);
+			Move(EmitExpression(expression->GetLeft()), RegCx);
 			Write("\tidiv%c   %s", Mod(), RegCx);
 			return RegAx();
 		}
@@ -320,9 +327,7 @@ namespace Symple
 
 		unsigned int pushedSize = call->GetArguments()->GetArguments().size();
 		for (int i = call->GetArguments()->GetArguments().size() - 1; i >= 0; i--)
-		{
 			Write("\tpush%c   %s", Mod(), EmitExpression(call->GetArguments()->GetArguments()[i]));
-		}
 
 		Write("\tcall%c   _%s", Mod(), std::string(call->GetName()->GetLex()).c_str());
 		Write("\tadd%c    $%i, %s", Mod(), pushedSize, RegSp);
@@ -342,20 +347,15 @@ namespace Symple
 
 	char* Emitter::EmitAssignmentExpression(const AssignmentExpressionNode* expression)
 	{
-		switch (expression->GetOperator()->GetKind())
-		{
-		case Token::Kind::Equal:
-			Write("\tmov%c    %s, %s", Mod(), Cast(EmitExpression(expression->GetRight()), 4, EmitModifiableExpression(expression->GetLeft()).Size), EmitModifiableExpression(expression->GetLeft()).Emit);
-			return EmitModifiableExpression(expression->GetLeft()).Emit;
-		}
-
-		return nullptr;
+		return Cast(EmitModifiableAssignmentExpression(expression).Emit, EmitModifiableAssignmentExpression(expression).Size);
 	}
 
 	Emitter::ModifiableExpression Emitter::EmitModifiableExpression(const ModifiableExpressionNode* expression)
 	{
 		if (expression->Is<VariableExpressionNode>())
 			return EmitModifiableVariableExpression(expression->Cast<VariableExpressionNode>());
+		if (expression->Is<AssignmentExpressionNode>())
+			return EmitModifiableAssignmentExpression(expression->Cast<AssignmentExpressionNode>());
 
 		return { nullptr, 0 };
 	}
@@ -371,6 +371,20 @@ namespace Symple
 
 		int size = mDeclaredVariables[name]->GetType()->GetSize();
 		return { Format("_%s$(%s)", name.c_str(), RegBp), size };
+	}
+
+	Emitter::ModifiableExpression Emitter::EmitModifiableAssignmentExpression(const AssignmentExpressionNode* expression)
+	{
+		switch (expression->GetOperator()->GetKind())
+		{
+		case Token::Kind::Equal:
+			int size = EmitModifiableExpression(expression->GetLeft()).Size;
+
+			Move(Cast(EmitExpression(expression->GetRight()), 4, size), EmitModifiableExpression(expression->GetLeft()).Emit, size);
+			return EmitModifiableExpression(expression->GetLeft());
+		}
+
+		return { nullptr, 0 };
 	}
 
 	bool Emitter::VariableDefined(const std::string_view& name)

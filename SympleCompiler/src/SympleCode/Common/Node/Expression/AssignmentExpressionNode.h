@@ -6,14 +6,15 @@
 
 namespace Symple
 {
-	class AssignmentExpressionNode : public OperatorExpressionNode, public ModifiableExpressionNode
+	class AssignmentExpressionNode : public ModifiableExpressionNode
 	{
 	private:
+		const Token* mOperator;
 		const ModifiableExpressionNode* mLeft;
 		const ExpressionNode* mRight;
 	public:
 		AssignmentExpressionNode(const Token* oqerator, const ModifiableExpressionNode* left, const ExpressionNode* right)
-			: OperatorExpressionNode(oqerator), mLeft(left), mRight(right) {}
+			: mOperator(oqerator), mLeft(left), mRight(right) {}
 
 		Kind GetKind() const override
 		{
@@ -37,6 +38,8 @@ namespace Symple
 
 			return ss.str();
 		}
+
+		const Token* GetOperator() const { return mOperator; }
 
 		const ModifiableExpressionNode* GetLeft() const { return mLeft; }
 

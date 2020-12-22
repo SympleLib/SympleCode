@@ -53,6 +53,7 @@ namespace Symple
 		char* Push(char* reg = RegAx());
 		char* Pop(char* reg = RegAx());
 
+		char* Move(char* from = RegAx(), char* to = RegAx(), int size = 4);
 		char* Cast(char* reg = RegAx(), int from = 4, int to = 4);
 
 		char* EmitMember(const MemberNode* member);
@@ -80,6 +81,7 @@ namespace Symple
 			int Size;
 		} EmitModifiableExpression(const ModifiableExpressionNode* expression);
 		ModifiableExpression EmitModifiableVariableExpression(const VariableExpressionNode* expression);
+		ModifiableExpression EmitModifiableAssignmentExpression(const AssignmentExpressionNode* expression);
 
 		bool VariableDefined(const std::string_view& name);
 
