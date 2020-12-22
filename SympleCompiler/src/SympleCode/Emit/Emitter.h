@@ -56,6 +56,8 @@ namespace Symple
 		char* Move(char* from = RegAx(), char* to = RegAx(), int size = 4);
 		char* Cast(char* reg = RegAx(), int from = 4, int to = 4);
 
+		char* Add(char* right = RegDx(), char* left = RegAx());
+
 		char* EmitMember(const MemberNode* member);
 
 		char* EmitFunctionDeclaration(const FunctionDeclarationNode* declaration);

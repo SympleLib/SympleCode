@@ -10,6 +10,10 @@ int main()
 	myInt = myByte;
 	
 	printf("%i\n", myInt);
+
+	myInt += 1;
+
+	printf("%i\n", myInt);
 	
 	0;
 };

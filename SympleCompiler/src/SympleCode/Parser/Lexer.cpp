@@ -221,56 +221,59 @@ namespace Symple
 	{
 		const char* beg = mCurrent;
 		int bLine = mLine, bColumn = mColumn;
+
 		Get();
 		if (Peek() == '=')
 		{
+			Get();
 			switch (*beg)
 			{
 			case '=':
-				return new Token(Token::Kind::EqualEqual, bLine, bColumn);
+				return new Token(Token::Kind::EqualEqual, beg, mCurrent, bLine, bColumn);
 			case '!':
-				return new Token(Token::Kind::ExclamationEqual, bLine, bColumn);
+				return new Token(Token::Kind::ExclamationEqual, beg, mCurrent, bLine, bColumn);
 			case '+':
-				return new Token(Token::Kind::PlusEqual, bLine, bColumn);
+				return new Token(Token::Kind::PlusEqual, beg, mCurrent, bLine, bColumn);
 			case '-':
-				return new Token(Token::Kind::MinusEqual, bLine, bColumn);
+				return new Token(Token::Kind::MinusEqual, beg, mCurrent, bLine, bColumn);
 			case '*':
-				return new Token(Token::Kind::AsteriskEqual, bLine, bColumn);
+				return new Token(Token::Kind::AsteriskEqual, beg, mCurrent, bLine, bColumn);
 			case '/':
-				return new Token(Token::Kind::SlashEqual, bLine, bColumn);
+				return new Token(Token::Kind::SlashEqual, beg, mCurrent, bLine, bColumn);
 			case '%':
-				return new Token(Token::Kind::PercentageEqual, bLine, bColumn);
+				return new Token(Token::Kind::PercentageEqual, beg, mCurrent, bLine, bColumn);
 			}
 		}
 		if (Peek() == *beg)
 		{
+			Get();
 			switch (*beg)
 			{
 			case '+':
-				return new Token(Token::Kind::PlusPlus, bLine, bColumn);
+				return new Token(Token::Kind::PlusPlus, beg, mCurrent, bLine, bColumn);
 			case '-':
-				return new Token(Token::Kind::MinusMinus, bLine, bColumn);
+				return new Token(Token::Kind::MinusMinus, beg, mCurrent, bLine, bColumn);
 			}
 		}
 
 		switch (*beg)
 		{
 		case '=':
-			return new Token(Token::Kind::Equal, bLine, bColumn);
+			return new Token(Token::Kind::Equal, beg, mCurrent, bLine, bColumn);
 		case '!':
-			return new Token(Token::Kind::Exclamation, bLine, bColumn);
+			return new Token(Token::Kind::Exclamation, beg, mCurrent, bLine, bColumn);
 		case '+':
-			return new Token(Token::Kind::Plus, bLine, bColumn);
+			return new Token(Token::Kind::Plus, beg, mCurrent, bLine, bColumn);
 		case '-':
-			return new Token(Token::Kind::Minus, bLine, bColumn);
+			return new Token(Token::Kind::Minus, beg, mCurrent, bLine, bColumn);
 		case '*':
-			return new Token(Token::Kind::Asterisk, bLine, bColumn);
+			return new Token(Token::Kind::Asterisk, beg, mCurrent, bLine, bColumn);
 		case '/':
-			return new Token(Token::Kind::Slash, bLine, bColumn);
+			return new Token(Token::Kind::Slash, beg, mCurrent, bLine, bColumn);
 		case '%':
-			return new Token(Token::Kind::Percentage, bLine, bColumn);
+			return new Token(Token::Kind::Percentage, beg, mCurrent, bLine, bColumn);
 		}
 
-		return new Token(Token::Kind::Unknown, bLine, bColumn);
+		return new Token(Token::Kind::Unknown, beg, mCurrent, bLine, bColumn);
 	}
 }

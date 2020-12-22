@@ -235,6 +235,7 @@ namespace Symple
 			Match(Token::Kind::Semicolon);
 			return statement;
 		}
+
 		ExpressionNode* expression = ParseExpression();
 		Match(Token::Kind::Semicolon);
 		return new ExpressionStatementNode(expression);
@@ -328,11 +329,12 @@ namespace Symple
 
 	ExpressionNode* Parser::ParseAssignmentExpression()
 	{
-		switch (Peek(1)->GetKind())
+		int priority = Priority::AssignmentOperatorPriority(Peek(1));
+		if (!priority)
 		{
-		case Token::Kind::Equal:
 			ModifiableExpressionNode* left = ParseModifiableExpression();
 			const Token* oqerator = Next();
+			//std::cout << Token::KindString(Peek()->GetKind()) << '\n';
 			ExpressionNode* right = ParseExpression();
 			return new AssignmentExpressionNode(oqerator, left, right);
 		}

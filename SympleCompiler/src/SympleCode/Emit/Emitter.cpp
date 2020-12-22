@@ -123,6 +123,12 @@ namespace Symple
 		return RegAx(to);
 	}
 
+	char* Emitter::Add(char* right, char* left)
+	{
+		Write("\tadd%c    %s, %s", Mod(), right, left);
+		return left;
+	}
+
 	void Emitter::Emit(const CompilationUnitNode* unit)
 	{
 		for (const MemberNode* member : unit->GetMembers())
@@ -266,7 +272,7 @@ namespace Symple
 		case Token::Kind::Plus:
 			Push(EmitExpression(expression->GetRight()));
 			Move(EmitExpression(expression->GetLeft()), RegAx());
-			Write("\tadd%c    %s, %s", Mod(), Pop(RegDx()), RegAx());
+			Add(Pop(RegDx()), RegAx());
 			return RegAx();
 		case Token::Kind::Minus:
 			Push(EmitExpression(expression->GetRight()));
@@ -347,7 +353,8 @@ namespace Symple
 
 	char* Emitter::EmitAssignmentExpression(const AssignmentExpressionNode* expression)
 	{
-		return Cast(EmitModifiableAssignmentExpression(expression).Emit, EmitModifiableAssignmentExpression(expression).Size);
+		ModifiableExpression modifiableExpression = EmitModifiableAssignmentExpression(expression);
+		return Cast(modifiableExpression.Emit, modifiableExpression.Size);
 	}
 
 	Emitter::ModifiableExpression Emitter::EmitModifiableExpression(const ModifiableExpressionNode* expression)
@@ -375,13 +382,26 @@ namespace Symple
 
 	Emitter::ModifiableExpression Emitter::EmitModifiableAssignmentExpression(const AssignmentExpressionNode* expression)
 	{
+		ModifiableExpression modifiableExpression = EmitModifiableExpression(expression->GetLeft());
+		int size = modifiableExpression.Size;
+
 		switch (expression->GetOperator()->GetKind())
 		{
 		case Token::Kind::Equal:
-			int size = EmitModifiableExpression(expression->GetLeft()).Size;
-
-			Move(Cast(EmitExpression(expression->GetRight()), 4, size), EmitModifiableExpression(expression->GetLeft()).Emit, size);
-			return EmitModifiableExpression(expression->GetLeft());
+			Write("");
+			Move(Cast(EmitExpression(expression->GetRight()), 4, size), modifiableExpression.Emit, size);
+			Write("");
+			return modifiableExpression;
+		case Token::Kind::PlusEqual:
+			Write("");
+			char* lval = modifiableExpression.Emit;
+			Push(EmitExpression(expression->GetRight()));
+			char* left = EmitExpression(expression->GetLeft());
+			char* right = Pop(RegDx());
+			char* rval = Add(right, left);
+			Move(Cast(rval, 4, size), lval);
+			Write("");
+			return modifiableExpression;
 		}
 
 		return { nullptr, 0 };
