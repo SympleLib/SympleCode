@@ -22,7 +22,7 @@ namespace Symple
 		: mPreprocessor(source), mPosition(0), mTokens(mPreprocessor.GetTokens()), mTypes(Type::PrimitiveTypes), mDiagnostics(new Diagnostics), mIgnore(false)
 	{
 		//for (auto tok : mTokens)
-		//	std::cout << Token::KindString(tok->GetKind()) << '|' << tok->GetLex() << '\n';
+		//	std::cout << Token::KindString(tok->GetKind()) << '#' << (int)tok->GetKind() << '|' << tok->GetLex() << '\n';
 	}
 
 	CompilationUnitNode* Parser::ParseCompilationUnit()

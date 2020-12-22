@@ -73,7 +73,8 @@ namespace Symple
 
 		static constexpr const char* KindMap[] = {
 			"Identifier", "Number", "String",
-			"Exclamation", "Equal", "Plus", "Minus", "Asterisk", "Slash", "Percentage",
+			"Equal", "Exclamation", "Plus", "Minus", "Asterisk", "Slash", "Percentage",
+			"PlusPlus", "MinusMinus",
 			"EqualEqual", "ExclamationEqual", "PlusEqual", "MinusEqual", "AsteriskEqual", "SlashEqual", "PercentageEqual",
 			"Comma", "Semicolon", "Period",
 			"OpenBrace", "CloseBrace", "OpenBracket", "CloseBracket", "OpenParenthesis", "CloseParenthesis",

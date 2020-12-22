@@ -35,6 +35,8 @@ namespace Symple
 			return Equal();
 		case '%':
 			return Equal();
+		case '\\':
+			return Comment();
 		case ';':
 			return Atom(Token::Kind::Semicolon);
 		case '{':
@@ -113,7 +115,6 @@ namespace Symple
 		return *mCurrent++;
 	}
 
-
 	Token* Lexer::Atom(Token::Kind kind)
 	{
 		return new Token(kind, mCurrent++, 1, mLine, mColumn);
@@ -122,38 +123,40 @@ namespace Symple
 	Token* Lexer::Identifier()
 	{
 		const char* beg = mCurrent;
+		int bColumn = mColumn;
 		Get();
 		while (IsIdentifier(Peek()))
 			Get();
 		std::string_view identifier(beg, std::distance(beg, mCurrent));
 		if (identifier == "hint")
-			return new Token(Token::Kind::Hint, beg, mCurrent, mLine, mColumn);
+			return new Token(Token::Kind::Hint, beg, mCurrent, mLine, bColumn);
 		if (identifier == "true")
-			return new Token(Token::Kind::True, beg, mCurrent, mLine, mColumn);
+			return new Token(Token::Kind::True, beg, mCurrent, mLine, bColumn);
 		if (identifier == "false")
-			return new Token(Token::Kind::False, beg, mCurrent, mLine, mColumn);
+			return new Token(Token::Kind::False, beg, mCurrent, mLine, bColumn);
 		if (identifier == "return")
-			return new Token(Token::Kind::Return, beg, mCurrent, mLine, mColumn);
+			return new Token(Token::Kind::Return, beg, mCurrent, mLine, bColumn);
 		if (identifier == "break")
-			return new Token(Token::Kind::Break, beg, mCurrent, mLine, mColumn);
+			return new Token(Token::Kind::Break, beg, mCurrent, mLine, bColumn);
 		if (identifier == "while")
-			return new Token(Token::Kind::While, beg, mCurrent, mLine, mColumn);
+			return new Token(Token::Kind::While, beg, mCurrent, mLine, bColumn);
 		if (identifier == "extern")
-			return new Token(Token::Kind::Extern, beg, mCurrent, mLine, mColumn);
+			return new Token(Token::Kind::Extern, beg, mCurrent, mLine, bColumn);
 		if (identifier == "struct")
-			return new Token(Token::Kind::Struct, beg, mCurrent, mLine, mColumn);
+			return new Token(Token::Kind::Struct, beg, mCurrent, mLine, bColumn);
 		if (identifier == "sizeof")
-			return new Token(Token::Kind::SizeOf, beg, mCurrent, mLine, mColumn);
+			return new Token(Token::Kind::SizeOf, beg, mCurrent, mLine, bColumn);
 
 		if (identifier == "if")
-			return new Token(Token::Kind::If, beg, mCurrent, mLine, mColumn);
+			return new Token(Token::Kind::If, beg, mCurrent, mLine, bColumn);
 		if (identifier == "else")
-			return new Token(Token::Kind::Else, beg, mCurrent, mLine, mColumn);
-		return new Token(Token::Kind::Identifier, beg, mCurrent, mLine, mColumn);
+			return new Token(Token::Kind::Else, beg, mCurrent, mLine, bColumn);
+		return new Token(Token::Kind::Identifier, beg, mCurrent, mLine, bColumn);
 	}
 
 	Token* Lexer::Preprocess()
 	{
+		int bLine = mLine, bColumn = mColumn;
 		Get();
 		const char* beg = mCurrent;
 		while (!(CheckNewLine(Peek()) || Peek() == 0))
@@ -161,14 +164,15 @@ namespace Symple
 			Get();
 		}
 		Get();
-		return new Token(Token::Kind::Preprocess, beg, mCurrent - 1, mLine, mColumn);
+		return new Token(Token::Kind::Preprocess, beg, mCurrent - 1, bLine, bColumn);
 	}
 
 	Token* Lexer::Comment()
 	{
 		const char* beg = mCurrent;
+		int bLine = mLine, bColumn = mColumn;
 		Get();
-		if (Peek() == '/')
+		if (Peek() == '\\')
 		{
 			Get();
 			while (!(CheckNewLine(Peek()) || Peek() == 0))
@@ -176,63 +180,66 @@ namespace Symple
 				Get();
 			}
 			Get();
-			return new Token(Token::Kind::Comment, beg + 2, mCurrent - 1, mLine, mColumn);
+			return new Token(Token::Kind::Comment, beg + 2, mCurrent - 1, bLine, bColumn);
 		}
 		else if (Peek() == '*')
 		{
 			Get();
 			while (Peek() != 0)
 			{
-				if (Get() == '*' && Get() == '/')
-					return new Token(Token::Kind::Comment, beg + 2, mCurrent - 2, mLine, mColumn);
+				if (Get() == '*' && Get() == '\\')
+					return new Token(Token::Kind::Comment, beg + 2, mCurrent - 2, bLine, bColumn);
 			}
-			return new Token(Token::Kind::Comment, beg + 2, mCurrent - 1, mLine, mColumn);
+			return new Token(Token::Kind::Comment, beg + 2, mCurrent - 1, bLine, bColumn);
 		}
-		else
-			return new Token(Token::Kind::Slash, beg, 1, mLine, mColumn);
+
+		return new Token(Token::Kind::Unknown, beg, mCurrent, bLine, bColumn);
 	}
 
 	Token* Lexer::Number()
 	{
 		const char* beg = mCurrent;
+		int bColumn = mColumn;
 		Get();
 		while (IsDigit(Peek()))
 			Get();
-		return new Token(Token::Kind::Number, beg, mCurrent, mLine, mColumn);
+		return new Token(Token::Kind::Number, beg, mCurrent, mLine, bColumn);
 	}
 
 	Token* Lexer::String()
 	{
 		Get();
 		const char* beg = mCurrent;
+		int bLine = mLine, bColumn = mColumn;
 		while (Peek() != '"' || Peek(-1) == '\\')
 			Get();
 		Get();
-		return new Token(Token::Kind::String, beg, mCurrent - 1, mLine, mColumn);
+		return new Token(Token::Kind::String, beg, mCurrent - 1, bLine, bColumn);
 	}
 
 	Token* Lexer::Equal()
 	{
 		const char* beg = mCurrent;
+		int bLine = mLine, bColumn = mColumn;
 		Get();
 		if (Peek() == '=')
 		{
 			switch (*beg)
 			{
 			case '=':
-				return new Token(Token::Kind::EqualEqual, mLine, mColumn);
+				return new Token(Token::Kind::EqualEqual, bLine, bColumn);
 			case '!':
-				return new Token(Token::Kind::ExclamationEqual, mLine, mColumn);
+				return new Token(Token::Kind::ExclamationEqual, bLine, bColumn);
 			case '+':
-				return new Token(Token::Kind::PlusEqual, mLine, mColumn);
+				return new Token(Token::Kind::PlusEqual, bLine, bColumn);
 			case '-':
-				return new Token(Token::Kind::MinusEqual, mLine, mColumn);
+				return new Token(Token::Kind::MinusEqual, bLine, bColumn);
 			case '*':
-				return new Token(Token::Kind::AsteriskEqual, mLine, mColumn);
+				return new Token(Token::Kind::AsteriskEqual, bLine, bColumn);
 			case '/':
-				return new Token(Token::Kind::SlashEqual, mLine, mColumn);
+				return new Token(Token::Kind::SlashEqual, bLine, bColumn);
 			case '%':
-				return new Token(Token::Kind::PercentageEqual, mLine, mColumn);
+				return new Token(Token::Kind::PercentageEqual, bLine, bColumn);
 			}
 		}
 		if (Peek() == *beg)
@@ -240,28 +247,30 @@ namespace Symple
 			switch (*beg)
 			{
 			case '+':
-				return new Token(Token::Kind::PlusPlus, mLine, mColumn);
+				return new Token(Token::Kind::PlusPlus, bLine, bColumn);
 			case '-':
-				return new Token(Token::Kind::MinusMinus, mLine, mColumn);
+				return new Token(Token::Kind::MinusMinus, bLine, bColumn);
 			}
 		}
 
 		switch (*beg)
 		{
 		case '=':
-			return new Token(Token::Kind::Equal, mLine, mColumn);
+			return new Token(Token::Kind::Equal, bLine, bColumn);
 		case '!':
-			return new Token(Token::Kind::Exclamation, mLine, mColumn);
+			return new Token(Token::Kind::Exclamation, bLine, bColumn);
 		case '+':
-			return new Token(Token::Kind::Plus, mLine, mColumn);
+			return new Token(Token::Kind::Plus, bLine, bColumn);
 		case '-':
-			return new Token(Token::Kind::Minus, mLine, mColumn);
+			return new Token(Token::Kind::Minus, bLine, bColumn);
 		case '*':
-			return new Token(Token::Kind::Asterisk, mLine, mColumn);
+			return new Token(Token::Kind::Asterisk, bLine, bColumn);
 		case '/':
-			return new Token(Token::Kind::Slash, mLine, mColumn);
+			return new Token(Token::Kind::Slash, bLine, bColumn);
 		case '%':
-			return new Token(Token::Kind::Percentage, mLine, mColumn);
+			return new Token(Token::Kind::Percentage, bLine, bColumn);
 		}
+
+		return new Token(Token::Kind::Unknown, bLine, bColumn);
 	}
 }

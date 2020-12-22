@@ -11,7 +11,8 @@ namespace Symple
 		while (!current->Is(Token::Kind::EndOfFile))
 		{
 			current = mLexer.Next();
-			if (current->Is(Token::Kind::Preprocess))
+			if (current->Is(Token::Kind::Comment));
+			else if (current->Is(Token::Kind::Preprocess))
 				Preprocess(current);
 			else
 			{

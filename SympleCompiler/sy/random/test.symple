@@ -1,0 +1,11 @@
+extern int printf(string fmt);
+
+int main()
+{
+	int myInt = 6 * 9;
+	byte myByte = 4 * 20;
+	
+	printf("%i\n", -myInt + myByte);
+	
+	0;
+};

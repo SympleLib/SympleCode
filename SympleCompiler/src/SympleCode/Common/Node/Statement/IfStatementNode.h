@@ -19,7 +19,7 @@ namespace Symple
 
 		Kind GetKind() const override
 		{
-			return Kind::WhileStatement;
+			return Kind::IfStatement;
 		}
 
 		std::string ToString(const std::string& indent = "", bool last = true) const override
