@@ -14,9 +14,11 @@
 #include "SympleCode/Common/Node/Statement/ReturnStatementNode.h"
 #include "SympleCode/Common/Node/Statement/ExpressionStatementNode.h"
 
+#include "SympleCode/Common/Node/Expression/UnaryExpressionNode.h"
 #include "SympleCode/Common/Node/Expression/BinaryExpressionNode.h"
 #include "SympleCode/Common/Node/Expression/LiteralExpressionNode.h"
 #include "SympleCode/Common/Node/Expression/VariableExpressionNode.h"
+#include "SympleCode/Common/Node/Expression/AssignmentExpressionNode.h"
 #include "SympleCode/Common/Node/Expression/FunctionCallExpressionNode.h"
 #include "SympleCode/Common/Node/Expression/StringLiteralExpressionNode.h"
 
@@ -63,11 +65,14 @@ namespace Symple
 		char* EmitVariableDeclaration(const VariableDeclarationNode* declaration);
 
 		char* EmitExpression(const ExpressionNode* expression);
+		char* EmitUnaryExpression(const UnaryExpressionNode* expression);
 		char* EmitBinaryExpression(const BinaryExpressionNode* expression);
 		char* EmitLiteralExpression(const LiteralExpressionNode* expression);
 		char* EmitVariableExpression(const VariableExpressionNode* expression, bool set = false);
 		char* EmitFunctionCallExpression(const FunctionCallExpressionNode* call);
 		char* EmitStringLiteralExpression(const StringLiteralExpressionNode* call);
+		char* EmitModifiableExpression(const ModifiableExpressionNode* expression);
+		char* EmitAssignmentExpression(const AssignmentExpressionNode* expression);
 
 		bool VariableDefined(const std::string_view& name);
 

@@ -223,6 +223,8 @@ namespace Symple
 
 	char* Emitter::EmitExpression(const ExpressionNode* expression)
 	{
+		if (expression->Is<UnaryExpressionNode>())
+			return EmitUnaryExpression(expression->Cast<UnaryExpressionNode>());
 		if (expression->Is<ParenthesizedExpressionNode>())
 			return EmitExpression(expression->Cast<ParenthesizedExpressionNode>()->GetExpression());
 		if (expression->Is<BinaryExpressionNode>())
@@ -237,9 +239,21 @@ namespace Symple
 		return nullptr;
 	}
 
+	char* Emitter::EmitUnaryExpression(const UnaryExpressionNode* expression)
+	{
+		switch (expression->GetOperator()->GetKind())
+		{
+		case Token::Kind::Minus:
+			Write("\tmov%c    %s, %s", Mod(), EmitExpression(expression->GetValue()), RegAx());
+			Write("\tneg%c    %s", Mod(), RegAx());
+			return RegAx();
+		}
+
+		return nullptr;
+	}
+
 	char* Emitter::EmitBinaryExpression(const BinaryExpressionNode* expression)
 	{
-
 		switch (expression->GetOperator()->GetKind())
 		{
 		case Token::Kind::Plus:
@@ -291,10 +305,7 @@ namespace Symple
 
 		int size = mDeclaredVariables[name]->GetType()->GetSize();
 		if (set)
-		{
-			Write("\tlea%c    _%s$(%s), %s", Mod(), name.c_str(), RegBp, RegAx());
-			return Format("(%s)", RegAx());
-		}
+			return Format("_%s$(%s)", Mod(), name.c_str(), RegBp);
 
 		return Cast(Format("_%s$(%s)", name.c_str(), RegBp), size);
 	}
@@ -309,12 +320,10 @@ namespace Symple
 			return RegErr;
 		}
 
-		Write("");
 		unsigned int pushedSize = call->GetArguments()->GetArguments().size();
 		for (int i = call->GetArguments()->GetArguments().size() - 1; i >= 0; i--)
 		{
 			Write("\tpush%c   %s", Mod(), EmitExpression(call->GetArguments()->GetArguments()[i]));
-			Write("");
 		}
 
 		Write("\tcall%c   _%s", Mod(), std::string(call->GetName()->GetLex()).c_str());
@@ -331,6 +340,21 @@ namespace Symple
 		WriteLiteral("\t.string \"%s\"", std::string(call->GetLiteral()->GetLex()).c_str());
 
 		return Format("$..%i", dataPos);
+	}
+
+	char* Emitter::EmitModifiableExpression(const ModifiableExpressionNode* expression)
+	{
+		
+	}
+
+	char* Emitter::EmitAssignmentExpression(const AssignmentExpressionNode* expression)
+	{
+		switch (expression->GetOperator()->GetKind())
+		{
+		case Token::Kind::Equal:
+			Write("\t");
+			return RegAx();
+		}
 	}
 
 	bool Emitter::VariableDefined(const std::string_view& name)
