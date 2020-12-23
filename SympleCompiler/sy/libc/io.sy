@@ -1,23 +1,37 @@
-#define EOF (-1)
+#define file ptr
+#define null 0
 
+#define stdin  __acrt_iob_func(0)
+#define stdout __acrt_iob_func(1)
+#define stderr __acrt_iob_func(2)
+
+#define SEEK_SET 0
 #define SEEK_CUR 1
 #define SEEK_END 2
-#define SEEK_SET 0
 
-#define FILENAME_MAX 260
-#define FOPEN_MAX    20
-#define _SYS_OPEN    20
+#define EOF -1
 
-#define FILE ptr
-#define FILE_REF ptr
+extern int printf(string fmt);
+extern int puts(string str);
+extern int putchar(char c);
 
-#define errno int
+extern file fopen(string path, string mode);
+extern file freopen(string path, string mode, file stream);
+extern int fclose(file stream);
 
-extern errno clearerr_s(FILE stream);
+extern int fprintf(file stream, string fmt);
+extern int fputs(string str, file stream);
+extern int putc(char c, file stream);
+extern int fflush(file stream);
 
-extern errno fopen_s(FILE_REF stream, string path, string mode);
-extern errno fread_s(ptr buffer, int bufferSize, int elementSize, int elementCount, FILE stream);
-extern errno freopen_s(FILE_REF stream, string path, string mode, FILE oldStream);
-extern string gets_s(ptr buffer, int size);
-extern errno tmpfile_s(FILE_REF stream);
-extern errno tmpnam_s(ptr buffer, int size);
+extern int fgets(ptr buff, int max, file stream);
+
+extern int fread(ptr buff, int elementSize, int count, file stream);
+extern int fwrite(ptr buff, int elementSize, int count, file stream);
+
+extern int fseek(file stream, int offset, int origin);
+extern int ftell(file stream);
+
+extern int remove(string name);
+extern int rename(string old, string new);
+extern void rewind(file stream);
