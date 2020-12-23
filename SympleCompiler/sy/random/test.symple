@@ -8,7 +8,7 @@ int main()
 	
 	printf("%i\n", -myInt + myByte);
 	
-	myInt = myByte + 4;
+	myInt = myByte + 3;
 	
 	printf("%i\n", myInt);
 
@@ -19,6 +19,6 @@ int main()
 
 string BoolToString(bool boolean)
 	if (boolean)
-		return "true";
+		"true";
 	else
-		return "false";
+		"false";
