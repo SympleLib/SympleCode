@@ -1,0 +1,20 @@
+extern string strcat(string dest, string source);
+extern string strchr(string str, char c);
+extern int strcmp(string left, string right);
+extern string strcpy(string dest, string source);
+extern int strcspn(string match, string with);
+
+extern string strerror(int err);
+extern int strlen(string str);
+
+extern string strncat(string dest, string source, int max);
+extern int strncmp(string left, string right, int max);
+extern string strncpy(string dest, string source, int max);
+extern int strcmp(string left, string right);
+
+extern string strrchr(string str, char c);
+extern int strspn(string str, string match);
+extern string strstr(string in, string find);
+extern string strtok(string str, string del);
+
+extern int atoi(string str);

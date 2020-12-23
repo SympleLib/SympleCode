@@ -1,0 +1,8 @@
+extern int abort();
+extern void exit(int status);
+extern void quick_exit(int status);
+extern int system(string cmd);
+extern string getenv(string env);
+
+extern int abs(int val);
+extern int div(int num, int den);

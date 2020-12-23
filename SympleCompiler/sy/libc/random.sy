@@ -1,0 +1,4 @@
+#define RAND_MAX 32767
+
+extern int rand();
+extern void srand(int seed);
