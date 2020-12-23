@@ -161,6 +161,12 @@ namespace Symple
 		return left;
 	}
 
+	char* Emitter::Xor(char* right, char* left, int size)
+	{
+		Write("\txor%c    %s, %s", Rep(size), right, left);
+		return left;
+	}
+
 	char* Emitter::Neg(char* val)
 	{
 		Write("\tneg%c    %s", Rep(), val);
@@ -367,10 +373,12 @@ namespace Symple
 	{
 		switch (expression->GetOperator()->GetKind())
 		{
+		case Token::Kind::Exclamation:
+			Move(EmitExpression(expression->GetValue()), RegAx());
+			return Xor("$1");
 		case Token::Kind::Minus:
 			Move(EmitExpression(expression->GetValue()), RegAx());
-			Neg(RegAx());
-			return RegAx();
+			return Neg(RegAx());
 		}
 
 		return nullptr;

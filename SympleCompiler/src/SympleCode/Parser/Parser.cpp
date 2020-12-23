@@ -111,8 +111,14 @@ namespace Symple
 		const Type* type = GetType(Next());
 		const Token* name = Next();
 		FunctionArgumentsNode* arguments = ParseFunctionArguments();
-		BlockStatementNode* body = ParseBlockStatement();
-		Match(Token::Kind::Semicolon);
+		BlockStatementNode* body;
+		if (Peek()->Is(Token::Kind::OpenBrace))
+		{
+			body = ParseBlockStatement();
+			Match(Token::Kind::Semicolon);
+		}
+		else
+			body = new BlockStatementNode(Peek(), { ParseStatement() }, Peek());
 
 		FunctionDeclarationNode* declaration = new FunctionDeclarationNode(type, name, arguments, body);
 		mDiagnostics->FunctionDeclaration(declaration);
@@ -245,14 +251,27 @@ namespace Symple
 	{
 		const Token* open = Match(Token::Kind::If);
 		ExpressionNode* condition = ParseExpression();
-		BlockStatementNode* then = ParseBlockStatement();
+		BlockStatementNode* then;
+		if (Peek()->Is(Token::Kind::OpenBrace))
+		{
+			then = ParseBlockStatement();
+			if (!Peek()->Is(Token::Kind::Else))
+				Match(Token::Kind::Semicolon);
+		}
+		else
+			then = new BlockStatementNode(Peek(), { ParseStatement() }, Peek());
 		BlockStatementNode* elze = nullptr;
 		if (Peek()->Is(Token::Kind::Else))
 		{
 			Next();
-			elze = ParseBlockStatement();
+			if (Peek()->Is(Token::Kind::OpenBrace))
+			{
+				elze = ParseBlockStatement();
+				Match(Token::Kind::Semicolon);
+			}
+			else
+				elze = new BlockStatementNode(Peek(), { ParseStatement() }, Peek());
 		}
-		Match(Token::Kind::Semicolon);
 
 		return new IfStatementNode(open, condition, then, elze);
 	}
