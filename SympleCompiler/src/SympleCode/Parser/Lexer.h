@@ -29,6 +29,7 @@ namespace Symple
 		Token* Atom(Token::Kind kind);
 		Token* Identifier();
 		Token* Preprocess();
+		Token* Character();
 		Token* Comment();
 		Token* Number();
 		Token* String();

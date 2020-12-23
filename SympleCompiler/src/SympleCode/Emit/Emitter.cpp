@@ -11,6 +11,7 @@
 #include "SympleCode/Common/Node/Expression/ParenthesizedExpressionNode.h"
 #include "SympleCode/Common/Node/Expression/NumberLiteralExpressionNode.h"
 #include "SympleCode/Common/Node/Expression/BooleanLiteralExpressionNode.h"
+#include "SympleCode/Common/Node/Expression/CharacterLiteralExpressionNode.h"
 
 #define Write(fmt, ...) ((void)fprintf_s(mFile, fmt "\n", __VA_ARGS__))
 #define WriteLiteral(fmt, ...) ((void)fprintf_s(mLiteralFile, fmt "\n", __VA_ARGS__))
@@ -430,6 +431,8 @@ namespace Symple
 			return Format("$%s", std::string(expression->GetLiteral()->GetLex()).c_str());
 		if (expression->Is<BooleanLiteralExpressionNode>())
 			return Format("$%i", expression->GetLiteral()->Is(Token::Kind::True));
+		if (expression->Is<CharacterLiteralExpressionNode>())
+			return Format("$%i", expression->GetLiteral()->GetLex()[0]);
 		if (expression->Is<StringLiteralExpressionNode>())
 			return EmitStringLiteralExpression(expression->Cast<StringLiteralExpressionNode>());
 

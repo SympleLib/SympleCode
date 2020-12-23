@@ -13,6 +13,7 @@ namespace Symple
 			Identifier,
 			Number,
 			String,
+			Character,
 
 			Equal,
 			Exclamation,
@@ -77,7 +78,7 @@ namespace Symple
 		};
 
 		static constexpr const char* KindMap[] = {
-			"Identifier", "Number", "String",
+			"Identifier", "Number", "String", "Character",
 			"Equal", "Exclamation", "Plus", "Minus", "Asterisk", "Slash", "Percentage",
 			"PlusPlus", "MinusMinus",
 			"EqualEqual", "ExclamationEqual", "PlusEqual", "MinusEqual", "AsteriskEqual", "SlashEqual", "PercentageEqual",

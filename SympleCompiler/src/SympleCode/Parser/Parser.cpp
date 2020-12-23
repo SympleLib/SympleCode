@@ -14,6 +14,7 @@
 #include "SympleCode/Common/Node/Expression/StringLiteralExpressionNode.h"
 #include "SympleCode/Common/Node/Expression/NumberLiteralExpressionNode.h"
 #include "SympleCode/Common/Node/Expression/BooleanLiteralExpressionNode.h"
+#include "SympleCode/Common/Node/Expression/CharacterLiteralExpressionNode.h"
 
 #include "SympleCode/Common/Priority.h"
 
@@ -404,6 +405,8 @@ namespace Symple
 			return new NumberLiteralExpressionNode(Next());
 		case Token::Kind::String:
 			return new StringLiteralExpressionNode(Next());
+		case Token::Kind::Character:
+			return new CharacterLiteralExpressionNode(Next());
 		}
 
 		return ParseNameOrCallExpression();

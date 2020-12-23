@@ -19,7 +19,7 @@ int main()
 	printf("%i\n", myInt);
 
 	printf("Number: %i, Even: %s\n", myInt, BoolToString(!(myInt % 2)));
-	char sad = 69;
+	char sad = 'E';
 	putc(sad, stdout);
 		
 	0;

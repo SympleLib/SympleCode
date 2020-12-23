@@ -65,6 +65,8 @@ namespace Symple
 			return Preprocess();
 		case '"':
 			return String();
+		case '\'':
+			return Character();
 		}
 
 		return Atom(Token::Kind::Unknown);
@@ -165,6 +167,33 @@ namespace Symple
 		}
 		Get();
 		return new Token(Token::Kind::Preprocess, beg, mCurrent - 1, bLine, bColumn);
+	}
+
+	Token* Lexer::Character()
+	{
+		Get();
+		const char* beg = mCurrent;
+		int bColumn = mColumn;
+		char c = Get();
+		if (c == '\\')
+		{
+			char mc = Get();
+			switch (mc)
+			{
+			case 'n':
+				return new Token(Token::Kind::Character, "\n", 1, mLine, bColumn);
+			case 'r':
+				return new Token(Token::Kind::Character, "\r", 1, mLine, bColumn);
+			case 't':
+				return new Token(Token::Kind::Character, "\t", 1, mLine, bColumn);
+			case '\'':
+				return new Token(Token::Kind::Character, "\'", 1, mLine, bColumn);
+			}
+		}
+		if (Get() == '\'')
+			return new Token(Token::Kind::Character, beg, 1, mLine, bColumn);;
+
+		return new Token(Token::Kind::Unknown, beg, mCurrent - 1, mLine, bColumn);
 	}
 
 	Token* Lexer::Comment()
