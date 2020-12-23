@@ -65,7 +65,7 @@ namespace Symple
 
 		char* Neg(char* val = RegAx());
 
-		char* Cmp(char* right = RegDx(), char* left = RegDx());
+		char* Cmp(char* right = RegDx(), char* left = RegDx(), int size = 4);
 		char* CmpOp(const Token* oqerator);
 		char* CmpNOp(const Token* oqerator);
 

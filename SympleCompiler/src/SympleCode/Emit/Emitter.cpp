@@ -167,9 +167,9 @@ namespace Symple
 		return val;
 	}
 
-	char* Emitter::Cmp(char* right, char* left)
+	char* Emitter::Cmp(char* right, char* left, int size)
 	{
-		Write("\tcmp%c    %s, %s", Rep(), right, left);
+		Write("\tcmp%c    %s, %s", Rep(size), right, left);
 		return left;
 	}
 
@@ -288,10 +288,24 @@ namespace Symple
 
 	char* Emitter::EmitIfStatement(const IfStatementNode* declaration)
 	{
-		unsigned int elsePos = mDataPos++, endPos = mDataPos++;
+		bool elze = declaration->GetElse();
+		unsigned int elsePos = elze ? mDataPos++ : mDataPos;
+		unsigned int endPos = mDataPos++;
 
+		Cmp("$0", EmitExpression(declaration->GetCondition()));
+		Write("\tje      ..%i", elsePos);
 
-		Write("..%i:", elsePos);
+		for (const StatementNode* statement : declaration->GetThen()->GetStatements())
+			EmitStatement(statement);
+
+		if (elze)
+		{
+			Write("\tjmp     ..%i", endPos);
+			Write("..%i:", elsePos);
+
+			for (const StatementNode* statement : declaration->GetElse()->GetStatements())
+				EmitStatement(statement);
+		}
 
 		Write("..%i:", endPos);
 

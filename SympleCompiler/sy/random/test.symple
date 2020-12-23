@@ -13,7 +13,14 @@ int main()
 
 	myInt %= 5;
 
-	printf("%i ? %i\n", myInt, myInt >= 3);
+	if (myInt > 2)
+	{
+		printf("%i ? true\n", myInt);
+	}
+	else
+	{
+		printf("%i ? false\n", myInt);
+	};
 	
 	0;
 };
