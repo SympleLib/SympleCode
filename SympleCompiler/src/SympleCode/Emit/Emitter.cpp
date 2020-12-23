@@ -167,9 +167,9 @@ namespace Symple
 		return val;
 	}
 
-	char* Emitter::Cmp(char* right = RegDx(), char* left = RegDx())
+	char* Emitter::Cmp(char* right, char* left)
 	{
-		Write("\tcmp%c    %s, %s", right, left);
+		Write("\tcmp%c    %s, %s", Rep(), right, left);
 		return left;
 	}
 
@@ -382,9 +382,15 @@ namespace Symple
 			return RegAx();
 
 		case Token::Kind::EqualEqual:
+		case Token::Kind::LeftArrow:
+		case Token::Kind::RightArrow:
 			Cmp(Pop(RegDx()), RegAx());
-			Write("");
-			return RegAx();
+			Write("set%s    %s", CmpOp(expression->GetOperator()), RegAx(1));
+			return Cast(RegAx(1), 1);
+		case Token::Kind::ExclamationEqual:
+			Cmp(Pop(RegDx()), RegAx());
+			Write("set%s   %s", CmpOp(expression->GetOperator()), RegAx(1));
+			return Cast(RegAx(1), 1);
 		}
 
 		return nullptr;

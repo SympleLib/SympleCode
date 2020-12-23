@@ -25,6 +25,8 @@ namespace Symple
 		{
 		case Token::Kind::EqualEqual:
 		case Token::Kind::ExclamationEqual:
+		case Token::Kind::LeftArrow:
+		case Token::Kind::RightArrow:
 			return 1;
 		case Token::Kind::Plus:
 		case Token::Kind::Minus:

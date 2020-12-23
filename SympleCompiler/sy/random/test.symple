@@ -13,7 +13,7 @@ int main()
 
 	myInt %= 5;
 
-	printf("%i\n", myInt);
+	printf("%i ? %i\n", myInt, myInt > 2);
 	
 	0;
 };
