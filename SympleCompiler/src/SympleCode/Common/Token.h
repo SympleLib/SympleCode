@@ -63,9 +63,6 @@ namespace Symple
 			Hint,
 			Return,
 			Extern,
-			Struct,
-
-			SizeOf,
 
 			If,
 			Else,
@@ -88,8 +85,7 @@ namespace Symple
 			"LeftArrow", "RightArrow",
 			"At",
 			"True", "False", "While", "Break",
-			"Hint", "Return", "Extern", "Struct",
-			"SizeOf",
+			"Hint", "Return", "Extern",
 			"If", "Else",
 			"Comment", "Preprocess",
 		};

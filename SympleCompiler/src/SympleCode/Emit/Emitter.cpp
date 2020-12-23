@@ -285,6 +285,8 @@ namespace Symple
 			return EmitBlockStatement(statement->Cast<BlockStatementNode>());
 		if (statement->Is<IfStatementNode>())
 			return EmitIfStatement(statement->Cast<IfStatementNode>());
+		if (statement->Is<BreakStatementNode>())
+			return EmitBreakStatement(statement->Cast<BreakStatementNode>());
 		if (statement->Is<ReturnStatementNode>())
 			return EmitReturnStatement(statement->Cast<ReturnStatementNode>());
 		if (statement->Is<ExpressionStatementNode>())
@@ -331,6 +333,14 @@ namespace Symple
 		return nullptr;
 	}
 
+	char* Emitter::EmitBreakStatement(const BreakStatementNode* statement)
+	{
+		Write("\tjmp     ..%i", mBreakPoints.back());
+		mBreakPoints.pop_back();
+
+		return nullptr;
+	}
+
 	char* Emitter::EmitWhileStatement(const WhileStatementNode* declaration)
 	{
 		unsigned int loopPos = mDataPos++, endPos = mDataPos++;
@@ -339,6 +349,8 @@ namespace Symple
 
 		Cmp("$1", EmitExpression(declaration->GetCondition()));
 		Write("\tje      ..%i", endPos);
+
+		mBreakPoints.push_back(endPos);
 
 		EmitBlockStatement(declaration->GetBody());
 

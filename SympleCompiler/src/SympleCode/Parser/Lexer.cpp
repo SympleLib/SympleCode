@@ -144,10 +144,6 @@ namespace Symple
 			return new Token(Token::Kind::While, beg, mCurrent, mLine, bColumn);
 		if (identifier == "extern")
 			return new Token(Token::Kind::Extern, beg, mCurrent, mLine, bColumn);
-		if (identifier == "struct")
-			return new Token(Token::Kind::Struct, beg, mCurrent, mLine, bColumn);
-		if (identifier == "sizeof")
-			return new Token(Token::Kind::SizeOf, beg, mCurrent, mLine, bColumn);
 
 		if (identifier == "if")
 			return new Token(Token::Kind::If, beg, mCurrent, mLine, bColumn);

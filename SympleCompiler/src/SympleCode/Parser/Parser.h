@@ -14,7 +14,6 @@
 #include "SympleCode/Common/Node/Statement/BlockStatementNode.h"
 #include "SympleCode/Common/Node/Statement/WhileStatementNode.h"
 #include "SympleCode/Common/Node/Statement/ReturnStatementNode.h"
-#include "SympleCode/Common/Node/Statement/StructDeclarationNode.h"
 #include "SympleCode/Common/Node/Statement/VariableDeclarationNode.h"
 
 #include "SympleCode/Common/Node/Member/FunctionHintNode.h"
@@ -64,7 +63,6 @@ namespace Symple
 		FunctionArgumentNode* ParseFunctionArgument();
 		ExternFunctionNode* ParseExternFunction();
 		FunctionHintNode* ParseFunctionHint();
-		StructDeclarationNode* ParseStruct();
 
 		StatementNode* ParseStatement();
 		IfStatementNode* ParseIfStatement();

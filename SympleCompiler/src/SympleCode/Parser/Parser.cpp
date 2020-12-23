@@ -170,36 +170,6 @@ namespace Symple
 		return hint;
 	}
 
-	StructDeclarationNode* Parser::ParseStruct()
-	{
-		Match(Token::Kind::Struct);
-		const Token* name = Match(Token::Kind::Identifier);
-		const Token* open = Match(Token::Kind::OpenBrace);
-		std::vector<const VariableDeclarationNode*> statements;
-		while (!Peek()->Is(Token::Kind::CloseBrace))
-		{
-			if (Peek()->Is(Token::Kind::EndOfFile))
-			{
-				mDiagnostics->ReportError(Next(), "Unexpected End Of File");
-				break;
-			}
-
-			const Token* start = Peek();
-
-			statements.push_back(ParseVariableDeclaration());
-
-			if (start == Peek())
-				Next();
-		}
-		const Token* close = Match(Token::Kind::CloseBrace);
-		Match(Token::Kind::Semicolon);
-
-		StructDeclarationNode* ztruct = new StructDeclarationNode(name, open, statements, close);
-		mTypes.push_back(new Type(std::string(name->GetLex()), ztruct->GetSize()));
-
-		return ztruct;
-	}
-
 	ExternFunctionNode* Parser::ParseExternFunction()
 	{
 		Match(Token::Kind::Extern);
@@ -217,8 +187,6 @@ namespace Symple
 	{
 		if (Peek()->Is(Token::Kind::Semicolon))
 			return new StatementNode; // Empty Statement;
-		if (Peek()->Is(Token::Kind::Struct))
-			return ParseStruct();
 		if (Peek()->Is(Token::Kind::Return))
 			return ParseReturnStatement();
 		if (Peek()->Is(Token::Kind::While))

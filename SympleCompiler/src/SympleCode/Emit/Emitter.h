@@ -12,6 +12,7 @@
 #include "SympleCode/Common/Node/Member/FunctionDeclarationNode.h"
 
 #include "SympleCode/Common/Node/Statement/IfStatementNode.h"
+#include "SympleCode/Common/Node/Statement/BreakStatementNode.h"
 #include "SympleCode/Common/Node/Statement/WhileStatementNode.h"
 #include "SympleCode/Common/Node/Statement/ReturnStatementNode.h"
 #include "SympleCode/Common/Node/Statement/ExpressionStatementNode.h"
@@ -38,6 +39,8 @@ namespace Symple
 		unsigned int mDataPos;
 
 		unsigned int mReturnPos;
+
+		std::vector<unsigned int> mBreakPoints;
 
 		std::map<std::string_view, const VariableDeclarationNode*> mDeclaredVariables;
 	public:
@@ -78,6 +81,7 @@ namespace Symple
 		char* EmitStatement(const StatementNode* statement);
 		char* EmitBlockStatement(const BlockStatementNode* body);
 		char* EmitIfStatement(const IfStatementNode* declaration);
+		char* EmitBreakStatement(const BreakStatementNode* statement);
 		char* EmitWhileStatement(const WhileStatementNode* declaration);
 		char* EmitReturnStatement(const ReturnStatementNode* statement);
 		char* EmitExpressionStatement(const ExpressionStatementNode* statement);
