@@ -1,0 +1,10 @@
+#include "libc/memory.sy"
+
+int main()
+{
+	ptr word = calloc(4, 1);
+	[1]word = 69;
+	\\ [2]word = [1]word;
+	\\ return [2]word;
+	return [1]word;
+};

@@ -23,6 +23,7 @@
 #include "SympleCode/Common/Node/Expression/VariableExpressionNode.h"
 #include "SympleCode/Common/Node/Expression/AssignmentExpressionNode.h"
 #include "SympleCode/Common/Node/Expression/FunctionCallExpressionNode.h"
+#include "SympleCode/Common/Node/Expression/PointerIndexExpressionNode.h"
 #include "SympleCode/Common/Node/Expression/StringLiteralExpressionNode.h"
 
 namespace Symple
@@ -60,6 +61,7 @@ namespace Symple
 
 		char* Move(char* from = RegAx(), char* to = RegAx(), int size = 4);
 		char* Cast(char* reg = RegAx(), int from = 4, int to = 4);
+		char* Lea(char* from = RegAx(), char* to = RegAx());
 
 		char* Add(char* right = RegDx(), char* left = RegAx());
 		char* Sub(char* right = RegDx(), char* left = RegAx());
@@ -93,6 +95,7 @@ namespace Symple
 		char* EmitLiteralExpression(const LiteralExpressionNode* expression);
 		char* EmitVariableExpression(const VariableExpressionNode* expression);
 		char* EmitFunctionCallExpression(const FunctionCallExpressionNode* call);
+		char* EmitPointerIndexExpression(const PointerIndexExpressionNode* expression);
 		char* EmitStringLiteralExpression(const StringLiteralExpressionNode* expression);
 		char* EmitAssignmentExpression(const AssignmentExpressionNode* expression);
 
@@ -103,6 +106,7 @@ namespace Symple
 		} EmitModifiableExpression(const ModifiableExpressionNode* expression);
 		ModifiableExpression EmitModifiableVariableExpression(const VariableExpressionNode* expression);
 		ModifiableExpression EmitModifiableAssignmentExpression(const AssignmentExpressionNode* expression);
+		ModifiableExpression EmitModifiablePointerIndexExpression(const PointerIndexExpressionNode* expression);
 
 		bool VariableDefined(const std::string_view& name);
 

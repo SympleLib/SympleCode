@@ -2,7 +2,7 @@
 
 extern ptr memchr(ptr buff, byte block, int size);
 extern int memcmp(ptr left, ptr right, int size);
-extern ptr memcpy(ptr dest. ptr source, int size);
+extern ptr memcpy(ptr dest, ptr source, int size);
 extern ptr memmove(ptr dest, ptr source, int size);
 extern ptr memset(ptr buff, byte val, int repeat);
 

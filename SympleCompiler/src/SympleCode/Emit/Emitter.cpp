@@ -117,11 +117,24 @@ namespace Symple
 		if (from == to)
 			Move(reg, RegAx(to), to);
 		else if (!strcmp(reg, RegAx(to)));
+		else if (to < from)
+		{
+			if (!strcmp(reg, RegDx(from)))
+				Move(RegDx(to), RegAx(to), to);
+		}
 		else if (to < from && !strcmp(reg, RegAx(from)));
+		else if (reg[0] == '$' && reg[1] != '.')
+			Move(reg, RegAx(to), to);
 		else
 			Write("\tmovs%c%c  %s, %s", Rep(from), Rep(to), reg, RegAx(to));
 
 		return RegAx(to);
+	}
+
+	char* Emitter::Lea(char* from, char* to)
+	{
+		Write("\tlea%c    %s, %s", Rep(), from, to);
+		return to;
 	}
 
 	char* Emitter::Add(char* right, char* left)
@@ -257,7 +270,7 @@ namespace Symple
 		{
 			argumentPos += 4;
 			Write("_%s$ = %i", std::string(argument->GetName()->GetLex()).c_str(), argumentPos);
-			mDeclaredVariables.insert({ argument->GetName()->GetLex(), new VariableDeclarationNode(argument->GetName(), argument->GetType(), nullptr) });
+			mDeclaredVariables.insert({ argument->GetName()->GetLex(), argument });
 		}
 
 		unsigned int pReturnPos = mReturnPos;
@@ -386,7 +399,7 @@ namespace Symple
 		Write("_%s$ = -%i", name.c_str(), mStackPos);
 		Write("\tsub%c    $%i, %s", Rep(), size, RegSp);
 		if (declaration->GetInitializer()->GetKind() != Node::Kind::Expression)
-			Move(Cast(Move(EmitExpression(declaration->GetInitializer()), RegAx()), 4, size), Format("_%s$(%s)", name.c_str(), RegBp), size);
+			Move(Cast(EmitExpression(declaration->GetInitializer()), 4, size), Format("_%s$(%s)", name.c_str(), RegBp), size);
 
 		return Format("_%s$(%s)", name.c_str(), RegBp);
 	}
@@ -405,6 +418,8 @@ namespace Symple
 			return EmitVariableExpression(expression->Cast<VariableExpressionNode>());
 		if (expression->Is<FunctionCallExpressionNode>())
 			return EmitFunctionCallExpression(expression->Cast<FunctionCallExpressionNode>());
+		if (expression->Is<PointerIndexExpressionNode>())
+			return EmitPointerIndexExpression(expression->Cast<PointerIndexExpressionNode>());
 		if (expression->Is<AssignmentExpressionNode>())
 			return EmitAssignmentExpression(expression->Cast<AssignmentExpressionNode>());
 		
@@ -514,6 +529,12 @@ namespace Symple
 		return RegAx();
 	}
 
+	char* Emitter::EmitPointerIndexExpression(const PointerIndexExpressionNode* expression)
+	{
+		ModifiableExpression modifiableExpression = EmitModifiablePointerIndexExpression(expression);
+		return Cast(modifiableExpression.Emit, modifiableExpression.Size);
+	}
+
 	char* Emitter::EmitStringLiteralExpression(const StringLiteralExpressionNode* expression)
 	{
 		unsigned int dataPos = mDataPos++;
@@ -536,6 +557,8 @@ namespace Symple
 			return EmitModifiableVariableExpression(expression->Cast<VariableExpressionNode>());
 		if (expression->Is<AssignmentExpressionNode>())
 			return EmitModifiableAssignmentExpression(expression->Cast<AssignmentExpressionNode>());
+		if (expression->Is<PointerIndexExpressionNode>())
+			return EmitModifiablePointerIndexExpression(expression->Cast<PointerIndexExpressionNode>());
 
 		return { nullptr, 0 };
 	}
@@ -586,6 +609,15 @@ namespace Symple
 		}
 
 		return { nullptr, 0 };
+	}
+
+	Emitter::ModifiableExpression Emitter::EmitModifiablePointerIndexExpression(const PointerIndexExpressionNode* expression)
+	{
+		ModifiableExpression modifiableExpression = EmitModifiableExpression(expression->GetExpression());
+		Move(modifiableExpression.Emit, RegAx());
+		Add(EmitExpression(expression->GetIndex()), RegAx());
+
+		return {Format("(%s)", RegAx()), 1 };
 	}
 
 	bool Emitter::VariableDefined(const std::string_view& name)

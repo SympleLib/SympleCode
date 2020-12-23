@@ -9,7 +9,7 @@ namespace Symple
 {
 	class VariableDeclarationNode : public StatementNode
 	{
-	private:
+	protected:
 		const Token* mName;
 		const Type* mType;
 		const ExpressionNode* mInitializer;

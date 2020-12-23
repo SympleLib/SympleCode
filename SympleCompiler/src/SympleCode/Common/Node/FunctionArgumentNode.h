@@ -2,18 +2,16 @@
 
 #include "SympleCode/Common/Analysis/Type.h"
 #include "SympleCode/Common/Token.h"
-#include "SympleCode/Common/Node/Node.h"
+#include "SympleCode/Common/Node/Statement/VariableDeclarationNode.h"
 
 namespace Symple
 {
-	class FunctionArgumentNode : public Node
+	class FunctionArgumentNode : public VariableDeclarationNode
 	{
 	private:
-		const Type* mType;
-		const Token* mName;
 	public:
 		FunctionArgumentNode(const Type* type, const Token* name)
-			: mType(type), mName(name) {}
+			: VariableDeclarationNode(name, type, nullptr) {}
 
 		Kind GetKind() const override
 		{
@@ -31,16 +29,6 @@ namespace Symple
 			ss << "Function Argument (" << mType->GetName() << ") " << mName->GetLex();
 
 			return ss.str();
-		}
-
-		const Type* GetType() const
-		{
-			return mType;
-		}
-
-		const Token* GetName() const
-		{
-			return mName;
 		}
 	};
 }

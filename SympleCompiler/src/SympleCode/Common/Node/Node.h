@@ -29,6 +29,7 @@ namespace Symple
 			StringLiteralExpression,
 			NumberLiteralExpression,
 			BooleanLiteralExpression,
+			FunctionPointerExpression,
 			CharacterLiteralExpression,
 
 			Member,
@@ -58,7 +59,7 @@ namespace Symple
 			"LiteralExpression", "VariableExpression", "OperatorExpression", "AssignmentExpression", "ModifiableExpression",
 			"FunctionCallExpression", "PointerIndexExpression", "ParenthesizedExpression",
 			"StringLiteralExpression", "NumberLiteralExpression", "BooleanLiteralExpression",
-			"CharacterLiteralExpression",
+			"FunctionPointerExpression", "CharacterLiteralExpression",
 			"Member", "CompilationUnit", "FunctionDeclaration",
 			"Statement", "IfStatement", "BlockStatement", "BreakStatement",
 			"WhileStatement", "GlobalStatement", "ReturnStatement", "VariableDeclaration", "ExpressionStatement",
