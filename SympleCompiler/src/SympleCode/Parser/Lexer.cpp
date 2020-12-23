@@ -178,6 +178,8 @@ namespace Symple
 		if (c == '\\')
 		{
 			char mc = Get();
+			if (Get() != '\'')
+				return new Token(Token::Kind::Unknown, beg, mCurrent - 1, mLine, bColumn);
 			switch (mc)
 			{
 			case 'n':
@@ -191,7 +193,7 @@ namespace Symple
 			}
 		}
 		if (Get() == '\'')
-			return new Token(Token::Kind::Character, beg, 1, mLine, bColumn);;
+			return new Token(Token::Kind::Character, beg, 1, mLine, bColumn);
 
 		return new Token(Token::Kind::Unknown, beg, mCurrent - 1, mLine, bColumn);
 	}

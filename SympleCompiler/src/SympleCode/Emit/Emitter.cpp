@@ -414,11 +414,11 @@ namespace Symple
 		case Token::Kind::LeftArrowEqual:
 		case Token::Kind::RightArrowEqual:
 			Cmp(Pop(RegDx()), RegAx());
-			Write("set%s    %s", CmpOp(expression->GetOperator()), RegAx(1));
+			Write("\tset%s    %s", CmpOp(expression->GetOperator()), RegAx(1));
 			return Cast(RegAx(1), 1);
 		case Token::Kind::ExclamationEqual:
 			Cmp(Pop(RegDx()), RegAx());
-			Write("set%s   %s", CmpOp(expression->GetOperator()), RegAx(1));
+			Write("\tset%s   %s", CmpOp(expression->GetOperator()), RegAx(1));
 			return Cast(RegAx(1), 1);
 		}
 
