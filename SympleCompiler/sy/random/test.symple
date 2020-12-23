@@ -1,5 +1,11 @@
 extern int printf(string fmt);
 extern int puts(string str);
+extern int putc(char c, ptr stream);
+extern ptr __acrt_iob_func(int num);
+
+#define stdin  __acrt_iob_func(0)
+#define stdout __acrt_iob_func(1)
+#define stderr __acrt_iob_func(2)
 
 int main()
 {
@@ -13,7 +19,9 @@ int main()
 	printf("%i\n", myInt);
 
 	printf("Number: %i, Even: %s\n", myInt, BoolToString(!(myInt % 2)));
-	
+	char sad = 69;
+	putc(sad, stdout);
+		
 	0;
 };
 

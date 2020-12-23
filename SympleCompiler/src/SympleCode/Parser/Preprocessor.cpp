@@ -4,7 +4,7 @@
 
 namespace Symple
 {
-	Preprocessor::Preprocessor(const char* source, const std::vector<std::string>& includedFiles, const std::map<std::string, const Token*>& defines)
+	Preprocessor::Preprocessor(const char* source, const std::vector<std::string>& includedFiles, const std::map<std::string, std::vector<const Token*>>& defines)
 		: mLexer(source), mIncludedFiles(includedFiles), mDefines(defines)
 	{
 		const Token* current = Token::Default;
@@ -20,7 +20,10 @@ namespace Symple
 				if (mDefines.find(lex) == mDefines.end())
 					mTokens.push_back(current);
 				else
-					mTokens.push_back(mDefines.at(lex));
+				{
+					for (const Token* deftok : mDefines.at(lex))
+						mTokens.push_back(deftok);
+				}
 			}
 		}
 	}
@@ -60,14 +63,21 @@ namespace Symple
 						if (mDefines.find(lex) == mDefines.end())
 							mTokens.push_back(token);
 						else
-							mTokens.push_back(mDefines.at(lex));
+						{
+							for (const Token* deftok : mDefines.at(lex))
+								mTokens.push_back(deftok);
+						}
 					}
 			}
 		}
 		else if (rcmd->GetLex() == "define")
 		{
 			std::string replace(prepoLexer.Next()->GetLex());
-			Token* with = prepoLexer.Next();
+			std::vector<const Token*> with;
+
+			Token* current;
+			while (!(current = prepoLexer.Next())->Is(Token::Kind::EndOfFile))
+				with.push_back(current);
 
 			mDefines.insert({ replace, with });
 		}

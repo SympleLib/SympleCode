@@ -340,11 +340,11 @@ namespace Symple
 		mStackPos += size;
 
 		mDeclaredVariables.insert({ declaration->GetName()->GetLex(), declaration });
-
+		
 		Write("_%s$ = -%i", name.c_str(), mStackPos);
 		Write("\tsub%c    $%i, %s", Rep(), size, RegSp);
 		if (declaration->GetInitializer()->GetKind() != Node::Kind::Expression)
-			Move(Cast(EmitExpression(declaration->GetInitializer()), 4, size), Format("_%s$(%s)", name.c_str(), RegBp), size);
+			Move(Cast(Move(EmitExpression(declaration->GetInitializer()), RegAx()), 4, size), Format("_%s$(%s)", name.c_str(), RegBp), size);
 
 		return Format("_%s$(%s)", name.c_str(), RegBp);
 	}
