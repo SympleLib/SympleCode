@@ -33,6 +33,11 @@ namespace Symple
 			SlashEqual,
 			PercentageEqual,
 
+			LeftArrowEqual,
+			RightArrowEqual,
+			LeftArrowArrow,
+			RightArrowArrow,
+
 			Comma,
 			Semicolon,
 			Period,
@@ -76,6 +81,7 @@ namespace Symple
 			"Equal", "Exclamation", "Plus", "Minus", "Asterisk", "Slash", "Percentage",
 			"PlusPlus", "MinusMinus",
 			"EqualEqual", "ExclamationEqual", "PlusEqual", "MinusEqual", "AsteriskEqual", "SlashEqual", "PercentageEqual",
+			"LeftArrowEqual", "RightArrowEqual", "LeftArrowArrow", "RightArrowArrow",
 			"Comma", "Semicolon", "Period",
 			"OpenBrace", "CloseBrace", "OpenBracket", "CloseBracket", "OpenParenthesis", "CloseParenthesis",
 			"LeftArrow", "RightArrow",

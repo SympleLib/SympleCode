@@ -183,8 +183,12 @@ namespace Symple
 			return "ne";
 		case Token::Kind::LeftArrow:
 			return "l";
+		case Token::Kind::LeftArrowEqual:
+			return "le";
 		case Token::Kind::RightArrow:
 			return "g";
+		case Token::Kind::RightArrowEqual:
+			return "ge";
 		}
 
 		return nullptr;
@@ -384,6 +388,8 @@ namespace Symple
 		case Token::Kind::EqualEqual:
 		case Token::Kind::LeftArrow:
 		case Token::Kind::RightArrow:
+		case Token::Kind::LeftArrowEqual:
+		case Token::Kind::RightArrowEqual:
 			Cmp(Pop(RegDx()), RegAx());
 			Write("set%s    %s", CmpOp(expression->GetOperator()), RegAx(1));
 			return Cast(RegAx(1), 1);

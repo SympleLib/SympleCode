@@ -7,11 +7,11 @@ namespace Symple
 		switch (token->GetKind())
 		{
 		case Token::Kind::Asterisk:
-			return 1;
+			return 0;
 		case Token::Kind::Minus:
 		case Token::Kind::PlusPlus:
 		case Token::Kind::MinusMinus:
-			return 3;
+			return 2;
 		case Token::Kind::At:
 			return 4;
 		}
@@ -27,6 +27,11 @@ namespace Symple
 		case Token::Kind::ExclamationEqual:
 		case Token::Kind::LeftArrow:
 		case Token::Kind::RightArrow:
+		case Token::Kind::LeftArrowEqual:
+		case Token::Kind::RightArrowEqual:
+			return 0;
+		case Token::Kind::LeftArrowArrow:
+		case Token::Kind::RightArrowArrow:
 			return 1;
 		case Token::Kind::Plus:
 		case Token::Kind::Minus:
@@ -35,8 +40,6 @@ namespace Symple
 		case Token::Kind::Slash:
 		case Token::Kind::Percentage:
 			return 3;
-		case Token::Kind::OpenBracket:
-			return 4;
 		}
 
 		return -1;

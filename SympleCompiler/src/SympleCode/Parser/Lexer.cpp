@@ -35,6 +35,10 @@ namespace Symple
 			return Equal();
 		case '%':
 			return Equal();
+		case '<':
+			return Equal();
+		case '>':
+			return Equal();
 		case '\\':
 			return Comment();
 		case ';':
@@ -51,10 +55,6 @@ namespace Symple
 			return Atom(Token::Kind::OpenParenthesis);
 		case ')':
 			return Atom(Token::Kind::CloseParenthesis);
-		case '<':
-			return Atom(Token::Kind::LeftArrow);
-		case '>':
-			return Atom(Token::Kind::RightArrow);
 		case ',':
 			return Atom(Token::Kind::Comma);
 		case '.':
@@ -242,6 +242,10 @@ namespace Symple
 				return new Token(Token::Kind::SlashEqual, beg, mCurrent, bLine, bColumn);
 			case '%':
 				return new Token(Token::Kind::PercentageEqual, beg, mCurrent, bLine, bColumn);
+			case '<':
+				return new Token(Token::Kind::LeftArrowEqual, beg, mCurrent, bLine, bColumn);
+			case '>':
+				return new Token(Token::Kind::RightArrowEqual, beg, mCurrent, bLine, bColumn);
 			}
 		}
 		if (Peek() == *beg)
@@ -253,6 +257,10 @@ namespace Symple
 				return new Token(Token::Kind::PlusPlus, beg, mCurrent, bLine, bColumn);
 			case '-':
 				return new Token(Token::Kind::MinusMinus, beg, mCurrent, bLine, bColumn);
+			case '<':
+				return new Token(Token::Kind::LeftArrowArrow, beg, mCurrent, bLine, bColumn);
+			case '>':
+				return new Token(Token::Kind::RightArrowArrow, beg, mCurrent, bLine, bColumn);
 			}
 		}
 
@@ -272,6 +280,10 @@ namespace Symple
 			return new Token(Token::Kind::Slash, beg, mCurrent, bLine, bColumn);
 		case '%':
 			return new Token(Token::Kind::Percentage, beg, mCurrent, bLine, bColumn);
+		case '<':
+			return new Token(Token::Kind::LeftArrowEqual, beg, mCurrent, bLine, bColumn);
+		case '>':
+			return new Token(Token::Kind::RightArrowEqual, beg, mCurrent, bLine, bColumn);
 		}
 
 		return new Token(Token::Kind::Unknown, beg, mCurrent, bLine, bColumn);
