@@ -12,6 +12,7 @@
 #include "SympleCode/Common/Node/Member/FunctionDeclarationNode.h"
 
 #include "SympleCode/Common/Node/Statement/IfStatementNode.h"
+#include "SympleCode/Common/Node/Statement/WhileStatementNode.h"
 #include "SympleCode/Common/Node/Statement/ReturnStatementNode.h"
 #include "SympleCode/Common/Node/Statement/ExpressionStatementNode.h"
 
@@ -75,7 +76,9 @@ namespace Symple
 		char* EmitFunctionDeclaration(const FunctionDeclarationNode* declaration);
 
 		char* EmitStatement(const StatementNode* statement);
+		char* EmitBlockStatement(const BlockStatementNode* body);
 		char* EmitIfStatement(const IfStatementNode* declaration);
+		char* EmitWhileStatement(const WhileStatementNode* declaration);
 		char* EmitReturnStatement(const ReturnStatementNode* statement);
 		char* EmitExpressionStatement(const ExpressionStatementNode* statement);
 		char* EmitVariableDeclaration(const VariableDeclarationNode* declaration);
@@ -88,7 +91,6 @@ namespace Symple
 		char* EmitFunctionCallExpression(const FunctionCallExpressionNode* call);
 		char* EmitStringLiteralExpression(const StringLiteralExpressionNode* expression);
 		char* EmitAssignmentExpression(const AssignmentExpressionNode* expression);
-
 
 		struct ModifiableExpression
 		{

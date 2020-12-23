@@ -112,14 +112,7 @@ namespace Symple
 		const Type* type = GetType(Next());
 		const Token* name = Next();
 		FunctionArgumentsNode* arguments = ParseFunctionArguments();
-		BlockStatementNode* body;
-		if (Peek()->Is(Token::Kind::OpenBrace))
-		{
-			body = ParseBlockStatement();
-			Match(Token::Kind::Semicolon);
-		}
-		else
-			body = new BlockStatementNode(Peek(), { ParseStatement() }, Peek());
+		BlockStatementNode* body = ParseBlockStatement();
 
 		FunctionDeclarationNode* declaration = new FunctionDeclarationNode(type, name, arguments, body);
 		mDiagnostics->FunctionDeclaration(declaration);
@@ -265,13 +258,7 @@ namespace Symple
 		if (Peek()->Is(Token::Kind::Else))
 		{
 			Next();
-			if (Peek()->Is(Token::Kind::OpenBrace))
-			{
-				elze = ParseBlockStatement();
-				Match(Token::Kind::Semicolon);
-			}
-			else
-				elze = new BlockStatementNode(Peek(), { ParseStatement() }, Peek());
+			elze = ParseBlockStatement();
 		}
 
 		return new IfStatementNode(open, condition, then, elze);
@@ -289,6 +276,8 @@ namespace Symple
 
 	BlockStatementNode* Parser::ParseBlockStatement()
 	{
+		if (!Peek()->Is(Token::Kind::OpenBrace))
+			return new BlockStatementNode(Peek(), { ParseStatement() }, Peek());
 		const Token* open = Match(Token::Kind::OpenBrace);
 		std::vector<const StatementNode*> statements;
 		while (!Peek()->Is(Token::Kind::CloseBrace))

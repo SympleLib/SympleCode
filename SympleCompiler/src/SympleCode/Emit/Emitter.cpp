@@ -281,6 +281,8 @@ namespace Symple
 	char* Emitter::EmitStatement(const StatementNode* statement)
 	{
 		Write("");
+		if (statement->Is<BlockStatementNode>())
+			return EmitBlockStatement(statement->Cast<BlockStatementNode>());
 		if (statement->Is<IfStatementNode>())
 			return EmitIfStatement(statement->Cast<IfStatementNode>());
 		if (statement->Is<ReturnStatementNode>())
@@ -289,6 +291,18 @@ namespace Symple
 			return EmitExpressionStatement(statement->Cast<ExpressionStatementNode>());
 		if (statement->Is<VariableDeclarationNode>())
 			return EmitVariableDeclaration(statement->Cast<VariableDeclarationNode>());
+
+		return nullptr;
+	}
+
+	char* Emitter::EmitBlockStatement(const BlockStatementNode* body)
+	{
+		const std::map<std::string_view, const VariableDeclarationNode*> pDeclaredVariables = mDeclaredVariables;
+
+		for (const StatementNode* statement : body->GetStatements())
+			EmitStatement(statement);
+
+		mDeclaredVariables = pDeclaredVariables;
 
 		return nullptr;
 	}
@@ -302,18 +316,33 @@ namespace Symple
 		Cmp("$0", EmitExpression(declaration->GetCondition()));
 		Write("\tje      ..%i", elsePos);
 
-		for (const StatementNode* statement : declaration->GetThen()->GetStatements())
-			EmitStatement(statement);
+		EmitBlockStatement(declaration->GetThen());
 
 		if (elze)
 		{
 			Write("\tjmp     ..%i", endPos);
 			Write("..%i:", elsePos);
 
-			for (const StatementNode* statement : declaration->GetElse()->GetStatements())
-				EmitStatement(statement);
+			EmitBlockStatement(declaration->GetElse());
 		}
 
+		Write("..%i:", endPos);
+
+		return nullptr;
+	}
+
+	char* Emitter::EmitWhileStatement(const WhileStatementNode* declaration)
+	{
+		unsigned int loopPos = mDataPos++, endPos = mDataPos++;
+
+		Write("..%i:", loopPos);
+
+		Cmp("$1", EmitExpression(declaration->GetCondition()));
+		Write("\tje      ..%i", endPos);
+
+		EmitBlockStatement(declaration->GetBody());
+
+		Write("\tjmp     ..%i", loopPos);
 		Write("..%i:", endPos);
 
 		return nullptr;

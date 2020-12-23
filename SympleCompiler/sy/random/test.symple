@@ -12,7 +12,9 @@ int main()
 	int myInt = 6 * 9;
 	byte myByte = 4 * 20;
 	
-	printf("-myInt + myByte = %i\n", -myInt + myByte);
+	int sum = -myInt + myByte;
+	
+	printf("-myInt + myByte = %i\n",sum );
 	
 	myInt = myByte / 3;
 	
@@ -22,7 +24,9 @@ int main()
 	char newLine = '\n';
 	putc(newLine, stdout);
 
-	printf("Are they the same? %s\nCoincedence I think Not!!!\n", BoolToString(myInt == myByte));
+	printf("Are they the same? %s\nCoincedence I think Not!!!\n", BoolToString(myInt == sum));
+	
+	while true;
 		
 	0;
 };
