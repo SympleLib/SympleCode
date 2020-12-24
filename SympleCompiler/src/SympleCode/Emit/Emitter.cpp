@@ -14,7 +14,7 @@
 #include "SympleCode/Common/Node/Expression/CharacterLiteralExpressionNode.h"
 
 #define Write(fmt, ...) ((void)fprintf_s(mFile, fmt "\n", __VA_ARGS__))
-#define WriteLiteral(fmt, ...) ((void)fprintf_s(mLiteralFile, fmt "\n", __VA_ARGS__))
+#define WriteLiteral(fmt, ...) ((void)(mWriting ? fprintf_s(mLiteralFile, fmt "\n", __VA_ARGS__) : 0))
 
 #define RegErr "ERROR"
 
@@ -27,7 +27,7 @@
 namespace Symple
 {
 	Emitter::Emitter(Diagnostics* diagnostics, const char* path)
-		: mDiagnostics(diagnostics), mPath(path), mStackPos(0), mDataPos(0), mDeclaredVariables()
+		: mDiagnostics(diagnostics), mPath(path), mStackPos(0), mDataPos(0), mDeclaredVariables(), mWriting(true)
 	{
 		while (OpenFile());
 		while (OpenLiteralFile());
@@ -90,16 +90,26 @@ namespace Symple
 		return out;
 	}
 
-	char* Emitter::Push(char* reg)
+	void Emitter::EnableWrite()
 	{
-		Write("\tpush%c   %s", Rep(), reg);
+		mWriting = true;
+	}
+
+	void Emitter::DisableWrite()
+	{
+		mWriting = false;
+	}
+
+	char* Emitter::Push(char* reg, int size)
+	{
+		Write("\tpush%c   %s", Rep(size), reg);
 
 		return reg;
 	}
 
-	char* Emitter::Pop(char* reg)
+	char* Emitter::Pop(char* reg, int size)
 	{
-		Write("\tpop%c    %s", Rep(), reg);
+		Write("\tpop%c    %s", Rep(size), reg);
 
 		return reg;
 	}
@@ -112,23 +122,21 @@ namespace Symple
 		return to;
 	}
 
-	char* Emitter::Cast(char* reg, int from, int to)
+	char* Emitter::Cast(char* rfrom, char* rto, int from, int to)
 	{
-		if (from == to)
-			Move(reg, RegAx(to), to);
-		else if (!strcmp(reg, RegAx(to)));
-		else if (to < from)
-		{
-			if (!strcmp(reg, RegDx(from)))
-				Move(RegDx(to), RegAx(to), to);
-		}
-		else if (to < from && !strcmp(reg, RegAx(from)));
-		else if (reg[0] == '$' && reg[1] != '.')
-			Move(reg, RegAx(to), to);
+		if (!strcmp(rfrom, rto));
+		else if (from == to)
+			Move(rfrom, rto, to);
+		else if (rfrom[0] == '$' && rfrom[1] != '.')
+			Move(rfrom, rto, to);
+		else if (!strcmp(rfrom, RegAx(from)))
+			Move(RegAx(to), rto, to);
+		else if (!strcmp(rfrom, RegDx(from)))
+			Move(RegDx(to), rto, to);
 		else
-			Write("\tmovs%c%c  %s, %s", Rep(from), Rep(to), reg, RegAx(to));
+			Write("\tmovs%c%c  %s, %s", Rep(from), Rep(to), rfrom, rto);
 
-		return RegAx(to);
+		return rto;
 	}
 
 	char* Emitter::Lea(char* from, char* to)
@@ -399,7 +407,7 @@ namespace Symple
 		Write("_%s$ = -%i", name.c_str(), mStackPos);
 		Write("\tsub%c    $%i, %s", Rep(), size, RegSp);
 		if (declaration->GetInitializer()->GetKind() != Node::Kind::Expression)
-			Move(Cast(EmitExpression(declaration->GetInitializer()), 4, size), Format("_%s$(%s)", name.c_str(), RegBp), size);
+			Move(Cast(EmitExpression(declaration->GetInitializer()), RegAx(), 4, size), Format("_%s$(%s)", name.c_str(), RegBp), size);
 
 		return Format("_%s$(%s)", name.c_str(), RegBp);
 	}
@@ -471,11 +479,11 @@ namespace Symple
 		case Token::Kind::RightArrowEqual:
 			Cmp(Pop(RegDx()), RegAx());
 			Write("\tset%s    %s", CmpOp(expression->GetOperator()), RegAx(1));
-			return Cast(RegAx(1), 1);
+			return Cast(RegAx(1), RegAx(), 1);
 		case Token::Kind::ExclamationEqual:
 			Cmp(Pop(RegDx()), RegAx());
 			Write("\tset%s   %s", CmpOp(expression->GetOperator()), RegAx(1));
-			return Cast(RegAx(1), 1);
+			return Cast(RegAx(1), RegAx(), 1);
 		}
 
 		return nullptr;
@@ -506,7 +514,7 @@ namespace Symple
 
 		int size = mDeclaredVariables[name]->GetType()->GetSize();
 
-		return Cast(Format("_%s$(%s)", name.c_str(), RegBp), size);
+		return Cast(Format("_%s$(%s)", name.c_str(), RegBp), RegAx(), size);
 	}
 
 	char* Emitter::EmitFunctionCallExpression(const FunctionCallExpressionNode* call)
@@ -532,7 +540,7 @@ namespace Symple
 	char* Emitter::EmitPointerIndexExpression(const PointerIndexExpressionNode* expression)
 	{
 		ModifiableExpression modifiableExpression = EmitModifiablePointerIndexExpression(expression);
-		return Cast(modifiableExpression.Emit, modifiableExpression.Size);
+		return Cast(modifiableExpression.Emit, RegAx(), modifiableExpression.Size);
 	}
 
 	char* Emitter::EmitStringLiteralExpression(const StringLiteralExpressionNode* expression)
@@ -548,7 +556,7 @@ namespace Symple
 	char* Emitter::EmitAssignmentExpression(const AssignmentExpressionNode* expression)
 	{
 		ModifiableExpression modifiableExpression = EmitModifiableAssignmentExpression(expression);
-		return Cast(modifiableExpression.Emit, modifiableExpression.Size);
+		return Cast(modifiableExpression.Emit, RegAx(), modifiableExpression.Size);
 	}
 
 	Emitter::ModifiableExpression Emitter::EmitModifiableExpression(const ModifiableExpressionNode* expression)
@@ -578,33 +586,29 @@ namespace Symple
 
 	Emitter::ModifiableExpression Emitter::EmitModifiableAssignmentExpression(const AssignmentExpressionNode* expression)
 	{
+		DisableWrite();
 		ModifiableExpression modifiableExpression = EmitModifiableExpression(expression->GetLeft());
 		int size = modifiableExpression.Size;
+		EnableWrite();
+		Push(EmitExpression(expression->GetRight()));
+		EmitModifiableExpression(expression->GetLeft());
 
 		switch (expression->GetOperator()->GetKind())
 		{
 		case Token::Kind::Equal:
-			Move(Cast(EmitExpression(expression->GetRight()), 4, size), modifiableExpression.Emit, size);
+			Cast(Pop(RegDx()), modifiableExpression.Emit, 4, size);
 			return modifiableExpression;
 		case Token::Kind::PlusEqual:
-			Push(EmitExpression(expression->GetRight()));
-			Move(Cast(Add(Pop(RegDx()), EmitExpression(expression->GetLeft())), 4, size), modifiableExpression.Emit);
+			Cast(Add(Pop(RegCx), Cast(modifiableExpression.Emit, RegDx(), size)), modifiableExpression.Emit, 4, size);
 			return modifiableExpression;
 		case Token::Kind::MinusEqual:
-			Push(EmitExpression(expression->GetRight()));
-			Move(Cast(Sub(Pop(RegDx()), EmitExpression(expression->GetLeft())), 4, size), modifiableExpression.Emit);
-			return modifiableExpression;
-		case Token::Kind::AsteriskEqual:
-			Push(EmitExpression(expression->GetRight()));
-			Move(Cast(Mul(Pop(RegDx()), EmitExpression(expression->GetLeft())), 4, size), modifiableExpression.Emit);
+			Cast(Sub(Pop(RegCx), Cast(modifiableExpression.Emit, RegDx(), size)), modifiableExpression.Emit, 4, size);
 			return modifiableExpression;
 		case Token::Kind::SlashEqual:
-			Push(EmitExpression(expression->GetRight()));
-			Move(Cast(Div(EmitExpression(expression->GetLeft())), 4, size), modifiableExpression.Emit);
+			Cast(Div(Cast(modifiableExpression.Emit, RegDx(), size)), modifiableExpression.Emit, 4, size);
 			return modifiableExpression;
 		case Token::Kind::PercentageEqual:
-			Push(EmitExpression(expression->GetRight()));
-			Move(Cast(Mod(EmitExpression(expression->GetLeft())), 4, size), modifiableExpression.Emit);
+			Cast(Mod(Cast(modifiableExpression.Emit, RegDx(), size)), modifiableExpression.Emit, 4, size);
 			return modifiableExpression;
 		}
 
@@ -614,10 +618,10 @@ namespace Symple
 	Emitter::ModifiableExpression Emitter::EmitModifiablePointerIndexExpression(const PointerIndexExpressionNode* expression)
 	{
 		ModifiableExpression modifiableExpression = EmitModifiableExpression(expression->GetExpression());
-		Move(modifiableExpression.Emit, RegAx());
-		Add(EmitExpression(expression->GetIndex()), RegAx());
+		Move(modifiableExpression.Emit);
+		Add(EmitExpression(expression->GetIndex()));
 
-		return {Format("(%s)", RegAx()), 1 };
+		return { Format("(%s)", RegAx()), 1 };
 	}
 
 	bool Emitter::VariableDefined(const std::string_view& name)

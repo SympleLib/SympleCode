@@ -2,9 +2,11 @@
 
 int main()
 {
-	ptr word = calloc(4, 1);
+	ptr word = malloc(4);
+	int i;
+	i = 1;
 	[1]word = 69;
-	\\ [2]word = [1]word;
-	\\ return [2]word;
-	return [1]word;
+	[2]word = [1]word;
+	[2]word /= i;
+	return [2]word;
 };

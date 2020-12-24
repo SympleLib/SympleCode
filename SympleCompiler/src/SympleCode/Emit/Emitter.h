@@ -41,6 +41,8 @@ namespace Symple
 
 		unsigned int mReturnPos;
 
+		bool mWriting;
+
 		std::vector<unsigned int> mBreakPoints;
 
 		std::map<std::string_view, const VariableDeclarationNode*> mDeclaredVariables;
@@ -56,11 +58,14 @@ namespace Symple
 
 		static char* Format(char* fmt, ...);
 
-		char* Push(char* reg = RegAx());
-		char* Pop(char* reg = RegAx());
+		void EnableWrite();
+		void DisableWrite();
+
+		char* Push(char* reg = RegAx(), int size = 4);
+		char* Pop(char* reg = RegAx(), int size = 4);
 
 		char* Move(char* from = RegAx(), char* to = RegAx(), int size = 4);
-		char* Cast(char* reg = RegAx(), int from = 4, int to = 4);
+		char* Cast(char* rfrom = RegAx(), char* rto = RegAx(), int from = 4, int to = 4);
 		char* Lea(char* from = RegAx(), char* to = RegAx());
 
 		char* Add(char* right = RegDx(), char* left = RegAx());
