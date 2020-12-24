@@ -16,12 +16,6 @@
 #define Write(fmt, ...) ((void)fprintf_s(mFile, fmt "\n", __VA_ARGS__))
 #define WriteLiteral(fmt, ...) ((void)(mWriting ? fprintf_s(mLiteralFile, fmt "\n", __VA_ARGS__) : 0))
 
-#define RegErr "ERROR"
-
-#define RegCx "%ecx"
-#define RegSp "%esp"
-#define RegBp "%ebp"
-
 #define FORMAT__MAX 128
 
 namespace Symple
@@ -54,28 +48,6 @@ namespace Symple
 		if (size <= 4)
 			return 'l';
 		return ' ';
-	}
-
-	char* Emitter::RegAx(int size)
-	{
-		if (size <= 1)
-			return "%al";
-		if (size <= 2)
-			return "%ax";
-		if (size <= 4)
-			return "%eax";
-		return "%eax";
-	}
-
-	char* Emitter::RegDx(int size)
-	{
-		if (size <= 1)
-			return "%dl";
-		if (size <= 2)
-			return "%dx";
-		if (size <= 4)
-			return "%edx";
-		return "%eax";
 	}
 
 	char* Emitter::Format(char* fmt, ...)
@@ -129,10 +101,6 @@ namespace Symple
 			Move(rfrom, rto, to);
 		else if (rfrom[0] == '$' && rfrom[1] != '.')
 			Move(rfrom, rto, to);
-		else if (!strcmp(rfrom, RegAx(from)))
-			Move(RegAx(to), rto, to);
-		else if (!strcmp(rfrom, RegDx(from)))
-			Move(RegDx(to), rto, to);
 		else
 			Write("\tmovs%c%c  %s, %s", Rep(from), Rep(to), rfrom, rto);
 

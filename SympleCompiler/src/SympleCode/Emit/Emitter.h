@@ -4,6 +4,8 @@
 #include <sstream>
 #include <iostream>
 
+#include "SympleCode/Emit/Registers.h"
+
 #include "SympleCode/Common/Analysis/Diagnostics.h"
 
 #include "SympleCode/Common/Node/CompilationUnitNode.h"
@@ -44,8 +46,9 @@ namespace Symple
 		bool mWriting;
 
 		std::vector<unsigned int> mBreakPoints;
-
 		std::map<std::string_view, const VariableDeclarationNode*> mDeclaredVariables;
+
+		Registers mRegisters;
 	public:
 		Emitter(Diagnostics* diagnostics, const char* path);
 		~Emitter();
@@ -53,8 +56,6 @@ namespace Symple
 		void Emit(const CompilationUnitNode* unit);
 	private:
 		static char  Rep(int size = 4);
-		static char* RegAx(int size = 4);
-		static char* RegDx(int size = 4);
 
 		static char* Format(char* fmt, ...);
 
