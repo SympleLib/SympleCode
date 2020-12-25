@@ -22,6 +22,8 @@
 #define RegSp "%esp"
 #define RegBp "%ebp"
 
+#define RegMod "(%eax)"
+
 #define FORMAT__MAX 128
 
 namespace Symple
@@ -112,23 +114,42 @@ namespace Symple
 		return to;
 	}
 
-	char* Emitter::Cast(char* reg, int from, int to)
+	char* Emitter::Cast(char* reg, int from, bool toRegAx, int to)
 	{
+		if (toRegAx)
+		{
+			if (from == to)
+				Move(reg, RegAx(to), to);
+			else if (!strcmp(reg, RegAx(to)));
+			else if (reg[0] == '$' && reg[1] != '.')
+				Move(reg, RegAx(to), to);
+			else if (to < from)
+			{
+				if (!strcmp(reg, RegDx(from)))
+					Move(RegDx(to), RegAx(to), to);
+			}
+			else if (to < from && !strcmp(reg, RegAx(from)));
+			else
+				Write("\tmovs%c%c  %s, %s", Rep(from), Rep(to), reg, RegAx(to));
+
+			return RegAx(to);
+		}
+
 		if (from == to)
-			Move(reg, RegAx(to), to);
-		else if (!strcmp(reg, RegAx(to)));
+			Move(reg, RegDx(to), to);
+		else if (!strcmp(reg, RegDx(to)));
+		else if (reg[0] == '$' && reg[1] != '.')
+			Move(reg, RegDx(to), to);
 		else if (to < from)
 		{
-			if (!strcmp(reg, RegDx(from)))
-				Move(RegDx(to), RegAx(to), to);
+			if (!strcmp(reg, RegAx(from)))
+				Move(RegAx(to), RegDx(to), to);
 		}
-		else if (to < from && !strcmp(reg, RegAx(from)));
-		else if (reg[0] == '$' && reg[1] != '.')
-			Move(reg, RegAx(to), to);
+		else if (to < from && !strcmp(reg, RegDx(from)));
 		else
-			Write("\tmovs%c%c  %s, %s", Rep(from), Rep(to), reg, RegAx(to));
+			Write("\tmovs%c%c  %s, %s", Rep(from), Rep(to), reg, RegDx(to));
 
-		return RegAx(to);
+		return RegDx(to);
 	}
 
 	char* Emitter::Lea(char* from, char* to)
@@ -573,7 +594,14 @@ namespace Symple
 		}
 
 		int size = mDeclaredVariables[name]->GetType()->GetSize();
-		return { Format("_%s$(%s)", name.c_str(), RegBp), size };
+		Lea(Format("_%s$(%s)", name.c_str(), RegBp), RegAx());
+		return { RegMod, size };
+	}
+
+	char* Emitter::PopToRegMod()
+	{
+		Pop(RegAx());
+		return RegMod;
 	}
 
 	Emitter::ModifiableExpression Emitter::EmitModifiableAssignmentExpression(const AssignmentExpressionNode* expression)
@@ -581,34 +609,41 @@ namespace Symple
 		ModifiableExpression modifiableExpression = EmitModifiableExpression(expression->GetLeft());
 		int size = modifiableExpression.Size;
 
+		Push(RegAx());
+
+		char* right;
+
 		switch (expression->GetOperator()->GetKind())
 		{
 		case Token::Kind::Equal:
-			Move(Cast(EmitExpression(expression->GetRight()), 4, size), modifiableExpression.Emit, size);
+			right = Cast(EmitExpression(expression->GetRight()), 4, false, size);
+			Move(right, PopToRegMod(), size);
 			return modifiableExpression;
 		case Token::Kind::PlusEqual:
-			Push(EmitExpression(expression->GetRight()));
-			Move(Cast(Add(Pop(RegDx()), EmitExpression(expression->GetLeft())), 4, size), modifiableExpression.Emit);
+			right = Cast(Add(EmitExpression(expression->GetRight()), Pop(RegAx())), 4, false, size);
+			Move(right, RegMod);
 			return modifiableExpression;
 		case Token::Kind::MinusEqual:
-			Push(EmitExpression(expression->GetRight()));
-			Move(Cast(Sub(Pop(RegDx()), EmitExpression(expression->GetLeft())), 4, size), modifiableExpression.Emit);
+			right = Cast(Sub(EmitExpression(expression->GetRight()), Pop(RegAx())), 4, false, size);
+			Move(right, RegMod);
 			return modifiableExpression;
 		case Token::Kind::AsteriskEqual:
-			Push(EmitExpression(expression->GetRight()));
-			Move(Cast(Mul(Pop(RegDx()), EmitExpression(expression->GetLeft())), 4, size), modifiableExpression.Emit);
+			right = Cast(Mul(EmitExpression(expression->GetRight()), Pop(RegAx())), 4, false, size);
+			Move(right, RegMod);
 			return modifiableExpression;
 		case Token::Kind::SlashEqual:
 			Push(EmitExpression(expression->GetRight()));
-			Move(Cast(Div(EmitExpression(expression->GetLeft())), 4, size), modifiableExpression.Emit);
+			right = Cast(Div(Pop(RegAx())), 4, false, size);
+			Move(right, RegMod);
 			return modifiableExpression;
 		case Token::Kind::PercentageEqual:
 			Push(EmitExpression(expression->GetRight()));
-			Move(Cast(Mod(EmitExpression(expression->GetLeft())), 4, size), modifiableExpression.Emit);
+			right = Cast(Mod(Pop(RegAx())), 4, false, size);
+			Move(right, RegMod);
 			return modifiableExpression;
 		}
 
-		return { nullptr, 0 };
+		return { RegMod, 0 };
 	}
 
 	Emitter::ModifiableExpression Emitter::EmitModifiablePointerIndexExpression(const PointerIndexExpressionNode* expression)
@@ -617,7 +652,7 @@ namespace Symple
 		Move(modifiableExpression.Emit, RegAx());
 		Add(EmitExpression(expression->GetIndex()), RegAx());
 
-		return {Format("(%s)", RegAx()), 1 };
+		return { RegMod, 1 };
 	}
 
 	bool Emitter::VariableDefined(const std::string_view& name)

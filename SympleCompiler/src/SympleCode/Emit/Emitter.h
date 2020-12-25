@@ -60,7 +60,7 @@ namespace Symple
 		char* Pop(char* reg = RegAx());
 
 		char* Move(char* from = RegAx(), char* to = RegAx(), int size = 4);
-		char* Cast(char* reg = RegAx(), int from = 4, int to = 4);
+		char* Cast(char* reg = RegAx(), int from = 4, bool toRegAx = true, int to = 4);
 		char* Lea(char* from = RegAx(), char* to = RegAx());
 
 		char* Add(char* right = RegDx(), char* left = RegAx());
@@ -105,6 +105,9 @@ namespace Symple
 			int Size;
 		} EmitModifiableExpression(const ModifiableExpressionNode* expression);
 		ModifiableExpression EmitModifiableVariableExpression(const VariableExpressionNode* expression);
+
+		char* PopToRegMod();
+
 		ModifiableExpression EmitModifiableAssignmentExpression(const AssignmentExpressionNode* expression);
 		ModifiableExpression EmitModifiablePointerIndexExpression(const PointerIndexExpressionNode* expression);
 
