@@ -420,7 +420,7 @@ namespace Symple
 		Write("_%s$ = -%i", name.c_str(), mStackPos);
 		Write("\tsub%c    $%i, %s", Rep(), size, RegSp);
 		if (declaration->GetInitializer()->GetKind() != Node::Kind::Expression)
-			Move(Cast(EmitExpression(declaration->GetInitializer()), 4, size), Format("_%s$(%s)", name.c_str(), RegBp), size);
+			Move(Cast(EmitExpression(declaration->GetInitializer()), 4, true, size), Format("_%s$(%s)", name.c_str(), RegBp), size);
 
 		return Format("_%s$(%s)", name.c_str(), RegBp);
 	}
@@ -451,6 +451,14 @@ namespace Symple
 	{
 		switch (expression->GetOperator()->GetKind())
 		{
+		case Token::Kind::At:
+			if (!expression->GetValue()->Is<ModifiableExpressionNode>())
+			{
+				mDiagnostics->ReportError(expression->GetOperator(), "Expected LValue");
+
+				return RegErr;
+			}
+			return Lea(EmitModifiableExpression(expression->GetValue()->Cast<ModifiableExpressionNode>()).Emit);
 		case Token::Kind::Exclamation:
 			Move(EmitExpression(expression->GetValue()), RegAx());
 			return Xor("$1");

@@ -1,10 +1,11 @@
-#include "libc/memory.sy"
+#include "libc/io.sy"
 
 int main()
 {
-	ptr word = malloc(4);
-	[0]word = 1;
-	[1]word = 69;
-	[2]word = [0]word + [1]word;
-	return [2]word;
+	byte a = 42;
+	ptr b = @a;
+	
+	printf("val: %i\n", [0]b);
+	a = 69;
+	printf("val: %i\n", [0]b);
 };
