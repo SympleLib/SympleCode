@@ -1,5 +1,4 @@
 #include "libc/io.sy"
-#lib "this_lib_does_not_exist.lib"
 
 int main()
 {

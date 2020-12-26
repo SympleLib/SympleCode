@@ -63,6 +63,8 @@ namespace Symple
 			return Atom(Token::Kind::At);
 		case '|':
 			return Equal();
+		case '&':
+			return Equal();
 		case '#':
 			return Preprocess();
 		case '"':
@@ -288,6 +290,8 @@ namespace Symple
 				return new Token(Token::Kind::RightArrowEqual, beg, mCurrent, bLine, bColumn);
 			case '|':
 				return new Token(Token::Kind::PipeEqual, beg, mCurrent, bLine, bColumn);
+			case '&':
+				return new Token(Token::Kind::AmpersandEqual, beg, mCurrent, bLine, bColumn);
 			}
 		}
 		if (Peek() == *beg)
@@ -305,6 +309,8 @@ namespace Symple
 				return new Token(Token::Kind::RightArrowArrow, beg, mCurrent, bLine, bColumn);
 			case '|':
 				return new Token(Token::Kind::PipePipe, beg, mCurrent, bLine, bColumn);
+			case '&':
+				return new Token(Token::Kind::AmpersandAmpersand, beg, mCurrent, bLine, bColumn);
 			}
 		}
 
@@ -330,6 +336,8 @@ namespace Symple
 			return new Token(Token::Kind::RightArrowEqual, beg, mCurrent, bLine, bColumn);
 		case '|':
 			return new Token(Token::Kind::Pipe, beg, mCurrent, bLine, bColumn);
+		case '&':
+			return new Token(Token::Kind::Ampersand, beg, mCurrent, bLine, bColumn);
 		}
 
 		return new Token(Token::Kind::Unknown, beg, mCurrent, bLine, bColumn);

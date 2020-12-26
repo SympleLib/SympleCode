@@ -58,6 +58,10 @@ namespace Symple
 			PipePipe,
 			PipeEqual,
 
+			Ampersand,
+			AmpersandAmpersand,
+			AmpersandEqual,
+
 			Null,
 
 			True,
@@ -96,6 +100,7 @@ namespace Symple
 			"Null",
 			"True", "False", "While", "Break",
 			"At", "Pipe", "PipePipe", "PipeEqual",
+			"Ampersand", "AmpersandAmpersand", "AmpersandEqual",
 			"Hint", "Return", "Extern", "Static",
 			"If", "Else",
 			"SympleCall", "StdCall", "CCall",

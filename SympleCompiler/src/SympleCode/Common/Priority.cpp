@@ -35,6 +35,8 @@ namespace Symple
 		case Token::Kind::RightArrowArrow:
 		case Token::Kind::Pipe:
 		case Token::Kind::PipePipe:
+		case Token::Kind::Ampersand:
+		case Token::Kind::AmpersandAmpersand:
 			return 1;
 		case Token::Kind::Plus:
 		case Token::Kind::Minus:
@@ -58,6 +60,8 @@ namespace Symple
 		case Token::Kind::AsteriskEqual:
 		case Token::Kind::SlashEqual:
 		case Token::Kind::PercentageEqual:
+		case Token::Kind::PipeEqual:
+		case Token::Kind::AmpersandEqual:
 			return 0;
 		}
 

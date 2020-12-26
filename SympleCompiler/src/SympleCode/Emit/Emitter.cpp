@@ -196,6 +196,12 @@ namespace Symple
 			Move(RegDx(), left);
 		return left;
 	}
+	
+	char* Emitter::And(char* right, char* left, int size)
+	{
+		Write("\tand%c    %s, %s", Rep(size), right, left);
+		return left;
+	}
 
 	char* Emitter::Or(char* right, char* left, int size)
 	{
@@ -499,6 +505,10 @@ namespace Symple
 		case Token::Kind::PipePipe:
 			return Or(Pop(RegDx()), RegAx());
 
+		case Token::Kind::Ampersand:
+		case Token::Kind::AmpersandAmpersand:
+			return And(Pop(RegDx()), RegAx());
+
 		case Token::Kind::EqualEqual:
 		case Token::Kind::LeftArrow:
 		case Token::Kind::RightArrow:
@@ -655,6 +665,14 @@ namespace Symple
 		case Token::Kind::PercentageEqual:
 			Push(EmitExpression(expression->GetRight()));
 			right = Cast(Mod(Pop(RegAx())), 4, false, size);
+			Move(right, RegMod);
+			return modifiableExpression;
+		case Token::Kind::PipeEqual:
+			right = Cast(Or(EmitExpression(expression->GetRight()), Pop(RegAx())), 4, false, size);
+			Move(right, RegMod);
+			return modifiableExpression;
+		case Token::Kind::AmpersandEqual:
+			right = Cast(And(EmitExpression(expression->GetRight()), Pop(RegAx())), 4, false, size);
 			Move(right, RegMod);
 			return modifiableExpression;
 		}
