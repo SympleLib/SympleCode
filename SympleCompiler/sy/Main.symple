@@ -2,8 +2,8 @@
 
 int main()
 {
-	puts("lol\n");
-	puts("I am cool\n");
+	puts("lol");
+	puts("I am cool");
 
 	0;
 };
