@@ -465,6 +465,8 @@ namespace Symple
 		switch (expression->GetOperator()->GetKind())
 		{
 		case Token::Kind::At:
+			if (expression->GetValue()->Is<FunctionCallExpressionNode>())
+				return Lea((char*)mDiagnostics->GetFunction(expression->GetValue()->Cast<FunctionCallExpressionNode>())->GetAsmName().c_str());
 			if (!expression->GetValue()->Is<ModifiableExpressionNode>())
 			{
 				mDiagnostics->ReportError(expression->GetOperator(), "Expected LValue");

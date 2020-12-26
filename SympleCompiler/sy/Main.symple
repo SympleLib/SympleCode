@@ -1,4 +1,14 @@
+#include "libc/io.sy"
+#include "libc/system.sy"
+
+void OnExit()
+{
+	puts("exiting...");
+}
+
 int main()
 {
+	atexit(@OnExit());
+
 	0;
 };
