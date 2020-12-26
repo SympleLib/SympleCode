@@ -24,5 +24,7 @@
 
 extern Window GetConsoleWindow() stdcall;
 
+extern void ShowWindow(Window window, int show) stdcall;
+
 extern bool MessageBeep(int type) stdcall;
 extern int MessageBoxA(Window window, string text, string title, int type) stdcall;

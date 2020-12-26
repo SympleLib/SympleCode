@@ -1,9 +1,4 @@
-#include "libc/io.sy"
-
 int main()
 {
-	puts("lol");
-	puts("I am cool");
-
 	0;
 };
