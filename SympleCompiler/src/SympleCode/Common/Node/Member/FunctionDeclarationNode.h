@@ -4,6 +4,7 @@
 
 #include "SympleCode/Common/Node/Member/MemberNode.h"
 #include "SympleCode/Common/Node/FunctionArgumentsNode.h"
+#include "SympleCode/Common/Node/FunctionModifiersNode.h"
 #include "SympleCode/Common/Node/Statement/BlockStatementNode.h"
 
 namespace Symple
@@ -14,10 +15,40 @@ namespace Symple
 		const Type* mType;
 		const Token* mName;
 		const FunctionArgumentsNode* mArguments;
+		const FunctionModifiersNode* mModifiers;
 		const BlockStatementNode* mBody;
+
+		std::string mAsmName;
 	public:
-		FunctionDeclarationNode(const Type* type, const Token* name, const FunctionArgumentsNode* arguments, const BlockStatementNode* body)
-			: mType(type), mName(name),mArguments(arguments), mBody(body) {}
+		FunctionDeclarationNode(const Type* type, const Token* name, const FunctionArgumentsNode* arguments, const FunctionModifiersNode* modifiers, const BlockStatementNode* body)
+			: mType(type), mName(name), mArguments(arguments), mModifiers(modifiers), mBody(body)
+		{
+			std::stringstream ss;
+
+			std::stringstream postfix;
+
+			if (mModifiers->GetFormatType())
+				switch (mModifiers->GetFormatType()->GetKind())
+				{
+				case Token::Kind::StdCall:
+					postfix << '@' << mArguments->GetSize();
+					break;
+				case Token::Kind::CCall:
+					break;
+				case Token::Kind::SympleCall:
+				SympleCall:
+					postfix << '@' << arguments->GetArguments().size() << '.';
+					for (const FunctionArgumentNode* argument : mArguments->GetArguments())
+						postfix << '.' << argument->GetType()->GetSize();
+					break;
+				}
+			else if (mName->GetLex() == "main");
+			else
+				goto SympleCall;
+			ss << '_' << mName->GetLex() << postfix.str();
+
+			mAsmName = ss.str();
+		}
 
 		virtual Kind GetKind() const override
 		{
@@ -37,6 +68,7 @@ namespace Symple
 			if (!last)
 				newIndent = "|\t";
 			ss << '\n' << mArguments->ToString(indent + newIndent, false);
+			ss << '\n' << mModifiers->ToString(indent + newIndent, false);
 			ss << '\n' << mBody->ToString(indent + newIndent);
 
 			return ss.str();
@@ -57,9 +89,19 @@ namespace Symple
 			return mArguments;
 		}
 
+		const FunctionModifiersNode* GetModifiers() const
+		{
+			return mModifiers;
+		}
+
 		const BlockStatementNode* GetBody() const
 		{
 			return mBody;
+		}
+
+		const std::string& GetAsmName() const
+		{
+			return mAsmName;
 		}
 	};
 }

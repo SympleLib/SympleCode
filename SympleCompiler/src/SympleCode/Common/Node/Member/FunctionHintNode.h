@@ -7,8 +7,8 @@ namespace Symple
 	class FunctionHintNode : public FunctionDeclarationNode
 	{
 	public:
-		FunctionHintNode(const Type* type, const Token* name, const FunctionArgumentsNode* arguments)
-			: FunctionDeclarationNode(type, name, arguments, nullptr) {}
+		FunctionHintNode(const Type* type, const Token* name, const FunctionArgumentsNode* arguments, const FunctionModifiersNode* modifiers)
+			: FunctionDeclarationNode(type, name, arguments, modifiers, nullptr) {}
 
 		Kind GetKind() const override
 		{

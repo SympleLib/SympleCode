@@ -5,6 +5,7 @@
 
 #include "SympleCode/Common/Token.h"
 #include "SympleCode/Common/Node/Member/FunctionDeclarationNode.h"
+#include "SympleCode/Common/Node/Expression/FunctionCallExpressionNode.h"
 
 #define DIAGNOSTIC_LEVEL_ERROR    2
 #define DIAGNOSTIC_LEVEL_WARNING  1
@@ -37,7 +38,7 @@ namespace Symple
 		const std::vector<const Message*>& GetWarnings() const;
 		const std::vector<const Message*>& GetErrors() const;
 
-		const FunctionDeclarationNode* GetFunction(const std::string_view& name) const;
+		const FunctionDeclarationNode* GetFunction(const FunctionCallExpressionNode* call) const;
 		const std::map<std::string_view, const FunctionDeclarationNode*>& GetFunctions() const;
 	};
 }

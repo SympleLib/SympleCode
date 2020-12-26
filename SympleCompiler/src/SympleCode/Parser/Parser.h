@@ -7,7 +7,6 @@
 
 #include "SympleCode/Common/Node/Node.h"
 #include "SympleCode/Common/Node/CompilationUnitNode.h"
-#include "SympleCode/Common/Node/FunctionArgumentsNode.h"
 #include "SympleCode/Common/Node/FunctionCallArgumentsNode.h"
 
 #include "SympleCode/Common/Node/Statement/IfStatementNode.h"
@@ -61,6 +60,7 @@ namespace Symple
 
 		FunctionDeclarationNode* ParseFunctionDeclaration();
 		FunctionArgumentsNode* ParseFunctionArguments();
+		FunctionModifiersNode* ParseFunctionModifiers();
 		FunctionArgumentNode* ParseFunctionArgument();
 		ExternFunctionNode* ParseExternFunction();
 		FunctionHintNode* ParseFunctionHint();

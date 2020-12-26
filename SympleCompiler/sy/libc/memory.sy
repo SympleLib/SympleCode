@@ -1,12 +1,10 @@
-#define null 0
+extern ptr memchr(ptr buff, byte block, int size) ccall;
+extern int memcmp(ptr left, ptr right, int size) ccall;
+extern ptr memcpy(ptr dest, ptr source, int size) ccall;
+extern ptr memmove(ptr dest, ptr source, int size) ccall;
+extern ptr memset(ptr buff, byte val, int repeat) ccall;
 
-extern ptr memchr(ptr buff, byte block, int size);
-extern int memcmp(ptr left, ptr right, int size);
-extern ptr memcpy(ptr dest, ptr source, int size);
-extern ptr memmove(ptr dest, ptr source, int size);
-extern ptr memset(ptr buff, byte val, int repeat);
-
-extern ptr malloc(int size);
-extern ptr calloc(int count, int elementSize);
-extern ptr realloc(ptr old, int size);
-extern void free(ptr buff);
+extern ptr malloc(int size) ccall;
+extern ptr calloc(int count, int elementSize) ccall;
+extern ptr realloc(ptr old, int size) ccall;
+extern void free(ptr buff) ccall;

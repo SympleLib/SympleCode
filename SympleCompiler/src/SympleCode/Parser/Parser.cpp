@@ -8,6 +8,7 @@
 
 #include "SympleCode/Common/Node/Expression/UnaryExpressionNode.h"
 #include "SympleCode/Common/Node/Expression/BinaryExpressionNode.h"
+#include "SympleCode/Common/Node/Expression/NullLiteralExpressionNode.h"
 #include "SympleCode/Common/Node/Expression/VariableExpressionNode.h"
 #include "SympleCode/Common/Node/Expression/AssignmentExpressionNode.h"
 #include "SympleCode/Common/Node/Expression/PointerIndexExpressionNode.h"
@@ -112,9 +113,10 @@ namespace Symple
 		const Type* type = GetType(Next());
 		const Token* name = Next();
 		FunctionArgumentsNode* arguments = ParseFunctionArguments();
+		FunctionModifiersNode* modifiers = ParseFunctionModifiers();
 		BlockStatementNode* body = ParseBlockStatement();
 
-		FunctionDeclarationNode* declaration = new FunctionDeclarationNode(type, name, arguments, body);
+		FunctionDeclarationNode* declaration = new FunctionDeclarationNode(type, name, arguments, modifiers, body);
 		mDiagnostics->FunctionDeclaration(declaration);
 		return declaration;
 	}
@@ -149,6 +151,18 @@ namespace Symple
 		return new FunctionArgumentsNode(open, arguments, close);
 	}
 
+	FunctionModifiersNode* Parser::ParseFunctionModifiers()
+	{
+		std::vector<const Token*> modifiers;
+		while (!Peek()->IsEither({ Token::Kind::OpenBrace, Token::Kind::Semicolon }))
+		{
+			const Token* modifier = Next();
+			modifiers.push_back(modifier);
+		}
+
+		return new FunctionModifiersNode(modifiers);
+	}
+
 	FunctionArgumentNode* Parser::ParseFunctionArgument()
 	{
 		const Type* type = GetType(Next());
@@ -166,9 +180,10 @@ namespace Symple
 		const Type* type = GetType(Next());
 		const Token* name = Next();
 		FunctionArgumentsNode* arguments = ParseFunctionArguments();
+		FunctionModifiersNode* modifiers = ParseFunctionModifiers();
 		Match(Token::Kind::Semicolon);
 
-		FunctionHintNode* hint = new FunctionHintNode(type, name, arguments);
+		FunctionHintNode* hint = new FunctionHintNode(type, name, arguments, modifiers);
 		mDiagnostics->FunctionDeclaration(hint);
 		return hint;
 	}
@@ -179,9 +194,10 @@ namespace Symple
 		const Type* type = GetType(Next());
 		const Token* name = Next();
 		FunctionArgumentsNode* arguments = ParseFunctionArguments();
+		FunctionModifiersNode* modifiers = ParseFunctionModifiers();
 		Match(Token::Kind::Semicolon);
 
-		ExternFunctionNode* hint = new ExternFunctionNode(type, name, arguments);
+		ExternFunctionNode* hint = new ExternFunctionNode(type, name, arguments, modifiers);
 		mDiagnostics->FunctionDeclaration(hint);
 		return hint;
 	}
@@ -368,6 +384,8 @@ namespace Symple
 		{
 		case Token::Kind::OpenParenthesis:
 			return ParseParenthesizedExpression();
+		case Token::Kind::Null:
+			return new NullLiteralExpressionNode(Next());
 		case Token::Kind::True:
 		case Token::Kind::False:
 			return new BooleanLiteralExpressionNode(Next());

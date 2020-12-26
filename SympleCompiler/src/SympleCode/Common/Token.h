@@ -54,6 +54,11 @@ namespace Symple
 			RightArrow,
 
 			At,
+			Pipe,
+			PipePipe,
+			PipeEqual,
+
+			Null,
 
 			True,
 			False,
@@ -63,9 +68,14 @@ namespace Symple
 			Hint,
 			Return,
 			Extern,
+			Static,
 
 			If,
 			Else,
+
+			SympleCall,
+			StdCall,
+			CCall,
 
 			Comment,
 			Preprocess,
@@ -83,10 +93,12 @@ namespace Symple
 			"Comma", "Semicolon", "Period",
 			"OpenBrace", "CloseBrace", "OpenBracket", "CloseBracket", "OpenParenthesis", "CloseParenthesis",
 			"LeftArrow", "RightArrow",
-			"At",
+			"Null",
 			"True", "False", "While", "Break",
-			"Hint", "Return", "Extern",
+			"At", "Pipe", "PipePipe", "PipeEqual",
+			"Hint", "Return", "Extern", "Static",
 			"If", "Else",
+			"SympleCall", "StdCall", "CCall",
 			"Comment", "Preprocess",
 		};
 

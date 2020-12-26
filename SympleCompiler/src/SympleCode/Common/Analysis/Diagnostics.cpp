@@ -48,11 +48,30 @@ namespace Symple
 		return mWarnings;
 	}
 
-	const FunctionDeclarationNode* Diagnostics::GetFunction(const std::string_view& name) const
+	const FunctionDeclarationNode* Diagnostics::GetFunction(const FunctionCallExpressionNode* call) const
 	{
-		if (mFunctions.find(name) == mFunctions.end())
-			return nullptr;
-		return mFunctions.at(name);
+		std::string_view name = call->GetName()->GetLex();
+		for (const auto& function : mFunctions)
+		{
+			if (function.first == name)
+			{
+				if (function.second->GetModifiers()->GetFormatType())
+					switch (function.second->GetModifiers()->GetFormatType()->GetKind())
+					{
+					case Token::Kind::SympleCall:
+						goto SympleCall;
+					case Token::Kind::StdCall:
+					case Token::Kind::CCall:
+						return function.second;
+					}
+
+			SympleCall:
+				if (call->GetArguments()->GetArguments().size() == function.second->GetArguments()->GetArguments().size())
+					return function.second;
+			}
+		}
+
+		return nullptr;
 	}
 
 	const std::map<std::string_view, const FunctionDeclarationNode*>& Diagnostics::GetFunctions() const

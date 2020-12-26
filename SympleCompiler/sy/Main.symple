@@ -1,11 +1,18 @@
-#include "libc/io.sy"
+#include "windows/windows.sy"
 
 int main()
 {
-	byte a = 42;
-	ptr b = @a;
+	MessageBoxA(null, "Just Kidding :)", "Fatal Error: 0xC0000374", MB_ABORTRETRYIGNORE | MB_ICONERROR);
 	
-	printf("val: %i\n", [0]b);
-	a = 69;
-	printf("val: %i\n", [0]b);
+	0;
 };
+
+void Func()
+{
+	
+}
+
+void Func(int num)
+{
+	
+}

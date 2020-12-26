@@ -8,6 +8,7 @@
 #include "SympleCode/Common/Node/Member/FunctionHintNode.h"
 #include "SympleCode/Common/Node/Member/ExternFunctionNode.h"
 
+#include "SympleCode/Common/Node/Expression/NullLiteralExpressionNode.h"
 #include "SympleCode/Common/Node/Expression/ParenthesizedExpressionNode.h"
 #include "SympleCode/Common/Node/Expression/NumberLiteralExpressionNode.h"
 #include "SympleCode/Common/Node/Expression/BooleanLiteralExpressionNode.h"
@@ -196,6 +197,12 @@ namespace Symple
 		return left;
 	}
 
+	char* Emitter::Or(char* right, char* left, int size)
+	{
+		Write("\tor%c     %s, %s", Rep(size), right, left);
+		return left;
+	}
+
 	char* Emitter::Xor(char* right, char* left, int size)
 	{
 		Write("\txor%c    %s, %s", Rep(size), right, left);
@@ -277,10 +284,10 @@ namespace Symple
 		mStackPos = 0;
 
 		std::string name(declaration->GetName()->GetLex());
-		if (name[0] != '$')
-			Write(".global _%s", name.c_str());
+		if (!declaration->GetModifiers()->IsStatic())
+			Write(".global %s", declaration->GetAsmName().c_str());
 
-		Write("_%s:", name.c_str());
+		Write("%s:", declaration->GetAsmName().c_str());
 		Write("\tpush%c   %s", Rep(), RegBp);
 		Move(RegSp, RegBp);
 
@@ -478,20 +485,19 @@ namespace Symple
 		switch (expression->GetOperator()->GetKind())
 		{
 		case Token::Kind::Plus:
-			Add(Pop(RegDx()), RegAx());
-			return RegAx();
+			return Add(Pop(RegDx()), RegAx());
 		case Token::Kind::Minus:
-			Sub(Pop(RegDx()), RegAx());
-			return RegAx();
+			return Sub(Pop(RegDx()), RegAx());
 		case Token::Kind::Asterisk:
-			Mul(Pop(RegDx()), RegAx());
-			return RegAx();
+			return Mul(Pop(RegDx()), RegAx());
 		case Token::Kind::Slash:
-			Div(RegAx());
-			return RegAx();
+			return Div(RegAx());
 		case Token::Kind::Percentage:
-			Mod(RegAx());
-			return RegAx();
+			return Mod(RegAx());
+
+		case Token::Kind::Pipe:
+		case Token::Kind::PipePipe:
+			return Or(Pop(RegDx()), RegAx());
 
 		case Token::Kind::EqualEqual:
 		case Token::Kind::LeftArrow:
@@ -512,6 +518,8 @@ namespace Symple
 
 	char* Emitter::EmitLiteralExpression(const LiteralExpressionNode* expression)
 	{
+		if (expression->Is<NullLiteralExpressionNode>())
+			return "$0";
 		if (expression->Is<NumberLiteralExpressionNode>())
 			return Format("$%s", std::string(expression->GetLiteral()->GetLex()).c_str());
 		if (expression->Is<BooleanLiteralExpressionNode>())
@@ -540,7 +548,7 @@ namespace Symple
 
 	char* Emitter::EmitFunctionCallExpression(const FunctionCallExpressionNode* call)
 	{
-		const FunctionDeclarationNode* function = mDiagnostics->GetFunction(call->GetName()->GetLex());
+		const FunctionDeclarationNode* function = mDiagnostics->GetFunction(call);
 		if (!function)
 		{
 			mDiagnostics->ReportError(call->GetName(), "Function does not Exist");
@@ -552,7 +560,7 @@ namespace Symple
 		for (int i = call->GetArguments()->GetArguments().size() - 1; i >= 0; i--)
 			Write("\tpush%c   %s", Rep(), EmitExpression(call->GetArguments()->GetArguments()[i]));
 
-		Write("\tcall%c   _%s", Rep(), std::string(call->GetName()->GetLex()).c_str());
+		Write("\tcall%c   %s", Rep(), function->GetAsmName().c_str());
 		Write("\tadd%c    $%i, %s", Rep(), pushedSize, RegSp);
 
 		return RegAx();

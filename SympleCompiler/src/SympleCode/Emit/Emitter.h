@@ -69,6 +69,7 @@ namespace Symple
 		char* Div(char* left = RegAx());
 		char* Mod(char* left = RegAx());
 
+		char* Or(char* right = RegDx(), char* left = RegDx(), int size = 4);
 		char* Xor(char* right = RegDx(), char* left = RegDx(), int size = 4);
 		char* Neg(char* val = RegAx());
 

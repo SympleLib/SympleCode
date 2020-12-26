@@ -1,1 +1,1 @@
-extern void assert(bool expr);
+extern void assert(bool expr) ccall;

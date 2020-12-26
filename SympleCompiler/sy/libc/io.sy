@@ -1,5 +1,4 @@
 #define file ptr
-#define null 0
 
 #define stdin  __acrt_iob_func(0)
 #define stdout __acrt_iob_func(1)
@@ -11,27 +10,27 @@
 
 #define EOF -1
 
-extern int printf(string fmt);
-extern int puts(string str);
-extern int putchar(char c);
+extern int printf(string fmt) ccall;
+extern int puts(string str) ccall;
+extern int putchar(char c) ccall;
 
-extern file fopen(string path, string mode);
-extern file freopen(string path, string mode, file stream);
-extern int fclose(file stream);
+extern file fopen(string path, string mode) ccall;
+extern file freopen(string path, string mode, file stream) ccall;
+extern int fclose(file stream) ccall;
 
-extern int fprintf(file stream, string fmt);
-extern int fputs(string str, file stream);
-extern int putc(char c, file stream);
-extern int fflush(file stream);
+extern int fprintf(file stream, string fmt) ccall;
+extern int fputs(string str, file stream) ccall;
+extern int putc(char c, file stream) ccall;
+extern int fflush(file stream) ccall;
 
-extern int fgets(ptr buff, int max, file stream);
+extern int fgets(ptr buff, int max, file stream) ccall;
 
-extern int fread(ptr buff, int elementSize, int count, file stream);
-extern int fwrite(ptr buff, int elementSize, int count, file stream);
+extern int fread(ptr buff, int elementSize, int count, file stream) ccall;
+extern int fwrite(ptr buff, int elementSize, int count, file stream) ccall;
 
-extern int fseek(file stream, int offset, int origin);
-extern int ftell(file stream);
+extern int fseek(file stream, int offset, int origin) ccall;
+extern int ftell(file stream) ccall;
 
-extern int remove(string name);
-extern int rename(string old, string new);
-extern void rewind(file stream);
+extern int remove(string name) ccall;
+extern int rename(string old, string new) ccall;
+extern void rewind(file stream) ccall;

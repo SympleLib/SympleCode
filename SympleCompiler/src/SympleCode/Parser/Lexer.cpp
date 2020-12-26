@@ -61,6 +61,8 @@ namespace Symple
 			return Atom(Token::Kind::Period);
 		case '@':
 			return Atom(Token::Kind::At);
+		case '|':
+			return Equal();
 		case '#':
 			return Preprocess();
 		case '"':
@@ -132,6 +134,8 @@ namespace Symple
 		std::string_view identifier(beg, std::distance(beg, mCurrent));
 		if (identifier == "hint")
 			return new Token(Token::Kind::Hint, beg, mCurrent, mLine, bColumn);
+		if (identifier == "null")
+			return new Token(Token::Kind::Null, beg, mCurrent, mLine, bColumn);
 		if (identifier == "true")
 			return new Token(Token::Kind::True, beg, mCurrent, mLine, bColumn);
 		if (identifier == "false")
@@ -144,11 +148,20 @@ namespace Symple
 			return new Token(Token::Kind::While, beg, mCurrent, mLine, bColumn);
 		if (identifier == "extern")
 			return new Token(Token::Kind::Extern, beg, mCurrent, mLine, bColumn);
+		if (identifier == "static")
+			return new Token(Token::Kind::Static, beg, mCurrent, mLine, bColumn);
 
 		if (identifier == "if")
 			return new Token(Token::Kind::If, beg, mCurrent, mLine, bColumn);
 		if (identifier == "else")
 			return new Token(Token::Kind::Else, beg, mCurrent, mLine, bColumn);
+
+		if (identifier == "symplecall")
+			return new Token(Token::Kind::SympleCall, beg, mCurrent, mLine, bColumn);
+		if (identifier == "stdcall")
+			return new Token(Token::Kind::StdCall, beg, mCurrent, mLine, bColumn);
+		if (identifier == "ccall")
+			return new Token(Token::Kind::CCall, beg, mCurrent, mLine, bColumn);
 		return new Token(Token::Kind::Identifier, beg, mCurrent, mLine, bColumn);
 	}
 
@@ -273,6 +286,8 @@ namespace Symple
 				return new Token(Token::Kind::LeftArrowEqual, beg, mCurrent, bLine, bColumn);
 			case '>':
 				return new Token(Token::Kind::RightArrowEqual, beg, mCurrent, bLine, bColumn);
+			case '|':
+				return new Token(Token::Kind::PipeEqual, beg, mCurrent, bLine, bColumn);
 			}
 		}
 		if (Peek() == *beg)
@@ -288,6 +303,8 @@ namespace Symple
 				return new Token(Token::Kind::LeftArrowArrow, beg, mCurrent, bLine, bColumn);
 			case '>':
 				return new Token(Token::Kind::RightArrowArrow, beg, mCurrent, bLine, bColumn);
+			case '|':
+				return new Token(Token::Kind::PipePipe, beg, mCurrent, bLine, bColumn);
 			}
 		}
 
@@ -311,6 +328,8 @@ namespace Symple
 			return new Token(Token::Kind::LeftArrowEqual, beg, mCurrent, bLine, bColumn);
 		case '>':
 			return new Token(Token::Kind::RightArrowEqual, beg, mCurrent, bLine, bColumn);
+		case '|':
+			return new Token(Token::Kind::Pipe, beg, mCurrent, bLine, bColumn);
 		}
 
 		return new Token(Token::Kind::Unknown, beg, mCurrent, bLine, bColumn);

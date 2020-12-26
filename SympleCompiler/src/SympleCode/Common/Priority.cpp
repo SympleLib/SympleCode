@@ -33,6 +33,8 @@ namespace Symple
 			return 0;
 		case Token::Kind::LeftArrowArrow:
 		case Token::Kind::RightArrowArrow:
+		case Token::Kind::Pipe:
+		case Token::Kind::PipePipe:
 			return 1;
 		case Token::Kind::Plus:
 		case Token::Kind::Minus:
