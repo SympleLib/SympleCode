@@ -1,18 +1,4 @@
-#include "windows/windows.sy"
-
 int main()
 {
-	MessageBoxA(null, "Just Kidding :)", "Fatal Error: 0xC0000374", MB_ABORTRETRYIGNORE | MB_ICONERROR);
-	
-	0;
+	42;
 };
-
-void Func()
-{
-	
-}
-
-void Func(int num)
-{
-	
-}

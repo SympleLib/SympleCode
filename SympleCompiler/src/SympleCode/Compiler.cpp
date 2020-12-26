@@ -99,7 +99,7 @@ namespace Symple
 				if (!diagnostics->GetErrors().size())
 				{
 					char command[128];
-					sprintf_s(command, "clang -c %s -o %s", asmS, obj);
+					sprintf_s(command, "as -c %s -o %s", asmS, obj);
 					int compileStatis = system(command);
 
 					mObjectFiles.push_back(objStr);
@@ -125,7 +125,7 @@ namespace Symple
 		mOutput = output;
 		
 		std::stringstream ss;
-		ss << "clang -o " << output << " --optimize=3";
+		ss << "clang -o " << output << " -o3";
 		for (const std::string& objFile : mObjectFiles)
 			ss << ' ' << objFile;
 		for (const char* library : libraries)
