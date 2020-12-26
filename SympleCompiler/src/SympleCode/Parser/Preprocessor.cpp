@@ -81,5 +81,10 @@ namespace Symple
 
 			mDefines.insert({ replace, with });
 		}
+		else if (rcmd->GetLex() == "lib")
+		{
+			extern std::vector<const char*> sLibraries;
+			sLibraries.push_back((new std::string(prepoLexer.Next()->GetLex()))->c_str());
+		}
 	}
 }

@@ -1,3 +1,5 @@
+#lib "user32.lib"
+
 #define Window ptr
 #define null 0
 

@@ -1,4 +1,9 @@
+#include "libc/io.sy"
+
 int main()
 {
-	42;
+	puts("lol\n");
+	puts("I am cool\n");
+
+	0;
 };

@@ -125,7 +125,7 @@ namespace Symple
 		mOutput = output;
 		
 		std::stringstream ss;
-		ss << "clang -o " << output << " -o3";
+		ss << "clang -o " << output << " --optimize=3";
 		for (const std::string& objFile : mObjectFiles)
 			ss << ' ' << objFile;
 		for (const char* library : libraries)

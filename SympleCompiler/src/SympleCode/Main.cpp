@@ -7,6 +7,8 @@ static void FindFiles(const std::string& dir);
 
 static std::vector<std::string> sPaths;
 
+std::vector<const char*> sLibraries;
+
 int main(unsigned int argc, const char* argv[])
 {
 	SetConsoleTitleA("SympleCode Compiler - Treidex");
@@ -23,7 +25,7 @@ int main(unsigned int argc, const char* argv[])
 
 	if (compiledGood)
 	{
-		compiler.Link("sy\\Main.exe");
+		compiler.Link("sy\\Main.exe", sLibraries);
 		compiler.Run();
 	}
 	
