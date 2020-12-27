@@ -1,4 +1,8 @@
+#include "libc/io.sy"
+
 int main()
 {
-	0;
+	puts("Hello, world!");
+
+	return 0;
 };
