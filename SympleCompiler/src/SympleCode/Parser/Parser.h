@@ -71,7 +71,7 @@ namespace Symple
 		BlockStatementNode* ParseBlockStatement();
 		ReturnStatementNode* ParseReturnStatement();
 		GlobalStatementNode* ParseGlobalStatement();
-		VariableDeclarationNode* ParseVariableDeclaration();
+		VariableDeclarationNode* ParseVariableDeclaration(const Type* type = nullptr);
 	
 		ExpressionNode* ParseExpression();
 

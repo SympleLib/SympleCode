@@ -303,9 +303,10 @@ namespace Symple
 		return new GlobalStatementNode(ParseStatement());
 	}
 
-	VariableDeclarationNode* Parser::ParseVariableDeclaration()
+	VariableDeclarationNode* Parser::ParseVariableDeclaration(const Type* type)
 	{
-		const Type* type = GetType(Next());
+		if (!type)
+			type = GetType(Next());
 		const Token* name = Next();
 		VariableDeclarationNode* declaration = nullptr;
 		if (Peek()->Is(Token::Kind::Equal))
