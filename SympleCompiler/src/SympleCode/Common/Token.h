@@ -81,6 +81,8 @@ namespace Symple
 			StdCall,
 			CCall,
 
+			Mutable,
+
 			Comment,
 			Preprocess,
 
@@ -104,6 +106,7 @@ namespace Symple
 			"Hint", "Return", "Extern", "Static",
 			"If", "Else",
 			"SympleCall", "StdCall", "CCall",
+			"Mutable",
 			"Comment", "Preprocess",
 		};
 

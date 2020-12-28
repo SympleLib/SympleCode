@@ -164,6 +164,9 @@ namespace Symple
 			return new Token(Token::Kind::StdCall, beg, mCurrent, mLine, bColumn);
 		if (identifier == "ccall")
 			return new Token(Token::Kind::CCall, beg, mCurrent, mLine, bColumn);
+
+		if (identifier == "mut" || identifier == "mutable")
+			return new Token(Token::Kind::Mutable, beg, mCurrent, mLine, bColumn);
 		return new Token(Token::Kind::Identifier, beg, mCurrent, mLine, bColumn);
 	}
 

@@ -55,6 +55,9 @@ namespace Symple
 			FunctionArguments,
 			FunctionModifiers,
 			FunctionCallArguments,
+
+			VariableModifier,
+			VariableModifiers,
 		};
 
 		static constexpr const char* KindMap[] = {
@@ -70,6 +73,7 @@ namespace Symple
 			"WhileStatement", "GlobalStatement", "ReturnStatement", "VariableDeclaration", "ExpressionStatement",
 			"FunctionNode", "FunctionHint", "ExternFunction",  "FunctionModifier",
 			"FunctionArgument", "FunctionArguments", "FunctionModifiers", "FunctionCallArguments",
+			"VariableModifier", "VariableModifiers",
 		};
 
 		static constexpr const char* KindString(Kind kind)

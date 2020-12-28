@@ -28,7 +28,7 @@ namespace Symple
 			std::stringstream postfix;
 
 			if (mModifiers->GetFormatType())
-				switch (mModifiers->GetFormatType()->GetKind())
+				switch (mModifiers->GetFormatType()->GetModifier()->GetKind())
 				{
 				case Token::Kind::StdCall:
 					postfix << '@' << mArguments->GetSize();

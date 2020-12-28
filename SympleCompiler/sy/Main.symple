@@ -2,7 +2,15 @@
 
 int main()
 {
-	puts("Hello, world!");
+	int test mut = 420;
+	puti(test);
+	test = 69;
+	puti(test);
 
-	return 0;
+	0;
+};
+
+void puti(int num) ccall static
+{
+	printf("%i\n", num);
 };

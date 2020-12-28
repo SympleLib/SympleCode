@@ -8,8 +8,6 @@
 #include "SympleCode/Common/Node/Node.h"
 #include "SympleCode/Common/Node/CompilationUnitNode.h"
 
-#include "SympleCode/Common/Node/Function/FunctionCallArgumentsNode.h"
-
 #include "SympleCode/Common/Node/Statement/IfStatementNode.h"
 #include "SympleCode/Common/Node/Statement/BlockStatementNode.h"
 #include "SympleCode/Common/Node/Statement/WhileStatementNode.h"
@@ -74,7 +72,10 @@ namespace Symple
 		BlockStatementNode* ParseBlockStatement();
 		ReturnStatementNode* ParseReturnStatement();
 		GlobalStatementNode* ParseGlobalStatement();
+		std::vector<VariableDeclarationNode*> ParseVariableDeclarations();
 		VariableDeclarationNode* ParseVariableDeclaration(const Type* type = nullptr);
+		VariableModifiersNode* ParseVariableModifiers();
+		VariableModifierNode* ParseVariableModifier();
 	
 		ExpressionNode* ParseExpression();
 

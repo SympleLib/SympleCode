@@ -11,8 +11,8 @@ namespace Symple
 	{
 	private:
 	public:
-		FunctionArgumentNode(const Type* type, const Token* name)
-			: VariableDeclarationNode(name, type, nullptr) {}
+		FunctionArgumentNode(const Type* type, const Token* name, const VariableModifiersNode* modifiers)
+			: VariableDeclarationNode(name, type, modifiers, nullptr, nullptr) {}
 
 		Kind GetKind() const override
 		{

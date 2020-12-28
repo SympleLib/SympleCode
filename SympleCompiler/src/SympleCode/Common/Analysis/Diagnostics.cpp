@@ -56,7 +56,7 @@ namespace Symple
 			if (function.first == name)
 			{
 				if (function.second->GetModifiers()->GetFormatType())
-					switch (function.second->GetModifiers()->GetFormatType()->GetKind())
+					switch (function.second->GetModifiers()->GetFormatType()->GetModifier()->GetKind())
 					{
 					case Token::Kind::SympleCall:
 						goto SympleCall;

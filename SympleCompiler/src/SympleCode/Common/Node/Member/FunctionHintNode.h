@@ -28,6 +28,7 @@ namespace Symple
 			if (!last)
 				newIndent = "|\t";
 			ss << '\n' << mArguments->ToString(indent + newIndent);
+			ss << '\n' << mModifiers->ToString(indent + newIndent, false);
 
 			return ss.str();
 		}

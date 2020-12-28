@@ -172,7 +172,7 @@ namespace Symple
 		const Type* type = GetType(Next());
 		const Token* name = Next();
 
-		FunctionArgumentNode* argument = new FunctionArgumentNode(type, name);
+		FunctionArgumentNode* argument = new FunctionArgumentNode(type, name, ParseVariableModifiers());
 
 		mDeclaredVariables.insert({ std::string(name->GetLex()), argument });
 		return argument;
@@ -312,23 +312,58 @@ namespace Symple
 		if (!type)
 			type = GetType(Next());
 		const Token* name = Next();
+
+		VariableModifiersNode* modifiers = ParseVariableModifiers();
+
 		VariableDeclarationNode* declaration = nullptr;
 		if (Peek()->Is(Token::Kind::Equal))
 		{
 			Next();
 			ExpressionNode* expression = ParseExpression();
+
+			VariableDeclarationNode* next = nullptr;
+
+			if (Peek()->Is(Token::Kind::Comma))
+			{
+				Next();
+				next = ParseVariableDeclaration(type);
+			}
+			
 			Match(Token::Kind::Semicolon);
 
-			declaration = new VariableDeclarationNode(name, type, expression);
+			declaration = new VariableDeclarationNode(name, type, modifiers, expression, next);
 			mDeclaredVariables.insert({ std::string(name->GetLex()), declaration });
 			return declaration;
 		}
 
+		VariableDeclarationNode* next = nullptr;
+
+		if (Peek()->Is(Token::Kind::Comma))
+		{
+			Next();
+			next = ParseVariableDeclaration(type);
+		}
+
 		Match(Token::Kind::Semicolon);
 
-		declaration =  new VariableDeclarationNode(name, type, new ExpressionNode);
+		declaration =  new VariableDeclarationNode(name, type, modifiers, nullptr, next);
 		mDeclaredVariables.insert({ std::string(name->GetLex()), declaration });
 		return declaration;
+	}
+
+	VariableModifiersNode* Parser::ParseVariableModifiers()
+	{
+		std::vector<const VariableModifierNode*> modifiers;
+
+		while (!Peek()->IsEither({ Token::Kind::Equal, Token::Kind::Comma, Token::Kind::Semicolon, Token::Kind::CloseParenthesis }))
+			modifiers.push_back(ParseVariableModifier());
+
+		return new VariableModifiersNode(modifiers);
+	}
+
+	VariableModifierNode* Parser::ParseVariableModifier()
+	{
+		return new VariableModifierNode(Next());
 	}
 
 	ExpressionNode* Parser::ParseExpression()

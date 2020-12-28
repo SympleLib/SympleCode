@@ -2,10 +2,11 @@
 
 #include "SympleCode/Common/Token.h"
 #include "SympleCode/Common/Node/Expression/ModifiableExpressionNode.h"
+#include "SympleCode/Common/Node/Variable/Variable.h"
 
 namespace Symple
 {
-	class VariableExpressionNode : public ModifiableExpressionNode
+	class VariableExpressionNode : public ModifiableExpressionNode, public Variable
 	{
 	private:
 		const Token* mName;

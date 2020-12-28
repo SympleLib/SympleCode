@@ -621,6 +621,12 @@ namespace Symple
 			mDiagnostics->ReportError(expression->GetName(), "'%s' is not a Variable", name.c_str());
 			return { RegErr, 0 };
 		}
+		
+		if (!mDeclaredVariables[name]->GetModifiers()->IsMutable())
+		{
+			mDiagnostics->ReportError(expression->GetName(), "'%s' is not Mutable", name.c_str());
+			return { RegErr, 0 };
+		}
 
 		int size = mDeclaredVariables[name]->GetType()->GetSize();
 		Lea(Format("_%s$(%s)", name.c_str(), RegBp), RegAx());
