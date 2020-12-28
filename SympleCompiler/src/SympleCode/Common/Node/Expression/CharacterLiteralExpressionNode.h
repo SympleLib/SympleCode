@@ -1,6 +1,6 @@
 #pragma once
 
-#include "SympleCode/Common/Node/Expression/LiteralExpressionNode.h"
+#include "SympleCode/Common/Node/Expression/Literal/LiteralExpressionNode.h"
 
 namespace Symple
 {

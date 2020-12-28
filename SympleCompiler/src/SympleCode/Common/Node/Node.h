@@ -47,6 +47,7 @@ namespace Symple
 			VariableDeclaration,
 			ExpressionStatement,
 
+			FunctionNode,
 			FunctionHint,
 			ExternFunction,
 			FunctionArgument,
@@ -66,6 +67,7 @@ namespace Symple
 			"Member", "CompilationUnit", "FunctionDeclaration",
 			"Statement", "IfStatement", "BlockStatement", "BreakStatement",
 			"WhileStatement", "GlobalStatement", "ReturnStatement", "VariableDeclaration", "ExpressionStatement",
+			"FunctionNode",
 			"FunctionHint", "ExternFunction", "FunctionArgument", "FunctionArguments", "FunctionModifiers", "FunctionCallArguments",
 		};
 

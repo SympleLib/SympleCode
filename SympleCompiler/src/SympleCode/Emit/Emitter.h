@@ -17,14 +17,16 @@
 #include "SympleCode/Common/Node/Statement/ReturnStatementNode.h"
 #include "SympleCode/Common/Node/Statement/ExpressionStatementNode.h"
 
-#include "SympleCode/Common/Node/Expression/UnaryExpressionNode.h"
-#include "SympleCode/Common/Node/Expression/BinaryExpressionNode.h"
-#include "SympleCode/Common/Node/Expression/LiteralExpressionNode.h"
+#include "SympleCode/Common/Node/Expression/Operator/UnaryExpressionNode.h"
+#include "SympleCode/Common/Node/Expression/Operator/BinaryExpressionNode.h"
+#include "SympleCode/Common/Node/Expression/Operator/AssignmentExpressionNode.h"
+
+#include "SympleCode/Common/Node/Expression/Literal/LiteralExpressionNode.h"
+#include "SympleCode/Common/Node/Expression/Literal/StringLiteralExpressionNode.h"
+
 #include "SympleCode/Common/Node/Expression/VariableExpressionNode.h"
-#include "SympleCode/Common/Node/Expression/AssignmentExpressionNode.h"
 #include "SympleCode/Common/Node/Expression/FunctionCallExpressionNode.h"
 #include "SympleCode/Common/Node/Expression/PointerIndexExpressionNode.h"
-#include "SympleCode/Common/Node/Expression/StringLiteralExpressionNode.h"
 
 namespace Symple
 {

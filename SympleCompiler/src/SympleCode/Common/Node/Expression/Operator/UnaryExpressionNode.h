@@ -1,7 +1,7 @@
 #pragma once
 
 #include "SympleCode/Common/Token.h"
-#include "SympleCode/Common/Node/Expression/OperatorExpressionNode.h"
+#include "SympleCode/Common/Node/Expression/Operator/OperatorExpressionNode.h"
 
 namespace Symple
 {

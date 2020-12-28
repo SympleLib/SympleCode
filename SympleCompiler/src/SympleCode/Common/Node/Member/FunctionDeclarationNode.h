@@ -3,13 +3,13 @@
 #include "SympleCode/Common/Analysis/Type.h"
 
 #include "SympleCode/Common/Node/Member/MemberNode.h"
-#include "SympleCode/Common/Node/FunctionArgumentsNode.h"
-#include "SympleCode/Common/Node/FunctionModifiersNode.h"
+#include "SympleCode/Common/Node/Function/FunctionArgumentsNode.h"
+#include "SympleCode/Common/Node/Function/FunctionModifiersNode.h"
 #include "SympleCode/Common/Node/Statement/BlockStatementNode.h"
 
 namespace Symple
 {
-	class FunctionDeclarationNode : public MemberNode
+	class FunctionDeclarationNode : public MemberNode, public Function
 	{
 	protected:
 		const Type* mType;

@@ -6,15 +6,17 @@
 #include "SympleCode/Common/Node/Statement/BreakStatementNode.h"
 #include "SympleCode/Common/Node/Statement/ExpressionStatementNode.h"
 
-#include "SympleCode/Common/Node/Expression/UnaryExpressionNode.h"
-#include "SympleCode/Common/Node/Expression/BinaryExpressionNode.h"
-#include "SympleCode/Common/Node/Expression/NullLiteralExpressionNode.h"
+#include "SympleCode/Common/Node/Expression/Operator/UnaryExpressionNode.h"
+#include "SympleCode/Common/Node/Expression/Operator/BinaryExpressionNode.h"
+#include "SympleCode/Common/Node/Expression/Operator/AssignmentExpressionNode.h"
+
+#include "SympleCode/Common/Node/Expression/Literal/NullLiteralExpressionNode.h"
+#include "SympleCode/Common/Node/Expression/Literal/StringLiteralExpressionNode.h"
+#include "SympleCode/Common/Node/Expression/Literal/NumberLiteralExpressionNode.h"
+#include "SympleCode/Common/Node/Expression/Literal/BooleanLiteralExpressionNode.h"
+
 #include "SympleCode/Common/Node/Expression/VariableExpressionNode.h"
-#include "SympleCode/Common/Node/Expression/AssignmentExpressionNode.h"
 #include "SympleCode/Common/Node/Expression/PointerIndexExpressionNode.h"
-#include "SympleCode/Common/Node/Expression/StringLiteralExpressionNode.h"
-#include "SympleCode/Common/Node/Expression/NumberLiteralExpressionNode.h"
-#include "SympleCode/Common/Node/Expression/BooleanLiteralExpressionNode.h"
 #include "SympleCode/Common/Node/Expression/CharacterLiteralExpressionNode.h"
 
 #include "SympleCode/Common/Priority.h"

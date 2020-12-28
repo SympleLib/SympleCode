@@ -2,11 +2,12 @@
 
 #include <vector>
 
+#include "SympleCode/Common/Node/Function/Function.h"
 #include "SympleCode/Common/Node/Expression/ExpressionNode.h"
 
 namespace Symple
 {
-	class FunctionCallArgumentsNode : public Node
+	class FunctionCallArgumentsNode : public Node, public Function
 	{
 	private:
 		const Token* mOpen;

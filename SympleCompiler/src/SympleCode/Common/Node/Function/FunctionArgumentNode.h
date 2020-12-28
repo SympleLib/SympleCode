@@ -2,11 +2,12 @@
 
 #include "SympleCode/Common/Analysis/Type.h"
 #include "SympleCode/Common/Token.h"
+#include "SympleCode/Common/Node/Function/Function.h"
 #include "SympleCode/Common/Node/Statement/VariableDeclarationNode.h"
 
 namespace Symple
 {
-	class FunctionArgumentNode : public VariableDeclarationNode
+	class FunctionArgumentNode : public VariableDeclarationNode, public Function
 	{
 	private:
 	public:

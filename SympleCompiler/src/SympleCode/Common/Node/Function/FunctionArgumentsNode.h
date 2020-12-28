@@ -2,11 +2,11 @@
 
 #include "SympleCode/Common/Analysis/Type.h"
 #include "SympleCode/Common/Token.h"
-#include "SympleCode/Common/Node/FunctionArgumentNode.h"
+#include "SympleCode/Common/Node/Function/FunctionArgumentNode.h"
 
 namespace Symple
 {
-	class FunctionArgumentsNode : public Node
+	class FunctionArgumentsNode : public Node, public Function
 	{
 	private:
 		const Token* mOpen;

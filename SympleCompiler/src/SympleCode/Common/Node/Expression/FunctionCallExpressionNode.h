@@ -2,11 +2,11 @@
 
 #include "SympleCode/Common/Token.h"
 #include "SympleCode/Common/Node/Expression/ExpressionNode.h"
-#include "SympleCode/Common/Node/FunctionCallArgumentsNode.h"
+#include "SympleCode/Common/Node/Function/FunctionCallArgumentsNode.h"
 
 namespace Symple
 {
-	class FunctionCallExpressionNode : public ExpressionNode
+	class FunctionCallExpressionNode : public ExpressionNode, public Function
 	{
 	private:
 		const Token* mName;

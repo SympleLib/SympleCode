@@ -3,10 +3,11 @@
 #include "SympleCode/Common/Analysis/Type.h"
 #include "SympleCode/Common/Token.h"
 #include "SympleCode/Common/Node/Node.h"
+#include "SympleCode/Common/Node/Function/Function.h"
 
 namespace Symple
 {
-	class FunctionModifiersNode : public Node
+	class FunctionModifiersNode : public Node, public Function
 	{
 	private:
 		const std::vector<const Token*> mModifiers;

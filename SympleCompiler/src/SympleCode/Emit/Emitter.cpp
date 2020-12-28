@@ -8,10 +8,11 @@
 #include "SympleCode/Common/Node/Member/FunctionHintNode.h"
 #include "SympleCode/Common/Node/Member/ExternFunctionNode.h"
 
-#include "SympleCode/Common/Node/Expression/NullLiteralExpressionNode.h"
+#include "SympleCode/Common/Node/Expression/Literal/NullLiteralExpressionNode.h"
+#include "SympleCode/Common/Node/Expression/Literal/NumberLiteralExpressionNode.h"
+#include "SympleCode/Common/Node/Expression/Literal/BooleanLiteralExpressionNode.h"
+
 #include "SympleCode/Common/Node/Expression/ParenthesizedExpressionNode.h"
-#include "SympleCode/Common/Node/Expression/NumberLiteralExpressionNode.h"
-#include "SympleCode/Common/Node/Expression/BooleanLiteralExpressionNode.h"
 #include "SympleCode/Common/Node/Expression/CharacterLiteralExpressionNode.h"
 
 #define Write(fmt, ...) ((void)fprintf_s(mFile, fmt "\n", __VA_ARGS__))
