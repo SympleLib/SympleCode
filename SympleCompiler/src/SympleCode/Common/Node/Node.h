@@ -50,6 +50,7 @@ namespace Symple
 			FunctionNode,
 			FunctionHint,
 			ExternFunction,
+			FunctionModifier,
 			FunctionArgument,
 			FunctionArguments,
 			FunctionModifiers,
@@ -67,8 +68,8 @@ namespace Symple
 			"Member", "CompilationUnit", "FunctionDeclaration",
 			"Statement", "IfStatement", "BlockStatement", "BreakStatement",
 			"WhileStatement", "GlobalStatement", "ReturnStatement", "VariableDeclaration", "ExpressionStatement",
-			"FunctionNode",
-			"FunctionHint", "ExternFunction", "FunctionArgument", "FunctionArguments", "FunctionModifiers", "FunctionCallArguments",
+			"FunctionNode", "FunctionHint", "ExternFunction",  "FunctionModifier",
+			"FunctionArgument", "FunctionArguments", "FunctionModifiers", "FunctionCallArguments",
 		};
 
 		static constexpr const char* KindString(Kind kind)

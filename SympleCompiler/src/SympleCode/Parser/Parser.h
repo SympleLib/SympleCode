@@ -63,6 +63,7 @@ namespace Symple
 		FunctionDeclarationNode* ParseFunctionDeclaration();
 		FunctionArgumentsNode* ParseFunctionArguments();
 		FunctionModifiersNode* ParseFunctionModifiers();
+		FunctionModifierNode* ParseFunctionModifier();
 		FunctionArgumentNode* ParseFunctionArgument();
 		ExternFunctionNode* ParseExternFunction();
 		FunctionHintNode* ParseFunctionHint();

@@ -155,14 +155,16 @@ namespace Symple
 
 	FunctionModifiersNode* Parser::ParseFunctionModifiers()
 	{
-		std::vector<const Token*> modifiers;
+		std::vector<const FunctionModifierNode*> modifiers;
 		while (!Peek()->IsEither({ Token::Kind::OpenBrace, Token::Kind::Semicolon }))
-		{
-			const Token* modifier = Next();
-			modifiers.push_back(modifier);
-		}
+			modifiers.push_back(ParseFunctionModifier());
 
 		return new FunctionModifiersNode(modifiers);
+	}
+
+	FunctionModifierNode* Parser::ParseFunctionModifier()
+	{
+		return new FunctionModifierNode(Next());
 	}
 
 	FunctionArgumentNode* Parser::ParseFunctionArgument()

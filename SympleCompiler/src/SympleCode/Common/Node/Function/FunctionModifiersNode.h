@@ -3,33 +3,26 @@
 #include "SympleCode/Common/Analysis/Type.h"
 #include "SympleCode/Common/Token.h"
 #include "SympleCode/Common/Node/Node.h"
-#include "SympleCode/Common/Node/Function/Function.h"
+#include "SympleCode/Common/Node/Function/FunctionModifierNode.h"
 
 namespace Symple
 {
 	class FunctionModifiersNode : public Node, public Function
 	{
 	private:
-		const std::vector<const Token*> mModifiers;
-		const Token* mFormatType;
-		bool mIsStatic;
+		const std::vector<const FunctionModifierNode*> mModifiers;
+		const FunctionModifierNode* mFormatType;
+		bool mStatic;
 	public:
-		FunctionModifiersNode(const std::vector<const Token*>& modifiers)
-			: mModifiers(modifiers), mFormatType(nullptr), mIsStatic(false)
+		FunctionModifiersNode(const std::vector<const FunctionModifierNode*>& modifiers)
+			: mModifiers(modifiers), mFormatType(), mStatic()
 		{
-			for (const Token* modifier : mModifiers)
+			for (const FunctionModifierNode* modifier : mModifiers)
 			{
-				switch (modifier->GetKind())
-				{
-				case Token::Kind::SympleCall:
-				case Token::Kind::StdCall:
-				case Token::Kind::CCall:
+				mStatic |= modifier->IsStatic();
+
+				if (modifier->IsFormat())
 					mFormatType = modifier;
-					break;
-				case Token::Kind::Static:
-					mIsStatic = true;
-					break;
-				}
 			}
 		}
 
@@ -50,25 +43,25 @@ namespace Symple
 			const char* newIndent = " \t";
 			if (!last)
 				newIndent = "|\t";
-			for (const Token* modifier : mModifiers)
-				ss << '\n' << indent + newIndent << (modifier == mModifiers.back() ? "L--\t" : "|--\t") << modifier->GetLex();
+			for (const FunctionModifierNode* modifier : mModifiers)
+				ss << '\n' << modifier->ToString(indent + newIndent, modifier == mModifiers.back());
 
 			return ss.str();
 		}
 
-		const std::vector<const Token*>& GetModifiers() const
+		const std::vector<const FunctionModifierNode*>& GetModifiers() const
 		{
 			return mModifiers;
 		}
 
-		const Token* GetFormatType() const
+		const FunctionModifierNode* GetFormatType() const
 		{
 			return mFormatType;
 		}
 
 		bool IsStatic() const
 		{
-			return mIsStatic;
+			return mStatic;
 		}
 	};
 }
