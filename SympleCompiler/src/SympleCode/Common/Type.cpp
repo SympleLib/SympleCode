@@ -1,4 +1,4 @@
-#include "SympleCode/Common/Analysis/Type.h"
+#include "SympleCode/Common/Type.h"
 
 namespace Symple
 {

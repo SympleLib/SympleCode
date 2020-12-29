@@ -30,7 +30,7 @@ namespace Symple
 				ss << "L--\t";
 			else
 				ss << "|--\t";
-			ss << "Function Modifier [" << mModifier << "]";
+			ss << "Function Modifier [" << mModifier->GetLex() << "]";
 
 			return ss.str();
 		}

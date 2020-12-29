@@ -436,7 +436,10 @@ namespace Symple
 		if (declaration->GetInitializer()->GetKind() != Node::Kind::Expression)
 			Move(Cast(EmitExpression(declaration->GetInitializer()), 4, true, size), Format("_%s$(%s)", name.c_str(), RegBp), size);
 
-		return Format("_%s$(%s)", name.c_str(), RegBp);
+		if (declaration->GetNext())
+			return EmitVariableDeclaration(declaration->GetNext());
+
+		return nullptr;
 	}
 
 	char* Emitter::EmitExpression(const ExpressionNode* expression)
