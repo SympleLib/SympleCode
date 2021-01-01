@@ -1,6 +1,6 @@
 #pragma once
 
-#include "SympleCode/Common/Analysis/Type.h"
+#include "SympleCode/Common/Type.h"
 
 #include "SympleCode/Common/Node/Member/MemberNode.h"
 #include "SympleCode/Common/Node/Function/FunctionArgumentsNode.h"

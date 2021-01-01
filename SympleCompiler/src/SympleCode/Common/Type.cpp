@@ -17,6 +17,6 @@ namespace Symple
 		new Type("string", 4),
 		new Type("wstring", 4),
 
-		new Type("error-type", 0), // Error Type
+		new Type("error-type", -1), // Error Type
 	};
 }

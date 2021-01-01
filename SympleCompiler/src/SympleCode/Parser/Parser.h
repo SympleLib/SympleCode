@@ -26,7 +26,7 @@
 
 #include "SympleCode/Common/Node/Expression/Literal/LiteralExpressionNode.h"
 
-#include "SympleCode/Common/Analysis/Type.h"
+#include "SympleCode/Common/Type.h"
 #include "SympleCode/Common/Analysis/Diagnostics.h"
 
 namespace Symple

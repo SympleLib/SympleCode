@@ -1,4 +1,4 @@
-extern ptr memchr(ptr buff, byte block, int size) ccall;
+extern ptr memchr(void buff, byte block, int size) ccall;
 extern int memcmp(ptr left, ptr right, int size) ccall;
 extern ptr memcpy(ptr dest, ptr source, int size) ccall;
 extern ptr memmove(ptr dest, ptr source, int size) ccall;
