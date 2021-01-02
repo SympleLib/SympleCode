@@ -2,7 +2,7 @@
 
 int main()
 {
-	int test mut = 420;
+	int test = 420;
 	puti(test);
 	test = 69;
 	puti(test);

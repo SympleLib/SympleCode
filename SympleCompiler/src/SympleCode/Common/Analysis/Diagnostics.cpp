@@ -117,7 +117,7 @@ namespace Symple
 
 	const VariableDeclarationNode* Diagnostics::GetVariable(const std::string_view& name)
 	{
-		if (sVariables.find(name) == sVariables.end())
+		if (sVariables.find(name) != sVariables.end())
 			return sVariables.at(name);
 		return nullptr;
 	}
