@@ -4,11 +4,13 @@
 
 namespace Symple
 {
+	static const TypeNode* sBooleanType = new TypeNode(Type::PrimitiveTypes[4], new TypeModifiersNode({}));
+
 	class BooleanLiteralExpressionNode : public LiteralExpressionNode
 	{
 	public:
 		BooleanLiteralExpressionNode(const Token* literal)
-			: LiteralExpressionNode(literal) {}
+			: LiteralExpressionNode(sBooleanType, literal) {}
 
 		Kind GetKind() const override
 		{

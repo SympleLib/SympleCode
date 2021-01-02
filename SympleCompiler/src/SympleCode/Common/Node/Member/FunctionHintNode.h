@@ -7,7 +7,7 @@ namespace Symple
 	class FunctionHintNode : public FunctionDeclarationNode
 	{
 	public:
-		FunctionHintNode(const Type* type, const Token* name, const FunctionArgumentsNode* arguments, const FunctionModifiersNode* modifiers)
+		FunctionHintNode(const TypeNode* type, const Token* name, const FunctionArgumentsNode* arguments, const FunctionModifiersNode* modifiers)
 			: FunctionDeclarationNode(type, name, arguments, modifiers, nullptr) {}
 
 		Kind GetKind() const override
@@ -23,7 +23,7 @@ namespace Symple
 				ss << "L--\t";
 			else
 				ss << "|--\t";
-			ss << "Function Hint: " << mType->GetName() << ' ' << mName->GetLex() << "()";
+			ss << "Function Hint: " << mType->GetType()->GetName() << ' ' << mName->GetLex() << "()";
 			const char* newIndent = " \t";
 			if (!last)
 				newIndent = "|\t";

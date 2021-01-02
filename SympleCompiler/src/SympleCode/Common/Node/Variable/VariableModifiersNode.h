@@ -12,16 +12,10 @@ namespace Symple
 	private:
 		const std::vector<const VariableModifierNode*> mModifiers;
 		const VariableModifierNode* mFormatType;
-		bool mMutable;
 	public:
 		VariableModifiersNode(const std::vector<const VariableModifierNode*>& modifiers)
-			: mModifiers(modifiers), mFormatType(), mMutable()
-		{
-			for (const VariableModifierNode* modifier : mModifiers)
-			{
-				mMutable |= modifier->IsMutable();
-			}
-		}
+			: mModifiers(modifiers), mFormatType()
+		{}
 
 		Kind GetKind() const override
 		{
@@ -54,11 +48,6 @@ namespace Symple
 		const VariableModifierNode* GetFormatType() const
 		{
 			return mFormatType;
-		}
-
-		bool IsMutable() const
-		{
-			return mMutable;
 		}
 	};
 }

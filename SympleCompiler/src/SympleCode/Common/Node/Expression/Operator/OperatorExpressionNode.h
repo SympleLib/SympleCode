@@ -10,8 +10,8 @@ namespace Symple
 	protected:
 		const Token* mOperator;
 	public:
-		OperatorExpressionNode(const Token* oqerator)
-			: mOperator(oqerator) {}
+		OperatorExpressionNode(const TypeNode* type, const Token* oqerator)
+			: ExpressionNode(type), mOperator(oqerator) {}
 
 		Kind GetKind() const
 		{

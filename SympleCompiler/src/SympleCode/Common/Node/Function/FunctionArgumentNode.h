@@ -11,7 +11,7 @@ namespace Symple
 	{
 	private:
 	public:
-		FunctionArgumentNode(const Type* type, const Token* name, const VariableModifiersNode* modifiers)
+		FunctionArgumentNode(const TypeNode* type, const Token* name, const VariableModifiersNode* modifiers)
 			: VariableDeclarationNode(name, type, modifiers, nullptr, nullptr) {}
 
 		Kind GetKind() const override
@@ -27,7 +27,7 @@ namespace Symple
 				ss << "L--\t";
 			else
 				ss << "|--\t";
-			ss << "Function Argument (" << mType->GetName() << ") " << mName->GetLex();
+			ss << "Function Argument (" << mType->GetType()->GetName() << ") " << mName->GetLex();
 
 			return ss.str();
 		}

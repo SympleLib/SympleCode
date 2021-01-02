@@ -10,9 +10,21 @@ namespace Symple
 	private:
 		const ExpressionNode* mLeft;
 		const ExpressionNode* mRight;
+
+		const TypeNode* ResolveType()
+		{
+			if (mLeft->GetType()->GetType()->GetSize() >= mRight->GetType()->GetType()->GetSize())
+			{
+				return mLeft->GetType();
+			}
+			else
+			{
+				return mRight->GetType();
+			}
+		}
 	public:
 		BinaryExpressionNode(const Token* oqerator, const ExpressionNode* left, const ExpressionNode* right)
-			: OperatorExpressionNode(oqerator), mLeft(left), mRight(right) {}
+			: OperatorExpressionNode(ResolveType(), oqerator), mLeft(left), mRight(right) {}
 
 		Kind GetKind() const override
 		{

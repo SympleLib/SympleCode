@@ -7,7 +7,7 @@ namespace Symple
 	class ExternFunctionNode : public FunctionDeclarationNode
 	{
 	public:
-		ExternFunctionNode(const Type* type, const Token* name, const FunctionArgumentsNode* arguments, const FunctionModifiersNode* modifiers)
+		ExternFunctionNode(const TypeNode* type, const Token* name, const FunctionArgumentsNode* arguments, const FunctionModifiersNode* modifiers)
 			: FunctionDeclarationNode(type, name, arguments, modifiers, nullptr) {}
 
 		Kind GetKind() const override
@@ -23,7 +23,7 @@ namespace Symple
 				ss << "L--\t";
 			else
 				ss << "|--\t";
-			ss << "External Function: " << mType->GetName() << ' ' << mName->GetLex() << "()";
+			ss << "External Function: " << mType->GetType()->GetName() << ' ' << mName->GetLex() << "()";
 			const char* newIndent = " \t";
 			if (!last)
 				newIndent = "|\t";

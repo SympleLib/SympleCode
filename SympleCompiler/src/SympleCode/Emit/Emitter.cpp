@@ -11,9 +11,9 @@
 #include "SympleCode/Common/Node/Expression/Literal/NullLiteralExpressionNode.h"
 #include "SympleCode/Common/Node/Expression/Literal/NumberLiteralExpressionNode.h"
 #include "SympleCode/Common/Node/Expression/Literal/BooleanLiteralExpressionNode.h"
+#include "SympleCode/Common/Node/Expression/Literal/CharacterLiteralExpressionNode.h"
 
 #include "SympleCode/Common/Node/Expression/ParenthesizedExpressionNode.h"
-#include "SympleCode/Common/Node/Expression/CharacterLiteralExpressionNode.h"
 
 #define Write(fmt, ...) ((void)fprintf_s(mFile, fmt "\n", __VA_ARGS__))
 #define WriteLiteral(fmt, ...) ((void)fprintf_s(mLiteralFile, fmt "\n", __VA_ARGS__))
@@ -426,7 +426,7 @@ namespace Symple
 	char* Emitter::EmitVariableDeclaration(const VariableDeclarationNode* declaration)
 	{
 		std::string name(declaration->GetName()->GetLex());
-		unsigned int size = declaration->GetType()->GetSize();
+		unsigned int size = declaration->GetType()->GetType()->GetSize();
 		mStackPos += size;
 
 		mDeclaredVariables.insert({ declaration->GetName()->GetLex(), declaration });
@@ -557,7 +557,7 @@ namespace Symple
 			return RegErr;
 		}
 
-		int size = mDeclaredVariables[name]->GetType()->GetSize();
+		int size = mDeclaredVariables[name]->GetType()->GetType()->GetSize();
 
 		return Cast(Format("_%s$(%s)", name.c_str(), RegBp), size);
 	}
@@ -625,13 +625,13 @@ namespace Symple
 			return { RegErr, 0 };
 		}
 		
-		if (!mDeclaredVariables[name]->GetModifiers()->IsMutable())
+		if (!mDeclaredVariables[name]->GetType()->GetModifiers()->IsMutable())
 		{
 			mDiagnostics->ReportError(expression->GetName(), "'%s' is not Mutable", name.c_str());
 			return { RegErr, 0 };
 		}
 
-		int size = mDeclaredVariables[name]->GetType()->GetSize();
+		int size = mDeclaredVariables[name]->GetType()->GetType()->GetSize();
 		Lea(Format("_%s$(%s)", name.c_str(), RegBp), RegAx());
 		return { RegMod, size };
 	}

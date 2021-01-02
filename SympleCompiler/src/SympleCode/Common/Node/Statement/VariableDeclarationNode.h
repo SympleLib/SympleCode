@@ -12,12 +12,12 @@ namespace Symple
 	{
 	protected:
 		const Token* mName;
-		const Type* mType;
+		const TypeNode* mType;
 		const VariableModifiersNode* mModifiers;
 		const ExpressionNode* mInitializer;
 		const VariableDeclarationNode* mNext;
 	public:
-		VariableDeclarationNode(const Token* name, const Type* type, const VariableModifiersNode* modifiers, const ExpressionNode* initializer, const VariableDeclarationNode* next)
+		VariableDeclarationNode(const Token* name, const TypeNode* type, const VariableModifiersNode* modifiers, const ExpressionNode* initializer, const VariableDeclarationNode* next)
 			: mName(name), mType(type), mInitializer(initializer), mModifiers(modifiers), mNext(next) {}
 
 		Kind GetKind() const
@@ -33,7 +33,7 @@ namespace Symple
 				ss << "L--\t";
 			else
 				ss << "|--\t";
-			ss << "Variable Declaration (" << mType->GetName() << ") " << mName->GetLex();
+			ss << "Variable Declaration (" << mType->GetType()->GetName() << ") " << mName->GetLex();
 			const char* newIndent = " \t";
 			if (!last)
 				newIndent = "|\t";
@@ -52,7 +52,7 @@ namespace Symple
 			return mName;
 		}
 
-		const Type* GetType() const
+		const TypeNode* GetType() const
 		{
 			return mType;
 		}

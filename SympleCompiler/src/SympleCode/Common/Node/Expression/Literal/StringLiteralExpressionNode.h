@@ -4,11 +4,13 @@
 
 namespace Symple
 {
+	static const TypeNode* sStringType = new TypeNode(Type::PrimitiveTypes[7], new TypeModifiersNode({}));
+
 	class StringLiteralExpressionNode : public LiteralExpressionNode
 	{
 	public:
 		StringLiteralExpressionNode(const Token* literal)
-			: LiteralExpressionNode(literal) {}
+			: LiteralExpressionNode(sStringType, literal) {}
 
 		Kind GetKind() const override
 		{

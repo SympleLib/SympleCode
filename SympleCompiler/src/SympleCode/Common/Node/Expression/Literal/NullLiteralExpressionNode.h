@@ -4,11 +4,13 @@
 
 namespace Symple
 {
+	static const TypeNode* sNullType = new TypeNode(Type::PrimitiveTypes[0], new TypeModifiersNode({ new TypeModifierNode(new Token(Token::Kind::Asterisk)) }));
+
 	class NullLiteralExpressionNode : public LiteralExpressionNode
 	{
 	public:
 		NullLiteralExpressionNode(const Token* literal)
-			: LiteralExpressionNode(literal) {}
+			: LiteralExpressionNode(sNullType, literal) {}
 
 		Kind GetKind() const override
 		{

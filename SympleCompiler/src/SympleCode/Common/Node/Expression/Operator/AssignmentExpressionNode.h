@@ -14,7 +14,7 @@ namespace Symple
 		const ExpressionNode* mRight;
 	public:
 		AssignmentExpressionNode(const Token* oqerator, const ModifiableExpressionNode* left, const ExpressionNode* right)
-			: mOperator(oqerator), mLeft(left), mRight(right) {}
+			: ModifiableExpressionNode(left->GetType()), mOperator(oqerator), mLeft(left), mRight(right) {}
 
 		Kind GetKind() const override
 		{

@@ -1,7 +1,5 @@
 #pragma once
 
-#include "SympleCode/Common/Type.h"
-
 #include "SympleCode/Common/Node/Member/MemberNode.h"
 #include "SympleCode/Common/Node/Function/FunctionArgumentsNode.h"
 #include "SympleCode/Common/Node/Function/FunctionModifiersNode.h"
@@ -12,7 +10,7 @@ namespace Symple
 	class FunctionDeclarationNode : public MemberNode, public Function
 	{
 	protected:
-		const Type* mType;
+		const TypeNode* mType;
 		const Token* mName;
 		const FunctionArgumentsNode* mArguments;
 		const FunctionModifiersNode* mModifiers;
@@ -20,7 +18,7 @@ namespace Symple
 
 		std::string mAsmName;
 	public:
-		FunctionDeclarationNode(const Type* type, const Token* name, const FunctionArgumentsNode* arguments, const FunctionModifiersNode* modifiers, const BlockStatementNode* body)
+		FunctionDeclarationNode(const TypeNode* type, const Token* name, const FunctionArgumentsNode* arguments, const FunctionModifiersNode* modifiers, const BlockStatementNode* body)
 			: mType(type), mName(name), mArguments(arguments), mModifiers(modifiers), mBody(body)
 		{
 			std::stringstream ss;
@@ -39,7 +37,7 @@ namespace Symple
 				SympleCall:
 					postfix << '@' << arguments->GetArguments().size() << '.';
 					for (const FunctionArgumentNode* argument : mArguments->GetArguments())
-						postfix << '.' << argument->GetType()->GetSize();
+						postfix << '.' << argument->GetType()->GetType()->GetSize();
 					break;
 				}
 			else if (mName->GetLex() == "main");
@@ -63,7 +61,7 @@ namespace Symple
 				ss << "L--\t";
 			else
 				ss << "|--\t";
-			ss << "Function Declaration: " << mType->GetName() << ' ' << mName->GetLex() << "()";
+			ss << "Function Declaration: " << mType->GetType()->GetName() << ' ' << mName->GetLex() << "()";
 			const char* newIndent = " \t";
 			if (!last)
 				newIndent = "|\t";
@@ -79,7 +77,7 @@ namespace Symple
 			return mName;
 		}
 
-		const Type* GetType() const
+		const TypeNode* GetType() const
 		{
 			return mType;
 		}

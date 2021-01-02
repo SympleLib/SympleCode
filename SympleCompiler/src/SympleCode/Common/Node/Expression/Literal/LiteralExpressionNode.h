@@ -10,8 +10,8 @@ namespace Symple
 	protected:
 		const Token* mLiteral;
 	public:
-		LiteralExpressionNode(const Token* literal)
-			: mLiteral(literal) {}
+		LiteralExpressionNode(const TypeNode* type, const Token* literal)
+			: ExpressionNode(type), mLiteral(literal) {}
 
 		virtual Kind GetKind() const override
 		{

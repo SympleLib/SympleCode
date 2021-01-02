@@ -11,7 +11,7 @@ namespace Symple
 		const ExpressionNode* mIndex;
 	public:
 		PointerIndexExpressionNode(const ModifiableExpressionNode* variable, const ExpressionNode* index)
-			: mVariable(variable), mIndex(index) {}
+			: ModifiableExpressionNode(variable->GetType()), mVariable(variable), mIndex(index) {}
 
 		Kind GetKind() const override
 		{

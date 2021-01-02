@@ -4,11 +4,13 @@
 
 namespace Symple
 {
+	static const TypeNode* sCharacterType = new TypeNode(Type::PrimitiveTypes[5], new TypeModifiersNode({}));
+
 	class CharacterLiteralExpressionNode : public LiteralExpressionNode
 	{
 	public:
 		CharacterLiteralExpressionNode(const Token* literal)
-			: LiteralExpressionNode(literal) {}
+			: LiteralExpressionNode(sCharacterType, literal) {}
 
 		Kind GetKind() const override
 		{

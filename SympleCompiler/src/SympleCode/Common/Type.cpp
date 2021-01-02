@@ -8,9 +8,6 @@ namespace Symple
 		new Type("short", 2),
 		new Type("int", 4),
 
-		new Type("ptr", 4),
-		new Type("function", 4),
-
 		new Type("bool", 1),
 		new Type("char", 1),
 		new Type("wchar", 2),
