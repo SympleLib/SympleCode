@@ -13,7 +13,7 @@ namespace Symple
 		const Token* mName;
 	public:
 		VariableExpressionNode(const Token* name)
-			: ModifiableExpressionNode(Diagnostics::sDiagnostics->GetVariable(name->GetLex())->GetType()), mName(name) {}
+			: ModifiableExpressionNode(Diagnostics::GetVariable(name->GetLex())->GetType()), mName(name) {}
 
 		Kind GetKind() const override
 		{

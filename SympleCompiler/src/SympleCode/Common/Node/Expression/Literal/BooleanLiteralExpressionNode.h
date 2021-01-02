@@ -4,7 +4,7 @@
 
 namespace Symple
 {
-	static const TypeNode* sBooleanType = new TypeNode(Type::PrimitiveTypes[4], new TypeModifiersNode({}));
+	static const TypeNode* sBooleanType = new TypeNode(Type::PrimitiveType::Bool, new TypeModifiersNode({}));
 
 	class BooleanLiteralExpressionNode : public LiteralExpressionNode
 	{

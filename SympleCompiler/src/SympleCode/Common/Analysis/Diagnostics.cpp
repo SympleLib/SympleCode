@@ -4,7 +4,13 @@
 
 namespace Symple
 {
-	Diagnostics* Diagnostics::sDiagnostics = new Diagnostics;
+	std::vector<const Message*> Diagnostics::sMessages;
+	std::vector<const Message*> Diagnostics::sWarnings;
+	std::vector<const Message*> Diagnostics::sErrors;
+
+	std::map<std::string_view, const FunctionDeclarationNode*> Diagnostics::sFunctions;
+	std::map<std::string_view, const VariableDeclarationNode*> Diagnostics::sVariables;
+	std::map<std::string_view, const VariableDeclarationNode*> Diagnostics::pVariables;
 
 	void Diagnostics::ReportError(const Token* token, const char* fmt, ...)
 	{
@@ -14,8 +20,8 @@ namespace Symple
 		vsprintf_s(message, fmt, args);
 		va_end(args);
 
-		mMessages.push_back(new Message{ message, DIAGNOSTIC_LEVEL_ERROR, token });
-		mErrors.push_back(mMessages.back());
+		sMessages.push_back(new Message{ message, DIAGNOSTIC_LEVEL_ERROR, token });
+		sErrors.push_back(sMessages.back());
 	}
 
 	void Diagnostics::ReportWarning(const Token* token, const char* fmt, ...)
@@ -26,48 +32,48 @@ namespace Symple
 		vsprintf_s(message, fmt, args);
 		va_end(args);
 
-		mMessages.push_back(new Message{ message, DIAGNOSTIC_LEVEL_WARNING, token });
-		mWarnings.push_back(mMessages.back());
+		sMessages.push_back(new Message{ message, DIAGNOSTIC_LEVEL_WARNING, token });
+		sWarnings.push_back(sMessages.back());
 	}
 
 	void Diagnostics::FunctionDeclaration(const FunctionDeclarationNode* function)
 	{
-		mFunctions.insert({ function->GetName()->GetLex(), function });
+		sFunctions.insert({ function->GetName()->GetLex(), function });
 	}
 
 	void Diagnostics::VariableDeclaration(const VariableDeclarationNode* variable)
 	{
-		mVariables.insert({ variable->GetName()->GetLex(), variable });
+		sVariables.insert({ variable->GetName()->GetLex(), variable });
 	}
 
 	void Diagnostics::BeginScope()
 	{
-		pVariables = mVariables;
+		pVariables = sVariables;
 	}
 
 	void Diagnostics::EndScope()
 	{
-		mVariables = pVariables;
+		sVariables = pVariables;
 	}
 
-	const std::vector<const Message*>& Diagnostics::GetMessages() const
+	const std::vector<const Message*>& Diagnostics::GetMessages()
 	{
-		return mMessages;
+		return sMessages;
 	}
 
-	const std::vector<const Message*>& Diagnostics::GetErrors() const
+	const std::vector<const Message*>& Diagnostics::GetErrors()
 	{
-		return mErrors;
+		return sErrors;
 	}
 
-	const std::vector<const Message*>& Diagnostics::GetWarnings() const
+	const std::vector<const Message*>& Diagnostics::GetWarnings()
 	{
-		return mWarnings;
+		return sWarnings;
 	}
 
-	const FunctionDeclarationNode* Diagnostics::GetFunction(const std::string_view& name, const FunctionCallArgumentsNode* arguments) const
+	const FunctionDeclarationNode* Diagnostics::GetFunction(const std::string_view& name, const FunctionCallArgumentsNode* arguments)
 	{
-		for (const auto& function : mFunctions)
+		for (const auto& function : sFunctions)
 		{
 			if (function.first == name)
 			{
@@ -104,25 +110,20 @@ namespace Symple
 		return nullptr;
 	}
 
-	const FunctionDeclarationNode* Diagnostics::GetFunction(const FunctionCallExpressionNode* call) const
+	const std::map<std::string_view, const FunctionDeclarationNode*>& Diagnostics::GetFunctions()
 	{
-		return GetFunction(call->GetName()->GetLex(), call->GetArguments());
+		return sFunctions;
 	}
 
-	const std::map<std::string_view, const FunctionDeclarationNode*>& Diagnostics::GetFunctions() const
+	const VariableDeclarationNode* Diagnostics::GetVariable(const std::string_view& name)
 	{
-		return mFunctions;
-	}
-
-	const VariableDeclarationNode* Diagnostics::GetVariable(const std::string_view& name) const
-	{
-		if (mVariables.find(name) == mVariables.end())
-			return mVariables.at(name);
+		if (sVariables.find(name) == sVariables.end())
+			return sVariables.at(name);
 		return nullptr;
 	}
 
-	const std::map<std::string_view, const VariableDeclarationNode*>& Diagnostics::GetVariables() const
+	const std::map<std::string_view, const VariableDeclarationNode*>& Diagnostics::GetVariables()
 	{
-		return mVariables;
+		return sVariables;
 	}
 }

@@ -14,17 +14,17 @@
 #include "SympleCode/Common/Node/Expression/Literal/StringLiteralExpressionNode.h"
 #include "SympleCode/Common/Node/Expression/Literal/NumberLiteralExpressionNode.h"
 #include "SympleCode/Common/Node/Expression/Literal/BooleanLiteralExpressionNode.h"
+#include "SympleCode/Common/Node/Expression/Literal/CharacterLiteralExpressionNode.h"
 
 #include "SympleCode/Common/Node/Expression/VariableExpressionNode.h"
 #include "SympleCode/Common/Node/Expression/PointerIndexExpressionNode.h"
-#include "SympleCode/Common/Node/Expression/CharacterLiteralExpressionNode.h"
 
 #include "SympleCode/Common/Priority.h"
 
 namespace Symple
 {
 	Parser::Parser(const char* source)
-		: mPreprocessor(source), mPosition(0), mTokens(mPreprocessor.GetTokens()), mTypes(Type::PrimitiveTypes), mDiagnostics(new Diagnostics)
+		: mPreprocessor(source), mPosition(0), mTokens(mPreprocessor.GetTokens()), mTypes(Type::PrimitiveTypes)
 	{
 		//for (auto tok : mTokens)
 		//	std::cout << Token::KindString(tok->GetKind()) << '#' << (int)tok->GetKind() << '|' << tok->GetLex() << '\n';
@@ -37,9 +37,9 @@ namespace Symple
 		return new CompilationUnitNode(members);
 	}
 
-	const Token* Parser::Peek(size_t offset)
+	const Token* Parser::Peek(unsigned int offset) const
 	{
-		size_t i = mPosition + offset;
+		unsigned int i = mPosition + offset;
 		if (i >= mTokens.size())
 			return mTokens.back();
 		return mTokens[i];
@@ -56,17 +56,12 @@ namespace Symple
 	{
 		if (Peek()->Is(kind))
 			return Next();
-		mDiagnostics->ReportError(Peek(), "Unexpected Token '%s' of type <%s>, Expected <%s>", std::string(Peek()->GetLex()).c_str(), Token::KindString(Peek()->GetKind()), Token::KindString(kind));
+		Diagnostics::ReportError(Peek(), "Unexpected Token '%s' of type <%s>, Expected <%s>", std::string(Peek()->GetLex()).c_str(), Token::KindString(Peek()->GetKind()), Token::KindString(kind));
 		Next();
 		return new Token(kind);
 	}
 
-	Diagnostics* Parser::GetDiagnostics() const
-	{
-		return mDiagnostics;
-	}
-
-	bool Parser::IsType(const Token* token)
+	bool Parser::IsType(const Token* token) const
 	{
 		for (const Type* type : mTypes)
 			if (token->GetLex() == type->GetName())
@@ -74,13 +69,42 @@ namespace Symple
 		return false;
 	}
 
-	const Type* Parser::GetType(const Token* token)
+	const Type* Parser::GetType(const Token* token) const
 	{
 		for (const Type* type : mTypes)
 			if (token->GetLex() == type->GetName())
 				return type;
-		mDiagnostics->ReportError(token, "'%s' is not a Type", std::string(token->GetLex()).c_str());
-		return mTypes.back();
+		return nullptr;
+	}
+
+	bool Parser::IsTypeNodeable(const Token* token) const
+	{
+		return IsType(Peek()) || token->IsEither({ Token::Kind::Mutable });
+	}
+
+	TypeNode* Parser::ParseType()
+	{
+		const Type* type = nullptr;
+		std::vector<const TypeModifierNode*> modifiers;
+
+		while (IsTypeNodeable(Peek()))
+		{
+			if (IsType(Peek()))
+			{
+				if (type)
+					Diagnostics::ReportError(Next(), "Type Already Specified");
+				else
+					type = GetType(Next());
+				continue;
+			}
+
+			modifiers.push_back(new TypeModifierNode(Next()));
+		}
+
+		if (type)
+			return new TypeNode(type, new TypeModifiersNode(modifiers));
+
+		return new TypeNode(Type::PrimitiveType::Error, new TypeModifiersNode({}));
 	}
 
 	const std::vector<const MemberNode*> Parser::ParseMembers()
@@ -112,14 +136,14 @@ namespace Symple
 
 	FunctionDeclarationNode* Parser::ParseFunctionDeclaration()
 	{
-		const Type* type = GetType(Next());
+		const TypeNode* type = ParseType();
 		const Token* name = Next();
 		FunctionArgumentsNode* arguments = ParseFunctionArguments();
 		FunctionModifiersNode* modifiers = ParseFunctionModifiers();
 		BlockStatementNode* body = ParseBlockStatement();
 
 		FunctionDeclarationNode* declaration = new FunctionDeclarationNode(type, name, arguments, modifiers, body);
-		mDiagnostics->FunctionDeclaration(declaration);
+		Diagnostics::FunctionDeclaration(declaration);
 		return declaration;
 	}
 
@@ -132,7 +156,7 @@ namespace Symple
 		{
 			if (Peek()->Is(Token::Kind::EndOfFile))
 			{
-				mDiagnostics->ReportError(Next(), "Unexpected End Of File");
+				Diagnostics::ReportError(Next(), "Unexpected End Of File");
 				break;
 			}
 
@@ -143,7 +167,7 @@ namespace Symple
 			else
 			{
 				if (!Peek()->Is(Token::Kind::CloseParenthesis))
-					mDiagnostics->ReportError(Peek(), "Expected Comma");
+					Diagnostics::ReportError(Peek(), "Expected Comma");
 				break;
 			}
 		}
@@ -169,7 +193,7 @@ namespace Symple
 
 	FunctionArgumentNode* Parser::ParseFunctionArgument()
 	{
-		const Type* type = GetType(Next());
+		const TypeNode* type = ParseType();
 		const Token* name = Next();
 
 		FunctionArgumentNode* argument = new FunctionArgumentNode(type, name, ParseVariableModifiers());
@@ -181,28 +205,28 @@ namespace Symple
 	FunctionHintNode* Parser::ParseFunctionHint()
 	{
 		Match(Token::Kind::Hint);
-		const Type* type = GetType(Next());
+		const TypeNode* type = ParseType();
 		const Token* name = Next();
 		FunctionArgumentsNode* arguments = ParseFunctionArguments();
 		FunctionModifiersNode* modifiers = ParseFunctionModifiers();
 		Match(Token::Kind::Semicolon);
 
 		FunctionHintNode* hint = new FunctionHintNode(type, name, arguments, modifiers);
-		mDiagnostics->FunctionDeclaration(hint);
+		Diagnostics::FunctionDeclaration(hint);
 		return hint;
 	}
 
 	ExternFunctionNode* Parser::ParseExternFunction()
 	{
 		Match(Token::Kind::Extern);
-		const Type* type = GetType(Next());
+		const TypeNode* type = ParseType();
 		const Token* name = Next();
 		FunctionArgumentsNode* arguments = ParseFunctionArguments();
 		FunctionModifiersNode* modifiers = ParseFunctionModifiers();
 		Match(Token::Kind::Semicolon);
 
 		ExternFunctionNode* hint = new ExternFunctionNode(type, name, arguments, modifiers);
-		mDiagnostics->FunctionDeclaration(hint);
+		Diagnostics::FunctionDeclaration(hint);
 		return hint;
 	}
 
@@ -277,7 +301,7 @@ namespace Symple
 		{
 			if (Peek()->Is(Token::Kind::EndOfFile))
 			{
-				mDiagnostics->ReportError(Next(), "Unexpected End Of File");
+				Diagnostics::ReportError(Next(), "Unexpected End Of File");
 				break;
 			}
 
@@ -307,10 +331,10 @@ namespace Symple
 		return new GlobalStatementNode(ParseStatement());
 	}
 
-	VariableDeclarationNode* Parser::ParseVariableDeclaration(const Type* type)
+	VariableDeclarationNode* Parser::ParseVariableDeclaration(const TypeNode* type)
 	{
 		if (!type)
-			type = GetType(Next());
+			type = ParseType();
 		const Token* name = Next();
 
 		VariableModifiersNode* modifiers = ParseVariableModifiers();
@@ -485,7 +509,7 @@ namespace Symple
 		{
 			if (Peek()->Is(Token::Kind::EndOfFile))
 			{
-				mDiagnostics->ReportError(Next(), "Unexpected End Of File");
+				Diagnostics::ReportError(Next(), "Unexpected End Of File");
 				break;
 			}
 

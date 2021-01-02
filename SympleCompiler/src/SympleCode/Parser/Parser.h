@@ -38,7 +38,6 @@ namespace Symple
 
 		std::vector<const Token*> mTokens;
 		std::vector<const Type*> mTypes;
-		Diagnostics* mDiagnostics;
 		size_t mPosition;
 
 		std::map<std::string, const VariableDeclarationNode*> mDeclaredVariables;
@@ -46,14 +45,16 @@ namespace Symple
 		Parser(const char* source = "");
 
 		CompilationUnitNode* ParseCompilationUnit();
-		Diagnostics* GetDiagnostics() const;
 	private:
-		const Token* Peek(size_t offset = 0);
+		const Token* Peek(unsigned int offset = 0) const;
 		const Token* Next();
 		const Token* Match(Token::Kind kind);
 
-		bool IsType(const Token* token);
-		const Type* GetType(const Token* token);
+		bool IsType(const Token* token) const;
+		const Type* GetType(const Token* token) const;
+
+		bool IsTypeNodeable(const Token* token) const;
+		TypeNode* ParseType();
 
 		const std::vector<const MemberNode*> ParseMembers();
 		MemberNode* ParseMember();
@@ -72,8 +73,7 @@ namespace Symple
 		BlockStatementNode* ParseBlockStatement();
 		ReturnStatementNode* ParseReturnStatement();
 		GlobalStatementNode* ParseGlobalStatement();
-		std::vector<VariableDeclarationNode*> ParseVariableDeclarations();
-		VariableDeclarationNode* ParseVariableDeclaration(const Type* type = nullptr);
+		VariableDeclarationNode* ParseVariableDeclaration(const TypeNode* type = nullptr);
 		VariableModifiersNode* ParseVariableModifiers();
 		VariableModifierNode* ParseVariableModifier();
 	

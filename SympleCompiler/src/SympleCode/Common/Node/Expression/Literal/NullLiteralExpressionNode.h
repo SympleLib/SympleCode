@@ -4,7 +4,7 @@
 
 namespace Symple
 {
-	static const TypeNode* sNullType = new TypeNode(Type::PrimitiveTypes[0], new TypeModifiersNode({ new TypeModifierNode(new Token(Token::Kind::Asterisk)) }));
+	static const TypeNode* sNullType = new TypeNode(Type::PrimitiveType::Void, new TypeModifiersNode({}));
 
 	class NullLiteralExpressionNode : public LiteralExpressionNode
 	{

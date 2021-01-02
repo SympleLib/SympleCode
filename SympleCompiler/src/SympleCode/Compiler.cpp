@@ -1,7 +1,6 @@
 #include "SympleCode/Compiler.h"
 
 #include "SympleCode/Parser/Parser.h"
-#include "SympleCode/Emit/Emitter.h"
 
 #include <algorithm>
 #include <iostream>
@@ -43,7 +42,6 @@ namespace Symple
 			printf("Parsing...\n");
 			Parser parser(source);
 			CompilationUnitNode* tree = parser.ParseCompilationUnit();
-			Diagnostics* diagnostics = parser.GetDiagnostics();
 
 			FILE* treef;
 			errno_t err;
@@ -61,17 +59,17 @@ namespace Symple
 					std::cerr << "[!]: Unkown Error opening file '" << syt << "'!\n";
 			}
 
-			unsigned int parseErrors = diagnostics->GetErrors().size();
+			unsigned int parseErrors = Diagnostics::GetErrors().size();
 			if (parseErrors)
 			{
-				printf("Compiled %s with %i errors, %i warnings (total: %i)\n", path, diagnostics->GetErrors().size(), diagnostics->GetWarnings().size(), diagnostics->GetMessages().size());
+				printf("Compiled %s with %i errors, %i warnings (total: %i)\n", path, Diagnostics::GetErrors().size(), Diagnostics::GetWarnings().size(), Diagnostics::GetMessages().size());
 
-				for (const Message* error : diagnostics->GetErrors())
+				for (const Message* error : Diagnostics::GetErrors())
 				{
 					std::cout << "[!]<" << error->Token->GetLine() << ':' << error->Token->GetColumn() << ">: " << error->Message << '\n';
 				}
 
-				for (const Message* warning : diagnostics->GetWarnings())
+				for (const Message* warning : Diagnostics::GetWarnings())
 				{
 					std::cout << "[?]<" << warning->Token->GetLine() << ':' << warning->Token->GetColumn() << ">: " << warning->Message << '\n';
 				}
@@ -80,23 +78,22 @@ namespace Symple
 			{
 				{
 					printf("Generating...\n");
-					Emitter emitter(diagnostics, asmS);
-					emitter.Emit(tree);
+					
 
-					printf("Compiled %s with %i errors, %i warnings (total: %i)\n", path, diagnostics->GetErrors().size(), diagnostics->GetWarnings().size(), diagnostics->GetMessages().size());
+					printf("Compiled %s with %i errors, %i warnings (total: %i)\n", path, Diagnostics::GetErrors().size(), Diagnostics::GetWarnings().size(), Diagnostics::GetMessages().size());
 
-					for (const Message* error : diagnostics->GetErrors())
+					for (const Message* error : Diagnostics::GetErrors())
 					{
 						std::cout << "[!]<" << error->Token->GetLine() << ':' << error->Token->GetColumn() << ">: " << error->Message << '\n';
 					}
 
-					for (const Message* warning : diagnostics->GetWarnings())
+					for (const Message* warning : Diagnostics::GetWarnings())
 					{
 						std::cout << "[?]<" << warning->Token->GetLine() << ':' << warning->Token->GetColumn() << ">: " << warning->Message << '\n';
 					}
 				}
 
-				if (!diagnostics->GetErrors().size())
+				if (!Diagnostics::GetErrors().size())
 				{
 					char command[128];
 					sprintf_s(command, "as -c %s -o %s", asmS, obj);
