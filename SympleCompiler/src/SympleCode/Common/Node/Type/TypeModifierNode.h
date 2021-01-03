@@ -1,8 +1,9 @@
 #pragma once
 
-#include "SympleCode/Common/Node/Type/TypeNodes.h"
-#include "SympleCode/Common/Node/Node.h"
 #include "SympleCode/Common/Token.h"
+#include "SympleCode/Common/Node/Node.h"
+#include "SympleCode/Common/Node/Type/TypeNodes.h"
+#include "SympleCode/Common/Analysis/Diagnostics.h"
 
 namespace Symple
 {
@@ -14,7 +15,10 @@ namespace Symple
 	public:
 		TypeModifierNode(const Token* modifier)
 			: mModifier(modifier), mMutable(mModifier->Is(Token::Kind::Mutable))
-		{}
+		{
+			if (!mModifier->IsEither({ Token::Kind::Mutable }))
+				Diagnostics::ReportError(mModifier, "Illegal Modifier");
+		}
 
 		Kind GetKind() const override
 		{

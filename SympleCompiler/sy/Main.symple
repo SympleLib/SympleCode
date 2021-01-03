@@ -1,6 +1,6 @@
 int main()
 {
-	int test = 420;
+	mut int test lol = 420;
 	test = 69;
 
 	0;

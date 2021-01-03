@@ -3,6 +3,7 @@
 #include "SympleCode/Common/Type.h"
 #include "SympleCode/Common/Token.h"
 #include "SympleCode/Common/Node/Node.h"
+#include "SympleCode/Common/Analysis/Diagnostics.h"
 #include "SympleCode/Common/Node/Variable/Variable.h"
 
 namespace Symple
@@ -14,7 +15,10 @@ namespace Symple
 	public:
 		VariableModifierNode(const Token* modifier)
 			: mModifier(modifier)
-		{}
+		{
+			if (!mModifier->IsEither({}))
+				Diagnostics::ReportError(mModifier, "Illegal Modifier");
+		}
 
 		Kind GetKind() const override
 		{

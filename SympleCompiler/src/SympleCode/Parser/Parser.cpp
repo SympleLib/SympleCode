@@ -124,8 +124,15 @@ namespace Symple
 
 	MemberNode* Parser::ParseMember()
 	{
-		if (IsType(Peek()) && Peek(2)->Is(Token::Kind::OpenParenthesis))
-			return ParseFunctionDeclaration();
+		if (IsTypeNodeable(Peek()))
+		{
+			unsigned int pPosition = mPosition;
+			ParseType();
+			bool isFunction = Peek(1)->Is(Token::Kind::OpenParenthesis);
+			mPosition = pPosition;
+			if (isFunction)
+				return ParseFunctionDeclaration();
+		}
 		if (Peek()->Is(Token::Kind::Hint))
 			return ParseFunctionHint();
 		if (Peek()->Is(Token::Kind::Extern))
@@ -244,7 +251,7 @@ namespace Symple
 			return ParseIfStatement();
 		if (Peek()->Is(Token::Kind::Break))
 			return new BreakStatementNode(Next());
-		if (IsType(Peek()))
+		if (IsTypeNodeable(Peek()))
 			return ParseVariableDeclaration();
 		if (Peek()->Is(Token::Kind::OpenBrace))
 		{
@@ -481,8 +488,14 @@ namespace Symple
 		if (Peek()->Is(Token::Kind::OpenBracket))
 			return ParsePointerIndexExpression();
 		
-		if (Diagnostics::GetVariable(Peek()->GetLex()))
+		const VariableDeclarationNode* variable;
+		if (variable = Diagnostics::GetVariable(Peek()->GetLex()))
+		{
+			if (!variable->GetType()->GetModifiers()->IsMutable())
+				Diagnostics::ReportError(Peek(), "Variable is not Mutable");
+
 			return new VariableExpressionNode(Next());
+		}
 		return nullptr;
 	}
 

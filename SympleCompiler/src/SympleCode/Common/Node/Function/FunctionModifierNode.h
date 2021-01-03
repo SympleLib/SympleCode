@@ -3,6 +3,7 @@
 #include "SympleCode/Common/Type.h"
 #include "SympleCode/Common/Token.h"
 #include "SympleCode/Common/Node/Node.h"
+#include "SympleCode/Common/Analysis/Diagnostics.h"
 #include "SympleCode/Common/Node/Function/Function.h"
 
 namespace Symple
@@ -15,7 +16,10 @@ namespace Symple
 	public:
 		FunctionModifierNode(const Token* modifier)
 			: mModifier(modifier), mStatic(mModifier->Is(Token::Kind::Static)), mFormat(mModifier->IsEither({ Token::Kind::SympleCall, Token::Kind::CCall, Token::Kind::StdCall }))
-		{}
+		{
+			if (!mModifier->IsEither({ Token::Kind::Static, Token::Kind::SympleCall, Token::Kind::CCall, Token::Kind::StdCall }))
+				Diagnostics::ReportError(mModifier, "Illegal Modifier");
+		}
 
 		Kind GetKind() const override
 		{
