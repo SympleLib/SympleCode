@@ -4,8 +4,8 @@
 
 namespace Symple
 {
-	Preprocessor::Preprocessor(const char* source, const std::vector<std::string>& includedFiles, const std::map<std::string, std::vector<const Token*>>& defines)
-		: mLexer(source), mIncludedFiles(includedFiles), mDefines(defines)
+	Preprocessor::Preprocessor(const char* source, const char* file, const std::vector<std::string>& includedFiles, const std::map<std::string, std::vector<const Token*>>& defines)
+		: mLexer(source, file), mIncludedFiles(includedFiles), mDefines(defines)
 	{
 		const Token* current = Token::Default;
 		while (!current->Is(Token::Kind::EndOfFile))
@@ -54,7 +54,7 @@ namespace Symple
 				source[size] = 0;
 				fclose(file);
 
-				Preprocessor includePreprocessor(source, mIncludedFiles, mDefines);
+				Preprocessor includePreprocessor(source, ("sy\\" + includeDir).c_str(), mIncludedFiles, mDefines);
 				mDefines = includePreprocessor.mDefines;
 				for (const Token* token : includePreprocessor.GetTokens())
 					if (token != includePreprocessor.GetTokens().back())

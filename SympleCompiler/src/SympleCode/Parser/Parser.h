@@ -39,10 +39,8 @@ namespace Symple
 		std::vector<const Token*> mTokens;
 		std::vector<const Type*> mTypes;
 		size_t mPosition;
-
-		std::map<std::string, const VariableDeclarationNode*> mDeclaredVariables;
 	public:
-		Parser(const char* source = "");
+		Parser(const char* source = "", const char* file = "");
 
 		CompilationUnitNode* ParseCompilationUnit();
 	private:

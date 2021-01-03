@@ -23,7 +23,7 @@ int main(unsigned int argc, const char* argv[])
 		compiledGood &= compiler.CompileFile(path);
 	}
 
-	if (compiledGood)
+	if (compiledGood && false)
 	{
 		compiler.Link("sy\\Main.exe", sLibraries);
 		compiler.Run();

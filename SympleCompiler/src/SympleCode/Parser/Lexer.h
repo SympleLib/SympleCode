@@ -10,9 +10,10 @@ namespace Symple
 		const char* mSource;
 		const char* mCurrent;
 
+		const char* mFile;
 		int mLine, mColumn;
 	public:
-		Lexer(const char* source = "");
+		Lexer(const char* source = "", const char* file = "");
 
 		Token* Next();
 	private:

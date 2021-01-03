@@ -16,11 +16,7 @@ namespace Symple
 
 		std::map<std::string, std::vector<const Token*>> mDefines;
 	public:
-		Preprocessor(const char* source = "", const std::vector<std::string>& includedFiles = {}, const std::map<std::string, std::vector<const Token*>>& defines =
-			{
-				{ "null", { new Token(Token::Kind::Number, "0", 1) } },
-				{ "ptr_size", { new Token(Token::Kind::Number, "4", 1) } }
-			});
+		Preprocessor(const char* source = "", const char* file = "", const std::vector<std::string>& includedFiles = {}, const std::map<std::string, std::vector<const Token*>>& defines = {});
 
 		inline const auto& GetTokens() const
 		{

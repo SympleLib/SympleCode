@@ -2,14 +2,14 @@
 
 namespace Symple
 {
-	Token::Token(Kind kind, int line, int column)
-		: mKind(kind), mLine(line), mColumn(column) {}
+	Token::Token(Kind kind, const char* file, int line, int column)
+		: mKind(kind), mFile(file), mLine(line), mColumn(column) {}
 
-	Token::Token(Kind kind, const char* beg, size_t len, int line, int column)
-		: mKind(kind), mLex(beg, len), mLine(line), mColumn(column) {}
+	Token::Token(Kind kind, const char* beg, size_t len, const char* file, int line, int column)
+		: mKind(kind), mLex(beg, len), mFile(file), mLine(line), mColumn(column) {}
 
-	Token::Token(Kind kind, const char* beg, const char* end, int line, int column)
-		: mKind(kind), mLex(beg, std::distance(beg, end)), mLine(line), mColumn(column) {}
+	Token::Token(Kind kind, const char* beg, const char* end, const char* file, int line, int column)
+		: mKind(kind), mLex(beg, std::distance(beg, end)), mFile(file), mLine(line), mColumn(column) {}
 
 	const Token* const Token::Default = new Token;
 
@@ -34,6 +34,11 @@ namespace Symple
 	const std::string_view& Token::GetLex() const
 	{
 		return mLex;
+	}
+
+	const char* Token::GetFile() const
+	{
+		return mFile;
 	}
 
 	int Token::GetLine() const

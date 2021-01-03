@@ -1,6 +1,6 @@
 #lib "legacy_stdio_definitions.lib"
 
-#define file ptr
+#define file int
 
 #define stdin  __acrt_iob_func(0)
 #define stdout __acrt_iob_func(1)
@@ -25,10 +25,10 @@ extern int fputs(string str, file stream) ccall;
 extern int putc(char c, file stream) ccall;
 extern int fflush(file stream) ccall;
 
-extern int fgets(ptr buff, int max, file stream) ccall;
+extern int fgets(int buff, int max, file stream) ccall;
 
-extern int fread(ptr buff, int elementSize, int count, file stream) ccall;
-extern int fwrite(ptr buff, int elementSize, int count, file stream) ccall;
+extern int fread(int buff, int elementSize, int count, file stream) ccall;
+extern int fwrite(int buff, int elementSize, int count, file stream) ccall;
 
 extern int fseek(file stream, int offset, int origin) ccall;
 extern int ftell(file stream) ccall;

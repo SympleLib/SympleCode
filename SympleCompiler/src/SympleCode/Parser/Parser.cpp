@@ -23,8 +23,8 @@
 
 namespace Symple
 {
-	Parser::Parser(const char* source)
-		: mPreprocessor(source), mPosition(0), mTokens(mPreprocessor.GetTokens()), mTypes(Type::PrimitiveTypes)
+	Parser::Parser(const char* source, const char* file)
+		: mPreprocessor(source, file), mPosition(0), mTokens(mPreprocessor.GetTokens()), mTypes(Type::PrimitiveTypes)
 	{
 		//for (auto tok : mTokens)
 		//	std::cout << Token::KindString(tok->GetKind()) << '#' << (int)tok->GetKind() << '|' << tok->GetLex() << '\n';
@@ -138,9 +138,12 @@ namespace Symple
 	{
 		const TypeNode* type = ParseType();
 		const Token* name = Next();
+
+		Diagnostics::BeginScope();
 		FunctionArgumentsNode* arguments = ParseFunctionArguments();
 		FunctionModifiersNode* modifiers = ParseFunctionModifiers();
 		BlockStatementNode* body = ParseBlockStatement();
+		Diagnostics::EndScope();
 
 		FunctionDeclarationNode* declaration = new FunctionDeclarationNode(type, name, arguments, modifiers, body);
 		Diagnostics::FunctionDeclaration(declaration);
@@ -197,8 +200,7 @@ namespace Symple
 		const Token* name = Next();
 
 		FunctionArgumentNode* argument = new FunctionArgumentNode(type, name, ParseVariableModifiers());
-
-		mDeclaredVariables.insert({ std::string(name->GetLex()), argument });
+		Diagnostics::VariableDeclaration(argument);
 		return argument;
 	}
 
@@ -225,9 +227,9 @@ namespace Symple
 		FunctionModifiersNode* modifiers = ParseFunctionModifiers();
 		Match(Token::Kind::Semicolon);
 
-		ExternFunctionNode* hint = new ExternFunctionNode(type, name, arguments, modifiers);
-		Diagnostics::FunctionDeclaration(hint);
-		return hint;
+		ExternFunctionNode* exjern = new ExternFunctionNode(type, name, arguments, modifiers);
+		Diagnostics::FunctionDeclaration(exjern);
+		return exjern;
 	}
 
 	StatementNode* Parser::ParseStatement()
@@ -291,10 +293,12 @@ namespace Symple
 
 	BlockStatementNode* Parser::ParseBlockStatement()
 	{
-		const std::map<std::string, const VariableDeclarationNode*> pDeclaredVariables = mDeclaredVariables;
-
+		Diagnostics::BeginScope();
 		if (!Peek()->Is(Token::Kind::OpenBrace))
+		{
+			Diagnostics::EndScope();
 			return new BlockStatementNode(Peek(), { ParseStatement() }, Peek());
+		}
 		const Token* open = Match(Token::Kind::OpenBrace);
 		std::vector<const StatementNode*> statements;
 		while (!Peek()->Is(Token::Kind::CloseBrace))
@@ -313,7 +317,7 @@ namespace Symple
 				Next();
 		}
 		const Token* close = Match(Token::Kind::CloseBrace);
-		mDeclaredVariables = pDeclaredVariables;
+		Diagnostics::EndScope();
 
 		return new BlockStatementNode(open, statements, close);
 	}
@@ -356,7 +360,7 @@ namespace Symple
 			Match(Token::Kind::Semicolon);
 
 			declaration = new VariableDeclarationNode(name, type, modifiers, expression, next);
-			mDeclaredVariables.insert({ std::string(name->GetLex()), declaration });
+			Diagnostics::VariableDeclaration(declaration);
 			return declaration;
 		}
 
@@ -370,8 +374,8 @@ namespace Symple
 
 		Match(Token::Kind::Semicolon);
 
-		declaration =  new VariableDeclarationNode(name, type, modifiers, nullptr, next);
-		mDeclaredVariables.insert({ std::string(name->GetLex()), declaration });
+		declaration = new VariableDeclarationNode(name, type, modifiers, nullptr, next);
+		Diagnostics::VariableDeclaration(declaration);
 		return declaration;
 	}
 
@@ -477,7 +481,7 @@ namespace Symple
 		if (Peek()->Is(Token::Kind::OpenBracket))
 			return ParsePointerIndexExpression();
 		
-		if (mDeclaredVariables.find(std::string(Peek()->GetLex())) != mDeclaredVariables.end())
+		if (Diagnostics::GetVariable(Peek()->GetLex()))
 			return new VariableExpressionNode(Next());
 		return nullptr;
 	}

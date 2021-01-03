@@ -13,6 +13,8 @@ namespace Symple
 {
 	bool Compiler::CompileFile(const std::string& pathStr)
 	{
+		Diagnostics::Clear();
+
 		std::string dir = "bin\\" + pathStr.substr(0, pathStr.find_last_of('\\'));
 		std::string cmd = "mkdir " + dir;
 		if (GetFileAttributesA(dir.c_str()) == INVALID_FILE_ATTRIBUTES)
@@ -40,7 +42,7 @@ namespace Symple
 			fclose(file);
 
 			printf("Parsing...\n");
-			Parser parser(source);
+			Parser parser(source, path);
 			CompilationUnitNode* tree = parser.ParseCompilationUnit();
 
 			FILE* treef;
@@ -66,12 +68,12 @@ namespace Symple
 
 				for (const Message* error : Diagnostics::GetErrors())
 				{
-					std::cout << "[!]<" << error->Token->GetLine() << ':' << error->Token->GetColumn() << ">: " << error->Message << '\n';
+					std::cout << "[!](" << error->Token->GetFile() << ")<" << error->Token->GetLine() << ':' << error->Token->GetColumn() << ">: " << error->Message << '\n';
 				}
 
 				for (const Message* warning : Diagnostics::GetWarnings())
 				{
-					std::cout << "[?]<" << warning->Token->GetLine() << ':' << warning->Token->GetColumn() << ">: " << warning->Message << '\n';
+					std::cout << "[?](" << warning->Token->GetFile() << ")<" << warning->Token->GetLine() << ':' << warning->Token->GetColumn() << ">: " << warning->Message << '\n';
 				}
 			}
 			else
@@ -84,12 +86,12 @@ namespace Symple
 
 					for (const Message* error : Diagnostics::GetErrors())
 					{
-						std::cout << "[!]<" << error->Token->GetLine() << ':' << error->Token->GetColumn() << ">: " << error->Message << '\n';
+						std::cout << "[!](" << error->Token->GetFile() << ")<" << error->Token->GetLine() << ':' << error->Token->GetColumn() << ">: " << error->Message << '\n';
 					}
 
 					for (const Message* warning : Diagnostics::GetWarnings())
 					{
-						std::cout << "[?]<" << warning->Token->GetLine() << ':' << warning->Token->GetColumn() << ">: " << warning->Message << '\n';
+						std::cout << "[?](" << warning->Token->GetFile() << ")<" << warning->Token->GetLine() << ':' << warning->Token->GetColumn() << ">: " << warning->Message << '\n';
 					}
 				}
 

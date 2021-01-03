@@ -1,16 +1,7 @@
-#include "libc/io.sy"
-
 int main()
 {
 	int test = 420;
-	puti(test);
 	test = 69;
-	puti(test);
 
 	0;
-};
-
-void puti(int num) ccall static
-{
-	printf("%i\n", num);
 };

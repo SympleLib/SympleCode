@@ -1,6 +1,7 @@
 #include "SympleCode/Common/Analysis/Diagnostics.h"
 
 #include <cstdarg>
+#include <iostream>
 
 namespace Symple
 {
@@ -11,6 +12,17 @@ namespace Symple
 	std::map<std::string_view, const FunctionDeclarationNode*> Diagnostics::sFunctions;
 	std::map<std::string_view, const VariableDeclarationNode*> Diagnostics::sVariables;
 	std::map<std::string_view, const VariableDeclarationNode*> Diagnostics::pVariables;
+
+	void Diagnostics::Clear()
+	{
+		sMessages.clear();
+		sWarnings.clear();
+		sErrors.clear();
+
+		sFunctions.clear();
+		sVariables.clear();
+		pVariables.clear();
+	}
 
 	void Diagnostics::ReportError(const Token* token, const char* fmt, ...)
 	{
@@ -117,9 +129,9 @@ namespace Symple
 
 	const VariableDeclarationNode* Diagnostics::GetVariable(const std::string_view& name)
 	{
-		if (sVariables.find(name) != sVariables.end())
-			return sVariables.at(name);
-		return nullptr;
+		if (sVariables.find(name) == sVariables.end())
+			return nullptr;
+		return sVariables.at(name);
 	}
 
 	const std::map<std::string_view, const VariableDeclarationNode*>& Diagnostics::GetVariables()

@@ -115,19 +115,21 @@ namespace Symple
 		Kind mKind;
 		std::string_view mLex;
 
+		const char* mFile;
 		int mLine, mColumn;
 	public:
 		static const Token* const Default;
 
-		Token(Kind kind = Kind::Unknown, int line = 0, int column = 0);
-		Token(Kind kind, const char* beg, size_t len, int line = 0, int column = 0);
-		Token(Kind kind, const char* beg, const char* end, int line = 0, int column = 0);
+		Token(Kind kind = Kind::Unknown, const char* file = "", int line = 0, int column = 0);
+		Token(Kind kind, const char* beg, size_t len, const char* file = "", int line = 0, int column = 0);
+		Token(Kind kind, const char* beg, const char* end, const char* file = "", int line = 0, int column = 0);
 
 		bool Is(Kind kind) const;
 		bool IsEither(std::initializer_list<Kind> kinds) const;
 
 		const Kind& GetKind() const;
 		const std::string_view& GetLex() const;
+		const char* GetFile() const;
 		int GetLine() const;
 		int GetColumn() const;
 	};

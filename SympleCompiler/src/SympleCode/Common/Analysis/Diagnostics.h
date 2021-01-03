@@ -31,6 +31,8 @@ namespace Symple
 		static std::map<std::string_view, const VariableDeclarationNode*> sVariables;
 		static std::map<std::string_view, const VariableDeclarationNode*> pVariables;
 	public:
+		static void Clear();
+
 		static void ReportError(const Token* token, const char* fmt, ...);
 
 		static void ReportWarning(const Token* token, const char* fmt, ...);
@@ -48,7 +50,7 @@ namespace Symple
 		static const FunctionDeclarationNode* GetFunction(const std::string_view& name, const FunctionCallArgumentsNode* arguments);
 		static const std::map<std::string_view, const FunctionDeclarationNode*>& GetFunctions();
 
-		static const VariableDeclarationNode* GetVariable(const std::string_view& call);
+		static const VariableDeclarationNode* GetVariable(const std::string_view& name);
 		static const std::map<std::string_view, const VariableDeclarationNode*>& GetVariables();
 	};
 }
