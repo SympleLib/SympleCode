@@ -507,8 +507,10 @@ namespace Symple
 		Match(Token::Kind::OpenBracket);
 		ExpressionNode* right = ParseExpression();
 		Match(Token::Kind::CloseBracket);
-		ModifiableExpressionNode* left = ParseModifiableExpression();
+		const Token* leftToken = Peek();
+		ExpressionNode* left = ParseExpression();
 
+		Diagnostics::ReportError(leftToken, "Expression not a Pointer");
 		return new PointerIndexExpressionNode(left, right);
 	}
 

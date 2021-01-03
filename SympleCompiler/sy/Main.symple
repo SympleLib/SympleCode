@@ -1,7 +1,8 @@
+#include "libc/memory.sy"
+
 int main()
 {
-	mut int test = 420 lol;
-	test = 69;
+	
 
 	0;
 };

@@ -7,10 +7,10 @@ namespace Symple
 	class PointerIndexExpressionNode : public ModifiableExpressionNode
 	{
 	private:
-		const ModifiableExpressionNode* mVariable;
+		const ExpressionNode* mVariable;
 		const ExpressionNode* mIndex;
 	public:
-		PointerIndexExpressionNode(const ModifiableExpressionNode* variable, const ExpressionNode* index)
+		PointerIndexExpressionNode(const ExpressionNode* variable, const ExpressionNode* index)
 			: ModifiableExpressionNode(variable->GetType()), mVariable(variable), mIndex(index) {}
 
 		Kind GetKind() const override
@@ -36,7 +36,7 @@ namespace Symple
 			return ss.str();
 		}
 
-		const ModifiableExpressionNode* GetExpression() const
+		const ExpressionNode* GetExpression() const
 		{
 			return mVariable;
 		}
