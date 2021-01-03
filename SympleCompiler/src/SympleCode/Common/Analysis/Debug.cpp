@@ -5,25 +5,34 @@
 
 namespace Symple
 {
-	std::map<std::string_view, const FunctionDeclarationNode*> Debug::sFunctions;
-	std::map<std::string_view, const VariableDeclarationNode*> Debug::sVariables;
-	std::map<std::string_view, const VariableDeclarationNode*> Debug::pVariables;
+	std::vector<const FunctionDeclarationNode*> Debug::sFunctions;
+	std::vector<const VariableDeclarationNode*> Debug::sVariables;
+	std::vector<const VariableDeclarationNode*> Debug::pVariables;
+
+	std::vector<const Type*> Debug::sTypes;
 
 	void Debug::Clear()
 	{
 		sFunctions.clear();
 		sVariables.clear();
 		pVariables.clear();
+
+		sTypes = Type::PrimitiveTypes;
 	}
 
 	void Debug::FunctionDeclaration(const FunctionDeclarationNode* function)
 	{
-		sFunctions.insert({ function->GetName()->GetLex(), function });
+		sFunctions.push_back(function);
 	}
 
 	void Debug::VariableDeclaration(const VariableDeclarationNode* variable)
 	{
-		sVariables.insert({ variable->GetName()->GetLex(), variable });
+		sVariables.push_back(variable);
+	}
+
+	void Debug::TypeDeclaration(const Type* type)
+	{
+		sTypes.push_back(type);
 	}
 
 	void Debug::BeginScope()
@@ -38,18 +47,18 @@ namespace Symple
 
 	const FunctionDeclarationNode* Debug::GetFunction(const std::string_view& name, const FunctionCallArgumentsNode* arguments)
 	{
-		for (const auto& function : sFunctions)
+		for (const FunctionDeclarationNode* function : sFunctions)
 		{
-			if (function.first == name)
+			if (function->GetName()->GetLex() == name)
 			{
-				if (function.second->GetModifiers()->GetFormatType())
-					switch (function.second->GetModifiers()->GetFormatType()->GetModifier()->GetKind())
+				if (function->GetModifiers()->GetFormatType())
+					switch (function->GetModifiers()->GetFormatType()->GetModifier()->GetKind())
 					{
 					case Token::Kind::SympleCall:
 						goto SympleCall;
 					case Token::Kind::StdCall:
 					case Token::Kind::CCall:
-						return function.second;
+						return function;
 					}
 
 			SympleCall:
@@ -57,38 +66,54 @@ namespace Symple
 
 				for (unsigned int i = 0; i < arguments->GetArguments().size(); i++)
 				{
-					if (i >= function.second->GetArguments()->GetArguments().size())
+					if (i >= function->GetArguments()->GetArguments().size())
 					{
 						same = false;
 
 						break;
 					}
 
-					same &= arguments->GetArguments()[i]->GetType()->GetType() == function.second->GetArguments()->GetArguments()[i]->GetType()->GetType();
+					same &= arguments->GetArguments()[i]->GetType()->GetType() == function->GetArguments()->GetArguments()[i]->GetType()->GetType();
 				}
 
 				if (same)
-					return function.second;
+					return function;
 			}
 		}
 
 		return nullptr;
 	}
 
-	const std::map<std::string_view, const FunctionDeclarationNode*>& Debug::GetFunctions()
+	const std::vector<const FunctionDeclarationNode*>& Debug::GetFunctions()
 	{
 		return sFunctions;
 	}
 
 	const VariableDeclarationNode* Debug::GetVariable(const std::string_view& name)
 	{
-		if (sVariables.find(name) == sVariables.end())
-			return nullptr;
-		return sVariables.at(name);
+		for (const VariableDeclarationNode* variable : sVariables)
+			if (variable->GetName()->GetLex() == name)
+				return variable;
+
+		return nullptr;
 	}
 
-	const std::map<std::string_view, const VariableDeclarationNode*>& Debug::GetVariables()
+	const std::vector<const VariableDeclarationNode*>& Debug::GetVariables()
 	{
 		return sVariables;
+	}
+
+	const Type* Debug::GetType(const std::string_view& name)
+	{
+		for (const Type* type : sTypes)
+			if (type->GetName() == name)
+				return type;
+
+		return nullptr;
+	}
+
+	const std::vector<const Type*>& Debug::GetTypes()
+	{
+		return sTypes;
 	}
 }

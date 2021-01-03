@@ -1,8 +1,8 @@
 #pragma once
 
-#include "SympleCode/Common/Node/Type/TypeNodes.h"
-#include "SympleCode/Common/Node/Type/TypeModifiersNode.h"
 #include "SympleCode/Common/Type.h"
+#include "SympleCode/Common/Node/Type/TypeContinueNode.h"
+#include "SympleCode/Common/Node/Type/TypeModifiersNode.h"
 
 namespace Symple
 {
@@ -11,9 +11,10 @@ namespace Symple
 	private:
 		const Type* mType;
 		const TypeModifiersNode* mModifiers;
+		const TypeContinueNode* mContinue;
 	public:
-		TypeNode(const Type* type, const TypeModifiersNode* modifiers)
-			: mType(type), mModifiers(modifiers)
+		TypeNode(const Type* type, const TypeModifiersNode* modifiers, const TypeContinueNode* contjnue)
+			: mType(type), mModifiers(modifiers), mContinue(contjnue)
 		{}
 
 		Kind GetKind() const
@@ -29,6 +30,18 @@ namespace Symple
 		const TypeModifiersNode* GetModifiers() const
 		{
 			return mModifiers;
+		}
+
+		const TypeContinueNode* GetContinue() const
+		{
+			return mContinue;
+		}
+
+		bool HasContinue(const Token* type) const
+		{
+			if (mContinue)
+				return mContinue->HasContinue(type);
+			return false;
 		}
 	};
 }

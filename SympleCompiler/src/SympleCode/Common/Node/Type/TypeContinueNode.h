@@ -1,40 +1,51 @@
 #pragma once
 
-#include "SympleCode/Common/Node/Type/TypeModifierNode.h"
+#include "SympleCode/Common/Type.h"
+#include "SympleCode/Common/Node/Type/TypeModifiersNode.h"
 
 namespace Symple
 {
-	class TypeContinueNode : public TypeModifierNode
+	class TypeContinueNode : public Node, public TypeNodes
 	{
+	private:
+		const Token* mType;
+		const TypeModifiersNode* mModifiers;
+		const TypeContinueNode* mContinue;
 	public:
-		TypeContinueNode(const Token* contjnue)
-			
+		TypeContinueNode(const Token* type, const TypeModifiersNode* modifiers, const TypeContinueNode* contjnue)
+			: mType(type), mModifiers(modifiers), mContinue(contjnue)
 		{
-			if (!mModifier->IsEither({ Token::Kind::Asterisk }))
-				Diagnostics::ReportError(mModifier, "Illegal Modifier");
+			if (!mType->IsEither({ Token::Kind::Asterisk }))
+				Diagnostics::ReportError(mType, "Illegal Continue");
 		}
 
-		Kind GetKind() const override
+		Kind GetKind() const
 		{
-			return Kind::TypeModifier;
+			return Kind::TypeContinue;
 		}
 
-		std::string ToString(const std::string& indent = "", bool last = true) const override
+		const Token* GetType() const
 		{
-			std::stringstream ss;
-			ss << indent;
-			if (last)
-				ss << "L--\t";
-			else
-				ss << "|--\t";
-			ss << "Type Continue [" << mModifier->GetLex() << "]";
-
-			return ss.str();
+			return mType;
 		}
 
-		const Token* GetModifier() const
+		const TypeModifiersNode* GetModifiers() const
 		{
-			return mModifier;
+			return mModifiers;
+		}
+
+		const TypeContinueNode* GetContinue() const
+		{
+			return mContinue;
+		}
+		
+		bool HasContinue(const Token* type) const
+		{
+			if (mType == type)
+				return true;
+			if (mContinue)
+				return mContinue->HasContinue(type);
+			return false;
 		}
 	};
 }

@@ -1,7 +1,5 @@
 #pragma once
 
-#include <map>
-
 #include "SympleCode/Common/Node/Member/FunctionDeclarationNode.h"
 #include "SympleCode/Common/Node/Function/FunctionCallArgumentsNode.h"
 
@@ -13,22 +11,28 @@ namespace Symple
 	class Debug
 	{
 	private:
-		static std::map<std::string_view, const FunctionDeclarationNode*> sFunctions;
-		static std::map<std::string_view, const VariableDeclarationNode*> sVariables;
-		static std::map<std::string_view, const VariableDeclarationNode*> pVariables;
+		static std::vector<const FunctionDeclarationNode*> sFunctions;
+		static std::vector<const VariableDeclarationNode*> sVariables;
+		static std::vector<const VariableDeclarationNode*> pVariables;
+
+		static std::vector<const Type*> sTypes;
 	public:
 		static void Clear();
 
 		static void FunctionDeclaration(const FunctionDeclarationNode* function);
 		static void VariableDeclaration(const VariableDeclarationNode* variable);
+		static void TypeDeclaration(const Type* type);
 
 		static void BeginScope();
 		static void EndScope();
 
 		static const FunctionDeclarationNode* GetFunction(const std::string_view& name, const FunctionCallArgumentsNode* arguments);
-		static const std::map<std::string_view, const FunctionDeclarationNode*>& GetFunctions();
+		static const std::vector<const FunctionDeclarationNode*>& GetFunctions();
 
 		static const VariableDeclarationNode* GetVariable(const std::string_view& name);
-		static const std::map<std::string_view, const VariableDeclarationNode*>& GetVariables();
+		static const std::vector<const VariableDeclarationNode*>& GetVariables();
+
+		static const Type* GetType(const std::string_view& name);
+		static const std::vector<const Type*>& GetTypes();
 	};
 }

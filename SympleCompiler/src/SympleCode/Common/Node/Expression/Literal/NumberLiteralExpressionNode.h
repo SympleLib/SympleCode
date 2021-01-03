@@ -4,7 +4,7 @@
 
 namespace Symple
 {
-	static const TypeNode* sNumberType = new TypeNode(Type::PrimitiveType::Int, new TypeModifiersNode({}));
+	static const TypeNode* sNumberType = new TypeNode(Type::PrimitiveType::Int, new TypeModifiersNode({}), nullptr);
 
 	class NumberLiteralExpressionNode : public LiteralExpressionNode
 	{

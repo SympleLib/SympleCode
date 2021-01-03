@@ -1,8 +1,6 @@
-#include "libc/memory.sy"
-
 int main()
 {
-	
+	int* myIntPtr = null;
 
 	0;
 };

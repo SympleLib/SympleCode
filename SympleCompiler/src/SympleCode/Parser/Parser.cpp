@@ -64,31 +64,37 @@ namespace Symple
 		return new Token(kind);
 	}
 
-	bool Parser::IsType(const Token* token) const
+	bool Parser::IsType(const Token* token)
 	{
-		for (const Type* type : mTypes)
+		for (const Type* type : Debug::GetTypes())
 			if (token->GetLex() == type->GetName())
 				return true;
 		return false;
 	}
 
-	const Type* Parser::GetType(const Token* token) const
+	const Type* Parser::GetType(const Token* token)
 	{
-		for (const Type* type : mTypes)
+		for (const Type* type : Debug::GetTypes())
 			if (token->GetLex() == type->GetName())
 				return type;
 		return nullptr;
 	}
 
-	bool Parser::IsTypeNodeable(const Token* token) const
+	bool Parser::IsTypeNodeable(const Token* token)
 	{
-		return IsType(Peek()) || token->IsEither({ Token::Kind::Mutable });
+		return IsType(token) || token->IsEither({ Token::Kind::Mutable });
+	}
+
+	bool Parser::IsTypeContinue(const Token* token)
+	{
+		return token->IsEither({ Token::Kind::Asterisk });
 	}
 
 	TypeNode* Parser::ParseType()
 	{
 		const Type* type = nullptr;
 		std::vector<const TypeModifierNode*> modifiers;
+		const TypeContinueNode* contjnue = nullptr;
 
 		while (IsTypeNodeable(Peek()))
 		{
@@ -101,13 +107,55 @@ namespace Symple
 				continue;
 			}
 
+			if (IsTypeContinue(Peek()))
+			{
+				if (!type)
+					Diagnostics::ReportError(Next(), "Type Not Specified");
+				
+				break;
+			}
+
 			modifiers.push_back(new TypeModifierNode(Next()));
 		}
 
-		if (type)
-			return new TypeNode(type, new TypeModifiersNode(modifiers));
+		if (IsTypeContinue(Peek()))
+			contjnue = ParseTypeContinue();
 
-		return new TypeNode(Type::PrimitiveType::Error, new TypeModifiersNode({}));
+		if (type)
+			return new TypeNode(type, new TypeModifiersNode(modifiers), contjnue);
+
+		return new TypeNode(Type::PrimitiveType::Error, new TypeModifiersNode({}), contjnue);
+	}
+
+	TypeContinueNode* Parser::ParseTypeContinue()
+	{
+		const Token* type = Next();
+		std::vector<const TypeModifierNode*> modifiers;
+		const TypeContinueNode* contjnue = nullptr;
+
+		while (IsTypeNodeable(Peek()))
+		{
+			if (IsType(Peek()))
+			{
+				Diagnostics::ReportError(Next(), "Type Already Specified");
+				continue;
+			}
+
+			if (IsTypeContinue(Peek()))
+			{
+				if (!type)
+					Diagnostics::ReportError(Next(), "Type Not Specified");
+
+				break;
+			}
+
+			modifiers.push_back(new TypeModifierNode(Next()));
+		}
+
+		if (IsTypeContinue(Peek()))
+			contjnue = ParseTypeContinue();
+
+		return new TypeContinueNode(type, new TypeModifiersNode({ modifiers }), contjnue);
 	}
 
 	const std::vector<const MemberNode*> Parser::ParseMembers()

@@ -4,7 +4,7 @@
 
 namespace Symple
 {
-	static const TypeNode* sCharacterType = new TypeNode(Type::PrimitiveType::Char, new TypeModifiersNode({}));
+	static const TypeNode* sCharacterType = new TypeNode(Type::PrimitiveType::Char, new TypeModifiersNode({}), nullptr);
 
 	class CharacterLiteralExpressionNode : public LiteralExpressionNode
 	{

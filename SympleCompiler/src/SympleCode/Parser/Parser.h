@@ -45,11 +45,13 @@ namespace Symple
 		const Token* Next();
 		const Token* Match(Token::Kind kind);
 
-		bool IsType(const Token* token) const;
-		const Type* GetType(const Token* token) const;
+		static bool IsType(const Token* token);
+		static const Type* GetType(const Token* token);
 
-		bool IsTypeNodeable(const Token* token) const;
+		static bool IsTypeNodeable(const Token* token);
+		static bool IsTypeContinue(const Token* token);
 		TypeNode* ParseType();
+		TypeContinueNode* ParseTypeContinue();
 
 		const std::vector<const MemberNode*> ParseMembers();
 		MemberNode* ParseMember();

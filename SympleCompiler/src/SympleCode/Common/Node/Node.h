@@ -62,6 +62,7 @@ namespace Symple
 			Type,
 			TypeModifier,
 			TypeModifiers,
+			TypeContinue,
 		};
 
 		static constexpr const char* KindMap[] = {
@@ -78,7 +79,7 @@ namespace Symple
 			"FunctionNode", "FunctionHint", "ExternFunction",  "FunctionModifier",
 			"FunctionArgument", "FunctionArguments", "FunctionModifiers", "FunctionCallArguments",
 			"VariableModifier", "VariableModifiers",
-			"Type", "TypeModifier", "TypeModifiers",
+			"Type", "TypeModifier", "TypeModifiers", "TypeContinue",
 		};
 
 		static constexpr const char* KindString(Kind kind)
