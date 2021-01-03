@@ -4,6 +4,8 @@
 #include "SympleCode/Common/Node/Expression/VariableExpressionNode.h"
 #include "SympleCode/Common/Node/Expression/ModifiableExpressionNode.h"
 
+#include "SympleCode/Common/Analysis/Diagnostics.h"
+
 namespace Symple
 {
 	class AssignmentExpressionNode : public ModifiableExpressionNode
@@ -14,7 +16,11 @@ namespace Symple
 		const ExpressionNode* mRight;
 	public:
 		AssignmentExpressionNode(const Token* oqerator, const ModifiableExpressionNode* left, const ExpressionNode* right)
-			: ModifiableExpressionNode(left->GetType()), mOperator(oqerator), mLeft(left), mRight(right) {}
+			: ModifiableExpressionNode(left->GetType()), mOperator(oqerator), mLeft(left), mRight(right)
+		{
+			if (!mLeft->GetType()->SameAs(mRight->GetType()))
+				Diagnostics::ReportError(mOperator, "Unmatched Types");
+		}
 
 		Kind GetKind() const override
 		{

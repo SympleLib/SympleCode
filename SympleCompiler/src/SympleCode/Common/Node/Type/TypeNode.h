@@ -43,5 +43,16 @@ namespace Symple
 				return mContinue->HasContinue(type);
 			return false;
 		}
+
+		bool SameAs(const TypeNode* other) const
+		{
+			bool rawType = mType == other->mType && mContinue->SameAs(other->mContinue);
+			bool modifiers = mModifiers->GetModifiers().size() == other->mModifiers->GetModifiers().size();
+			if (modifiers)
+				for (unsigned int i = 0; i < mModifiers->GetModifiers().size(); i++)
+					modifiers &= mModifiers->GetModifiers()[i]->GetModifier()->Is(other->mModifiers->GetModifiers()[i]->GetModifier()->GetKind());
+
+			return rawType && modifiers;
+		}
 	};
 }

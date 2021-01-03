@@ -16,7 +16,7 @@ namespace Symple
 		const Token* mModifier;
 	public:
 		TypeModifierNode(const Token* modifier)
-			: mModifier(modifier), mMutable(mModifier->Is(Token::Kind::Mutable))
+			: mModifier(modifier), mMutable(modifier->Is(Token::Kind::Mutable))
 		{
 			if (!mModifier->IsEither({ Token::Kind::Mutable }))
 				Diagnostics::ReportError(mModifier, "Illegal Modifier");

@@ -1,6 +1,6 @@
 int main()
 {
-	int* myIntPtr = null;
+	mut char* myIntPtr = "This is a string!";
 
 	0;
 };
