@@ -3,8 +3,9 @@
 #include "SympleCode/Common/Type.h"
 #include "SympleCode/Common/Token.h"
 #include "SympleCode/Common/Node/Node.h"
-#include "SympleCode/Common/Analysis/Diagnostics.h"
 #include "SympleCode/Common/Node/Function/Function.h"
+
+#include "SympleCode/Common/Analysis/Diagnostics.h"
 
 namespace Symple
 {

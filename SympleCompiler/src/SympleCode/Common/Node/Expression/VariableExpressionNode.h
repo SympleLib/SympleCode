@@ -1,9 +1,10 @@
 #pragma once
 
 #include "SympleCode/Common/Token.h"
-#include "SympleCode/Common/Analysis/Diagnostics.h"
-#include "SympleCode/Common/Node/Expression/ModifiableExpressionNode.h"
 #include "SympleCode/Common/Node/Variable/Variable.h"
+#include "SympleCode/Common/Node/Expression/ModifiableExpressionNode.h"
+
+#include "SympleCode/Common/Analysis/Debug.h"
 
 namespace Symple
 {
@@ -13,7 +14,7 @@ namespace Symple
 		const Token* mName;
 	public:
 		VariableExpressionNode(const Token* name)
-			: ModifiableExpressionNode(Diagnostics::GetVariable(name->GetLex())->GetType()), mName(name) {}
+			: ModifiableExpressionNode(Debug::GetVariable(name->GetLex())->GetType()), mName(name) {}
 
 		Kind GetKind() const override
 		{

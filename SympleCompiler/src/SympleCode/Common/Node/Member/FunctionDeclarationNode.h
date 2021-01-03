@@ -35,7 +35,7 @@ namespace Symple
 					break;
 				case Token::Kind::SympleCall:
 				SympleCall:
-					postfix << '@' << arguments->GetArguments().size() << '.';
+					postfix << '@' << mArguments->GetArguments().size() << '.';
 					for (const FunctionArgumentNode* argument : mArguments->GetArguments())
 						postfix << '.' << argument->GetType()->GetType()->GetSize();
 					break;

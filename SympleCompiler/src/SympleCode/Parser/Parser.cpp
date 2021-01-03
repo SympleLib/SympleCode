@@ -1,4 +1,4 @@
-#include "Parser.h"
+#include "SympleCode/Parser/Parser.h"
 
 #include <xhash>
 #include <iostream>
@@ -18,6 +18,9 @@
 
 #include "SympleCode/Common/Node/Expression/VariableExpressionNode.h"
 #include "SympleCode/Common/Node/Expression/PointerIndexExpressionNode.h"
+
+#include "SympleCode/Common/Analysis/Debug.h"
+#include "SympleCode/Common/Analysis/Diagnostics.h"
 
 #include "SympleCode/Common/Priority.h"
 
@@ -146,14 +149,14 @@ namespace Symple
 		const TypeNode* type = ParseType();
 		const Token* name = Next();
 
-		Diagnostics::BeginScope();
+		Debug::BeginScope();
 		FunctionArgumentsNode* arguments = ParseFunctionArguments();
 		FunctionModifiersNode* modifiers = ParseFunctionModifiers();
 		BlockStatementNode* body = ParseBlockStatement();
-		Diagnostics::EndScope();
+		Debug::EndScope();
 
 		FunctionDeclarationNode* declaration = new FunctionDeclarationNode(type, name, arguments, modifiers, body);
-		Diagnostics::FunctionDeclaration(declaration);
+		Debug::FunctionDeclaration(declaration);
 		return declaration;
 	}
 
@@ -207,7 +210,7 @@ namespace Symple
 		const Token* name = Next();
 
 		FunctionArgumentNode* argument = new FunctionArgumentNode(type, name, ParseVariableModifiers());
-		Diagnostics::VariableDeclaration(argument);
+		Debug::VariableDeclaration(argument);
 		return argument;
 	}
 
@@ -221,7 +224,7 @@ namespace Symple
 		Match(Token::Kind::Semicolon);
 
 		FunctionHintNode* hint = new FunctionHintNode(type, name, arguments, modifiers);
-		Diagnostics::FunctionDeclaration(hint);
+		Debug::FunctionDeclaration(hint);
 		return hint;
 	}
 
@@ -235,7 +238,7 @@ namespace Symple
 		Match(Token::Kind::Semicolon);
 
 		ExternFunctionNode* exjern = new ExternFunctionNode(type, name, arguments, modifiers);
-		Diagnostics::FunctionDeclaration(exjern);
+		Debug::FunctionDeclaration(exjern);
 		return exjern;
 	}
 
@@ -300,10 +303,10 @@ namespace Symple
 
 	BlockStatementNode* Parser::ParseBlockStatement()
 	{
-		Diagnostics::BeginScope();
+		Debug::BeginScope();
 		if (!Peek()->Is(Token::Kind::OpenBrace))
 		{
-			Diagnostics::EndScope();
+			Debug::EndScope();
 			return new BlockStatementNode(Peek(), { ParseStatement() }, Peek());
 		}
 		const Token* open = Match(Token::Kind::OpenBrace);
@@ -324,7 +327,7 @@ namespace Symple
 				Next();
 		}
 		const Token* close = Match(Token::Kind::CloseBrace);
-		Diagnostics::EndScope();
+		Debug::EndScope();
 
 		return new BlockStatementNode(open, statements, close);
 	}
@@ -367,7 +370,7 @@ namespace Symple
 			Match(Token::Kind::Semicolon);
 
 			declaration = new VariableDeclarationNode(name, type, modifiers, expression, next);
-			Diagnostics::VariableDeclaration(declaration);
+			Debug::VariableDeclaration(declaration);
 			return declaration;
 		}
 
@@ -382,7 +385,7 @@ namespace Symple
 		Match(Token::Kind::Semicolon);
 
 		declaration = new VariableDeclarationNode(name, type, modifiers, nullptr, next);
-		Diagnostics::VariableDeclaration(declaration);
+		Debug::VariableDeclaration(declaration);
 		return declaration;
 	}
 
@@ -489,7 +492,7 @@ namespace Symple
 			return ParsePointerIndexExpression();
 		
 		const VariableDeclarationNode* variable;
-		if (variable = Diagnostics::GetVariable(Peek()->GetLex()))
+		if (variable = Debug::GetVariable(Peek()->GetLex()))
 		{
 			if (!variable->GetType()->GetModifiers()->IsMutable())
 				Diagnostics::ReportError(Peek(), "Variable is not Mutable");

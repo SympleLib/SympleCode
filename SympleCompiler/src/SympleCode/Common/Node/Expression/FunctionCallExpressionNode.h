@@ -1,7 +1,7 @@
 #pragma once
 
 #include "SympleCode/Common/Token.h"
-#include "SympleCode/Common/Analysis/Diagnostics.h"
+#include "SympleCode/Common/Analysis/Debug.h"
 
 namespace Symple
 {
@@ -12,7 +12,7 @@ namespace Symple
 		const FunctionCallArgumentsNode* mArguments;
 	public:
 		FunctionCallExpressionNode(const Token* name, const FunctionCallArgumentsNode* arguments)
-			: ExpressionNode(Diagnostics::GetFunction(name->GetLex(), arguments)->GetType()), mName(name), mArguments(arguments)
+			: ExpressionNode(Debug::GetFunction(name->GetLex(), arguments)->GetType()), mName(name), mArguments(arguments)
 		{}
 
 		Kind GetKind() const

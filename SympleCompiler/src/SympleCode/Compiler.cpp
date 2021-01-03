@@ -2,6 +2,9 @@
 
 #include "SympleCode/Parser/Parser.h"
 
+#include "SympleCode/Common/Analysis/Debug.h"
+#include "SympleCode/Common/Analysis/Diagnostics.h"
+
 #include <algorithm>
 #include <iostream>
 #include <sstream>
@@ -13,6 +16,7 @@ namespace Symple
 {
 	bool Compiler::CompileFile(const std::string& pathStr)
 	{
+		Debug::Clear();
 		Diagnostics::Clear();
 
 		std::string dir = "bin\\" + pathStr.substr(0, pathStr.find_last_of('\\'));
