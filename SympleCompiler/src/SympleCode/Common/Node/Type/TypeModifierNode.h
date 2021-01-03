@@ -11,8 +11,9 @@ namespace Symple
 	class TypeModifierNode : public Node, public TypeNodes
 	{
 	private:
-		const Token* mModifier;
 		bool mMutable;
+	protected:
+		const Token* mModifier;
 	public:
 		TypeModifierNode(const Token* modifier)
 			: mModifier(modifier), mMutable(mModifier->Is(Token::Kind::Mutable))
