@@ -11,7 +11,7 @@ namespace Symple
 		const ExpressionNode* mValue;
 	public:
 		UnaryExpressionNode(const Token* oqerator, const ExpressionNode* value)
-			: OperatorExpressionNode(mValue->GetType(), oqerator), mValue(value) {}
+			: OperatorExpressionNode(value->GetType(), oqerator), mValue(value) {}
 
 		Kind GetKind() const override
 		{
