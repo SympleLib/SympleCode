@@ -21,11 +21,12 @@
 
 #include "SympleCode/Node/Expression/ExpressionNode.h"
 #include "SympleCode/Node/Expression/CastExpressionNode.h"
-#include "SympleCode/Node/Expression/ModifiableExpressionNode.h"
 #include "SympleCode/Node/Expression/FunctionCallExpressionNode.h"
 #include "SympleCode/Node/Expression/ParenthesizedExpressionNode.h"
 
 #include "SympleCode/Node/Expression/Literal/LiteralExpressionNode.h"
+
+#include "SympleCode/Node/Expression/Modifiable/ModifiableExpressionNode.h"
 
 namespace Symple
 {

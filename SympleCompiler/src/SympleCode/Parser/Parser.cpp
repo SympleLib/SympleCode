@@ -16,7 +16,7 @@
 #include "SympleCode/Node/Expression/Literal/BooleanLiteralExpressionNode.h"
 #include "SympleCode/Node/Expression/Literal/CharacterLiteralExpressionNode.h"
 
-#include "SympleCode/Node/Expression/VariableExpressionNode.h"
+#include "SympleCode/Node/Expression/Modifiable/VariableExpressionNode.h"
 
 #include "SympleCode/Analysis/Debug.h"
 #include "SympleCode/Analysis/Diagnostics.h"

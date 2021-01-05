@@ -1,8 +1,7 @@
 #pragma once
 
 #include "SympleCode/Common/Token.h"
-#include "SympleCode/Node/Expression/VariableExpressionNode.h"
-#include "SympleCode/Node/Expression/ModifiableExpressionNode.h"
+#include "SympleCode/Node/Expression/Modifiable/ModifiableExpressionNode.h"
 
 #include "SympleCode/Analysis/Diagnostics.h"
 
