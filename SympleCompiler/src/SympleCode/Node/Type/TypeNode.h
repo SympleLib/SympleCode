@@ -56,10 +56,15 @@ namespace Symple
 			return mContinue;
 		}
 
-		bool HasContinue(const Token* type) const
+		unsigned int GetSize() const
+		{
+			return HasContinue(Token::Kind::Asterisk) ? 4 : mType->GetSize();
+		}
+
+		bool HasContinue(Token::Kind kind) const
 		{
 			if (mContinue)
-				return mContinue->HasContinue(type);
+				return mContinue->HasContinue(kind);
 			return false;
 		}
 
@@ -77,6 +82,14 @@ namespace Symple
 			bool modifiers = mModifiers->IsMutable() || !(mModifiers->IsMutable() || other->mModifiers->IsMutable());
 
 			return rawType && modifiers;
+		}
+
+		bool CanCastTo(const TypeNode* other) const
+		{
+			bool type = GetSize() == other->GetSize() || (mType == other->mType && (mContinue == other->mContinue || (mContinue && other->mContinue && mContinue->CanImplicitlyCastTo(other->mContinue))));
+			bool modifiers = mModifiers->IsMutable() || !(mModifiers->IsMutable() || other->mModifiers->IsMutable());
+
+			return type && modifiers;
 		}
 	};
 

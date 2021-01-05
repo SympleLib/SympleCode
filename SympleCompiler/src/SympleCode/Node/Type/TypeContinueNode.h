@@ -41,12 +41,12 @@ namespace Symple
 			return mContinue;
 		}
 		
-		bool HasContinue(const Token* type) const
+		bool HasContinue(Token::Kind kind) const
 		{
-			if (mType == type)
+			if (mType->Is(kind))
 				return true;
 			if (mContinue)
-				return mContinue->HasContinue(type);
+				return mContinue->HasContinue(kind);
 			return false;
 		}
 		
