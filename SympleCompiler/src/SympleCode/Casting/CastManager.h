@@ -8,7 +8,7 @@ namespace Symple
 {
 	struct CastAction {};
 
-	static class CastManager
+	class CastManager
 	{
 	private:
 		static std::map<const Type*, const Type*> sTypeCastSheet;
