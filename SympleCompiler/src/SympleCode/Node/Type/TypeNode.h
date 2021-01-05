@@ -66,10 +66,15 @@ namespace Symple
 		bool SameAs(const TypeNode* other) const
 		{
 			bool rawType = mType == other->mType && (mContinue == other->mContinue || (mContinue && other->mContinue && mContinue->SameAs(other->mContinue)));
-			bool modifiers = mModifiers->GetModifiers().size() == other->mModifiers->GetModifiers().size();
-			if (modifiers)
-				for (unsigned int i = 0; i < mModifiers->GetModifiers().size(); i++)
-					modifiers &= mModifiers->GetModifiers()[i]->GetModifier()->Is(other->mModifiers->GetModifiers()[i]->GetModifier()->GetKind());
+			bool modifiers = mModifiers->IsMutable() == other->mModifiers->IsMutable();
+
+			return rawType && modifiers;
+		}
+
+		bool CanImplicitlyCastTo(const TypeNode* other) const
+		{
+			bool rawType = mType == other->mType && (mContinue == other->mContinue || (mContinue && other->mContinue && mContinue->CanImplicitlyCastTo(other->mContinue)));
+			bool modifiers = mModifiers->IsMutable() || !(mModifiers->IsMutable() || other->mModifiers->IsMutable());
 
 			return rawType && modifiers;
 		}

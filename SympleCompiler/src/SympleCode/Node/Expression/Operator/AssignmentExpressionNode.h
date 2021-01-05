@@ -18,7 +18,7 @@ namespace Symple
 		AssignmentExpressionNode(const Token* oqerator, const ModifiableExpressionNode* left, const ExpressionNode* right)
 			: ModifiableExpressionNode(left->GetType()), mOperator(oqerator), mLeft(left), mRight(right)
 		{
-			if (!mLeft->GetType()->SameAs(mRight->GetType()))
+			if (!mRight->GetType()->CanImplicitlyCastTo(mLeft->GetType()))
 				Diagnostics::ReportError(mOperator, "Unmatched Types");
 		}
 

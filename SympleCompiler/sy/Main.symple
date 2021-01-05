@@ -1,6 +1,6 @@
 int main()
 {
-	char* myString = "This is a string!";
+	char* myString = (char* mut)"This is a string!";
 
 	0;
 };

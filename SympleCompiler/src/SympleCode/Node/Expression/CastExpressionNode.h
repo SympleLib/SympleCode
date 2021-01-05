@@ -3,7 +3,6 @@
 #include "SympleCode/Common/Token.h"
 #include "SympleCode/Node/Expression/ExpressionNode.h"
 
-#include "SympleCode/Casting/CastManager.h"
 #include "SympleCode/Analysis/Diagnostics.h"
 
 namespace Symple
@@ -18,8 +17,8 @@ namespace Symple
 		CastExpressionNode(const Token* open, const TypeNode* type, const Token* close, const ExpressionNode* expression)
 			: ExpressionNode(type), mOpen(open), mClose(close), mExpression(expression)
 		{
-			if (!CastManager::CanCast(mType, mExpression->GetType()))
-				Diagnostics::ReportError(open, "Illegal Cast");
+			//if (!CastManager::CanCast(mType, mExpression->GetType()))
+			//	Diagnostics::ReportError(open, "Illegal Cast");
 		}
 
 		Kind GetKind() const override
