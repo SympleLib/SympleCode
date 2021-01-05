@@ -22,8 +22,7 @@ namespace Symple
 		VariableDeclarationNode(const Token* name, const TypeNode* type, const VariableModifiersNode* modifiers, const ExpressionNode* initializer, const VariableDeclarationNode* next)
 			: mName(name), mType(type), mInitializer(initializer), mModifiers(modifiers), mNext(next)
 		{
-			if (mInitializer && !mInitializer->GetType()->CanImplicitlyCastTo(mType))
-				Diagnostics::ReportError(name, "Unmatched Types");
+			Diagnostics::ReportError(mInitializer && !mInitializer->GetType()->CanImplicitlyCastTo(mType), name, "Unmatched Types");
 		}
 
 		Kind GetKind() const

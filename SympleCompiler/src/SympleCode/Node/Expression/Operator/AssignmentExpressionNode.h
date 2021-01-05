@@ -18,8 +18,8 @@ namespace Symple
 		AssignmentExpressionNode(const Token* oqerator, const ModifiableExpressionNode* left, const ExpressionNode* right)
 			: ModifiableExpressionNode(left->GetType()), mOperator(oqerator), mLeft(left), mRight(right)
 		{
-			if (!mRight->GetType()->CanImplicitlyCastTo(mLeft->GetType()))
-				Diagnostics::ReportError(mOperator, "Unmatched Types");
+			Diagnostics::ReportError(!left->IsMutable(), mOperator, "Left Hand Side is not Mutable");
+			Diagnostics::ReportError(!mRight->GetType()->CanImplicitlyCastTo(mLeft->GetType()), mOperator, "Unmatched Types");
 		}
 
 		Kind GetKind() const override
@@ -50,5 +50,7 @@ namespace Symple
 		const ModifiableExpressionNode* GetLeft() const { return mLeft; }
 
 		const ExpressionNode* GetRight() const { return mRight; }
+
+		bool IsMutable() const { return true; }
 	};
 }

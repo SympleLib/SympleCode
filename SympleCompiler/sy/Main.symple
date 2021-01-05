@@ -1,7 +1,7 @@
 int main()
 {
 	int num = 64;
-	int shortNum = &@num;
+	int* shortNum = @num;
 
 	0;
 };

@@ -17,7 +17,6 @@
 #include "SympleCode/Node/Expression/Literal/CharacterLiteralExpressionNode.h"
 
 #include "SympleCode/Node/Expression/VariableExpressionNode.h"
-#include "SympleCode/Node/Expression/PointerIndexExpressionNode.h"
 
 #include "SympleCode/Analysis/Debug.h"
 #include "SympleCode/Analysis/Diagnostics.h"
@@ -465,7 +464,6 @@ namespace Symple
 		int prority = Priority::AssignmentOperatorPriority(oqerator);
 		if (left && !prority)
 		{
-			//std::cout << Token::KindString(Peek()->GetKind()) << '\n';
 			ExpressionNode* right = ParseExpression();
 			return new AssignmentExpressionNode(oqerator, left, right);
 		}
@@ -549,9 +547,6 @@ namespace Symple
 
 	ModifiableExpressionNode* Parser::ParseModifiableExpression()
 	{
-		if (Peek()->Is(Token::Kind::OpenBracket))
-			return ParsePointerIndexExpression();
-		
 		const VariableDeclarationNode* variable;
 		if (variable = Debug::GetVariable(Peek()->GetLex()))
 		{
@@ -561,18 +556,6 @@ namespace Symple
 			return new VariableExpressionNode(Next());
 		}
 		return nullptr;
-	}
-
-	ModifiableExpressionNode* Parser::ParsePointerIndexExpression()
-	{
-		Match(Token::Kind::OpenBracket);
-		ExpressionNode* right = ParseExpression();
-		Match(Token::Kind::CloseBracket);
-		const Token* leftToken = Peek();
-		ExpressionNode* left = ParseExpression();
-
-		Diagnostics::ReportError(leftToken, "Expression not a Pointer");
-		return new PointerIndexExpressionNode(left, right);
 	}
 
 	FunctionCallExpressionNode* Parser::ParseFunctionCallExpression()

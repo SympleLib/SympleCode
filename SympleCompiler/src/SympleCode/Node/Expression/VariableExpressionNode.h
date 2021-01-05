@@ -21,7 +21,7 @@ namespace Symple
 			return Kind::VariableExpression;
 		}
 
-		std::string ToString(const std::string& indent = "", bool last = true) const
+		std::string ToString(const std::string& indent = "", bool last = true) const override
 		{
 			std::stringstream ss;
 			ss << indent;
@@ -37,6 +37,11 @@ namespace Symple
 		const Token* GetName() const
 		{
 			return mName;
+		}
+
+		bool IsMutable() const override
+		{
+			return Debug::GetVariable(mName->GetLex())->GetType()->GetModifiers()->IsMutable();
 		}
 	};
 }

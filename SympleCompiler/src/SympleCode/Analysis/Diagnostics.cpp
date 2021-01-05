@@ -3,6 +3,13 @@
 #include <cstdarg>
 #include <iostream>
 
+#define GENERATE_MESSAGE \
+	char message[128]; \
+	va_list args; \
+	va_start(args, fmt); \
+	vsprintf_s(message, fmt, args); \
+	va_end(args)
+
 namespace Symple
 {
 	std::vector<const Message*> Diagnostics::sMessages;
@@ -18,11 +25,7 @@ namespace Symple
 
 	void Diagnostics::ReportError(const Token* token, const char* fmt, ...)
 	{
-		char message[128];
-		va_list args;
-		va_start(args, fmt);
-		vsprintf_s(message, fmt, args);
-		va_end(args);
+		GENERATE_MESSAGE;
 
 		sMessages.push_back(new Message{ message, DIAGNOSTIC_LEVEL_ERROR, token });
 		sErrors.push_back(sMessages.back());
@@ -30,11 +33,29 @@ namespace Symple
 
 	void Diagnostics::ReportWarning(const Token* token, const char* fmt, ...)
 	{
-		char message[128];
-		va_list args;
-		va_start(args, fmt);
-		vsprintf_s(message, fmt, args);
-		va_end(args);
+		GENERATE_MESSAGE;
+
+		sMessages.push_back(new Message{ message, DIAGNOSTIC_LEVEL_WARNING, token });
+		sWarnings.push_back(sMessages.back());
+	}
+
+	void Diagnostics::ReportError(bool condition, const Token* token, const char* fmt, ...)
+	{
+		if (!condition)
+			return;
+
+		GENERATE_MESSAGE;
+
+		sMessages.push_back(new Message{ message, DIAGNOSTIC_LEVEL_ERROR, token });
+		sErrors.push_back(sMessages.back());
+	}
+
+	void Diagnostics::ReportWarning(bool condition, const Token* token, const char* fmt, ...)
+	{
+		if (!condition)
+			return;
+
+		GENERATE_MESSAGE;
 
 		sMessages.push_back(new Message{ message, DIAGNOSTIC_LEVEL_WARNING, token });
 		sWarnings.push_back(sMessages.back());

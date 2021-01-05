@@ -27,6 +27,8 @@ namespace Symple
 
 		static void ReportError(const Token* token, const char* fmt, ...);
 		static void ReportWarning(const Token* token, const char* fmt, ...);
+		static void ReportError(bool condition, const Token* token, const char* fmt, ...);
+		static void ReportWarning(bool condition, const Token* token, const char* fmt, ...);
 
 		static const std::vector<const Message*>& GetMessages();
 		static const std::vector<const Message*>& GetWarnings();

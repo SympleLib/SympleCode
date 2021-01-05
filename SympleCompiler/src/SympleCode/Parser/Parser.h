@@ -86,7 +86,6 @@ namespace Symple
 
 		ExpressionNode* ParseNameOrCallExpression();
 		ModifiableExpressionNode* ParseModifiableExpression();
-		ModifiableExpressionNode* ParsePointerIndexExpression();
 		FunctionCallArgumentsNode* ParseFunctionCallArguments();
 
 		FunctionCallExpressionNode* ParseFunctionCallExpression();

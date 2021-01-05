@@ -14,5 +14,7 @@ namespace Symple
 		{
 			return Kind::ModifiableExpression;
 		}
+
+		virtual bool IsMutable() const = 0;
 	};
 }
