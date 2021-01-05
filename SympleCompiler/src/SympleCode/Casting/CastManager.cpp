@@ -25,29 +25,10 @@ namespace Symple
 
 	bool CastManager::CanCast(const TypeModifiersNode* from, const TypeModifiersNode* to)
 	{
-		bool can = true;
-		for (unsigned int i = 0; i < from->GetModifiers().size(); i++)
-		{
-			bool thisCan = false;
+		Token::Kind fromKind = from->IsMutable() ? Token::Kind::Mutable : Token::Kind::Unknown;
+		Token::Kind toKind = to->IsMutable() ? Token::Kind::Mutable : Token::Kind::Unknown;
 
-			for (unsigned int j = 0; j < to->GetModifiers().size(); j++)
-			{
-				Token::Kind fromKind = Token::Kind::Unknown;
-				Token::Kind toKind = Token::Kind::Unknown;
-
-				if (j < from->GetModifiers().size())
-					fromKind = from->GetModifiers()[i]->GetModifier()->GetKind();
-				if (i < to->GetModifiers().size())
-					toKind = to->GetModifiers()[i]->GetModifier()->GetKind();
-
-				if (thisCan |= CanCast(fromKind, toKind))
-					break;
-			}
-
-			can &= thisCan;
-		}
-
-		return can;
+		return CanCast(fromKind, toKind);
 	}
 
 	bool CastManager::CanCast(const TypeModifierNode* from, const TypeModifierNode* to)
