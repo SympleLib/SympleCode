@@ -3,24 +3,24 @@
 #include <xhash>
 #include <iostream>
 
-#include "SympleCode/Common/Node/Statement/BreakStatementNode.h"
-#include "SympleCode/Common/Node/Statement/ExpressionStatementNode.h"
+#include "SympleCode/Node/Statement/BreakStatementNode.h"
+#include "SympleCode/Node/Statement/ExpressionStatementNode.h"
 
-#include "SympleCode/Common/Node/Expression/Operator/UnaryExpressionNode.h"
-#include "SympleCode/Common/Node/Expression/Operator/BinaryExpressionNode.h"
-#include "SympleCode/Common/Node/Expression/Operator/AssignmentExpressionNode.h"
+#include "SympleCode/Node/Expression/Operator/UnaryExpressionNode.h"
+#include "SympleCode/Node/Expression/Operator/BinaryExpressionNode.h"
+#include "SympleCode/Node/Expression/Operator/AssignmentExpressionNode.h"
 
-#include "SympleCode/Common/Node/Expression/Literal/NullLiteralExpressionNode.h"
-#include "SympleCode/Common/Node/Expression/Literal/StringLiteralExpressionNode.h"
-#include "SympleCode/Common/Node/Expression/Literal/NumberLiteralExpressionNode.h"
-#include "SympleCode/Common/Node/Expression/Literal/BooleanLiteralExpressionNode.h"
-#include "SympleCode/Common/Node/Expression/Literal/CharacterLiteralExpressionNode.h"
+#include "SympleCode/Node/Expression/Literal/NullLiteralExpressionNode.h"
+#include "SympleCode/Node/Expression/Literal/StringLiteralExpressionNode.h"
+#include "SympleCode/Node/Expression/Literal/NumberLiteralExpressionNode.h"
+#include "SympleCode/Node/Expression/Literal/BooleanLiteralExpressionNode.h"
+#include "SympleCode/Node/Expression/Literal/CharacterLiteralExpressionNode.h"
 
-#include "SympleCode/Common/Node/Expression/VariableExpressionNode.h"
-#include "SympleCode/Common/Node/Expression/PointerIndexExpressionNode.h"
+#include "SympleCode/Node/Expression/VariableExpressionNode.h"
+#include "SympleCode/Node/Expression/PointerIndexExpressionNode.h"
 
-#include "SympleCode/Common/Analysis/Debug.h"
-#include "SympleCode/Common/Analysis/Diagnostics.h"
+#include "SympleCode/Analysis/Debug.h"
+#include "SympleCode/Analysis/Diagnostics.h"
 
 #include "SympleCode/Common/Priority.h"
 
@@ -509,6 +509,8 @@ namespace Symple
 		switch (Peek()->GetKind())
 		{
 		case Token::Kind::OpenParenthesis:
+			if (IsTypeNodeable(Peek(1)))
+				return ParseCastExpression();
 			return ParseParenthesizedExpression();
 		case Token::Kind::Null:
 			return new NullLiteralExpressionNode(Next());
@@ -524,6 +526,17 @@ namespace Symple
 		}
 
 		return ParseNameOrCallExpression();
+	}
+
+	CastExpressionNode* Parser::ParseCastExpression()
+	{
+		const Token* open = Match(Token::Kind::OpenParenthesis);
+		const TypeNode* type = ParseType();
+		const Token* close = Match(Token::Kind::CloseParenthesis);
+
+		ExpressionNode* expression = ParseExpression();
+
+		return new CastExpressionNode(open, type, close, expression);
 	}
 
 	ExpressionNode* Parser::ParseNameOrCallExpression()

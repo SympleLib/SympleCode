@@ -5,26 +5,27 @@
 
 #include "SympleCode/Parser/Preprocessor.h"
 
-#include "SympleCode/Common/Node/Node.h"
-#include "SympleCode/Common/Node/CompilationUnitNode.h"
+#include "SympleCode/Node/Node.h"
+#include "SympleCode/Node/CompilationUnitNode.h"
 
-#include "SympleCode/Common/Node/Statement/IfStatementNode.h"
-#include "SympleCode/Common/Node/Statement/BlockStatementNode.h"
-#include "SympleCode/Common/Node/Statement/WhileStatementNode.h"
-#include "SympleCode/Common/Node/Statement/ReturnStatementNode.h"
-#include "SympleCode/Common/Node/Statement/VariableDeclarationNode.h"
+#include "SympleCode/Node/Statement/IfStatementNode.h"
+#include "SympleCode/Node/Statement/BlockStatementNode.h"
+#include "SympleCode/Node/Statement/WhileStatementNode.h"
+#include "SympleCode/Node/Statement/ReturnStatementNode.h"
+#include "SympleCode/Node/Statement/VariableDeclarationNode.h"
 
-#include "SympleCode/Common/Node/Member/FunctionHintNode.h"
-#include "SympleCode/Common/Node/Member/ExternFunctionNode.h"
-#include "SympleCode/Common/Node/Member/GlobalStatementNode.h"
-#include "SympleCode/Common/Node/Member/FunctionDeclarationNode.h"
+#include "SympleCode/Node/Member/FunctionHintNode.h"
+#include "SympleCode/Node/Member/ExternFunctionNode.h"
+#include "SympleCode/Node/Member/GlobalStatementNode.h"
+#include "SympleCode/Node/Member/FunctionDeclarationNode.h"
 
-#include "SympleCode/Common/Node/Expression/ExpressionNode.h"
-#include "SympleCode/Common/Node/Expression/ModifiableExpressionNode.h"
-#include "SympleCode/Common/Node/Expression/FunctionCallExpressionNode.h"
-#include "SympleCode/Common/Node/Expression/ParenthesizedExpressionNode.h"
+#include "SympleCode/Node/Expression/ExpressionNode.h"
+#include "SympleCode/Node/Expression/CastExpressionNode.h"
+#include "SympleCode/Node/Expression/ModifiableExpressionNode.h"
+#include "SympleCode/Node/Expression/FunctionCallExpressionNode.h"
+#include "SympleCode/Node/Expression/ParenthesizedExpressionNode.h"
 
-#include "SympleCode/Common/Node/Expression/Literal/LiteralExpressionNode.h"
+#include "SympleCode/Node/Expression/Literal/LiteralExpressionNode.h"
 
 namespace Symple
 {
@@ -80,6 +81,8 @@ namespace Symple
 		ExpressionNode* ParseUnaryExpression(int parentPriority = -1);
 		ExpressionNode* ParseBinaryExpression(int parentPriority = -1);
 		ExpressionNode* ParsePrimaryExpression();
+
+		CastExpressionNode* ParseCastExpression();
 
 		ExpressionNode* ParseNameOrCallExpression();
 		ModifiableExpressionNode* ParseModifiableExpression();

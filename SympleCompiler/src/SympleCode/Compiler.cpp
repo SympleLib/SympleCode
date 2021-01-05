@@ -2,8 +2,8 @@
 
 #include "SympleCode/Parser/Parser.h"
 
-#include "SympleCode/Common/Analysis/Debug.h"
-#include "SympleCode/Common/Analysis/Diagnostics.h"
+#include "SympleCode/Analysis/Debug.h"
+#include "SympleCode/Analysis/Diagnostics.h"
 
 #include <algorithm>
 #include <iostream>
