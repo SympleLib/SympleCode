@@ -6,6 +6,8 @@
 #include "SympleCode/Common/Node/Expression/ExpressionNode.h"
 #include "SympleCode/Common/Node/Variable/VariableModifiersNode.h"
 
+#include "SympleCode/Common/Analysis/Diagnostics.h"
+
 namespace Symple
 {
 	class VariableDeclarationNode : public StatementNode, public Variable
@@ -18,7 +20,11 @@ namespace Symple
 		const VariableDeclarationNode* mNext;
 	public:
 		VariableDeclarationNode(const Token* name, const TypeNode* type, const VariableModifiersNode* modifiers, const ExpressionNode* initializer, const VariableDeclarationNode* next)
-			: mName(name), mType(type), mInitializer(initializer), mModifiers(modifiers), mNext(next) {}
+			: mName(name), mType(type), mInitializer(initializer), mModifiers(modifiers), mNext(next)
+		{
+			if (mInitializer && !mType->SameAs(mInitializer->GetType()))
+				Diagnostics::ReportError(name, "Unmatched Types");
+		}
 
 		Kind GetKind() const
 		{

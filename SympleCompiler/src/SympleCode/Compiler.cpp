@@ -100,15 +100,16 @@ namespace Symple
 				}
 
 				if (!Diagnostics::GetErrors().size())
-				{
-					char command[128];
-					sprintf_s(command, "as -c %s -o %s", asmS, obj);
-					int compileStatis = system(command);
+					return true;
+				//{
+				//	char command[128];
+				//	sprintf_s(command, "clang -c %s -o %s", asmS, obj);
+				//	int compileStatis = system(command);
 
-					mObjectFiles.push_back(objStr);
+				//	mObjectFiles.push_back(objStr);
 
-					return !compileStatis;
-				}
+				//	return !compileStatis;
+				//}
 			}
 			printf("No Code Generated :(\n");
 

@@ -3,6 +3,8 @@
 #include "SympleCode/Common/Type.h"
 #include "SympleCode/Common/Node/Type/TypeModifiersNode.h"
 
+#include <iostream>
+
 namespace Symple
 {
 	class TypeContinueNode : public Node, public TypeNodes
@@ -50,7 +52,7 @@ namespace Symple
 		
 		bool SameAs(const TypeContinueNode* other) const
 		{
-			bool rawType = mType == other->mType && mContinue->SameAs(other->mContinue);
+			bool rawType = mType->Is(other->mType->GetKind()) && (mContinue == other->mContinue || (mContinue && other->mContinue && mContinue->SameAs(other->mContinue)));
 			bool modifiers = mModifiers->GetModifiers().size() == other->mModifiers->GetModifiers().size();
 			if (modifiers)
 				for (unsigned int i = 0; i < mModifiers->GetModifiers().size(); i++)
