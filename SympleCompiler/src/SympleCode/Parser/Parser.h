@@ -18,6 +18,7 @@
 #include "SympleCode/Node/Member/ExternFunctionNode.h"
 #include "SympleCode/Node/Member/GlobalStatementNode.h"
 #include "SympleCode/Node/Member/FunctionDeclarationNode.h"
+#include "SympleCode/Node/Member/GlobalVariableDeclarationNode.h"
 
 #include "SympleCode/Node/Expression/ExpressionNode.h"
 #include "SympleCode/Node/Expression/CastExpressionNode.h"
@@ -65,6 +66,7 @@ namespace Symple
 		FunctionArgumentNode* ParseFunctionArgument();
 		ExternFunctionNode* ParseExternFunction();
 		FunctionHintNode* ParseFunctionHint();
+		GlobalVariableDeclarationNode* ParseGlobalVariableDeclaration(const TypeNode* type = nullptr);
 
 		StatementNode* ParseStatement();
 		IfStatementNode* ParseIfStatement();

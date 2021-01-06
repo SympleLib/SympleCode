@@ -80,7 +80,7 @@ namespace Symple
 
 	bool Parser::IsTypeNodeable(const Token* token)
 	{
-		return IsType(token) || token->IsEither({ Token::Kind::Mutable });
+		return IsType(token) || TypeModifierNode::IsValid(token->GetKind());
 	}
 
 	bool Parser::IsTypeContinue(const Token* token)
@@ -180,6 +180,7 @@ namespace Symple
 			mPosition = pPosition;
 			if (isFunction)
 				return ParseFunctionDeclaration();
+			return ParseGlobalVariableDeclaration();
 		}
 		if (Peek()->Is(Token::Kind::Hint))
 			return ParseFunctionHint();
@@ -238,7 +239,7 @@ namespace Symple
 	FunctionModifiersNode* Parser::ParseFunctionModifiers()
 	{
 		std::vector<const FunctionModifierNode*> modifiers;
-		while (!Peek()->IsEither({ Token::Kind::OpenBrace, Token::Kind::Semicolon }))
+		while (FunctionModifierNode::IsValid(Peek()->GetKind()))
 			modifiers.push_back(ParseFunctionModifier());
 
 		return new FunctionModifiersNode(modifiers);
@@ -271,6 +272,51 @@ namespace Symple
 		FunctionHintNode* hint = new FunctionHintNode(type, name, arguments, modifiers);
 		Debug::FunctionDeclaration(hint);
 		return hint;
+	}
+
+	GlobalVariableDeclarationNode* Parser::ParseGlobalVariableDeclaration(const TypeNode* type)
+	{
+		if (!type)
+			type = ParseType();
+		const Token* name = Next();
+
+		VariableModifiersNode* modifiers = ParseVariableModifiers();
+
+		GlobalVariableDeclarationNode* declaration = nullptr;
+		if (Peek()->Is(Token::Kind::Equal))
+		{
+			Next();
+			ExpressionNode* expression = ParseExpression();
+
+			GlobalVariableDeclarationNode* next = nullptr;
+
+			if (Peek()->Is(Token::Kind::Comma))
+			{
+				Next();
+				next = ParseGlobalVariableDeclaration(type);
+			}
+
+			Match(Token::Kind::Semicolon);
+
+			declaration = new GlobalVariableDeclarationNode(name, type, modifiers, expression, next);
+			Debug::VariableDeclaration(declaration);
+			std::cout << declaration->ToString() << '\n';
+			return declaration;
+		}
+
+		GlobalVariableDeclarationNode* next = nullptr;
+
+		if (Peek()->Is(Token::Kind::Comma))
+		{
+			Next();
+			next = ParseGlobalVariableDeclaration(type);
+		}
+
+		Match(Token::Kind::Semicolon);
+
+		declaration = new GlobalVariableDeclarationNode(name, type, modifiers, nullptr, next);
+		Debug::VariableDeclaration(declaration);
+		return declaration;
 	}
 
 	ExternFunctionNode* Parser::ParseExternFunction()
@@ -438,7 +484,7 @@ namespace Symple
 	{
 		std::vector<const VariableModifierNode*> modifiers;
 
-		while (!Peek()->IsEither({ Token::Kind::Equal, Token::Kind::Comma, Token::Kind::Semicolon, Token::Kind::CloseParenthesis }))
+		while (VariableModifierNode::IsValid(Peek()->GetKind()))
 			modifiers.push_back(ParseVariableModifier());
 
 		return new VariableModifiersNode(modifiers);

@@ -14,11 +14,16 @@ namespace Symple
 	private:
 		const Token* mModifier;
 	public:
+		static bool IsValid(Token::Kind kind)
+		{
+			return false;
+		}
+
 		VariableModifierNode(const Token* modifier)
 			: mModifier(modifier)
 		{
 			if (!mModifier->IsEither({}))
-				Diagnostics::ReportError(mModifier, "Illegal Modifier");
+				Diagnostics::ReportError(mModifier, "Illegal Modifier: %s", std::string(mModifier->GetLex()).c_str());
 		}
 
 		Kind GetKind() const override

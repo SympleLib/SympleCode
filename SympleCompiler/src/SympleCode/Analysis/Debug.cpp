@@ -8,6 +8,7 @@ namespace Symple
 	std::vector<const FunctionDeclarationNode*> Debug::sFunctions;
 	std::vector<const VariableDeclarationNode*> Debug::sVariables;
 	std::vector<const VariableDeclarationNode*> Debug::pVariables;
+	std::vector<const GlobalVariableDeclarationNode*> Debug::sGlobalVariables;
 
 	std::vector<const Type*> Debug::sTypes;
 
@@ -16,6 +17,7 @@ namespace Symple
 		sFunctions.clear();
 		sVariables.clear();
 		pVariables.clear();
+		sGlobalVariables.clear();
 
 		sTypes = Type::PrimitiveTypes;
 	}
@@ -28,6 +30,11 @@ namespace Symple
 	void Debug::VariableDeclaration(const VariableDeclarationNode* variable)
 	{
 		sVariables.push_back(variable);
+	}
+
+	void Debug::VariableDeclaration(const GlobalVariableDeclarationNode* variable)
+	{
+		sGlobalVariables.push_back(variable);
 	}
 
 	void Debug::TypeDeclaration(const Type* type)
@@ -89,9 +96,12 @@ namespace Symple
 		return sFunctions;
 	}
 
-	const VariableDeclarationNode* Debug::GetVariable(const std::string_view& name)
+	const VariableDeclaration* Debug::GetVariable(const std::string_view& name)
 	{
 		for (const VariableDeclarationNode* variable : sVariables)
+			if (variable->GetName()->GetLex() == name)
+				return variable;
+		for (const GlobalVariableDeclarationNode* variable : sGlobalVariables)
 			if (variable->GetName()->GetLex() == name)
 				return variable;
 
@@ -101,6 +111,11 @@ namespace Symple
 	const std::vector<const VariableDeclarationNode*>& Debug::GetVariables()
 	{
 		return sVariables;
+	}
+
+	const std::vector<const GlobalVariableDeclarationNode*>& Debug::GetGlobalVariables()
+	{
+		return sGlobalVariables;
 	}
 
 	const Type* Debug::GetType(const std::string_view& name)

@@ -1,7 +1,8 @@
 #pragma once
 
 #include "SympleCode/Common/Token.h"
-#include "SympleCode/Node/Statement/StatementNode.h"
+#include "SympleCode/Common/Type.h"
+#include "SympleCode/Node/Member/MemberNode.h"
 #include "SympleCode/Node/Expression/ExpressionNode.h"
 #include "SympleCode/Node/Variable/VariableModifiersNode.h"
 #include "SympleCode/Node/Variable/VariableDeclaration.h"
@@ -10,16 +11,16 @@
 
 namespace Symple
 {
-	class VariableDeclarationNode : public StatementNode, public VariableDeclaration
+	class GlobalVariableDeclarationNode : public MemberNode, public VariableDeclaration
 	{
 	protected:
 		const Token* mName;
 		const TypeNode* mType;
 		const VariableModifiersNode* mModifiers;
 		const ExpressionNode* mInitializer;
-		const VariableDeclarationNode* mNext;
+		const GlobalVariableDeclarationNode* mNext;
 	public:
-		VariableDeclarationNode(const Token* name, const TypeNode* type, const VariableModifiersNode* modifiers, const ExpressionNode* initializer, const VariableDeclarationNode* next)
+		GlobalVariableDeclarationNode(const Token* name, const TypeNode* type, const VariableModifiersNode* modifiers, const ExpressionNode* initializer, const GlobalVariableDeclarationNode* next)
 			: mName(name), mType(type), mInitializer(initializer), mModifiers(modifiers), mNext(next)
 		{
 			if (mInitializer)
@@ -40,7 +41,7 @@ namespace Symple
 				ss << "L--\t";
 			else
 				ss << "|--\t";
-			ss << "Variable Declaration (" << mType->GetType()->GetName() << ") " << mName->GetLex();
+			ss << "Global Variable Declaration (" << mType->GetType()->GetName() << ") " << mName->GetLex();
 			const char* newIndent = " \t";
 			if (!last)
 				newIndent = "|\t";
@@ -73,8 +74,8 @@ namespace Symple
 		{
 			return mInitializer;
 		}
-		 
-		const VariableDeclarationNode* GetNext() const
+
+		const GlobalVariableDeclarationNode* GetNext() const
 		{
 			return mNext;
 		}

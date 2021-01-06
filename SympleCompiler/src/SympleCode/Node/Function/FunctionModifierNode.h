@@ -15,11 +15,25 @@ namespace Symple
 		const Token* mModifier;
 		bool mStatic, mFormat;
 	public:
+		static bool IsValid(Token::Kind kind)
+		{
+			switch (kind)
+			{
+			case Token::Kind::Static:
+			case Token::Kind::SympleCall:
+			case Token::Kind::CCall:
+			case Token::Kind::StdCall:
+				return true;
+			}
+
+			return false;
+		}
+
 		FunctionModifierNode(const Token* modifier)
 			: mModifier(modifier), mStatic(mModifier->Is(Token::Kind::Static)), mFormat(mModifier->IsEither({ Token::Kind::SympleCall, Token::Kind::CCall, Token::Kind::StdCall }))
 		{
-			if (!mModifier->IsEither({ Token::Kind::Static, Token::Kind::SympleCall, Token::Kind::CCall, Token::Kind::StdCall }))
-				Diagnostics::ReportError(mModifier, "Illegal Modifier");
+			if (!IsValid(mModifier->GetKind()))
+				Diagnostics::ReportError(mModifier, "Illegal Modifier: %s", std::string(mModifier->GetLex()).c_str());
 		}
 
 		Kind GetKind() const override

@@ -15,11 +15,22 @@ namespace Symple
 	protected:
 		const Token* mModifier;
 	public:
+		static bool IsValid(Token::Kind kind)
+		{
+			switch (kind)
+			{
+			case Token::Kind::Mutable:
+				return true;
+			}
+
+			return false;
+		}
+
 		TypeModifierNode(const Token* modifier)
 			: mModifier(modifier), mMutable(modifier->Is(Token::Kind::Mutable))
 		{
-			if (!mModifier->IsEither({ Token::Kind::Mutable }))
-				Diagnostics::ReportError(mModifier, "Illegal Modifier");
+			if (!IsValid(mModifier->GetKind()))
+				Diagnostics::ReportError(mModifier, "Illegal Modifier: %s", std::string(mModifier->GetLex()).c_str());
 		}
 
 		Kind GetKind() const override

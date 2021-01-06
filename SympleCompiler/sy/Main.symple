@@ -1,9 +1,3 @@
-int main()
-{
-	int num = 64;
-	short** shortNumPtrPtr = (short**)@num;
-	short* shortNumPtr = &shortNumPtrPtr;
-	short shortNum = &shortNumPtr;
+int globalVar = 5;
 
-	0;
-};
+int main() 0;
