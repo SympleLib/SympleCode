@@ -26,7 +26,7 @@
 
 #include "SympleCode/Node/Expression/Literal/LiteralExpressionNode.h"
 
-#include "SympleCode/Node/Expression/Modifiable/ModifiableExpressionNode.h"
+#include "SympleCode/Node/Expression/Modifiable/DereferencePointerExpressionNode.h"
 
 namespace Symple
 {
@@ -84,12 +84,14 @@ namespace Symple
 		ExpressionNode* ParsePrimaryExpression();
 
 		CastExpressionNode* ParseCastExpression();
-
-		ExpressionNode* ParseNameOrCallExpression();
-		ModifiableExpressionNode* ParseModifiableExpression();
-		FunctionCallArgumentsNode* ParseFunctionCallArguments();
-
-		FunctionCallExpressionNode* ParseFunctionCallExpression();
 		ParenthesizedExpressionNode* ParseParenthesizedExpression();
+
+		ModifiableExpressionNode* ParseModifiableExpression();
+		VariableExpressionNode* ParseVariableExpression();
+		VariableAddressExpressionNode* ParseVariableAddressExpression();
+		DereferencePointerExpressionNode* ParseDereferencePointerExpression();
+
+		FunctionCallArgumentsNode* ParseFunctionCallArguments();
+		FunctionCallExpressionNode* ParseFunctionCallExpression();
 	};
 }

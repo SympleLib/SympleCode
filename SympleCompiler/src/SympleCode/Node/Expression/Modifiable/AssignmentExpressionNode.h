@@ -18,7 +18,8 @@ namespace Symple
 			: ModifiableExpressionNode(left->GetType()), mOperator(oqerator), mLeft(left), mRight(right)
 		{
 			Diagnostics::ReportError(!left->IsMutable(), mOperator, "Left Hand Side is not Mutable");
-			Diagnostics::ReportError(!mRight->GetType()->CanImplicitlyCastTo(mLeft->GetType()), mOperator, "Unmatched Types");
+			Diagnostics::ReportError(!mRight->GetType()->CanImplicitlyCastTo(mLeft->GetType()), mOperator, "Unmatched Types:\n%s,\n%s",
+				mLeft->GetType()->ToString("", false).c_str(), mRight->GetType()->ToString().c_str());
 		}
 
 		Kind GetKind() const override

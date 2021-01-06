@@ -93,17 +93,24 @@ namespace Symple
 		}
 	};
 
-	extern TypeNode* VoidType;
-	extern TypeNode* ByteType;
-	extern TypeNode* ShortType;
-	extern TypeNode* IntType;
+	extern const TypeModifierNode* const MutModifier;
+	extern const TypeModifiersNode* const MutModifiers;
+	extern const TypeModifiersNode* const EmptyModifiers;
 
-	extern TypeNode* BoolType;
-	extern TypeNode* CharType;
-	extern TypeNode* WCharType;
+	extern const Token* const PtrToken;
+	extern const TypeContinueNode* const PtrContinue;
 
-	extern TypeNode* PtrType;
-	extern TypeNode* StringType;
+	extern const TypeNode* const VoidType;
+	extern const TypeNode* const ByteType;
+	extern const TypeNode* const ShortType;
+	extern const TypeNode* const IntType;
 
-	extern TypeNode* ErrorType;
+	extern const TypeNode* const BoolType;
+	extern const TypeNode* const CharType;
+	extern const TypeNode* const WCharType;
+
+	extern const TypeNode* const PtrType;
+	extern const TypeNode* const StringType;
+
+	extern const TypeNode* const ErrorType;
 }

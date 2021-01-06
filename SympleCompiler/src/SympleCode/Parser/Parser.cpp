@@ -8,7 +8,6 @@
 
 #include "SympleCode/Node/Expression/Operator/UnaryExpressionNode.h"
 #include "SympleCode/Node/Expression/Operator/BinaryExpressionNode.h"
-#include "SympleCode/Node/Expression/Operator/AssignmentExpressionNode.h"
 
 #include "SympleCode/Node/Expression/Literal/NullLiteralExpressionNode.h"
 #include "SympleCode/Node/Expression/Literal/StringLiteralExpressionNode.h"
@@ -16,7 +15,7 @@
 #include "SympleCode/Node/Expression/Literal/BooleanLiteralExpressionNode.h"
 #include "SympleCode/Node/Expression/Literal/CharacterLiteralExpressionNode.h"
 
-#include "SympleCode/Node/Expression/Modifiable/VariableExpressionNode.h"
+#include "SympleCode/Node/Expression/Modifiable/AssignmentExpressionNode.h"
 
 #include "SympleCode/Analysis/Debug.h"
 #include "SympleCode/Analysis/Diagnostics.h"
@@ -521,9 +520,15 @@ namespace Symple
 			return new StringLiteralExpressionNode(Next());
 		case Token::Kind::Character:
 			return new CharacterLiteralExpressionNode(Next());
+		case Token::Kind::At:
+			return ParseVariableAddressExpression();
+		case Token::Kind::Ampersand:
+			return ParseDereferencePointerExpression();
 		}
 
-		return ParseNameOrCallExpression();
+		if (Peek(1)->Is(Token::Kind::OpenParenthesis))
+			return ParseFunctionCallExpression();
+		return ParseModifiableExpression();
 	}
 
 	CastExpressionNode* Parser::ParseCastExpression()
@@ -537,33 +542,41 @@ namespace Symple
 		return new CastExpressionNode(open, type, close, expression);
 	}
 
-	ExpressionNode* Parser::ParseNameOrCallExpression()
+	ParenthesizedExpressionNode* Parser::ParseParenthesizedExpression()
 	{
-		if (Peek(1)->Is(Token::Kind::OpenParenthesis))
-			return ParseFunctionCallExpression();
+		const Token* open = Match(Token::Kind::OpenParenthesis);
+		ExpressionNode* expression = ParseExpression();
+		const Token* close = Match(Token::Kind::CloseParenthesis);
 
-		return ParseModifiableExpression();
+		return new ParenthesizedExpressionNode(open, expression, close);
 	}
 
 	ModifiableExpressionNode* Parser::ParseModifiableExpression()
 	{
-		const VariableDeclarationNode* variable;
-		if (variable = Debug::GetVariable(Peek()->GetLex()))
-		{
-			if (!variable->GetType()->GetModifiers()->IsMutable())
-				Diagnostics::ReportError(Peek(), "Variable is not Mutable");
-
-			return new VariableExpressionNode(Next());
-		}
+		if (Debug::GetVariable(Peek()->GetLex()))
+			return ParseVariableExpression();
 		return nullptr;
 	}
 
-	FunctionCallExpressionNode* Parser::ParseFunctionCallExpression()
+	VariableExpressionNode* Parser::ParseVariableExpression()
 	{
-		const Token* name = Match(Token::Kind::Identifier);
-		FunctionCallArgumentsNode* arguments = ParseFunctionCallArguments();
+		return new VariableExpressionNode(Next());
+	}
 
-		return new FunctionCallExpressionNode(name, arguments);
+	VariableAddressExpressionNode* Parser::ParseVariableAddressExpression()
+	{
+		const Token* symbol = Match(Token::Kind::At);
+		VariableExpressionNode* variable = ParseVariableExpression();
+
+		return new VariableAddressExpressionNode(symbol, variable);
+	}
+
+	DereferencePointerExpressionNode* Parser::ParseDereferencePointerExpression()
+	{
+		const Token* symbol = Match(Token::Kind::Ampersand);
+		ExpressionNode* address = ParseExpression();
+
+		return new DereferencePointerExpressionNode(symbol, address);
 	}
 
 	FunctionCallArgumentsNode* Parser::ParseFunctionCallArguments()
@@ -592,12 +605,11 @@ namespace Symple
 		return new FunctionCallArgumentsNode(open, arguments, close);
 	}
 
-	ParenthesizedExpressionNode* Parser::ParseParenthesizedExpression()
+	FunctionCallExpressionNode* Parser::ParseFunctionCallExpression()
 	{
-		const Token* open = Match(Token::Kind::OpenParenthesis);
-		ExpressionNode* expression = ParseExpression();
-		const Token* close = Match(Token::Kind::CloseParenthesis);
+		const Token* name = Match(Token::Kind::Identifier);
+		FunctionCallArgumentsNode* arguments = ParseFunctionCallArguments();
 
-		return new ParenthesizedExpressionNode(open, expression, close);
+		return new FunctionCallExpressionNode(name, arguments);
 	}
 }

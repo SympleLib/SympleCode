@@ -58,6 +58,8 @@ namespace Symple
 
 			VariableModifier,
 			VariableModifiers,
+			VariableAddressExpression,
+			DereferencePointerExpression,
 
 			Type,
 			TypeModifier,
@@ -79,7 +81,7 @@ namespace Symple
 			"WhileStatement", "GlobalStatement", "ReturnStatement", "VariableDeclaration", "ExpressionStatement",
 			"FunctionNode", "FunctionHint", "ExternFunction",  "FunctionModifier",
 			"FunctionArgument", "FunctionArguments", "FunctionModifiers", "FunctionCallArguments",
-			"VariableModifier", "VariableModifiers",
+			"VariableModifier", "VariableModifiers", "VariableAddressExpression", "DereferencePointerExpression",
 			"Type", "TypeModifier", "TypeModifiers", "TypeContinue",
 			"CastExpression",
 		};

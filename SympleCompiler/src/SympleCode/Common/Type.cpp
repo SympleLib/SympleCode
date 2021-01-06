@@ -26,19 +26,24 @@ namespace Symple
 		Type::PrimitiveType::WChar,
 	};
 
-	static TypeModifierNode* MutModifier = new TypeModifierNode(new Token(Token::Kind::Mutable, "mutable", 1, ""));
+	const TypeModifierNode* const MutModifier = new TypeModifierNode(new Token(Token::Kind::Mutable, "mutable", 1, ""));
+	const TypeModifiersNode* const MutModifiers = new TypeModifiersNode({ MutModifier });
+	const TypeModifiersNode* const EmptyModifiers = new TypeModifiersNode({});
 
-	TypeNode* VoidType = new TypeNode(Type::PrimitiveType::Void, new TypeModifiersNode({ MutModifier }), nullptr);
-	TypeNode* ByteType = new TypeNode(Type::PrimitiveType::Byte, new TypeModifiersNode({ MutModifier }), nullptr);
-	TypeNode* ShortType = new TypeNode(Type::PrimitiveType::Short, new TypeModifiersNode({ MutModifier }), nullptr);
-	TypeNode* IntType = new TypeNode(Type::PrimitiveType::Int, new TypeModifiersNode({ MutModifier }), nullptr);
+	const Token* const PtrToken = new Token(Token::Kind::Asterisk, "*", 1, "");
+	const TypeContinueNode* const PtrContinue = new TypeContinueNode(PtrToken, EmptyModifiers, nullptr);
 
-	TypeNode* BoolType = new TypeNode(Type::PrimitiveType::Bool, new TypeModifiersNode({ MutModifier }), nullptr);
-	TypeNode* CharType = new TypeNode(Type::PrimitiveType::Char, new TypeModifiersNode({ MutModifier }), nullptr);
-	TypeNode* WCharType = new TypeNode(Type::PrimitiveType::WChar, new TypeModifiersNode({ MutModifier }), nullptr);
+	const TypeNode* const VoidType = new TypeNode(Type::PrimitiveType::Void, MutModifiers, nullptr);
+	const TypeNode* const ByteType = new TypeNode(Type::PrimitiveType::Byte, MutModifiers, nullptr);
+	const TypeNode* const ShortType = new TypeNode(Type::PrimitiveType::Short, MutModifiers, nullptr);
+	const TypeNode* const IntType = new TypeNode(Type::PrimitiveType::Int, MutModifiers, nullptr);
 
-	TypeNode* PtrType = new TypeNode(Type::PrimitiveType::Void, new TypeModifiersNode({ MutModifier }), new TypeContinueNode(new Token(Token::Kind::Asterisk, "*", 1, ""), new TypeModifiersNode({}), nullptr));
-	TypeNode* StringType = new TypeNode(Type::PrimitiveType::Char, new TypeModifiersNode({}), new TypeContinueNode(new Token(Token::Kind::Asterisk, "*", 1, ""), new TypeModifiersNode({}), nullptr));
+	const TypeNode* const BoolType = new TypeNode(Type::PrimitiveType::Bool, MutModifiers, nullptr);
+	const TypeNode* const CharType = new TypeNode(Type::PrimitiveType::Char, MutModifiers, nullptr);
+	const TypeNode* const WCharType = new TypeNode(Type::PrimitiveType::WChar, MutModifiers, nullptr);
 
-	TypeNode* ErrorType = new TypeNode(Type::PrimitiveType::Error, new TypeModifiersNode({}), nullptr);
+	const TypeNode* const PtrType = new TypeNode(Type::PrimitiveType::Void, MutModifiers, PtrContinue);
+	const TypeNode* const StringType = new TypeNode(Type::PrimitiveType::Char, EmptyModifiers, PtrContinue);
+
+	const TypeNode* const ErrorType = new TypeNode(Type::PrimitiveType::Error, EmptyModifiers, nullptr);
 }

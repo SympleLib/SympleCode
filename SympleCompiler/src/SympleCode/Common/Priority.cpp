@@ -7,14 +7,11 @@ namespace Symple
 		switch (token->GetKind())
 		{
 		case Token::Kind::Exclamation:
-		case Token::Kind::Ampersand:
 			return 0;
 		case Token::Kind::Minus:
 		case Token::Kind::PlusPlus:
 		case Token::Kind::MinusMinus:
 			return 2;
-		case Token::Kind::At:
-			return 4;
 		}
 
 		return -1;
