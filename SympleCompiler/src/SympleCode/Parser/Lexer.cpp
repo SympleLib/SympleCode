@@ -299,20 +299,25 @@ namespace Symple
 		}
 		if (Peek() == *beg)
 		{
-			Get();
 			switch (*beg)
 			{
 			case '+':
+				Get();
 				return new Token(Token::Kind::PlusPlus, beg, mCurrent, mFile, bLine, bColumn);
 			case '-':
+				Get();
 				return new Token(Token::Kind::MinusMinus, beg, mCurrent, mFile, bLine, bColumn);
 			case '<':
+				Get();
 				return new Token(Token::Kind::LeftArrowArrow, beg, mCurrent, mFile, bLine, bColumn);
 			case '>':
+				Get();
 				return new Token(Token::Kind::RightArrowArrow, beg, mCurrent, mFile, bLine, bColumn);
 			case '|':
+				Get();
 				return new Token(Token::Kind::PipePipe, beg, mCurrent, mFile, bLine, bColumn);
 			case '&':
+				Get();
 				return new Token(Token::Kind::AmpersandAmpersand, beg, mCurrent, mFile, bLine, bColumn);
 			}
 		}

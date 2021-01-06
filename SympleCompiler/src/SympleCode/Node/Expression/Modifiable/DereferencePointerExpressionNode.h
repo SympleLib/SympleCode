@@ -12,7 +12,10 @@ namespace Symple
 	public:
 		DereferencePointerExpressionNode(const Token* symbol, const ExpressionNode* address)
 			: ModifiableExpressionNode(new TypeNode(address->GetType()->GetType(), EmptyModifiers,
-				address->GetType()->GetContinue())), mSymbol(symbol), mAddress(address) {}
+				address->GetType()->GetContinue() ? address->GetType()->GetContinue()->GetContinue() : nullptr)), mSymbol(symbol), mAddress(address)
+		{
+			Diagnostics::ReportError(address->GetType()->GetSize() != 4, symbol, "Address Not Pointer Type");
+		}
 
 		Kind GetKind() const override
 		{

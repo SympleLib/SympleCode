@@ -141,8 +141,7 @@ namespace Symple
 
 			if (IsTypeContinue(Peek()))
 			{
-				if (!type)
-					Diagnostics::ReportError(Next(), "Type Not Specified");
+				contjnue = ParseTypeContinue();
 
 				break;
 			}

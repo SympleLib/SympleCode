@@ -32,12 +32,14 @@ namespace Symple
 				ss << "L--\t";
 			else
 				ss << "|--\t";
-			ss << "Type (" << mType->GetName() << ")";
+			ss << "Type (" << mType->GetName() << ' ' << GetSize() << " bytes)";
 
 			const char* newIndent = " \t";
 			if (!last)
 				newIndent = "|\t";
-			ss << '\n' << mModifiers->ToString(indent + newIndent);
+			ss << '\n' << mModifiers->ToString(indent + newIndent, !mContinue);
+			if (mContinue)
+				ss << '\n' << mContinue->ToString(indent + newIndent);
 			return ss.str();
 		}
 

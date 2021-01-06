@@ -26,6 +26,25 @@ namespace Symple
 			return Kind::TypeContinue;
 		}
 
+		std::string ToString(const std::string& indent = "", bool last = true) const override
+		{
+			std::stringstream ss;
+			ss << indent;
+			if (last)
+				ss << "L--\t";
+			else
+				ss << "|--\t";
+			ss << "Type Continue (" << mType->GetLex() << ")";
+
+			const char* newIndent = " \t";
+			if (!last)
+				newIndent = "|\t";
+			ss << '\n' << mModifiers->ToString(indent + newIndent, !mContinue);
+			if (mContinue)
+				ss << '\n' << mContinue->ToString(indent + newIndent);
+			return ss.str();
+		}
+
 		const Token* GetType() const
 		{
 			return mType;
