@@ -15,21 +15,28 @@ namespace Symple
 			Unknown,
 
 			Expression,
+			ListExpression,
 			UnaryExpression,
+
 			FieldExpression,
 			BinaryExpression,
+
 			LiteralExpression,
 			VariableExpression,
 			OperatorExpression,
 			AssignmentExpression,
 			ModifiableExpression,
+
 			NullLiteralExpression,
+
 			FunctionCallExpression,
 			PointerIndexExpression,
 			ParenthesizedExpression,
+
 			StringLiteralExpression,
 			NumberLiteralExpression,
 			BooleanLiteralExpression,
+
 			FunctionPointerExpression,
 			CharacterLiteralExpression,
 
@@ -75,8 +82,9 @@ namespace Symple
 		};
 
 		static constexpr const char* KindMap[] = {
-			"Unknown", "Expression", "UnaryExpression", "FieldExpression",
-			"BinaryExpression",
+			"Unknown",
+			"Expression", "ListExpression", "UnaryExpression",
+			"FieldExpression", "BinaryExpression",
 			"LiteralExpression", "VariableExpression", "OperatorExpression", "AssignmentExpression", "ModifiableExpression",
 			"NullLiteralExpression",
 			"FunctionCallExpression", "PointerIndexExpression", "ParenthesizedExpression",

@@ -622,6 +622,8 @@ namespace Symple
 			return new CharacterLiteralExpressionNode(Next());
 		case Token::Kind::At:
 			return ParseVariableAddressExpression();
+		case Token::Kind::OpenBracket:
+			return ParseListExpression();
 		}
 
 		if (Peek(1)->Is(Token::Kind::OpenParenthesis))
@@ -638,6 +640,23 @@ namespace Symple
 		ExpressionNode* expression = ParseExpression();
 
 		return new CastExpressionNode(open, type, close, expression);
+	}
+
+	ListExpressionNode* Parser::ParseListExpression()
+	{
+		const Token* open = Match(Token::Kind::OpenBracket);
+
+		std::vector<const ExpressionNode*> expressions;
+		while (!Peek()->Is(Token::Kind::CloseBracket))
+		{
+			expressions.push_back(ParseExpression());
+			if (Peek()->Is(Token::Kind::Comma))
+				Next();
+		}
+
+		const Token* close = Next();
+
+		return new ListExpressionNode(open, expressions, close);
 	}
 
 	ParenthesizedExpressionNode* Parser::ParseParenthesizedExpression()

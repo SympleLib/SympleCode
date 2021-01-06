@@ -10,4 +10,6 @@ int main()
 	me.age = 5;
 	me.coolness = 5;
 	me.name = "Teddy";
+	
+	int* list = [ 14, 12, 69, 420 ];
 };
