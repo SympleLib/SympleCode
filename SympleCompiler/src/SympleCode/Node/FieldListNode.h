@@ -11,9 +11,14 @@ namespace Symple
 	{
 	private:
 		const std::vector<const VariableDeclarationNode*> mFields;
+		unsigned int mSize;
 	public:
 		FieldListNode(const std::vector<const VariableDeclarationNode*>& fields)
-			: mFields(fields) {}
+			: mFields(fields), mSize()
+		{
+			for (const VariableDeclarationNode* field : mFields)
+				mSize += field->GetType()->GetSize();
+		}
 
 		Kind GetKind() const override
 		{
@@ -42,6 +47,11 @@ namespace Symple
 		const std::vector<const VariableDeclarationNode*>& GetFields() const
 		{
 			return mFields;
+		}
+
+		unsigned int GetSize() const
+		{
+			return mSize;
 		}
 	};
 }

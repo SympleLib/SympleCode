@@ -1,7 +1,13 @@
 struct Person
 {
 	mut int age, coolness;
-	mut char* mut name;
+	mut char* name;
 };
 
-int main() 0;
+int main()
+{
+	Person me;
+	me.age = 5;
+	me.coolness = 5;
+	me.name = "Teddy";
+};

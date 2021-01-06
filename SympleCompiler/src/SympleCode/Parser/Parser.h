@@ -28,6 +28,7 @@
 
 #include "SympleCode/Node/Expression/Literal/LiteralExpressionNode.h"
 
+#include "SympleCode/Node/Expression/Modifiable/FieldExpressionNode.h"
 #include "SympleCode/Node/Expression/Modifiable/DereferencePointerExpressionNode.h"
 
 namespace Symple
@@ -94,6 +95,7 @@ namespace Symple
 
 		ModifiableExpressionNode* ParseModifiableExpression();
 		VariableExpressionNode* ParseVariableExpression();
+		FieldExpressionNode* ParseFieldExpression(ModifiableExpressionNode* callee = nullptr);
 		VariableAddressExpressionNode* ParseVariableAddressExpression();
 		DereferencePointerExpressionNode* ParseDereferencePointerExpression();
 

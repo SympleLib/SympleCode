@@ -18,7 +18,7 @@ namespace Symple
 			: mOpen(open), mArguments(arguments), mClose(close), mSize(0)
 		{
 			for (const FunctionArgumentNode* argument : mArguments)
-				mSize += argument->GetType()->GetType()->GetSize();
+				mSize += argument->GetType()->GetSize();
 		}
 
 		Kind GetKind() const override

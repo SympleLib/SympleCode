@@ -4,7 +4,7 @@
 #include <iostream>
 
 #define GENERATE_MESSAGE \
-	char message[256]; \
+	char message[1024]; \
 	va_list args; \
 	va_start(args, fmt); \
 	vsprintf_s(message, fmt, args); \

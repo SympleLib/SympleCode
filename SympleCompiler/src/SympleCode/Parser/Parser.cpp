@@ -329,7 +329,9 @@ namespace Symple
 		Match(Token::Kind::CloseBrace);
 		Match(Token::Kind::Semicolon);
 		
-		return new StructDeclarationNode(name, fields);
+		StructDeclarationNode* declaration = new StructDeclarationNode(name, fields);
+		Debug::StructDeclaration(declaration);
+		return declaration;
 	}
 
 	FieldListNode* Parser::ParseFieldList()
@@ -620,8 +622,6 @@ namespace Symple
 			return new CharacterLiteralExpressionNode(Next());
 		case Token::Kind::At:
 			return ParseVariableAddressExpression();
-		case Token::Kind::Ampersand:
-			return ParseDereferencePointerExpression();
 		}
 
 		if (Peek(1)->Is(Token::Kind::OpenParenthesis))
@@ -651,14 +651,35 @@ namespace Symple
 
 	ModifiableExpressionNode* Parser::ParseModifiableExpression()
 	{
+		ModifiableExpressionNode* expression = nullptr;
+
+		switch (Peek()->GetKind())
+		{
+		case Token::Kind::Ampersand:
+			expression = ParseDereferencePointerExpression();
+			goto CheckIfField;
+		}
+
 		if (Debug::GetVariable(Peek()->GetLex()))
-			return ParseVariableExpression();
+			expression = ParseVariableExpression();
+		
+	CheckIfField:
+		if (Peek()->Is(Token::Kind::Period))
+			return ParseFieldExpression(expression);
 		return nullptr;
 	}
 
 	VariableExpressionNode* Parser::ParseVariableExpression()
 	{
 		return new VariableExpressionNode(Next());
+	}
+
+	FieldExpressionNode* Parser::ParseFieldExpression(ModifiableExpressionNode* callee)
+	{
+		Match(Token::Kind::Period);
+		const Token* name = Match(Token::Kind::Identifier);
+
+		return new FieldExpressionNode(callee, name);
 	}
 
 	VariableAddressExpressionNode* Parser::ParseVariableAddressExpression()

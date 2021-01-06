@@ -11,6 +11,7 @@ namespace Symple
 	std::vector<const GlobalVariableDeclarationNode*> Debug::sGlobalVariables;
 
 	std::vector<const Type*> Debug::sTypes;
+	std::vector<const StructDeclarationNode*> Debug::sStructs;
 
 	void Debug::Clear()
 	{
@@ -37,9 +38,10 @@ namespace Symple
 		sGlobalVariables.push_back(variable);
 	}
 
-	void Debug::TypeDeclaration(const Type* type)
+	void Debug::StructDeclaration(const StructDeclarationNode* ztruct)
 	{
-		sTypes.push_back(type);
+		sTypes.push_back(ztruct);
+		sStructs.push_back(ztruct);
 	}
 
 	void Debug::BeginScope()
@@ -130,5 +132,28 @@ namespace Symple
 	const std::vector<const Type*>& Debug::GetTypes()
 	{
 		return sTypes;
+	}
+
+	const VariableDeclarationNode* Debug::GetField(const FieldListNode* list, const std::string_view& name)
+	{
+		for (const VariableDeclarationNode* field : list->GetFields())
+			if (field->GetName()->GetLex() == name)
+				return field;
+
+		return nullptr;
+	}
+
+	const StructDeclarationNode* Debug::GetStruct(const std::string_view& name)
+	{
+		for (const StructDeclarationNode* ztruct : sStructs)
+			if (ztruct->GetName() == name)
+				return ztruct;
+
+		return nullptr;
+	}
+
+	const std::vector<const StructDeclarationNode*>& Debug::GetStructs()
+	{
+		return sStructs;
 	}
 }

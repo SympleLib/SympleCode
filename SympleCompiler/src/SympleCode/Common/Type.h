@@ -7,9 +7,9 @@ namespace Symple
 {
 	class Type
 	{
-	private:
-		std::string mName;
-		unsigned int mSize;
+	protected:
+		const std::string mName;
+		const unsigned int mSize;
 	public:
 		Type(const std::string& name, unsigned int size)
 			: mName(name), mSize(size) {}
@@ -22,6 +22,30 @@ namespace Symple
 		unsigned int GetSize() const
 		{
 			return mSize;
+		}
+
+		template<typename T>
+		bool Is() const
+		{
+			return dynamic_cast<const T*>(this);
+		}
+
+		template<typename T>
+		T* Cast()
+		{
+			return dynamic_cast<T*>(this);
+		}
+
+		template<typename T>
+		const T* Cast() const
+		{
+			return dynamic_cast<const T*>(this);
+		}
+
+		// Mainly for use of `dynamic_cast`
+		virtual bool IsDecendent() const
+		{
+			return false;
 		}
 
 		static const std::vector<const Type*> PrimitiveTypes;

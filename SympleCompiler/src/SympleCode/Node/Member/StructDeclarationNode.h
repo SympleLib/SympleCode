@@ -10,15 +10,12 @@
 
 namespace Symple
 {
-	class StructDeclarationNode : public MemberNode
+	class StructDeclarationNode : public MemberNode, public Type
 	{
-	private:
-		const Token* mName;
-
 		const FieldListNode* mFields;
 	public:
 		StructDeclarationNode(const Token* name, const FieldListNode* fields)
-			: mName(name), mFields(fields) {}
+			: Type(std::string(name->GetLex()), fields->GetSize()), mFields(fields) {}
 
 		Kind GetKind() const
 		{
@@ -33,22 +30,24 @@ namespace Symple
 				ss << "L--\t";
 			else
 				ss << "|--\t";
-			ss << "Struct Declaration (" << mName << ") " << mName->GetLex();
+			ss << "Struct Declaration " << mName << " (" << mSize << " bytes) ";
 			const char* newIndent = " \t";
 			if (!last)
 				newIndent = "|\t";
 
-			return ss.str();
-		}
+			ss << '\n' << mFields->ToString(indent + newIndent);
 
-		const Token* GetName() const
-		{
-			return mName;
+			return ss.str();
 		}
 
 		const FieldListNode* GetFields() const
 		{
 			return mFields;
+		}
+
+		bool IsDecendent() const override
+		{
+			return true;
 		}
 	};
 }
