@@ -177,10 +177,12 @@ namespace Symple
 			unsigned int pPosition = mPosition;
 			ParseType();
 			bool isFunction = Peek(1)->Is(Token::Kind::OpenParenthesis);
+			bool isVariable = !Peek(1)->Is(Token::Kind::OpenBrace);
 			mPosition = pPosition;
 			if (isFunction)
 				return ParseFunctionDeclaration();
-			return ParseGlobalVariableDeclaration();
+			if (isVariable)
+				return ParseGlobalVariableDeclaration();
 		}
 		if (Peek()->Is(Token::Kind::Hint))
 			return ParseFunctionHint();
@@ -626,6 +628,8 @@ namespace Symple
 			return ParseListExpression();
 		}
 
+		if (IsType(Peek()) && Peek(1)->Is(Token::Kind::OpenBrace))
+			return ParseStructInitializerExpression();
 		if (Peek(1)->Is(Token::Kind::OpenParenthesis))
 			return ParseFunctionCallExpression();
 		return ParseModifiableExpression();
@@ -666,6 +670,25 @@ namespace Symple
 		const Token* close = Match(Token::Kind::CloseParenthesis);
 
 		return new ParenthesizedExpressionNode(open, expression, close);
+	}
+
+	StructInitializerExpressionNode* Parser::ParseStructInitializerExpression()
+	{
+		const Token* name = Match(Token::Kind::Identifier);
+		const Token* open = Match(Token::Kind::OpenBrace);
+
+		std::vector<const ExpressionNode*> expressions;
+		while (!Peek()->Is(Token::Kind::CloseBrace))
+		{
+			ExpressionNode* expression = ParseExpression();
+			expressions.push_back(expression);
+			if (Peek()->Is(Token::Kind::Comma))
+				Next();
+		}
+
+		const Token* close = Next();
+
+		return new StructInitializerExpressionNode(name, open, expressions, close);
 	}
 
 	ModifiableExpressionNode* Parser::ParseModifiableExpression()

@@ -1,15 +1,10 @@
 struct Person
 {
-	mut int age, coolness;
-	mut char* name;
+	int age, coolness;
+	char* name;
 };
 
 int main()
 {
-	mut Person me;
-	me.age = 5;
-	me.coolness = 5;
-	me.name = "Teddy";
-	
-	int* list = [ 14, 12, 69, 420 ];
+	Person me = Person { 12, 9999, "Teddy" };
 };

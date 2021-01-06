@@ -26,6 +26,7 @@
 #include "SympleCode/Node/Expression/ListExpressionNode.h"
 #include "SympleCode/Node/Expression/FunctionCallExpressionNode.h"
 #include "SympleCode/Node/Expression/ParenthesizedExpressionNode.h"
+#include "SympleCode/Node/Expression/StructInitializerExpressionNode.h"
 
 #include "SympleCode/Node/Expression/Literal/LiteralExpressionNode.h"
 
@@ -94,6 +95,7 @@ namespace Symple
 		CastExpressionNode* ParseCastExpression();
 		ListExpressionNode* ParseListExpression();
 		ParenthesizedExpressionNode* ParseParenthesizedExpression();
+		StructInitializerExpressionNode* ParseStructInitializerExpression();
 
 		ModifiableExpressionNode* ParseModifiableExpression();
 		VariableExpressionNode* ParseVariableExpression();
