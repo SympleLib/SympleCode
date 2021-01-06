@@ -186,6 +186,8 @@ namespace Symple
 			return ParseFunctionHint();
 		if (Peek()->Is(Token::Kind::Extern))
 			return ParseExternFunction();
+		if (Peek()->Is(Token::Kind::Struct))
+			return ParseStructDeclaration();
 
 		return ParseGlobalStatement();
 	}
@@ -316,6 +318,58 @@ namespace Symple
 		declaration = new GlobalVariableDeclarationNode(name, type, modifiers, nullptr, next);
 		Debug::VariableDeclaration(declaration);
 		return declaration;
+	}
+
+	StructDeclarationNode* Parser::ParseStructDeclaration()
+	{
+		Match(Token::Kind::Struct);
+		const Token* name = Match(Token::Kind::Identifier);
+		Match(Token::Kind::OpenBrace);
+		FieldListNode* fields = ParseFieldList();
+		Match(Token::Kind::CloseBrace);
+		Match(Token::Kind::Semicolon);
+		
+		return new StructDeclarationNode(name, fields);
+	}
+
+	FieldListNode* Parser::ParseFieldList()
+	{
+		const TypeNode* type = nullptr;
+		std::vector<const VariableDeclarationNode*> fields;
+		while (IsTypeNodeable(Peek()))
+		{
+			VariableDeclarationNode* field = ParseField();
+			fields.push_back(field);
+
+			type = field->GetType();
+			while (Peek()->Is(Token::Kind::Comma))
+			{
+				Next();
+				fields.push_back(ParseField(type));
+			}
+			Match(Token::Kind::Semicolon);
+		}
+
+		return new FieldListNode(fields);
+	}
+
+	VariableDeclarationNode* Parser::ParseField(const TypeNode* type)
+	{
+		if (!type)
+			type = ParseType();
+		const Token* name = Next();
+
+		VariableModifiersNode* modifiers = ParseVariableModifiers();
+
+		if (Peek()->Is(Token::Kind::Equal))
+		{
+			Next();
+			ExpressionNode* expression = ParseExpression();
+
+			return new VariableDeclarationNode(name, type, modifiers, expression, nullptr);
+		}
+
+		return new VariableDeclarationNode(name, type, modifiers, nullptr, nullptr);
 	}
 
 	ExternFunctionNode* Parser::ParseExternFunction()

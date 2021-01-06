@@ -83,6 +83,8 @@ namespace Symple
 
 			Mutable,
 
+			Struct,
+
 			Comment,
 			Preprocess,
 
@@ -107,6 +109,7 @@ namespace Symple
 			"If", "Else",
 			"SympleCall", "StdCall", "CCall",
 			"Mutable",
+			"Struct",
 			"Comment", "Preprocess",
 		};
 

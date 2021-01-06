@@ -30,7 +30,7 @@ namespace Symple
 
 		Kind GetKind() const
 		{
-			return Kind::VariableDeclaration;
+			return Kind::GlobalVariableDeclaration;
 		}
 
 		std::string ToString(const std::string& indent = "", bool last = true) const

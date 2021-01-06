@@ -13,16 +13,24 @@ namespace Symple
 	{
 	private:
 		const Token* mModifier;
+
+		bool mStatic;
 	public:
 		static bool IsValid(Token::Kind kind)
 		{
+			switch (kind)
+			{
+			case Token::Kind::Static:
+				return true;
+			}
+
 			return false;
 		}
 
 		VariableModifierNode(const Token* modifier)
-			: mModifier(modifier)
+			: mModifier(modifier), mStatic(modifier->Is(Token::Kind::Static))
 		{
-			if (!mModifier->IsEither({}))
+			if (!IsValid(mModifier->GetKind()))
 				Diagnostics::ReportError(mModifier, "Illegal Modifier: %s", std::string(mModifier->GetLex()).c_str());
 		}
 
@@ -47,6 +55,11 @@ namespace Symple
 		const Token* GetModifier() const
 		{
 			return mModifier;
+		}
+
+		bool IsStatic() const
+		{
+			return mStatic;
 		}
 	};
 }

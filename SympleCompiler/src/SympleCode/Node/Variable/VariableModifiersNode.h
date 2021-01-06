@@ -11,11 +11,17 @@ namespace Symple
 	{
 	private:
 		const std::vector<const VariableModifierNode*> mModifiers;
-		const VariableModifierNode* mFormatType;
+
+		bool mStatic;
 	public:
 		VariableModifiersNode(const std::vector<const VariableModifierNode*>& modifiers)
-			: mModifiers(modifiers), mFormatType()
-		{}
+			: mModifiers(modifiers), mStatic()
+		{
+			for (const VariableModifierNode* modifier : mModifiers)
+			{
+				mStatic |= modifier->IsStatic();
+			}
+		}
 
 		Kind GetKind() const override
 		{
@@ -43,11 +49,6 @@ namespace Symple
 		const std::vector<const VariableModifierNode*>& GetModifiers() const
 		{
 			return mModifiers;
-		}
-
-		const VariableModifierNode* GetFormatType() const
-		{
-			return mFormatType;
 		}
 	};
 }

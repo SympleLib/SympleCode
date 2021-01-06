@@ -1,3 +1,7 @@
-int globalVar = 5;
+struct Person
+{
+	mut int age, coolness;
+	mut char* mut name;
+};
 
-int main() ccall 0;
+int main() 0;

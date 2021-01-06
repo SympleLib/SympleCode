@@ -13,6 +13,7 @@ namespace Symple
 	{
 	private:
 		const Token* mModifier;
+
 		bool mStatic, mFormat;
 	public:
 		static bool IsValid(Token::Kind kind)
