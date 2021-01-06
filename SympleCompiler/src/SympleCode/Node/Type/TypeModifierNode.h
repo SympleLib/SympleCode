@@ -11,8 +11,7 @@ namespace Symple
 	class TypeModifierNode : public Node, public TypeNodes
 	{
 	private:
-		bool mMutable;
-	protected:
+		bool mMutable, mUnsigned, mSigned;
 		const Token* mModifier;
 	public:
 		static bool IsValid(Token::Kind kind)
@@ -20,6 +19,8 @@ namespace Symple
 			switch (kind)
 			{
 			case Token::Kind::Mutable:
+			case Token::Kind::Unsigned:
+			case Token::Kind::Signed:
 				return true;
 			}
 
@@ -27,7 +28,7 @@ namespace Symple
 		}
 
 		TypeModifierNode(const Token* modifier)
-			: mModifier(modifier), mMutable(modifier->Is(Token::Kind::Mutable))
+			: mModifier(modifier), mMutable(modifier->Is(Token::Kind::Mutable)), mUnsigned(modifier->Is(Token::Kind::Unsigned)), mSigned(modifier->Is(Token::Kind::Signed))
 		{
 			if (!IsValid(mModifier->GetKind()))
 				Diagnostics::ReportError(mModifier, "Illegal Modifier: %s", std::string(mModifier->GetLex()).c_str());
@@ -59,6 +60,16 @@ namespace Symple
 		bool IsMutable() const
 		{
 			return mMutable;
+		}
+
+		bool IsUnsigned() const
+		{
+			return mUnsigned;
+		}
+
+		bool IsSigned() const
+		{
+			return mSigned;
 		}
 	};
 }

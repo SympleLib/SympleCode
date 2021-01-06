@@ -83,6 +83,8 @@ namespace Symple
 
 			Mutable,
 			Private,
+			Signed,
+			Unsigned,
 
 			Struct,
 
@@ -109,7 +111,7 @@ namespace Symple
 			"Hint", "Return", "Extern", "Static",
 			"If", "Else",
 			"SympleCall", "StdCall", "CCall",
-			"Mutable", "Private",
+			"Mutable", "Private", "Signed", "Unsigned"
 			"Struct",
 			"Comment", "Preprocess",
 		};

@@ -1,10 +1,10 @@
 struct Person
 {
-	int age priv, coolness;
-	char* name;
+	mut unsigned int age, coolness;
+	mut char* name;
 };
 
 int main()
 {
-	Person me = Person { 12, 9999, "Teddy" };
+	mut Person me = Person { 12, 0xFFFFFFFF, "Teddy" };
 };

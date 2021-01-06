@@ -11,14 +11,16 @@ namespace Symple
 	{
 	private:
 		const std::vector<const TypeModifierNode*> mModifiers;
-		bool mMutable;
+		bool mMutable, mUnsigned, mSigned;
 	public:
 		TypeModifiersNode(const std::vector<const TypeModifierNode*>& modifiers)
-			: mModifiers(modifiers), mMutable()
+			: mModifiers(modifiers), mMutable(), mUnsigned(), mSigned()
 		{
 			for (const TypeModifierNode* modifier : mModifiers)
 			{
 				mMutable |= modifier->IsMutable();
+				mUnsigned |= modifier->IsUnsigned();
+				mSigned |= modifier->IsSigned();
 			}
 		}
 
@@ -53,6 +55,16 @@ namespace Symple
 		bool IsMutable() const
 		{
 			return mMutable;
+		}
+
+		bool IsUnsigned() const
+		{
+			return mUnsigned;
+		}
+
+		bool IsSigned() const
+		{
+			return mSigned;
 		}
 	};
 }

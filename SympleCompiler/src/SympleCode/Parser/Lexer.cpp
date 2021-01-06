@@ -169,6 +169,10 @@ namespace Symple
 			return new Token(Token::Kind::Mutable, beg, mCurrent, mFile, mLine, bColumn);
 		if (identifier == "priv" || identifier == "private")
 			return new Token(Token::Kind::Private, beg, mCurrent, mFile, mLine, bColumn);
+		if (identifier == "unsigned")
+			return new Token(Token::Kind::Unsigned, beg, mCurrent, mFile, mLine, bColumn);
+		if (identifier == "signed")
+			return new Token(Token::Kind::Signed, beg, mCurrent, mFile, mLine, bColumn);
 
 		if (identifier == "struct")
 			return new Token(Token::Kind::Struct, beg, mCurrent, mFile, mLine, bColumn);
