@@ -6,7 +6,7 @@ struct Person
 
 int main()
 {
-	Person me;
+	mut Person me;
 	me.age = 5;
 	me.coolness = 5;
 	me.name = "Teddy";

@@ -48,7 +48,7 @@ namespace Symple
 		bool IsMutable() const override
 		{
 			return Debug::GetField(mCallee->GetType()->GetType()->Cast<StructDeclarationNode>()->GetFields(), mName->GetLex())
-				->GetType()->GetModifiers()->IsMutable();
+				->GetType()->GetModifiers()->IsMutable() && mCallee->GetType()->GetModifiers()->IsMutable();
 		}
 	};
 }
