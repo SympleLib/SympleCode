@@ -11,7 +11,7 @@ namespace Symple
 		const ExpressionNode* mAddress;
 	public:
 		DereferencePointerExpressionNode(const Token* symbol, const ExpressionNode* address)
-			: ModifiableExpressionNode(new TypeNode(address->GetType()->GetType(), MutModifiers,
+			: ModifiableExpressionNode(new TypeNode(address->GetType()->GetType(), EmptyModifiers,
 				address->GetType()->GetContinue())), mSymbol(symbol), mAddress(address) {}
 
 		Kind GetKind() const override
