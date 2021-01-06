@@ -300,7 +300,6 @@ namespace Symple
 
 			declaration = new GlobalVariableDeclarationNode(name, type, modifiers, expression, next);
 			Debug::VariableDeclaration(declaration);
-			std::cout << declaration->ToString() << '\n';
 			return declaration;
 		}
 
