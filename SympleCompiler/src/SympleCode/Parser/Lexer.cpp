@@ -138,6 +138,8 @@ namespace Symple
 			return new Token(Token::Kind::Hint, beg, mCurrent, mFile, mLine, bColumn);
 		if (identifier == "null")
 			return new Token(Token::Kind::Null, beg, mCurrent, mFile, mLine, bColumn);
+		if (identifier == "auto" || identifier == "var")
+			return new Token(Token::Kind::Auto, beg, mCurrent, mFile, mLine, bColumn);
 		if (identifier == "true")
 			return new Token(Token::Kind::True, beg, mCurrent, mFile, mLine, bColumn);
 		if (identifier == "false")

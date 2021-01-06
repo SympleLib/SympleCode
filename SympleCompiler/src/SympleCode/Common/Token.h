@@ -63,6 +63,7 @@ namespace Symple
 			AmpersandEqual,
 
 			Null,
+			Auto,
 
 			True,
 			False,
@@ -104,7 +105,7 @@ namespace Symple
 			"Comma", "Semicolon", "Period",
 			"OpenBrace", "CloseBrace", "OpenBracket", "CloseBracket", "OpenParenthesis", "CloseParenthesis",
 			"LeftArrow", "RightArrow",
-			"Null",
+			"Null", "Auto",
 			"True", "False", "While", "Break",
 			"At", "Pipe", "PipePipe", "PipeEqual",
 			"Ampersand", "AmpersandAmpersand", "AmpersandEqual",
