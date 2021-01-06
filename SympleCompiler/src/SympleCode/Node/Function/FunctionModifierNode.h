@@ -14,13 +14,13 @@ namespace Symple
 	private:
 		const Token* mModifier;
 
-		bool mStatic, mFormat;
+		bool mPrivate, mFormat;
 	public:
 		static bool IsValid(Token::Kind kind)
 		{
 			switch (kind)
 			{
-			case Token::Kind::Static:
+			case Token::Kind::Private:
 			case Token::Kind::SympleCall:
 			case Token::Kind::CCall:
 			case Token::Kind::StdCall:
@@ -31,7 +31,7 @@ namespace Symple
 		}
 
 		FunctionModifierNode(const Token* modifier)
-			: mModifier(modifier), mStatic(mModifier->Is(Token::Kind::Static)), mFormat(mModifier->IsEither({ Token::Kind::SympleCall, Token::Kind::CCall, Token::Kind::StdCall }))
+			: mModifier(modifier), mPrivate(mModifier->Is(Token::Kind::Private)), mFormat(mModifier->IsEither({ Token::Kind::SympleCall, Token::Kind::CCall, Token::Kind::StdCall }))
 		{
 			if (!IsValid(mModifier->GetKind()))
 				Diagnostics::ReportError(mModifier, "Illegal Modifier: %s", std::string(mModifier->GetLex()).c_str());
@@ -60,9 +60,9 @@ namespace Symple
 			return mModifier;
 		}
 
-		bool IsStatic() const
+		bool IsPrivate() const
 		{
-			return mStatic;
+			return mPrivate;
 		}
 
 		bool IsFormat() const

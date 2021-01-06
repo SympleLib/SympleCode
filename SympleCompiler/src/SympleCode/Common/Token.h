@@ -82,6 +82,7 @@ namespace Symple
 			CCall,
 
 			Mutable,
+			Private,
 
 			Struct,
 
@@ -108,7 +109,7 @@ namespace Symple
 			"Hint", "Return", "Extern", "Static",
 			"If", "Else",
 			"SympleCall", "StdCall", "CCall",
-			"Mutable",
+			"Mutable", "Private",
 			"Struct",
 			"Comment", "Preprocess",
 		};

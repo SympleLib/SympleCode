@@ -15,6 +15,9 @@ namespace Symple
 			return Kind::ModifiableExpression;
 		}
 
-		virtual bool IsMutable() const = 0;
+		virtual bool IsMutable() const
+		{
+			return false;
+		}
 	};
 }

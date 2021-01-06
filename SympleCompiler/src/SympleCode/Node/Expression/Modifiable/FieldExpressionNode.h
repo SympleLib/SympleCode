@@ -15,7 +15,11 @@ namespace Symple
 	public:
 		FieldExpressionNode(const ModifiableExpressionNode* callee, const Token* name)
 			: ModifiableExpressionNode(Debug::GetField(callee->GetType()->GetType()->Cast<StructDeclarationNode>()->GetFields(), name->GetLex())->GetType()),
-			mCallee(callee), mName(name) {}
+			mCallee(callee), mName(name)
+		{
+			Diagnostics::ReportError(Debug::GetField(callee->GetType()->GetType()->Cast<StructDeclarationNode>()->GetFields(), name->GetLex())
+				->GetModifiers()->IsPrivate(), name, "Field is Private");
+		}
 
 		Kind GetKind() const override
 		{

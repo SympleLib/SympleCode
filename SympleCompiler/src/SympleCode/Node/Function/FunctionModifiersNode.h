@@ -12,14 +12,14 @@ namespace Symple
 	private:
 		const std::vector<const FunctionModifierNode*> mModifiers;
 		const FunctionModifierNode* mFormatType;
-		bool mStatic;
+		bool mPrivate;
 	public:
 		FunctionModifiersNode(const std::vector<const FunctionModifierNode*>& modifiers)
-			: mModifiers(modifiers), mFormatType(), mStatic()
+			: mModifiers(modifiers), mFormatType(), mPrivate()
 		{
 			for (const FunctionModifierNode* modifier : mModifiers)
 			{
-				mStatic |= modifier->IsStatic();
+				mPrivate |= modifier->IsPrivate();
 
 				if (modifier->IsFormat())
 					mFormatType = modifier;
@@ -59,9 +59,9 @@ namespace Symple
 			return mFormatType;
 		}
 
-		bool IsStatic() const
+		bool IsPrivate() const
 		{
-			return mStatic;
+			return mPrivate;
 		}
 	};
 }

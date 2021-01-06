@@ -1,6 +1,6 @@
 struct Person
 {
-	int age, coolness;
+	int age priv, coolness;
 	char* name;
 };
 

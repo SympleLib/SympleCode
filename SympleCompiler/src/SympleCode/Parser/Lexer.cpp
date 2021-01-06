@@ -167,6 +167,8 @@ namespace Symple
 
 		if (identifier == "mut" || identifier == "mutable")
 			return new Token(Token::Kind::Mutable, beg, mCurrent, mFile, mLine, bColumn);
+		if (identifier == "priv" || identifier == "private")
+			return new Token(Token::Kind::Private, beg, mCurrent, mFile, mLine, bColumn);
 
 		if (identifier == "struct")
 			return new Token(Token::Kind::Struct, beg, mCurrent, mFile, mLine, bColumn);

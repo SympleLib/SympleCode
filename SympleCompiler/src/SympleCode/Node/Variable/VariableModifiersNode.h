@@ -12,14 +12,14 @@ namespace Symple
 	private:
 		const std::vector<const VariableModifierNode*> mModifiers;
 
-		bool mStatic;
+		bool mPrivate;
 	public:
 		VariableModifiersNode(const std::vector<const VariableModifierNode*>& modifiers)
-			: mModifiers(modifiers), mStatic()
+			: mModifiers(modifiers), mPrivate()
 		{
 			for (const VariableModifierNode* modifier : mModifiers)
 			{
-				mStatic |= modifier->IsStatic();
+				mPrivate |= modifier->IsPrivate();
 			}
 		}
 
@@ -49,6 +49,11 @@ namespace Symple
 		const std::vector<const VariableModifierNode*>& GetModifiers() const
 		{
 			return mModifiers;
+		}
+
+		bool IsPrivate() const
+		{
+			return mPrivate;
 		}
 	};
 }
