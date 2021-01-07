@@ -24,7 +24,7 @@
             <Keywords name="Folders in comment, open"></Keywords>
             <Keywords name="Folders in comment, middle"></Keywords>
             <Keywords name="Folders in comment, close"></Keywords>
-            <Keywords name="Keywords1">void byte short int long float double char bool unsigned signed string functionl auto true false while if else</Keywords>
+            <Keywords name="Keywords1">void byte short int long char bool unsigned signed auto true false while if else</Keywords>
             <Keywords name="Keywords2">0x</Keywords>
             <Keywords name="Keywords3">interface struct impl class return const mutable static override mut mutable hint extern symplecall stdcall ccall private priv</Keywords>
             <Keywords name="Keywords4">#</Keywords>

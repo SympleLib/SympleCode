@@ -1,4 +1,8 @@
+extern int puts(char* string) ccall;
+
 int main()
 {
+	puts("Hello, world!");
+
     return 69;
 };

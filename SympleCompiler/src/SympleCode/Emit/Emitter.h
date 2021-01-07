@@ -7,6 +7,8 @@
 #include "SympleCode/Node/Statement/ReturnStatementNode.h"
 #include "SympleCode/Node/Statement/ExpressionStatementNode.h"
 
+#include "SympleCode/Node/Expression/FunctionCallExpressionNode.h"
+
 #include "SympleCode/Node/Expression/Literal/NullLiteralExpressionNode.h"
 #include "SympleCode/Node/Expression/Literal/NumberLiteralExpressionNode.h"
 #include "SympleCode/Node/Expression/Literal/StringLiteralExpressionNode.h"
@@ -40,12 +42,15 @@ namespace Symple
 		FILE* mFile;
 		FILE* mLiteralFile;
 
+		const char* mPath;
+
 		unsigned int mData;
 		unsigned int mReturn;
 
 		bool mReturning;
 	public:
-		Emitter();
+		Emitter(const char* path);
+		~Emitter();
 
 		Emit EmitCompilationUnit(const CompilationUnitNode* unit);
 	private:
@@ -61,6 +66,7 @@ namespace Symple
 		Emit EmitExpressionStatement(const ExpressionStatementNode* statement);
 
 		Emit EmitExpression(const ExpressionNode* expression);
+		Emit EmitFunctionCallExpression(const FunctionCallExpressionNode* call);
 
 		Emit EmitLiteralExpression(const LiteralExpressionNode* expression);
 		Emit EmitNullLiteralExpression(const NullLiteralExpressionNode* expression);

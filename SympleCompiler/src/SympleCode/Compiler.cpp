@@ -85,7 +85,7 @@ namespace Symple
 				{
 					printf("Generating...\n");
 					
-					Emitter emitter;
+					Emitter emitter(asmS);
 					emitter.EmitCompilationUnit(unit);
 
 					printf("Compiled %s with %i errors, %i warnings (total: %i)\n", path, Diagnostics::GetErrors().size(), Diagnostics::GetWarnings().size(), Diagnostics::GetMessages().size());
@@ -101,16 +101,16 @@ namespace Symple
 				}
 
 				if (!Diagnostics::GetErrors().size())
-					return true;
-				//{
-				//	char command[128];
-				//	sprintf_s(command, "clang -c %s -o %s", asmS, obj);
-				//	int compileStatis = system(command);
+					//return true;
+				{
+					char command[128];
+					sprintf_s(command, "clang -c %s -o %s", asmS, obj);
+					int compileStatis = system(command);
 
-				//	mObjectFiles.push_back(objStr);
+					mObjectFiles.push_back(objStr);
 
-				//	return !compileStatis;
-				//}
+					return !compileStatis;
+				}
 			}
 			printf("No Code Generated :(\n");
 

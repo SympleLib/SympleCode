@@ -14,11 +14,24 @@ namespace Symple
 	static Emit RegBp = { nullptr, "%ebp" };
 	static Emit RegSp = { nullptr, "%esp" };
 
-	Emitter::Emitter()
-		: mFile(), mData(), mReturn(),
+	Emitter::Emitter(const char* path)
+		: mPath(path), mFile(), mLiteralFile(), mData(), mReturn(),
 			mReturning()
 	{
 		while (OpenFile());
+		while (OpenLiteralFile());
+	}
+
+	Emitter::~Emitter()
+	{
+		rewind(mLiteralFile);
+
+		char c;
+		while ((c = getc(mLiteralFile)) != EOF)
+			putc(c, mFile);
+
+		fclose(mLiteralFile);
+		fclose(mFile);
 	}
 
 	Emit Emitter::EmitCompilationUnit(const CompilationUnitNode* unit)
@@ -70,7 +83,7 @@ namespace Symple
 
 	Emit Emitter::EmitMember(const MemberNode* member)
 	{
-		if (member->Is<FunctionDeclarationNode>())
+		if (member->GetKind() == Node::Kind::FunctionDeclaration)
 			return EmitFunctionDeclaration(member->Cast<FunctionDeclarationNode>());
 
 		return {};
@@ -81,7 +94,8 @@ namespace Symple
 		std::string nameStr = declaration->GetAsmName();
 		const char* name = nameStr.c_str();
 
-		Emit(".global %s", name);
+		if (!declaration->GetModifiers()->IsPrivate())
+			Emit(".global %s", name);
 		Emit("%s:", name);
 		Push(RegBp);
 		Move(RegSp, RegBp);
@@ -100,7 +114,8 @@ namespace Symple
 
 		if (mReturning)
 			Emit("..%i:", mReturn);
-		Emit("\tleave");
+		Move(RegBp, RegSp);
+		Pop(RegBp);
 		Emit("\tret");
 
 		return { nullptr, name };
@@ -134,8 +149,29 @@ namespace Symple
 	{
 		if (expression->Is<LiteralExpressionNode>())
 			return EmitLiteralExpression(expression->Cast<LiteralExpressionNode>());
+		if (expression->Is<FunctionCallExpressionNode>())
+			return EmitFunctionCallExpression(expression->Cast<FunctionCallExpressionNode>());
 
 		return { expression };
+	}
+
+	Emit Emitter::EmitFunctionCallExpression(const FunctionCallExpressionNode* call)
+	{
+		const FunctionDeclarationNode* function = Debug::GetFunction(call->GetName()->GetLex(), call->GetArguments());
+		if (!function)
+		{
+			Diagnostics::ReportError(call->GetName(), "Function Doesn't Exist");
+
+			return { call };
+		}
+		
+		for (int i = call->GetArguments()->GetArguments().size() - 1; i >= 0; i--)
+			Push(EmitExpression(call->GetArguments()->GetArguments()[i]));
+
+		Emit("\tcalll   %s", function->GetAsmName().c_str());
+		Emit("\taddl    $%i, %%esp", call->GetArguments()->GetArguments().size() * 4);
+
+		return { call, RegAx.Eval };
 	}
 
 	Emit Emitter::EmitLiteralExpression(const LiteralExpressionNode* expression)
@@ -184,7 +220,7 @@ namespace Symple
 
 	bool Emitter::OpenFile()
 	{
-		errno_t err = fopen_s(&mFile, "bin/out.s", "w");
+		errno_t err = fopen_s(&mFile, mPath, "w");
 		if (err && !mFile)
 		{
 			char msg[32];
