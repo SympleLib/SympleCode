@@ -7,7 +7,11 @@
 #include "SympleCode/Node/Statement/ReturnStatementNode.h"
 #include "SympleCode/Node/Statement/ExpressionStatementNode.h"
 
+#include "SympleCode/Node/Expression/Literal/NullLiteralExpressionNode.h"
 #include "SympleCode/Node/Expression/Literal/NumberLiteralExpressionNode.h"
+#include "SympleCode/Node/Expression/Literal/StringLiteralExpressionNode.h"
+#include "SympleCode/Node/Expression/Literal/BooleanLiteralExpressionNode.h"
+#include "SympleCode/Node/Expression/Literal/CharacterLiteralExpressionNode.h"
 
 #include <cstdio>
 
@@ -15,9 +19,9 @@ namespace Symple
 {
 	struct Emit
 	{
-		const Node* Node;
-		const char* Eval;
-		const int Size;
+		const ExpressionNode* Node = nullptr;
+		const char* Eval = nullptr;
+		const int Size = 4;
 
 		bool operator ==(const Emit& other) const
 		{
@@ -34,6 +38,7 @@ namespace Symple
 	{
 	private:
 		FILE* mFile;
+		FILE* mLiteralFile;
 
 		unsigned int mData;
 		unsigned int mReturn;
@@ -56,9 +61,15 @@ namespace Symple
 		Emit EmitExpressionStatement(const ExpressionStatementNode* statement);
 
 		Emit EmitExpression(const ExpressionNode* expression);
+
 		Emit EmitLiteralExpression(const LiteralExpressionNode* expression);
+		Emit EmitNullLiteralExpression(const NullLiteralExpressionNode* expression);
 		Emit EmitNumberLiteralExpression(const NumberLiteralExpressionNode* expression);
+		Emit EmitStringLiteralExpression(const StringLiteralExpressionNode* expression);
+		Emit EmitBooleanLiteralExpression(const BooleanLiteralExpressionNode* expression);
+		Emit EmitCharacterLiteralExpression(const CharacterLiteralExpressionNode* expression);
 
 		bool OpenFile();
+		bool OpenLiteralFile();
 	};
 }
