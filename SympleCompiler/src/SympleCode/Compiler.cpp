@@ -1,6 +1,7 @@
 #include "SympleCode/Compiler.h"
 
 #include "SympleCode/Parser/Parser.h"
+#include "SympleCode/Emit/Emitter.h"
 
 #include "SympleCode/Analysis/Debug.h"
 #include "SympleCode/Analysis/Diagnostics.h"
@@ -47,13 +48,13 @@ namespace Symple
 
 			printf("Parsing...\n");
 			Parser parser(source, path);
-			CompilationUnitNode* tree = parser.ParseCompilationUnit();
+			CompilationUnitNode* unit = parser.ParseCompilationUnit();
 
 			//FILE* treef;
 			//errno_t err;
 			//if (!(err = fopen_s(&treef, syt, "w")) && treef)
 			//{
-			//	fputs(tree->ToString().c_str(), treef);
+			//	fputs(unit->ToString().c_str(), treef);
 			//	fclose(treef);
 			//}
 			//else
@@ -84,6 +85,8 @@ namespace Symple
 				{
 					printf("Generating...\n");
 					
+					Emitter emitter;
+					emitter.EmitCompilationUnit(unit);
 
 					printf("Compiled %s with %i errors, %i warnings (total: %i)\n", path, Diagnostics::GetErrors().size(), Diagnostics::GetWarnings().size(), Diagnostics::GetMessages().size());
 

@@ -23,6 +23,8 @@ namespace Symple
 		{
 			std::stringstream ss;
 
+			std::stringstream prefix;
+			prefix << "_";
 			std::stringstream postfix;
 
 			if (mModifiers->GetFormatType())
@@ -35,15 +37,16 @@ namespace Symple
 					break;
 				case Token::Kind::SympleCall:
 				SympleCall:
-					postfix << '@' << mArguments->GetArguments().size() << '.';
+					prefix << "Sy" << mName->GetLex().length();
+					postfix << 'X';
 					for (const FunctionArgumentNode* argument : mArguments->GetArguments())
-						postfix << '.' << argument->GetType()->GetType()->GetSize();
+						postfix << argument->GetType()->GetType()->GetName().length() << argument->GetType()->GetType()->GetName();
 					break;
 				}
 			else if (mName->GetLex() == "main");
 			else
 				goto SympleCall;
-			ss << '_' << mName->GetLex() << postfix.str();
+			ss << prefix.str() << mName->GetLex() << postfix.str();
 
 			mAsmName = ss.str();
 		}

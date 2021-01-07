@@ -1,10 +1,4 @@
-struct Person
-{
-	mut unsigned int age, coolness;
-	mut char* name;
-};
-
 int main()
 {
-	mut Person me = Person { 12, 0xFFFFFFFF, "Teddy" };
+    return 0;
 };
