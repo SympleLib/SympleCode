@@ -2,7 +2,9 @@ extern int puts(char* string) ccall;
 
 int main()
 {
-	puts("Hello, world!");
+	char* message = "Hello, world!";
 
-    return 69;
+	puts(message);
+
+    return 0;
 };

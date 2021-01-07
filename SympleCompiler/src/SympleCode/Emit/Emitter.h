@@ -6,6 +6,7 @@
 
 #include "SympleCode/Node/Statement/ReturnStatementNode.h"
 #include "SympleCode/Node/Statement/ExpressionStatementNode.h"
+#include "SympleCode/Node/Statement/VariableDeclarationNode.h"
 
 #include "SympleCode/Node/Expression/FunctionCallExpressionNode.h"
 
@@ -15,6 +16,8 @@
 #include "SympleCode/Node/Expression/Literal/BooleanLiteralExpressionNode.h"
 #include "SympleCode/Node/Expression/Literal/CharacterLiteralExpressionNode.h"
 
+#include "SympleCode/Node/Expression/Modifiable/VariableExpressionNode.h"
+
 #include <cstdio>
 
 namespace Symple
@@ -23,7 +26,7 @@ namespace Symple
 	{
 		const ExpressionNode* Node = nullptr;
 		const char* Eval = nullptr;
-		const int Size = 4;
+		const unsigned int Size = 4;
 
 		bool operator ==(const Emit& other) const
 		{
@@ -46,6 +49,7 @@ namespace Symple
 
 		unsigned int mData;
 		unsigned int mReturn;
+		unsigned int mStack;
 
 		bool mReturning;
 	public:
@@ -58,12 +62,16 @@ namespace Symple
 		Emit Pop(Emit emit);
 		Emit Move(Emit from, Emit to);
 
+		Emit Add(Emit from, Emit to);
+		Emit Sub(Emit from, Emit to);
+
 		Emit EmitMember(const MemberNode* member);
 		Emit EmitFunctionDeclaration(const FunctionDeclarationNode* declaration);
 
 		Emit EmitStatement(const StatementNode* statement);
 		Emit EmitReturnStatement(const ReturnStatementNode* statement);
 		Emit EmitExpressionStatement(const ExpressionStatementNode* statement);
+		Emit EmitVariableDeclaration(const VariableDeclarationNode* declaration);
 
 		Emit EmitExpression(const ExpressionNode* expression);
 		Emit EmitFunctionCallExpression(const FunctionCallExpressionNode* call);
@@ -74,6 +82,8 @@ namespace Symple
 		Emit EmitStringLiteralExpression(const StringLiteralExpressionNode* expression);
 		Emit EmitBooleanLiteralExpression(const BooleanLiteralExpressionNode* expression);
 		Emit EmitCharacterLiteralExpression(const CharacterLiteralExpressionNode* expression);
+
+		Emit EmitVariableExpression(const VariableExpressionNode* expression);
 
 		bool OpenFile();
 		bool OpenLiteralFile();

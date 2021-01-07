@@ -81,6 +81,21 @@ namespace Symple
 	}
 
 
+	Emit Emitter::Add(Emit from, Emit to)
+	{
+		Emit("\taddl    %s, %s", from.Eval, to.Eval);
+
+		return { nullptr, to.Eval };
+	}
+
+	Emit Emitter::Sub(Emit from, Emit to)
+	{
+		Emit("\tsubl    %s, %s", from.Eval, to.Eval);
+
+		return { nullptr, to.Eval };
+	}
+
+
 	Emit Emitter::EmitMember(const MemberNode* member)
 	{
 		if (member->GetKind() == Node::Kind::FunctionDeclaration)
@@ -96,10 +111,17 @@ namespace Symple
 
 		if (!declaration->GetModifiers()->IsPrivate())
 			Emit(".global %s", name);
+
+		Debug::BeginScope();
+
+		for (unsigned int i = 0; i < declaration->GetArguments()->GetArguments().size(); i++)
+			Emit("_%s$ = %i", std::string(declaration->GetArguments()->GetArguments()[i]->GetName()->GetLex()).c_str(),
+				i * 4 + 4);
+
 		Emit("%s:", name);
 		Push(RegBp);
 		Move(RegSp, RegBp);
-
+		
 		mReturning = false;
 
 		for (const StatementNode* statement : declaration->GetBody()->GetStatements())
@@ -111,6 +133,8 @@ namespace Symple
 
 		for (const StatementNode* statement : declaration->GetBody()->GetStatements())
 			EmitStatement(statement);
+
+		Debug::EndScope();
 
 		if (mReturning)
 			Emit("..%i:", mReturn);
@@ -127,6 +151,8 @@ namespace Symple
 			return EmitReturnStatement(statement->Cast<ReturnStatementNode>());
 		if (statement->Is<ExpressionStatementNode>())
 			return EmitExpressionStatement(statement->Cast<ExpressionStatementNode>());
+		if (statement->Is<VariableDeclarationNode>())
+			return EmitVariableDeclaration(statement->Cast<VariableDeclarationNode>());
 
 		return {};
 	}
@@ -143,6 +169,25 @@ namespace Symple
 	Emit Emitter::EmitExpressionStatement(const ExpressionStatementNode* statement)
 	{
 		return EmitExpression(statement->GetExpression());
+	}
+
+	Emit Emitter::EmitVariableDeclaration(const VariableDeclarationNode* declaration)
+	{
+		Debug::VariableDeclaration(declaration);
+
+		std::string nameStr(declaration->GetName()->GetLex());
+		const char* name = nameStr.c_str();
+		mStack += declaration->GetType()->GetSize();
+
+		Emit("_%s$ = -%i", name, mStack);
+		Sub({ nullptr, Format("$%i", declaration->GetType()->GetSize()) }, RegSp);
+		if (declaration->GetInitializer())
+			Move(EmitExpression(declaration->GetInitializer()), { nullptr, Format("_%s$(%%ebp)", name) });
+
+		if (declaration->GetNext())
+			return EmitVariableDeclaration(declaration->GetNext());
+
+		return {};
 	}
 
 	Emit Emitter::EmitExpression(const ExpressionNode* expression)
@@ -169,7 +214,7 @@ namespace Symple
 			Push(EmitExpression(call->GetArguments()->GetArguments()[i]));
 
 		Emit("\tcalll   %s", function->GetAsmName().c_str());
-		Emit("\taddl    $%i, %%esp", call->GetArguments()->GetArguments().size() * 4);
+		Add({ nullptr, Format("$%i", call->GetArguments()->GetArguments().size() * 4) }, RegSp );
 
 		return { call, RegAx.Eval };
 	}
@@ -216,6 +261,19 @@ namespace Symple
 	Emit Emitter::EmitCharacterLiteralExpression(const CharacterLiteralExpressionNode* expression)
 	{
 		return { expression, Format("$%i", expression->GetLiteral()->GetLex()[0]), 1 };
+	}
+
+	Emit Emitter::EmitVariableExpression(const VariableExpressionNode* expression)
+	{
+		const VariableDeclaration* variable = Debug::GetVariable(expression->GetName()->GetLex());
+		if (!variable)
+		{
+			Diagnostics::ReportError(expression->GetName(), "This should not show, but if it does, something is wrong. Anyways, this variable does not exist");
+
+			return {};
+		}
+
+		return { expression, Format("_%s$(%%esp)", std::string(expression->GetName()->GetLex()).c_str()), variable->GetType()->GetSize() };
 	}
 
 	bool Emitter::OpenFile()

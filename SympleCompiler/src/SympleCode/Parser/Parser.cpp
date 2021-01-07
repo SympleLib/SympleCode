@@ -454,8 +454,9 @@ namespace Symple
 		Debug::BeginScope();
 		if (!Peek()->Is(Token::Kind::OpenBrace))
 		{
+			StatementNode* statement = ParseStatement();
 			Debug::EndScope();
-			return new BlockStatementNode(Peek(), { ParseStatement() }, Peek());
+			return new BlockStatementNode(Peek(), { statement }, Peek());
 		}
 		const Token* open = Match(Token::Kind::OpenBrace);
 		std::vector<const StatementNode*> statements;
