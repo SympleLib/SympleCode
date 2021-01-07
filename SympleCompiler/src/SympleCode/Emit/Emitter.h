@@ -17,6 +17,17 @@ namespace Symple
 	{
 		const Node* Node;
 		const char* Eval;
+		const int Size;
+
+		bool operator ==(const Emit& other) const
+		{
+			return Eval == other.Eval && Size == other.Size;
+		}
+
+		bool operator !=(const Emit& other) const
+		{
+			return !operator==(other);
+		}
 	};
 
 	class Emitter

@@ -51,5 +51,10 @@ namespace Symple
 		{
 			return mClose;
 		}
+
+		int Evaluate() const override
+		{
+			return mExpression->Evaluate();
+		}
 	};
 }

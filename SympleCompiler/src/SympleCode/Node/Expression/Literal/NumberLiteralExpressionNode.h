@@ -27,5 +27,10 @@ namespace Symple
 
 			return ss.str();
 		}
+
+		int Evaluate() const override
+		{
+			return std::stoi(std::string(mLiteral->GetLex()));
+		}
 	};
 }

@@ -57,7 +57,11 @@ namespace Symple
 
 	Emit Emitter::Move(Emit from, Emit to)
 	{
-		Emit("\tmovl    %s, %s", from.Eval, to.Eval);
+		if (from != to)
+			if (from.Node && from.Node->Is<ExpressionNode>() && !from.Node->Cast<ExpressionNode>()->Evaluate())
+				Emit("\txorl    %s, %s", to.Eval, to.Eval);
+			else
+				Emit("\tmovl    %s, %s", from.Eval, to.Eval);
 
 		return { nullptr, to.Eval };
 	}

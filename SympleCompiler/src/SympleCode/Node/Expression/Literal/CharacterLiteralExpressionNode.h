@@ -27,5 +27,10 @@ namespace Symple
 
 			return ss.str();
 		}
+
+		int Evaluate() const override
+		{
+			return mLiteral->GetLex()[0];
+		}
 	};
 }
