@@ -1,3 +1,4 @@
+#include "libc/io.sy"
 #include "libc/memory.sy"
 
 struct Pos
@@ -7,9 +8,11 @@ struct Pos
 
 int main()
 {
-    mut Pos* pos = (Pos*)malloc(8);
-	&pos.x = 0;
-	&pos.y = 0;
+    mut Pos pos;
+	pos.x = 14;
+	pos.y = 21;
+	
+	printf("%i, %i\n", pos.x, pos.y);
 	
 	0;
 };

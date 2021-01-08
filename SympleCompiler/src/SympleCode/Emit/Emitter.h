@@ -20,6 +20,7 @@
 #include "SympleCode/Node/Expression/Modifiable/FieldExpressionNode.h"
 #include "SympleCode/Node/Expression/Modifiable/VariableExpressionNode.h"
 #include "SympleCode/Node/Expression/Modifiable/AssignmentExpressionNode.h"
+#include "SympleCode/Node/Expression/Modifiable/DereferencePointerExpressionNode.h"
 
 #include <cstdio>
 
@@ -91,6 +92,7 @@ namespace Symple
 		Emit EmitFieldExpression(const FieldExpressionNode* expression);
 		Emit EmitVariableExpression(const VariableExpressionNode* expression);
 		Emit EmitAssignmentExpression(const AssignmentExpressionNode* expression);
+		Emit EmitDereferencePointerExpression(const DereferencePointerExpressionNode* expression);
 
 		bool OpenFile();
 		bool OpenLiteralFile();

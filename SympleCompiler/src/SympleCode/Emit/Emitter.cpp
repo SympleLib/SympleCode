@@ -219,6 +219,8 @@ namespace Symple
 			return EmitAssignmentExpression(expression->Cast<AssignmentExpressionNode>());
 		if (expression->Is<FunctionCallExpressionNode>())
 			return EmitFunctionCallExpression(expression->Cast<FunctionCallExpressionNode>());
+		if (expression->Is<DereferencePointerExpressionNode>())
+			return EmitDereferencePointerExpression(expression->Cast<DereferencePointerExpressionNode>());
 
 		return { expression };
 	}
@@ -304,7 +306,8 @@ namespace Symple
 		}
 
 		Lea(EmitExpression(expression->GetCallee()), RegAx);
-		Add({ nullptr, Format("$%i", offset) }, RegAx);
+		if (offset)
+			Add({ nullptr, Format("$%i", offset) }, RegAx);
 
 		return { expression, "(%eax)" };
 	}
@@ -325,6 +328,13 @@ namespace Symple
 		}
 
 		return { expression };
+	}
+
+	Emit Emitter::EmitDereferencePointerExpression(const DereferencePointerExpressionNode* expression)
+	{
+		Move(EmitExpression(expression->GetAddress()), RegAx);
+
+		return { expression, "(%eax)" };
 	}
 
 	bool Emitter::OpenFile()

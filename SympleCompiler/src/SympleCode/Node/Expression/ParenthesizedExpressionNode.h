@@ -13,7 +13,7 @@ namespace Symple
 		const Token* mClose;
 	public:
 		ParenthesizedExpressionNode(const Token* open, const ExpressionNode* expression, const Token* close)
-			: ExpressionNode(mExpression->GetType()), mOpen(open), mExpression(expression), mClose(close) {}
+			: ExpressionNode(expression->GetType()), mOpen(open), mExpression(expression), mClose(close) {}
 
 		Kind GetKind() const override
 		{

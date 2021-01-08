@@ -1,6 +1,8 @@
 #lib "legacy_stdio_definitions.lib"
 
-#define file int
+struct _file {};
+
+#define file _file*
 
 #define stdin  __acrt_iob_func(0)
 #define stdout __acrt_iob_func(1)
@@ -12,27 +14,27 @@
 
 #define EOF -1
 
-extern int printf(string fmt) ccall;
-extern int puts(string str) ccall;
+extern int printf(char* fmt) ccall;
+extern int puts(char* str) ccall;
 extern int putchar(char c) ccall;
 
-extern file fopen(string path, string mode) ccall;
-extern file freopen(string path, string mode, file stream) ccall;
+extern file fopen(char* path, char* mode) ccall;
+extern file freopen(char* path, char* mode, file stream) ccall;
 extern int fclose(file stream) ccall;
 
-extern int fprintf(file stream, string fmt) ccall;
-extern int fputs(string str, file stream) ccall;
+extern int fprintf(file stream, char* fmt) ccall;
+extern int fputs(char* str, file stream) ccall;
 extern int putc(char c, file stream) ccall;
 extern int fflush(file stream) ccall;
 
-extern int fgets(int buff, int max, file stream) ccall;
+extern int fgets(void* buff, int max, file stream) ccall;
 
-extern int fread(int buff, int elementSize, int count, file stream) ccall;
-extern int fwrite(int buff, int elementSize, int count, file stream) ccall;
+extern int fread(void* buff, int elementSize, int count, file stream) ccall;
+extern int fwrite(void* buff, int elementSize, int count, file stream) ccall;
 
 extern int fseek(file stream, int offset, int origin) ccall;
 extern int ftell(file stream) ccall;
 
-extern int remove(string name) ccall;
-extern int rename(string old, string new) ccall;
+extern int remove(char* name) ccall;
+extern int rename(char* old, char* new) ccall;
 extern void rewind(file stream) ccall;
