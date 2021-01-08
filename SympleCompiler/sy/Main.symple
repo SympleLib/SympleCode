@@ -1,19 +1,12 @@
 #include "libc/io.sy"
 #include "libc/memory.sy"
 
-struct Pos
-{
-	mut int x, y;
-};
-
 int main()
 {
-    mut Pos pos;
-	pos.y = 21;
-	pos.x = 14;
+	mut char* mut * names = [ "Teddy", "Not Teddy", "You", "Me" ];
 	
-	printf("(Int) %i + %i = %i\n", pos.x, pos.y, pos.x + pos.y);
-	printf("(Bool) %i + %i = %i\n", !!pos.x, !!pos.y, !!(!!pos.x + !!pos.y));
+	puts(&names);
+	puts(names[1]);
 	
 	0;
 };

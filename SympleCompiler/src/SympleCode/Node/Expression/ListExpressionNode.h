@@ -13,13 +13,16 @@ namespace Symple
 		const Token* mOpen;
 		const std::vector<const ExpressionNode*> mExpressions;
 		const Token* mClose;
+
+		const TypeNode* mExpressionType;
 	public:
 		ListExpressionNode(const Token* open, const std::vector<const ExpressionNode*> expressions, const Token* close)
-			: ExpressionNode(expressions.empty() ? VoidType : expressions[0]->GetType()), mOpen(open), mExpressions(expressions), mClose(close)
+			: ExpressionNode(expressions.empty() ? PtrType : new TypeNode(expressions[0]->GetType()->GetType(), MutModifiers, new TypeContinueNode(PtrToken, MutModifiers, expressions[0]->GetType()->GetContinue()))),
+			mOpen(open), mExpressions(expressions), mClose(close), mExpressionType(expressions.empty() ? VoidType : expressions[0]->GetType())
 		{
 			for (const ExpressionNode* expression : mExpressions)
-				Diagnostics::ReportError(mType != expression->GetType(), mOpen, "Unmatched Types : \n % s, \n % s",
-					mType->ToString("", false).c_str(), expression->GetType()->ToString().c_str());
+				Diagnostics::ReportError(!mExpressionType->SameAs(expression->GetType()), mOpen, "Unmatched Types : \n %s, \n %s",
+					mExpressionType->ToString("", false).c_str(), expression->GetType()->ToString().c_str());
 		}
 
 		Kind GetKind() const override

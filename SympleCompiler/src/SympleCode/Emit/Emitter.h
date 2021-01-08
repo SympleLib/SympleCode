@@ -9,6 +9,7 @@
 #include "SympleCode/Node/Statement/VariableDeclarationNode.h"
 
 #include "SympleCode/Node/Expression/CastExpressionNode.h"
+#include "SympleCode/Node/Expression/ListExpressionNode.h"
 #include "SympleCode/Node/Expression/FunctionCallExpressionNode.h"
 #include "SympleCode/Node/Expression/ParenthesizedExpressionNode.h"
 
@@ -88,6 +89,7 @@ namespace Symple
 
 		Emit EmitExpression(const ExpressionNode* expression);
 		Emit EmitCastExpression(const CastExpressionNode* expression);
+		Emit EmitListExpression(const ListExpressionNode* expression);
 		Emit EmitFunctionCallExpression(const FunctionCallExpressionNode* call);
 		Emit EmitParenthesizedExpression(const ParenthesizedExpressionNode* expression);
 

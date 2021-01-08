@@ -631,7 +631,7 @@ namespace Symple
 
 		if (IsType(Peek()) && Peek(1)->Is(Token::Kind::OpenBrace))
 			return ParseStructInitializerExpression();
-		if (Peek(1)->Is(Token::Kind::OpenParenthesis))
+		if (Peek()->Is(Token::Kind::Identifier) && Peek(1)->Is(Token::Kind::OpenParenthesis))
 			return ParseFunctionCallExpression();
 		return ParseModifiableExpression();
 	}

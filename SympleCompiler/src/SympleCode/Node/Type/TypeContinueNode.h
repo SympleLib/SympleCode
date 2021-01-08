@@ -71,10 +71,12 @@ namespace Symple
 		
 		bool SameAs(const TypeContinueNode* other) const
 		{
-			bool rawType = mType->Is(other->mType->GetKind()) && (mContinue == other->mContinue || (mContinue && other->mContinue && mContinue->SameAs(other->mContinue)));
-			bool modifiers = mModifiers->IsMutable() == other->mModifiers->IsMutable();
+			bool type = mType->Is(other->mType->GetKind());
+			bool hasContinue = mContinue && other->mContinue;
+			bool contjnue = hasContinue && (mContinue->SameAs(other->mContinue) || mContinue == other->mContinue);
+			bool modifiers = mModifiers->IsMutable() || !(mModifiers->IsMutable() || other->mModifiers->IsMutable());
 
-			return rawType && modifiers;
+			return type && ((modifiers && !hasContinue) || contjnue);
 		}
 
 		bool CanImplicitlyCastTo(const TypeContinueNode* other) const

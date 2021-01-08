@@ -232,6 +232,8 @@ namespace Symple
 			return EmitModifiableExpression(expression->Cast<ModifiableExpressionNode>());
 		if (expression->Is<FunctionCallExpressionNode>())
 			return EmitFunctionCallExpression(expression->Cast<FunctionCallExpressionNode>());
+		if (expression->Is<ListExpressionNode>())
+			return EmitListExpression(expression->Cast<ListExpressionNode>());
 
 		return { expression };
 	}
@@ -239,6 +241,23 @@ namespace Symple
 	Emit Emitter::EmitCastExpression(const CastExpressionNode* expression)
 	{
 		return EmitExpression(expression->GetExpression());
+	}
+
+	Emit Emitter::EmitListExpression(const ListExpressionNode* expression)
+	{
+		unsigned int size = expression->GetExpression().empty() ? 0 : expression->GetExpression().size() * expression->GetExpression()[0]->GetType()->GetSize();
+		Sub({ nullptr, Format("$%i", size) }, RegSp);
+
+		mStack += size;
+		for (const ExpressionNode* item : expression->GetExpression())
+		{
+			Move(EmitExpression(item), { nullptr, Format("-%i(%%ebp)", mStack) });
+			mStack -= item->GetType()->GetSize();
+		}
+		mStack += size;
+
+		Lea({ nullptr, Format("-%i(%%ebp)", mStack) }, RegAx);
+		return { expression, RegAx.Eval };
 	}
 
 	Emit Emitter::EmitFunctionCallExpression(const FunctionCallExpressionNode* call)
