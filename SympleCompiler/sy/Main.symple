@@ -9,10 +9,10 @@ struct Pos
 int main()
 {
     mut Pos pos;
-	pos.x = 14;
 	pos.y = 21;
+	pos.x = 14;
 	
-	printf("%i, %i\n", pos.x, pos.y);
+	printf("%i + %i = %i\n", pos.x, pos.y, pos.x + pos.y);
 	
 	0;
 };

@@ -11,20 +11,20 @@ namespace Symple
 		const ExpressionNode* mLeft;
 		const ExpressionNode* mRight;
 
-		const TypeNode* ResolveType()
+		const TypeNode* ResolveType(const ExpressionNode* left, const ExpressionNode* right)
 		{
-			if (mLeft->GetType()->GetType()->GetSize() >= mRight->GetType()->GetType()->GetSize())
+			if (left->GetType()->GetType()->GetSize() >= right->GetType()->GetType()->GetSize())
 			{
-				return mLeft->GetType();
+				return left->GetType();
 			}
 			else
 			{
-				return mRight->GetType();
+				return right->GetType();
 			}
 		}
 	public:
 		BinaryExpressionNode(const Token* oqerator, const ExpressionNode* left, const ExpressionNode* right)
-			: OperatorExpressionNode(ResolveType(), oqerator), mLeft(left), mRight(right) {}
+			: OperatorExpressionNode(ResolveType(left, right), oqerator), mLeft(left), mRight(right) {}
 
 		Kind GetKind() const override
 		{

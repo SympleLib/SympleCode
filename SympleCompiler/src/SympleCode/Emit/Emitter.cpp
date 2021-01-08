@@ -109,6 +109,14 @@ namespace Symple
 	}
 
 
+	Emit Emitter::Neg(Emit emit)
+	{
+		Emit("\tnegl    %s", emit.Eval);
+
+		return { nullptr, emit.Eval };
+	}
+
+
 	Emit Emitter::EmitMember(const MemberNode* member)
 	{
 		if (member->GetKind() == Node::Kind::FunctionDeclaration)
@@ -209,18 +217,14 @@ namespace Symple
 	{
 		if (expression->Is<CastExpressionNode>())
 			return EmitCastExpression(expression->Cast<CastExpressionNode>());
-		if (expression->Is<FieldExpressionNode>())
-			return EmitFieldExpression(expression->Cast<FieldExpressionNode>());
 		if (expression->Is<LiteralExpressionNode>())
 			return EmitLiteralExpression(expression->Cast<LiteralExpressionNode>());
-		if (expression->Is<VariableExpressionNode>())
-			return EmitVariableExpression(expression->Cast<VariableExpressionNode>());
-		if (expression->Is<AssignmentExpressionNode>())
-			return EmitAssignmentExpression(expression->Cast<AssignmentExpressionNode>());
+		if (expression->Is<OperatorExpressionNode>())
+			return EmitOperatorExpression(expression->Cast<OperatorExpressionNode>());
+		if (expression->Is<ModifiableExpressionNode>())
+			return EmitModifiableExpression(expression->Cast<ModifiableExpressionNode>());
 		if (expression->Is<FunctionCallExpressionNode>())
 			return EmitFunctionCallExpression(expression->Cast<FunctionCallExpressionNode>());
-		if (expression->Is<DereferencePointerExpressionNode>())
-			return EmitDereferencePointerExpression(expression->Cast<DereferencePointerExpressionNode>());
 
 		return { expression };
 	}
@@ -293,6 +297,20 @@ namespace Symple
 		return { expression, Format("$%i", expression->GetLiteral()->GetLex()[0]), 1 };
 	}
 
+	Emit Emitter::EmitModifiableExpression(const ModifiableExpressionNode* expression)
+	{
+		if (expression->Is<FieldExpressionNode>())
+			return EmitFieldExpression(expression->Cast<FieldExpressionNode>());
+		if (expression->Is<VariableExpressionNode>())
+			return EmitVariableExpression(expression->Cast<VariableExpressionNode>());
+		if (expression->Is<AssignmentExpressionNode>())
+			return EmitAssignmentExpression(expression->Cast<AssignmentExpressionNode>());
+		if (expression->Is<DereferencePointerExpressionNode>())
+			return EmitDereferencePointerExpression(expression->Cast<DereferencePointerExpressionNode>());
+
+		return { expression };
+	}
+
 	Emit Emitter::EmitFieldExpression(const FieldExpressionNode* expression)
 	{
 		const StructDeclarationNode* ztruct = expression->GetCallee()->GetType()->GetType()->Cast<StructDeclarationNode>();
@@ -335,6 +353,46 @@ namespace Symple
 		Move(EmitExpression(expression->GetAddress()), RegAx);
 
 		return { expression, "(%eax)" };
+	}
+
+	Emit Emitter::EmitOperatorExpression(const OperatorExpressionNode* expression)
+	{
+		if (expression->Is<UnaryExpressionNode>())
+			return EmitUnaryExpression(expression->Cast<UnaryExpressionNode>());
+		if (expression->Is<BinaryExpressionNode>())
+			return EmitBinaryExpression(expression->Cast<BinaryExpressionNode>());
+
+		return { expression };
+	}
+
+	Emit Emitter::EmitUnaryExpression(const UnaryExpressionNode* expression)
+	{
+		Move(EmitExpression(expression->GetValue()), RegAx);
+
+		switch (expression->GetOperator()->GetKind())
+		{
+		case Token::Kind::Minus:
+			return { expression, Neg(RegAx).Eval };
+		}
+
+		return { expression };
+	}
+
+	Emit Emitter::EmitBinaryExpression(const BinaryExpressionNode* expression)
+	{
+		Push(EmitExpression(expression->GetRight()));
+		Move(EmitExpression(expression->GetLeft()), RegAx);
+		Pop(RegDx);
+
+		switch (expression->GetOperator()->GetKind())
+		{
+		case Token::Kind::Plus:
+			return { expression, Add(RegDx, RegAx).Eval };
+		case Token::Kind::Minus:
+			return { expression, Sub(RegDx, RegAx).Eval };
+		}
+
+		return { expression };
 	}
 
 	bool Emitter::OpenFile()

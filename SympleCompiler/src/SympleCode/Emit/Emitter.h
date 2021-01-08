@@ -22,6 +22,9 @@
 #include "SympleCode/Node/Expression/Modifiable/AssignmentExpressionNode.h"
 #include "SympleCode/Node/Expression/Modifiable/DereferencePointerExpressionNode.h"
 
+#include "SympleCode/Node/Expression/Operator/UnaryExpressionNode.h"
+#include "SympleCode/Node/Expression/Operator/BinaryExpressionNode.h"
+
 #include <cstdio>
 
 namespace Symple
@@ -56,6 +59,7 @@ namespace Symple
 		unsigned int mStack;
 
 		bool mReturning;
+		bool mReturnStatement;
 	public:
 		Emitter(const char* path);
 		~Emitter();
@@ -69,6 +73,8 @@ namespace Symple
 
 		Emit Add(Emit from, Emit to);
 		Emit Sub(Emit from, Emit to);
+
+		Emit Neg(Emit emit);
 
 		Emit EmitMember(const MemberNode* member);
 		Emit EmitFunctionDeclaration(const FunctionDeclarationNode* declaration);
@@ -89,10 +95,15 @@ namespace Symple
 		Emit EmitBooleanLiteralExpression(const BooleanLiteralExpressionNode* expression);
 		Emit EmitCharacterLiteralExpression(const CharacterLiteralExpressionNode* expression);
 
+		Emit EmitModifiableExpression(const ModifiableExpressionNode* expression);
 		Emit EmitFieldExpression(const FieldExpressionNode* expression);
 		Emit EmitVariableExpression(const VariableExpressionNode* expression);
 		Emit EmitAssignmentExpression(const AssignmentExpressionNode* expression);
 		Emit EmitDereferencePointerExpression(const DereferencePointerExpressionNode* expression);
+
+		Emit EmitOperatorExpression(const OperatorExpressionNode* expression);
+		Emit EmitUnaryExpression(const UnaryExpressionNode* expression);
+		Emit EmitBinaryExpression(const BinaryExpressionNode* expression);
 
 		bool OpenFile();
 		bool OpenLiteralFile();
