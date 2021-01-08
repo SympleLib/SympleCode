@@ -12,7 +12,8 @@ int main()
 	pos.y = 21;
 	pos.x = 14;
 	
-	printf("%i + %i = %i\n", pos.x, pos.y, pos.x + pos.y);
+	printf("(Int) %i + %i = %i\n", pos.x, pos.y, pos.x + pos.y);
+	printf("(Bool) %i + %i = %i\n", !!pos.x, !!pos.y, !!(!!pos.x + !!pos.y));
 	
 	0;
 };

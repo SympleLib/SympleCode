@@ -9,8 +9,6 @@ namespace Symple
 		case Token::Kind::Exclamation:
 			return 0;
 		case Token::Kind::Minus:
-		case Token::Kind::PlusPlus:
-		case Token::Kind::MinusMinus:
 			return 2;
 		}
 

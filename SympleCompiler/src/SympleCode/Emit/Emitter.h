@@ -10,6 +10,7 @@
 
 #include "SympleCode/Node/Expression/CastExpressionNode.h"
 #include "SympleCode/Node/Expression/FunctionCallExpressionNode.h"
+#include "SympleCode/Node/Expression/ParenthesizedExpressionNode.h"
 
 #include "SympleCode/Node/Expression/Literal/NullLiteralExpressionNode.h"
 #include "SympleCode/Node/Expression/Literal/NumberLiteralExpressionNode.h"
@@ -73,6 +74,7 @@ namespace Symple
 
 		Emit Add(Emit from, Emit to);
 		Emit Sub(Emit from, Emit to);
+		Emit Xor(Emit from, Emit to);
 
 		Emit Neg(Emit emit);
 
@@ -87,6 +89,7 @@ namespace Symple
 		Emit EmitExpression(const ExpressionNode* expression);
 		Emit EmitCastExpression(const CastExpressionNode* expression);
 		Emit EmitFunctionCallExpression(const FunctionCallExpressionNode* call);
+		Emit EmitParenthesizedExpression(const ParenthesizedExpressionNode* expression);
 
 		Emit EmitLiteralExpression(const LiteralExpressionNode* expression);
 		Emit EmitNullLiteralExpression(const NullLiteralExpressionNode* expression);

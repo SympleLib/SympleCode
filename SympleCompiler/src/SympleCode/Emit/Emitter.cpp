@@ -108,6 +108,13 @@ namespace Symple
 		return { nullptr, to.Eval };
 	}
 
+	Emit Emitter::Xor(Emit from, Emit to)
+	{
+		Emit("\txorl    %s, %s", from.Eval, to.Eval);
+
+		return { nullptr, to.Eval };
+	}
+
 
 	Emit Emitter::Neg(Emit emit)
 	{
@@ -253,6 +260,11 @@ namespace Symple
 		return { call, RegAx.Eval };
 	}
 
+	Emit Emitter::EmitParenthesizedExpression(const ParenthesizedExpressionNode* expression)
+	{
+		return { expression, EmitExpression(expression->GetExpression()).Eval };
+	}
+
 	Emit Emitter::EmitLiteralExpression(const LiteralExpressionNode* expression)
 	{
 		if (expression->Is<NullLiteralExpressionNode>())
@@ -367,10 +379,18 @@ namespace Symple
 
 	Emit Emitter::EmitUnaryExpression(const UnaryExpressionNode* expression)
 	{
-		Move(EmitExpression(expression->GetValue()), RegAx);
+		Emit value = EmitExpression(expression->GetValue());
+		Move(value, RegAx);
 
 		switch (expression->GetOperator()->GetKind())
 		{
+		case Token::Kind::Exclamation:
+			if (!(value.Size - 1))
+				return { expression, Xor({ nullptr, "$1" }, RegAx).Eval };
+
+			Emit("\ttestl   %%eax, %%eax");
+			Emit("\tsete    %%al");
+			return { expression, RegAx.Eval, 1 };
 		case Token::Kind::Minus:
 			return { expression, Neg(RegAx).Eval };
 		}
