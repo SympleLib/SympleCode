@@ -704,12 +704,15 @@ namespace Symple
 		}
 
 		if (Debug::GetVariable(Peek()->GetLex()))
+		{
 			expression = ParseVariableExpression();
+			goto CheckIfField;
+		}
 		
 	CheckIfField:
 		if (Peek()->Is(Token::Kind::Period))
 			return ParseFieldExpression(expression);
-		return nullptr;
+		return expression;
 	}
 
 	VariableExpressionNode* Parser::ParseVariableExpression()

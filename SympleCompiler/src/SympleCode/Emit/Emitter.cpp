@@ -15,7 +15,7 @@ namespace Symple
 	static Emit RegSp = { nullptr, "%esp" };
 
 	Emitter::Emitter(const char* path)
-		: mPath(path), mFile(), mLiteralFile(), mData(), mReturn(),
+		: mPath(path), mFile(), mLiteralFile(), mData(), mReturn(), mStack(),
 			mReturning()
 	{
 		while (OpenFile());
@@ -106,6 +106,8 @@ namespace Symple
 
 	Emit Emitter::EmitFunctionDeclaration(const FunctionDeclarationNode* declaration)
 	{
+		mStack = 0;
+
 		std::string nameStr = declaration->GetAsmName();
 		const char* name = nameStr.c_str();
 
@@ -194,6 +196,8 @@ namespace Symple
 	{
 		if (expression->Is<LiteralExpressionNode>())
 			return EmitLiteralExpression(expression->Cast<LiteralExpressionNode>());
+		if (expression->Is<VariableExpressionNode>())
+			return EmitVariableExpression(expression->Cast<VariableExpressionNode>());
 		if (expression->Is<FunctionCallExpressionNode>())
 			return EmitFunctionCallExpression(expression->Cast<FunctionCallExpressionNode>());
 
@@ -273,7 +277,7 @@ namespace Symple
 			return {};
 		}
 
-		return { expression, Format("_%s$(%%esp)", std::string(expression->GetName()->GetLex()).c_str()), variable->GetType()->GetSize() };
+		return { expression, Format("_%s$(%%ebp)", std::string(expression->GetName()->GetLex()).c_str()), variable->GetType()->GetSize() };
 	}
 
 	bool Emitter::OpenFile()
