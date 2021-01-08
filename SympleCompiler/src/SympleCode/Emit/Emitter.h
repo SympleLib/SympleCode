@@ -17,6 +17,7 @@
 #include "SympleCode/Node/Expression/Literal/BooleanLiteralExpressionNode.h"
 #include "SympleCode/Node/Expression/Literal/CharacterLiteralExpressionNode.h"
 
+#include "SympleCode/Node/Expression/Modifiable/FieldExpressionNode.h"
 #include "SympleCode/Node/Expression/Modifiable/VariableExpressionNode.h"
 #include "SympleCode/Node/Expression/Modifiable/AssignmentExpressionNode.h"
 
@@ -60,6 +61,7 @@ namespace Symple
 
 		Emit EmitCompilationUnit(const CompilationUnitNode* unit);
 	private:
+		Emit Lea(Emit from, Emit to);
 		Emit Push(Emit emit);
 		Emit Pop(Emit emit);
 		Emit Move(Emit from, Emit to);
@@ -86,6 +88,7 @@ namespace Symple
 		Emit EmitBooleanLiteralExpression(const BooleanLiteralExpressionNode* expression);
 		Emit EmitCharacterLiteralExpression(const CharacterLiteralExpressionNode* expression);
 
+		Emit EmitFieldExpression(const FieldExpressionNode* expression);
 		Emit EmitVariableExpression(const VariableExpressionNode* expression);
 		Emit EmitAssignmentExpression(const AssignmentExpressionNode* expression);
 

@@ -11,6 +11,12 @@ namespace Symple
 {
 	static Emit RegAx = { nullptr, "%eax" };
 	static Emit RegDx = { nullptr, "%edx" };
+	static Emit RegCx = { nullptr, "%ecx" };
+	static Emit RegBx = { nullptr, "%ebx" };
+
+	static Emit RegSi = { nullptr, "%esi" };
+	static Emit RegDi = { nullptr, "%edi" };
+
 	static Emit RegBp = { nullptr, "%ebp" };
 	static Emit RegSp = { nullptr, "%esp" };
 
@@ -55,6 +61,13 @@ namespace Symple
 	}
 
 
+	Emit Emitter::Lea(Emit from, Emit to)
+	{
+		Emit("\tleal    %s, %s", from.Eval, to.Eval);
+
+		return { to };
+	}
+
 	Emit Emitter::Push(Emit emit)
 	{
 		Emit("\tpushl   %s", emit.Eval);
@@ -72,9 +85,9 @@ namespace Symple
 	Emit Emitter::Move(Emit from, Emit to)
 	{
 		if (from != to)
-			if (from.Node && !from.Node->Evaluate())
-				Emit("\txorl    %s, %s", to.Eval, to.Eval);
-			else
+			//if (from.Node && !from.Node->Evaluate())
+			//	Emit("\txorl    %s, %s", to.Eval, to.Eval);
+			//else
 				Emit("\tmovl    %s, %s", from.Eval, to.Eval);
 
 		return { nullptr, to.Eval };
@@ -196,6 +209,8 @@ namespace Symple
 	{
 		if (expression->Is<CastExpressionNode>())
 			return EmitCastExpression(expression->Cast<CastExpressionNode>());
+		if (expression->Is<FieldExpressionNode>())
+			return EmitFieldExpression(expression->Cast<FieldExpressionNode>());
 		if (expression->Is<LiteralExpressionNode>())
 			return EmitLiteralExpression(expression->Cast<LiteralExpressionNode>());
 		if (expression->Is<VariableExpressionNode>())
@@ -274,6 +289,24 @@ namespace Symple
 	Emit Emitter::EmitCharacterLiteralExpression(const CharacterLiteralExpressionNode* expression)
 	{
 		return { expression, Format("$%i", expression->GetLiteral()->GetLex()[0]), 1 };
+	}
+
+	Emit Emitter::EmitFieldExpression(const FieldExpressionNode* expression)
+	{
+		const StructDeclarationNode* ztruct = expression->GetCallee()->GetType()->GetType()->Cast<StructDeclarationNode>();
+
+		unsigned int offset = 0;
+		for (const VariableDeclarationNode* field : ztruct->GetFields()->GetFields())
+		{
+			if (field->GetName()->GetLex() == expression->GetName()->GetLex())
+				break;
+			offset += field->GetType()->GetSize();
+		}
+
+		Lea(EmitExpression(expression->GetCallee()), RegAx);
+		Add({ nullptr, Format("$%i", offset) }, RegAx);
+
+		return { expression, "(%eax)" };
 	}
 
 	Emit Emitter::EmitVariableExpression(const VariableExpressionNode* expression)

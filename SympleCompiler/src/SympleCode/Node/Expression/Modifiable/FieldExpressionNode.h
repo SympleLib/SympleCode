@@ -44,6 +44,11 @@ namespace Symple
 			return ss.str();
 		}
 
+		const ModifiableExpressionNode* GetCallee() const
+		{
+			return mCallee;
+		}
+
 		const Token* GetName() const
 		{
 			return mName;
