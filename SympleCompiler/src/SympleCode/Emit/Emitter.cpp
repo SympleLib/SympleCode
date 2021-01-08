@@ -170,7 +170,7 @@ namespace Symple
 
 	Emit Emitter::EmitExpressionStatement(const ExpressionStatementNode* statement)
 	{
-		return EmitExpression(statement->GetExpression());
+		return Move(EmitExpression(statement->GetExpression()), RegAx);
 	}
 
 	Emit Emitter::EmitVariableDeclaration(const VariableDeclarationNode* declaration)
@@ -194,6 +194,8 @@ namespace Symple
 
 	Emit Emitter::EmitExpression(const ExpressionNode* expression)
 	{
+		if (expression->Is<CastExpressionNode>())
+			return EmitCastExpression(expression->Cast<CastExpressionNode>());
 		if (expression->Is<LiteralExpressionNode>())
 			return EmitLiteralExpression(expression->Cast<LiteralExpressionNode>());
 		if (expression->Is<VariableExpressionNode>())
@@ -204,6 +206,11 @@ namespace Symple
 			return EmitFunctionCallExpression(expression->Cast<FunctionCallExpressionNode>());
 
 		return { expression };
+	}
+
+	Emit Emitter::EmitCastExpression(const CastExpressionNode* expression)
+	{
+		return EmitExpression(expression->GetExpression());
 	}
 
 	Emit Emitter::EmitFunctionCallExpression(const FunctionCallExpressionNode* call)

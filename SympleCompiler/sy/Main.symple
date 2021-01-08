@@ -1,12 +1,15 @@
-extern int puts(char* string) ccall;
+#include "libc/memory.sy"
+
+struct Pos
+{
+	mut int x, y;
+};
 
 int main()
 {
-	mut char* message = "Hello, world!";
-
-	puts(message);
-
-	message = "Not hello, world!";
+    mut Pos* pos = (Pos*)malloc(8);
+	&pos.x = 0;
+	&pos.y = 0;
 	
-	puts(message);
+	0;
 };
