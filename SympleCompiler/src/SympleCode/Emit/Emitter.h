@@ -17,6 +17,7 @@
 #include "SympleCode/Node/Expression/Literal/CharacterLiteralExpressionNode.h"
 
 #include "SympleCode/Node/Expression/Modifiable/VariableExpressionNode.h"
+#include "SympleCode/Node/Expression/Modifiable/AssignmentExpressionNode.h"
 
 #include <cstdio>
 
@@ -84,6 +85,7 @@ namespace Symple
 		Emit EmitCharacterLiteralExpression(const CharacterLiteralExpressionNode* expression);
 
 		Emit EmitVariableExpression(const VariableExpressionNode* expression);
+		Emit EmitAssignmentExpression(const AssignmentExpressionNode* expression);
 
 		bool OpenFile();
 		bool OpenLiteralFile();

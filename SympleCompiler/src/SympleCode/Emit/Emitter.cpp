@@ -198,6 +198,8 @@ namespace Symple
 			return EmitLiteralExpression(expression->Cast<LiteralExpressionNode>());
 		if (expression->Is<VariableExpressionNode>())
 			return EmitVariableExpression(expression->Cast<VariableExpressionNode>());
+		if (expression->Is<AssignmentExpressionNode>())
+			return EmitAssignmentExpression(expression->Cast<AssignmentExpressionNode>());
 		if (expression->Is<FunctionCallExpressionNode>())
 			return EmitFunctionCallExpression(expression->Cast<FunctionCallExpressionNode>());
 
@@ -270,14 +272,19 @@ namespace Symple
 	Emit Emitter::EmitVariableExpression(const VariableExpressionNode* expression)
 	{
 		const VariableDeclaration* variable = Debug::GetVariable(expression->GetName()->GetLex());
-		if (!variable)
-		{
-			Diagnostics::ReportError(expression->GetName(), "This should not show, but if it does, something is wrong. Anyways, this variable does not exist");
-
-			return {};
-		}
 
 		return { expression, Format("_%s$(%%ebp)", std::string(expression->GetName()->GetLex()).c_str()), variable->GetType()->GetSize() };
+	}
+
+	Emit Emitter::EmitAssignmentExpression(const AssignmentExpressionNode* expression)
+	{
+		switch (expression->GetOperator()->GetKind())
+		{
+		case Token::Kind::Equal:
+			return { expression, Move(EmitExpression(expression), EmitExpression(expression->GetLeft())).Eval };
+		}
+
+		return { expression };
 	}
 
 	bool Emitter::OpenFile()

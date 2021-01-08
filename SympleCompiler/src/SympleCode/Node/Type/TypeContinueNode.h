@@ -80,10 +80,11 @@ namespace Symple
 		bool CanImplicitlyCastTo(const TypeContinueNode* other) const
 		{
 			bool type = mType->Is(other->mType->GetKind());
-			bool contjnue = mContinue == other->mContinue || (mContinue && other->mContinue && mContinue->CanImplicitlyCastTo(other->mContinue));
+			bool hasContinue = mContinue && other->mContinue;
+			bool contjnue = hasContinue && (mContinue->CanImplicitlyCastTo(other->mContinue) || mContinue == other->mContinue);
 			bool modifiers = mModifiers->IsMutable() || !(mModifiers->IsMutable() || other->mModifiers->IsMutable());
 
-			return type && (modifiers || contjnue);
+			return type && ((modifiers && !hasContinue) || contjnue);
 		}
 
 		bool CanCastTo(const TypeContinueNode* other) const

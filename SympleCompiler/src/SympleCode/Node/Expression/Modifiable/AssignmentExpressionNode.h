@@ -52,5 +52,10 @@ namespace Symple
 		const ExpressionNode* GetRight() const { return mRight; }
 
 		bool IsMutable() const { return true; }
+
+		int Evaluate() const override
+		{
+			return mRight->Evaluate();
+		}
 	};
 }
