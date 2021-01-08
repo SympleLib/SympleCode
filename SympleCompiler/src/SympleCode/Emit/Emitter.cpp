@@ -281,7 +281,7 @@ namespace Symple
 		switch (expression->GetOperator()->GetKind())
 		{
 		case Token::Kind::Equal:
-			return { expression, Move(EmitExpression(expression), EmitExpression(expression->GetLeft())).Eval };
+			return { expression, Move(EmitExpression(expression->GetRight()), EmitExpression(expression->GetLeft())).Eval };
 		}
 
 		return { expression };
