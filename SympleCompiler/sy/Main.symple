@@ -3,10 +3,16 @@
 
 int main()
 {
-	mut char* mut * names = [ "Teddy", "Not Teddy", "You", "Me" ];
+	int size = 4;
+	char** names = [ "Teddy", "Not Teddy", "You", "Me" ];
 	
-	puts(&names);
-	puts(names[1]);
+	mut int i = 0;
+	while i < size
+	{
+		puts(names[i]);
+	
+		i = i + 1;
+	};
 	
 	0;
 };

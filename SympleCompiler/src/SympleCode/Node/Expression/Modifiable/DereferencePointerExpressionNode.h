@@ -11,7 +11,8 @@ namespace Symple
 		const ExpressionNode* mAddress;
 	public:
 		DereferencePointerExpressionNode(const Token* symbol, const ExpressionNode* address)
-			: ModifiableExpressionNode(new TypeNode(address->GetType()->GetType(), EmptyModifiers,
+			: ModifiableExpressionNode(new TypeNode(address->GetType()->GetType(),
+				address->GetType()->GetContinue() ? address->GetType()->GetContinue()->GetModifiers() : MutModifiers,
 				address->GetType()->GetContinue() ? address->GetType()->GetContinue()->GetContinue() : nullptr)), mSymbol(symbol), mAddress(address)
 		{
 			Diagnostics::ReportError(address->GetType()->GetSize() != 4, symbol, "Address Not Pointer Type");
@@ -51,7 +52,7 @@ namespace Symple
 
 		bool IsMutable() const
 		{
-			return mAddress->GetType()->GetModifiers()->IsMutable();
+			return mType->GetModifiers()->IsMutable();
 		}
 	};
 }

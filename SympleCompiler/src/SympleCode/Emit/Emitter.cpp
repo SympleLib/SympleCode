@@ -108,9 +108,30 @@ namespace Symple
 		return { nullptr, to.Eval };
 	}
 
+	Emit Emitter::Mul(Emit from, Emit to)
+	{
+		Emit("\timull   %s, %s", from.Eval, to.Eval);
+
+		return { nullptr, to.Eval };
+	}
+
 	Emit Emitter::Xor(Emit from, Emit to)
 	{
 		Emit("\txorl    %s, %s", from.Eval, to.Eval);
+
+		return { nullptr, to.Eval };
+	}
+
+	Emit Emitter::Cmp(Emit from, Emit to)
+	{
+		Emit("\tcmpl    %s, %s", from.Eval, to.Eval);
+
+		return { nullptr, to.Eval };
+	}
+
+	Emit Emitter::Test(Emit from, Emit to)
+	{
+		Emit("\ttestl   %s, %s", from.Eval, to.Eval);
 
 		return { nullptr, to.Eval };
 	}
@@ -119,6 +140,90 @@ namespace Symple
 	Emit Emitter::Neg(Emit emit)
 	{
 		Emit("\tnegl    %s", emit.Eval);
+
+		return { nullptr, emit.Eval };
+	}
+
+	Emit Emitter::SetE(Emit emit)
+	{
+		Emit("\tsete    %s", emit.Eval);
+
+		return { nullptr, emit.Eval };
+	}
+
+	Emit Emitter::SetN(Emit emit)
+	{
+		Emit("\tsetne   %s", emit.Eval);
+
+		return { nullptr, emit.Eval };
+	}
+
+	Emit Emitter::SetG(Emit emit)
+	{
+		Emit("\tsetg    %s", emit.Eval);
+
+		return { nullptr, emit.Eval };
+	}
+
+	Emit Emitter::SetGE(Emit emit)
+	{
+		Emit("\tsetge   %s", emit.Eval);
+
+		return { nullptr, emit.Eval };
+	}
+
+	Emit Emitter::SetL(Emit emit)
+	{
+		Emit("\tsetl    %s", emit.Eval);
+
+		return { nullptr, emit.Eval };
+	}
+
+	Emit Emitter::SetLE(Emit emit)
+	{
+		Emit("\tsetle   %s", emit.Eval);
+
+		return { nullptr, emit.Eval };
+	}
+
+	Emit Emitter::JmpE(Emit emit)
+	{
+		Emit("\tje      %s", emit.Eval);
+
+		return { nullptr, emit.Eval };
+	}
+
+	Emit Emitter::JmpN(Emit emit)
+	{
+		Emit("\tjne     %s", emit.Eval);
+
+		return { nullptr, emit.Eval };
+	}
+
+	Emit Emitter::JmpG(Emit emit)
+	{
+		Emit("\tjg      %s", emit.Eval);
+
+		return { nullptr, emit.Eval };
+	}
+
+	Emit Emitter::JmpGE(Emit emit)
+	{
+		Emit("\tjge     %s", emit.Eval);
+
+		return { nullptr, emit.Eval };
+	}
+
+	Emit Emitter::JmpL(Emit emit)
+	{
+		Emit("\tjl      %s", emit.Eval);
+
+		return { nullptr, emit.Eval };
+	}
+
+	Emit Emitter::JmpLE(Emit emit)
+	{
+		Emit("\tjle     %s", emit.Eval);
 
 		return { nullptr, emit.Eval };
 	}
@@ -177,12 +282,37 @@ namespace Symple
 
 	Emit Emitter::EmitStatement(const StatementNode* statement)
 	{
+		if (statement->Is<WhileStatementNode>())
+			return EmitWhileStatement(statement->Cast<WhileStatementNode>());
 		if (statement->Is<ReturnStatementNode>())
 			return EmitReturnStatement(statement->Cast<ReturnStatementNode>());
 		if (statement->Is<ExpressionStatementNode>())
 			return EmitExpressionStatement(statement->Cast<ExpressionStatementNode>());
 		if (statement->Is<VariableDeclarationNode>())
 			return EmitVariableDeclaration(statement->Cast<VariableDeclarationNode>());
+
+		return {};
+	}
+
+	Emit Emitter::EmitWhileStatement(const WhileStatementNode* statement)
+	{
+		unsigned int repeat = mData++;
+		mBreak = mData++;
+		Emit("..%i:", repeat);
+
+		Debug::BeginScope();
+
+		Emit condition = EmitExpression(statement->GetCondition());
+		Test(condition, condition);
+		JmpN({ nullptr, Format("..%i", mBreak) });
+
+		for (const StatementNode* then : statement->GetBody()->GetStatements())
+			EmitStatement(then);
+
+		Debug::EndScope();
+
+		Emit("\tjmp     ..%i", repeat);
+		Emit("..%i:", mBreak);
 
 		return {};
 	}
@@ -336,6 +466,8 @@ namespace Symple
 			return EmitVariableExpression(expression->Cast<VariableExpressionNode>());
 		if (expression->Is<AssignmentExpressionNode>())
 			return EmitAssignmentExpression(expression->Cast<AssignmentExpressionNode>());
+		if (expression->Is<PointerIndexExpressionNode>())
+			return EmitPointerIndexExpression(expression->Cast<PointerIndexExpressionNode>());
 		if (expression->Is<DereferencePointerExpressionNode>())
 			return EmitDereferencePointerExpression(expression->Cast<DereferencePointerExpressionNode>());
 
@@ -379,6 +511,16 @@ namespace Symple
 		return { expression };
 	}
 
+	Emit Emitter::EmitPointerIndexExpression(const PointerIndexExpressionNode* expression)
+	{
+		Move(EmitExpression(expression->GetAddress()), RegAx);
+		Move(EmitExpression(expression->GetIndex()), RegDx);
+		Mul({ nullptr, Format("$%i", expression->GetType()->GetSize()) }, RegDx);
+		Add(RegDx, RegAx);
+
+		return { expression, "(%eax)" };
+	}
+
 	Emit Emitter::EmitDereferencePointerExpression(const DereferencePointerExpressionNode* expression)
 	{
 		Move(EmitExpression(expression->GetAddress()), RegAx);
@@ -408,7 +550,8 @@ namespace Symple
 				return { expression, Xor({ nullptr, "$1" }, RegAx).Eval };
 
 			Emit("\ttestl   %%eax, %%eax");
-			Emit("\tsete    %%al");
+			Test(RegAx, RegAx);
+			SetE({ nullptr, "%al", 1 });
 			return { expression, RegAx.Eval, 1 };
 		case Token::Kind::Minus:
 			return { expression, Neg(RegAx).Eval };
@@ -429,6 +572,22 @@ namespace Symple
 			return { expression, Add(RegDx, RegAx).Eval };
 		case Token::Kind::Minus:
 			return { expression, Sub(RegDx, RegAx).Eval };
+		case Token::Kind::LeftArrow:
+			Cmp(RegAx, RegDx);
+			SetL({ nullptr, "%al" });
+			return { expression, RegAx.Eval, 1 };
+		case Token::Kind::RightArrow:
+			Cmp(RegAx, RegDx);
+			SetG({ nullptr, "%al" });
+			return { expression, RegAx.Eval, 1 };
+		case Token::Kind::LeftArrowEqual:
+			Cmp(RegAx, RegDx);
+			SetLE({ nullptr, "%al" });
+			return { expression, RegAx.Eval, 1 };
+		case Token::Kind::RightArrowEqual:
+			Cmp(RegAx, RegDx);
+			SetGE({ nullptr, "%al" });
+			return { expression, RegAx.Eval, 1 };
 		}
 
 		return { expression };

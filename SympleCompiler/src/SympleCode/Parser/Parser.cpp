@@ -571,7 +571,10 @@ namespace Symple
 		}
 		mPosition = pPosition;
 
-		return ParseBinaryExpression();
+		ExpressionNode* expression = ParseBinaryExpression();
+		if (Peek()->Is(Token::Kind::OpenBracket))
+			return ParsePointerIndexExpression(expression);
+		return expression;
 	}
 
 	ExpressionNode* Parser::ParseUnaryExpression(int parentPriority)
@@ -734,6 +737,15 @@ namespace Symple
 		VariableExpressionNode* variable = ParseVariableExpression();
 
 		return new VariableAddressExpressionNode(symbol, variable);
+	}
+
+	PointerIndexExpressionNode* Parser::ParsePointerIndexExpression(ExpressionNode* address)
+	{
+		const Token* bracket = Match(Token::Kind::OpenBracket);
+		ExpressionNode* index = ParseExpression();
+		Match(Token::Kind::CloseBracket);
+
+		return new PointerIndexExpressionNode(address, bracket, index);
 	}
 
 	DereferencePointerExpressionNode* Parser::ParseDereferencePointerExpression()

@@ -4,6 +4,7 @@
 
 #include "SympleCode/Node/Member/FunctionDeclarationNode.h"
 
+#include "SympleCode/Node/Statement/WhileStatementNode.h"
 #include "SympleCode/Node/Statement/ReturnStatementNode.h"
 #include "SympleCode/Node/Statement/ExpressionStatementNode.h"
 #include "SympleCode/Node/Statement/VariableDeclarationNode.h"
@@ -22,6 +23,7 @@
 #include "SympleCode/Node/Expression/Modifiable/FieldExpressionNode.h"
 #include "SympleCode/Node/Expression/Modifiable/VariableExpressionNode.h"
 #include "SympleCode/Node/Expression/Modifiable/AssignmentExpressionNode.h"
+#include "SympleCode/Node/Expression/Modifiable/PointerIndexExpressionNode.h"
 #include "SympleCode/Node/Expression/Modifiable/DereferencePointerExpressionNode.h"
 
 #include "SympleCode/Node/Expression/Operator/UnaryExpressionNode.h"
@@ -58,6 +60,7 @@ namespace Symple
 
 		unsigned int mData;
 		unsigned int mReturn;
+		unsigned int mBreak;
 		unsigned int mStack;
 
 		bool mReturning;
@@ -75,14 +78,32 @@ namespace Symple
 
 		Emit Add(Emit from, Emit to);
 		Emit Sub(Emit from, Emit to);
+		Emit Mul(Emit from, Emit to);
 		Emit Xor(Emit from, Emit to);
+		Emit Cmp(Emit from, Emit to);
+		Emit Test(Emit from, Emit to);
 
 		Emit Neg(Emit emit);
+
+		Emit SetE(Emit emit);
+		Emit SetN(Emit emit);
+		Emit SetG(Emit emit);
+		Emit SetGE(Emit emit);
+		Emit SetL(Emit emit);
+		Emit SetLE(Emit emit);
+
+		Emit JmpE(Emit emit);
+		Emit JmpN(Emit emit);
+		Emit JmpG(Emit emit);
+		Emit JmpGE(Emit emit);
+		Emit JmpL(Emit emit);
+		Emit JmpLE(Emit emit);
 
 		Emit EmitMember(const MemberNode* member);
 		Emit EmitFunctionDeclaration(const FunctionDeclarationNode* declaration);
 
 		Emit EmitStatement(const StatementNode* statement);
+		Emit EmitWhileStatement(const WhileStatementNode* statement);
 		Emit EmitReturnStatement(const ReturnStatementNode* statement);
 		Emit EmitExpressionStatement(const ExpressionStatementNode* statement);
 		Emit EmitVariableDeclaration(const VariableDeclarationNode* declaration);
@@ -104,6 +125,7 @@ namespace Symple
 		Emit EmitFieldExpression(const FieldExpressionNode* expression);
 		Emit EmitVariableExpression(const VariableExpressionNode* expression);
 		Emit EmitAssignmentExpression(const AssignmentExpressionNode* expression);
+		Emit EmitPointerIndexExpression(const PointerIndexExpressionNode* expression);
 		Emit EmitDereferencePointerExpression(const DereferencePointerExpressionNode* expression);
 
 		Emit EmitOperatorExpression(const OperatorExpressionNode* expression);
