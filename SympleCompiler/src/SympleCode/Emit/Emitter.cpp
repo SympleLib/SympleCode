@@ -5,6 +5,8 @@
 #define Emit(fmt, ...) fprintf(mFile, fmt "\n", __VA_ARGS__)
 #define EmitLiteral(fmt, ...) fprintf_s(mLiteralFile, fmt "\n", __VA_ARGS__)
 
+#define GetReg(reg, ...) RegisterManager::GetRegister(reg, __VA_ARGS__)
+
 namespace Symple
 {
 	Emitter::Emitter(const char* path)
@@ -32,7 +34,7 @@ namespace Symple
 
 	}
 
-	char Emitter::Suff(int sz)
+	char Emitter::Suf(int sz)
 	{
 		switch (sz)
 		{
@@ -51,12 +53,68 @@ namespace Symple
 
 	void Emitter::Push(Register reg, int sz)
 	{
-		Emit("\tpush%c   %s", Suff(sz), RegisterManager::GetRegister(reg, sz));
+		Emit("\tpush%c   %s", Suf(sz), GetReg(reg, sz));
 	}
 
 	void Emitter::Pop(Register reg, int sz)
 	{
-		Emit("\tpop%c    %s", Suff(sz), RegisterManager::GetRegister(reg, sz));
+		Emit("\tpop%c    %s", Suf(sz), GetReg(reg, sz));
+	}
+
+	void Emitter::EmitMember(const MemberNode* member)
+	{
+		if (member->Is<GlobalStatementNode>())
+			EmitGlobalStatement(member->Cast<GlobalStatementNode>());
+	}
+
+	void Emitter::EmitGlobalStatement(const GlobalStatementNode* member)
+	{
+		EmitStatement(member->GetStatement());
+	}
+
+	void Emitter::EmitFunctionDeclaration(const FunctionDeclarationNode* member)
+	{
+		const char* name = member->GetAsmName().c_str();
+
+		if (member->GetModifiers()->IsPrivate())
+			Emit("\t.local   %s .type %s, @function", name, name);
+		else
+			Emit("\t.globl   %s", name);
+
+		Emit("%s:", name);
+	}
+
+
+	void Emitter::EmitStatement(const StatementNode* statement)
+	{
+		if (statement->Is<ExpressionStatementNode>())
+			EmitExpressionStatement(statement->Cast<ExpressionStatementNode>());
+	}
+
+	void Emitter::EmitExpressionStatement(const ExpressionStatementNode* statement)
+	{
+		EmitExpression(statement->GetExpression());
+	}
+
+	Register Emitter::EmitExpression(const ExpressionNode* expression)
+	{
+		if (expression->Is<LiteralExpressionNode>())
+			return EmitLiteralExpression(expression->Cast<LiteralExpressionNode>());
+	}
+
+	Register Emitter::EmitLiteralExpression(const LiteralExpressionNode* expression)
+	{
+		if (expression->Is<NumberLiteralExpressionNode>())
+			return EmitNumberLiteralExpression(expression->Cast<NumberLiteralExpressionNode>());
+	}
+
+	Register Emitter::EmitNumberLiteralExpression(const NumberLiteralExpressionNode* expression)
+	{
+		Register reg = mRegisterManager->Alloc();
+
+		Emit("\tmov%c    $%d, %s", Suf(), expression->Evaluate(), GetReg(reg));
+
+		return reg;
 	}
 
 	bool Emitter::OpenFile()

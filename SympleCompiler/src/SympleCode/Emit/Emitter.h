@@ -2,6 +2,7 @@
 
 #include "SympleCode/Node/CompilationUnitNode.h"
 
+#include "SympleCode/Node/Member/GlobalStatementNode.h"
 #include "SympleCode/Node/Member/FunctionDeclarationNode.h"
 
 #include "SympleCode/Node/Statement/WhileStatementNode.h"
@@ -60,10 +61,22 @@ namespace Symple
 
 		void EmitCompilationUnit(const CompilationUnitNode* unit);
 	private:
-		char Suff(int sz = 4);
+		char Suf(int sz = 4);
 
 		void Push(Register, int sz = 4);
 		void Pop(Register, int sz = 4);
+
+		void EmitMember(const MemberNode*);
+		void EmitGlobalStatement(const GlobalStatementNode*);
+		void EmitFunctionDeclaration(const FunctionDeclarationNode*);
+
+		void EmitStatement(const StatementNode*);
+		void EmitExpressionStatement(const ExpressionStatementNode*);
+
+		Register EmitExpression(const ExpressionNode*);
+
+		Register EmitLiteralExpression(const LiteralExpressionNode*);
+		Register EmitNumberLiteralExpression(const NumberLiteralExpressionNode*);
 
 		bool OpenFile();
 		bool OpenLiteralFile();
