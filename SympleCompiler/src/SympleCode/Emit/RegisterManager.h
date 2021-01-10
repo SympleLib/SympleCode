@@ -1,5 +1,7 @@
 #pragma once
 
+#define nullreg (-1)
+
 namespace Symple
 {
 	class Emitter;

@@ -40,6 +40,9 @@ namespace Symple
 
 	void RegisterManager::Free(Register reg)
 	{
+		if (reg == nullreg)
+			return;
+
 		if (mFreeRegisters[reg])
 			return Diagnostics::ReportError(Token::Default, "Trying to Free Free Register");
 
@@ -62,6 +65,9 @@ namespace Symple
 
 	const char* RegisterManager::GetRegister(Register reg, int sz)
 	{
+		if (reg == nullreg)
+			return nullptr;
+
 		switch (sz)
 		{
 		case 1:

@@ -5,6 +5,7 @@
 #include "SympleCode/Node/Member/GlobalStatementNode.h"
 #include "SympleCode/Node/Member/FunctionDeclarationNode.h"
 
+#include "SympleCode/Node/Statement/BlockStatementNode.h"
 #include "SympleCode/Node/Statement/WhileStatementNode.h"
 #include "SympleCode/Node/Statement/ReturnStatementNode.h"
 #include "SympleCode/Node/Statement/ExpressionStatementNode.h"
@@ -59,7 +60,7 @@ namespace Symple
 		Emitter(const char* path);
 		~Emitter();
 
-		void EmitCompilationUnit(const CompilationUnitNode* unit);
+		void EmitCompilationUnit(const CompilationUnitNode*);
 	private:
 		char Suf(int sz = 4);
 
@@ -71,6 +72,7 @@ namespace Symple
 		void EmitFunctionDeclaration(const FunctionDeclarationNode*);
 
 		void EmitStatement(const StatementNode*);
+		void EmitBlockStatement(const BlockStatementNode*);
 		void EmitExpressionStatement(const ExpressionStatementNode*);
 
 		Register EmitExpression(const ExpressionNode*);

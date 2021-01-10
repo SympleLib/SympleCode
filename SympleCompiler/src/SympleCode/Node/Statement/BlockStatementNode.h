@@ -16,13 +16,17 @@ namespace Symple
 		const Token* mClose;
 
 		std::map<std::string_view, const VariableDeclarationNode*> mVariables;
+		unsigned int mStackUsage;
 	public:
 		BlockStatementNode(const Token* open, const std::vector<const StatementNode*>& statements, const Token* close)
-			: mOpen(open), mStatements(statements), mClose(close)
+			: mOpen(open), mStatements(statements), mClose(close), mStackUsage()
 		{
 			for (const StatementNode* statement : mStatements)
 				if (statement->Is<VariableDeclarationNode>())
+				{
 					mVariables.insert({ statement->Cast<VariableDeclarationNode>()->GetName()->GetLex(), statement->Cast<VariableDeclarationNode>() });
+					mStackUsage += statement->Cast<VariableDeclarationNode>()->GetType()->GetSize();
+				}
 		}
 
 		Kind GetKind() const override
@@ -48,6 +52,11 @@ namespace Symple
 		const std::map<std::string_view, const VariableDeclarationNode*>& GetVariables() const
 		{
 			return mVariables;
+		}
+
+		unsigned int GetStackUsage() const
+		{
+			return mStackUsage;
 		}
 
 		std::string ToString(const std::string& indent = "", bool last = true) const override

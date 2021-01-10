@@ -31,7 +31,8 @@ namespace Symple
 
 	void Emitter::EmitCompilationUnit(const CompilationUnitNode* unit)
 	{
-
+		for (const MemberNode* member : unit->GetMembers())
+			EmitMember(member);
 	}
 
 	char Emitter::Suf(int sz)
@@ -65,6 +66,8 @@ namespace Symple
 	{
 		if (member->Is<GlobalStatementNode>())
 			EmitGlobalStatement(member->Cast<GlobalStatementNode>());
+		if (member->Is<FunctionDeclarationNode>())
+			EmitFunctionDeclaration(member->Cast<FunctionDeclarationNode>());
 	}
 
 	void Emitter::EmitGlobalStatement(const GlobalStatementNode* member)
@@ -81,7 +84,18 @@ namespace Symple
 		else
 			Emit("\t.globl   %s", name);
 
+		int argOff = 4;
+		for (const FunctionArgumentNode* arg : member->GetArguments()->GetArguments())
+		{
+			Emit("_%s$ = %i", std::string(arg->GetName()->GetLex()).c_str(), argOff);
+			argOff += 4;
+		}
+
 		Emit("%s:", name);
+
+		EmitBlockStatement(member->GetBody());
+
+		Emit("\tret");
 	}
 
 
@@ -89,6 +103,24 @@ namespace Symple
 	{
 		if (statement->Is<ExpressionStatementNode>())
 			EmitExpressionStatement(statement->Cast<ExpressionStatementNode>());
+	}
+
+	void Emitter::EmitBlockStatement(const BlockStatementNode* block)
+	{
+		Emit("\tpushl   %%ebp");
+		Emit("\tmovl    %%esp, %%ebp");
+		if (block->GetStackUsage())
+			Emit("\tsubl    $%i, %%esp", block->GetStackUsage());
+
+		Debug::BeginScope();
+
+		for (const StatementNode* statement : block->GetStatements())
+			EmitStatement(statement);
+
+		Debug::EndScope();
+
+		Emit("\tmovl    %%ebp, %%esp");
+		Emit("\tpopl    %%ebp");
 	}
 
 	void Emitter::EmitExpressionStatement(const ExpressionStatementNode* statement)
@@ -100,19 +132,26 @@ namespace Symple
 	{
 		if (expression->Is<LiteralExpressionNode>())
 			return EmitLiteralExpression(expression->Cast<LiteralExpressionNode>());
+		
+		return nullreg;
 	}
 
 	Register Emitter::EmitLiteralExpression(const LiteralExpressionNode* expression)
 	{
 		if (expression->Is<NumberLiteralExpressionNode>())
 			return EmitNumberLiteralExpression(expression->Cast<NumberLiteralExpressionNode>());
+
+		return nullreg;
 	}
 
 	Register Emitter::EmitNumberLiteralExpression(const NumberLiteralExpressionNode* expression)
 	{
 		Register reg = mRegisterManager->Alloc();
 
-		Emit("\tmov%c    $%d, %s", Suf(), expression->Evaluate(), GetReg(reg));
+		if (expression->Evaluate())
+			Emit("\tmov%c    $%d, %s", Suf(), expression->Evaluate(), GetReg(reg));
+		else
+			Emit("\txor%c    %s, %s", Suf(), GetReg(reg), GetReg(reg));
 
 		return reg;
 	}
