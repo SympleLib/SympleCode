@@ -21,9 +21,22 @@ namespace Symple
 	RegisterManager::RegisterManager(Emitter* emitter)
 		: mEmitter(emitter) {}
 
-	Register RegisterManager::Alloc()
+	Register RegisterManager::Alloc(Register reg)
 	{
-		int reg;
+		if (reg != nullreg)
+		{
+			if (!mFreeRegisters[reg])
+			{
+				reg = mSpilledRegisters % NumRegisters;
+				mSpilledRegisters++;
+
+				mEmitter->Push(reg);
+				return reg;
+			}
+
+			mFreeRegisters[reg] = false;
+		}
+
 		for (reg = 0; reg < NumRegisters; reg++)
 			if (mFreeRegisters[reg])
 			{

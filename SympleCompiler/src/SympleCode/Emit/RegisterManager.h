@@ -1,6 +1,7 @@
 #pragma once
 
 #define nullreg (-1)
+#define regax (0)
 
 namespace Symple
 {
@@ -27,7 +28,7 @@ namespace Symple
 	public:
 		RegisterManager(Emitter* emitter);
 
-		Register Alloc();
+		Register Alloc(Register = nullreg);
 		void Free(Register);
 		void FreeAll();
 

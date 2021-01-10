@@ -72,13 +72,16 @@ namespace Symple
 		void EmitFunctionDeclaration(const FunctionDeclarationNode*);
 
 		void EmitStatement(const StatementNode*);
-		void EmitBlockStatement(const BlockStatementNode*);
+		void EmitBlockStatement(const BlockStatementNode*, bool = false);
+		void EmitReturnStatement(const ReturnStatementNode*);
 		void EmitExpressionStatement(const ExpressionStatementNode*);
 
 		Register EmitExpression(const ExpressionNode*);
+		Register EmitFunctionCallExpression(const FunctionCallExpressionNode*);
 
 		Register EmitLiteralExpression(const LiteralExpressionNode*);
 		Register EmitNumberLiteralExpression(const NumberLiteralExpressionNode*);
+		Register EmitStringLiteralExpression(const StringLiteralExpressionNode*);
 
 		bool OpenFile();
 		bool OpenLiteralFile();

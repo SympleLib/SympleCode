@@ -257,7 +257,9 @@ namespace Symple
 	FunctionArgumentNode* Parser::ParseFunctionArgument()
 	{
 		const TypeNode* type = ParseType();
-		const Token* name = Next();
+		const Token* name = Token::Default;
+		if (Peek()->Is(Token::Kind::Identifier))
+			name = Next();
 
 		FunctionArgumentNode* argument = new FunctionArgumentNode(type, name, ParseVariableModifiers());
 		Debug::VariableDeclaration(argument);

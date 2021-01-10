@@ -77,6 +77,9 @@ namespace Symple
 
 	void Emitter::EmitFunctionDeclaration(const FunctionDeclarationNode* member)
 	{
+		if (member->GetKind() != Node::Kind::FunctionDeclaration)
+			return;
+
 		const char* name = member->GetAsmName().c_str();
 
 		if (member->GetModifiers()->IsPrivate())
@@ -91,10 +94,26 @@ namespace Symple
 			argOff += 4;
 		}
 
+		mStack = 0;
+
 		Emit("%s:", name);
+		Emit("\tpushl   %%ebp");
+		Emit("\tmovl    %%esp, %%ebp");
+
+		mReturning = false;
+		for (const StatementNode* statement : member->GetBody()->GetStatements())
+			if (statement->Is<ReturnStatementNode>() && statement != member->GetBody()->GetStatements().back())
+				mReturning = true;
+
+		if (mReturning)
+			mReturn = mData++;
 
 		EmitBlockStatement(member->GetBody());
 
+		if (mReturning)
+			Emit("..%i:", mReturn);
+		Emit("\tmovl    %%ebp, %%esp");
+		Emit("\tpopl    %%ebp");
 		Emit("\tret");
 	}
 
@@ -105,10 +124,8 @@ namespace Symple
 			EmitExpressionStatement(statement->Cast<ExpressionStatementNode>());
 	}
 
-	void Emitter::EmitBlockStatement(const BlockStatementNode* block)
+	void Emitter::EmitBlockStatement(const BlockStatementNode* block, bool funcdecl)
 	{
-		Emit("\tpushl   %%ebp");
-		Emit("\tmovl    %%esp, %%ebp");
 		if (block->GetStackUsage())
 			Emit("\tsubl    $%i, %%esp", block->GetStackUsage());
 
@@ -118,28 +135,66 @@ namespace Symple
 			EmitStatement(statement);
 
 		Debug::EndScope();
+	}
 
-		Emit("\tmovl    %%ebp, %%esp");
-		Emit("\tpopl    %%ebp");
+	void Emitter::EmitReturnStatement(const ReturnStatementNode* statement)
+	{
+		Register reg = mRegisterManager->Alloc(regax);
+
+		Register exprReg = EmitExpression(statement->GetExpression());
+		Emit("\tmovl    %s, %s", GetReg(exprReg), GetReg(reg));
+		mRegisterManager->Free(exprReg);
+
+		mRegisterManager->Free(reg);
+
+		if (mReturning)
+			Emit("\tjmp     ..%i", mReturn);
 	}
 
 	void Emitter::EmitExpressionStatement(const ExpressionStatementNode* statement)
 	{
-		EmitExpression(statement->GetExpression());
+		Register reg = mRegisterManager->Alloc(regax);
+
+		Register exprReg = EmitExpression(statement->GetExpression());
+		Emit("\tmovl    %s, %s", GetReg(exprReg), GetReg(reg));
+		mRegisterManager->Free(exprReg);
+
+		mRegisterManager->Free(reg);
 	}
 
 	Register Emitter::EmitExpression(const ExpressionNode* expression)
 	{
 		if (expression->Is<LiteralExpressionNode>())
 			return EmitLiteralExpression(expression->Cast<LiteralExpressionNode>());
+		if (expression->Is<FunctionCallExpressionNode>())
+			return EmitFunctionCallExpression(expression->Cast<FunctionCallExpressionNode>());
 		
 		return nullreg;
+	}
+
+	Register Emitter::EmitFunctionCallExpression(const FunctionCallExpressionNode* expression)
+	{
+		for (unsigned int i = expression->GetArguments()->GetArguments().size(); i; i--)
+		{
+			Register argReg = EmitExpression(expression->GetArguments()->GetArguments()[i - 1]);
+			Push(argReg);
+			mRegisterManager->Free(argReg);
+		}
+
+		const FunctionDeclarationNode* function = Debug::GetFunction(expression->GetName()->GetLex(), expression->GetArguments());
+
+		Emit("\tcalll   %s", function->GetAsmName().c_str());
+		Emit("\taddl    $%i, %%esp", expression->GetArguments()->GetArguments().size() * 4);
+
+		return mRegisterManager->Alloc(regax);
 	}
 
 	Register Emitter::EmitLiteralExpression(const LiteralExpressionNode* expression)
 	{
 		if (expression->Is<NumberLiteralExpressionNode>())
 			return EmitNumberLiteralExpression(expression->Cast<NumberLiteralExpressionNode>());
+		if (expression->Is<StringLiteralExpressionNode>())
+			return EmitStringLiteralExpression(expression->Cast<StringLiteralExpressionNode>());
 
 		return nullreg;
 	}
@@ -152,6 +207,18 @@ namespace Symple
 			Emit("\tmov%c    $%d, %s", Suf(), expression->Evaluate(), GetReg(reg));
 		else
 			Emit("\txor%c    %s, %s", Suf(), GetReg(reg), GetReg(reg));
+
+		return reg;
+	}
+
+	Register Emitter::EmitStringLiteralExpression(const StringLiteralExpressionNode* expression)
+	{
+		Register reg = mRegisterManager->Alloc();
+
+		Emit("\tmovl    $..%i, %s", mData, GetReg(reg));
+
+		EmitLiteral("..%i:", mData++);
+		EmitLiteral("\t.string  \"%s\"", std::string(expression->GetLiteral()->GetLex()).c_str());
 
 		return reg;
 	}
