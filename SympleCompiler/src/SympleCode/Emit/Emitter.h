@@ -33,26 +33,15 @@
 
 namespace Symple
 {
-	struct Emit
-	{
-		const ExpressionNode* Node = nullptr;
-		const char* Eval = nullptr;
-		const unsigned int Size = 4;
-
-		bool operator ==(const Emit& other) const
-		{
-			return Eval == other.Eval && Size == other.Size;
-		}
-
-		bool operator !=(const Emit& other) const
-		{
-			return !operator==(other);
-		}
-	};
+	typedef int Register;
 
 	class Emitter
 	{
 	private:
+		friend class RegisterManager;
+
+		RegisterManager* mRegisterManager;
+
 		FILE* mFile;
 		FILE* mLiteralFile;
 
@@ -69,70 +58,16 @@ namespace Symple
 		Emitter(const char* path);
 		~Emitter();
 
-		Emit EmitCompilationUnit(const CompilationUnitNode* unit);
+		void EmitCompilationUnit(const CompilationUnitNode* unit);
 	private:
-		Emit Lea(Emit from, Emit to);
-		Emit Push(Emit emit);
-		Emit Pop(Emit emit);
-		Emit Move(Emit from, Emit to);
+		char Suff(int sz = 4);
 
-		Emit Add(Emit from, Emit to);
-		Emit Sub(Emit from, Emit to);
-		Emit Mul(Emit from, Emit to);
-		Emit Xor(Emit from, Emit to);
-		Emit Cmp(Emit from, Emit to);
-		Emit Test(Emit from, Emit to);
-
-		Emit Neg(Emit emit);
-
-		Emit SetE(Emit emit);
-		Emit SetN(Emit emit);
-		Emit SetG(Emit emit);
-		Emit SetGE(Emit emit);
-		Emit SetL(Emit emit);
-		Emit SetLE(Emit emit);
-
-		Emit JmpE(Emit emit);
-		Emit JmpN(Emit emit);
-		Emit JmpG(Emit emit);
-		Emit JmpGE(Emit emit);
-		Emit JmpL(Emit emit);
-		Emit JmpLE(Emit emit);
-
-		Emit EmitMember(const MemberNode* member);
-		Emit EmitFunctionDeclaration(const FunctionDeclarationNode* declaration);
-
-		Emit EmitStatement(const StatementNode* statement);
-		Emit EmitWhileStatement(const WhileStatementNode* statement);
-		Emit EmitReturnStatement(const ReturnStatementNode* statement);
-		Emit EmitExpressionStatement(const ExpressionStatementNode* statement);
-		Emit EmitVariableDeclaration(const VariableDeclarationNode* declaration);
-
-		Emit EmitExpression(const ExpressionNode* expression);
-		Emit EmitCastExpression(const CastExpressionNode* expression);
-		Emit EmitListExpression(const ListExpressionNode* expression);
-		Emit EmitFunctionCallExpression(const FunctionCallExpressionNode* call);
-		Emit EmitParenthesizedExpression(const ParenthesizedExpressionNode* expression);
-
-		Emit EmitLiteralExpression(const LiteralExpressionNode* expression);
-		Emit EmitNullLiteralExpression(const NullLiteralExpressionNode* expression);
-		Emit EmitNumberLiteralExpression(const NumberLiteralExpressionNode* expression);
-		Emit EmitStringLiteralExpression(const StringLiteralExpressionNode* expression);
-		Emit EmitBooleanLiteralExpression(const BooleanLiteralExpressionNode* expression);
-		Emit EmitCharacterLiteralExpression(const CharacterLiteralExpressionNode* expression);
-
-		Emit EmitModifiableExpression(const ModifiableExpressionNode* expression);
-		Emit EmitFieldExpression(const FieldExpressionNode* expression);
-		Emit EmitVariableExpression(const VariableExpressionNode* expression);
-		Emit EmitAssignmentExpression(const AssignmentExpressionNode* expression);
-		Emit EmitPointerIndexExpression(const PointerIndexExpressionNode* expression);
-		Emit EmitDereferencePointerExpression(const DereferencePointerExpressionNode* expression);
-
-		Emit EmitOperatorExpression(const OperatorExpressionNode* expression);
-		Emit EmitUnaryExpression(const UnaryExpressionNode* expression);
-		Emit EmitBinaryExpression(const BinaryExpressionNode* expression);
+		void Push(Register, int sz = 4);
+		void Pop(Register, int sz = 4);
 
 		bool OpenFile();
 		bool OpenLiteralFile();
 	};
 }
+
+#include "SympleCode/Emit/RegisterManager.h"
