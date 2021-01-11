@@ -182,8 +182,9 @@ namespace Symple
 			unsigned int elze = mData++, end = mData++;
 
 			Register cond = EmitExpression(statement->GetCondition());
-			Emit("\tcmp%c    $0, %s", Suf(), GetReg(cond));
+			Emit("\ttest%c   %s, %s", Suf(), GetReg(cond), GetReg(cond));
 			Emit("\tje      ..%i", elze);
+			mRegisterManager->Free(cond);
 
 			EmitBlockStatement(statement->GetThen());
 
@@ -199,8 +200,9 @@ namespace Symple
 			unsigned int end = mData++;
 
 			Register cond = EmitExpression(statement->GetCondition());
-			Emit("\tcmp%c    $0, %s", Suf(), GetReg(cond));
+			Emit("\ttest%c   %s, %s", Suf(), GetReg(cond), GetReg(cond));
 			Emit("\tje      ..%i", end);
+			mRegisterManager->Free(cond);
 
 			EmitBlockStatement(statement->GetThen());
 
@@ -241,13 +243,15 @@ namespace Symple
 		Emit("..%i:", loop);
 
 		Register cond = EmitExpression(statement->GetCondition());
-		Emit("\tcmp%c    $0, %s", Suf(), GetReg(cond));
+		Emit("\ttest%c   %s, %s", Suf(), GetReg(cond), GetReg(cond));
 		Emit("\tjne     ..%i", mBreak);
+		mRegisterManager->Free(cond);
 
 		EmitBlockStatement(statement->GetBody());
 
 		Emit("\tjmp     ..%i", loop);
 		Emit("..%i:", mBreak);
+
 	}
 
 	void Emitter::EmitReturnStatement(const ReturnStatementNode* statement)
@@ -319,6 +323,8 @@ namespace Symple
 			return EmitListExpression(expression->Cast<ListExpressionNode>());
 		if (expression->Is<LiteralExpressionNode>())
 			return EmitLiteralExpression(expression->Cast<LiteralExpressionNode>());
+		if (expression->Is<TernaryExpressionNode>())
+			return EmitTernaryExpression(expression->Cast<TernaryExpressionNode>());
 		if (expression->Is<OperatorExpressionNode>())
 			return EmitOperatorExpression(expression->Cast<OperatorExpressionNode>());
 		if (expression->Is<ModifiableExpressionNode>())
@@ -357,6 +363,38 @@ namespace Symple
 		mStack += sz;
 
 		Emit("\tlea%c    -%i(%%ebp), %s", Suf(), mStack, GetReg(reg));
+		return reg;
+	}
+
+	Register Emitter::EmitTernaryExpression(const TernaryExpressionNode* expression)
+	{
+		unsigned int elze = mData++, end = mData++;
+
+		Register reg = EmitExpression(expression->GetCondition());
+		Emit("\ttest%c   %s, %s", Suf(), GetReg(reg), GetReg(reg));
+		Emit("\tje      ..%i", elze);
+		mRegisterManager->Free(reg);
+
+		Register then = EmitExpression(expression->GetThen());
+		if (then != reg)
+		{
+			Emit("\tmov%c    %s, %s", Suf(), GetReg(then), GetReg(reg));
+			mRegisterManager->Free(then);
+		}
+
+		mRegisterManager->Free(reg);
+		Emit("\tjmp     ..%i", end);
+		Emit("..%i:", elze);
+
+		Register elzeReg = EmitExpression(expression->GetElse());
+		if (elzeReg != reg)
+		{
+			Emit("\tmov%c    %s, %s", Suf(), GetReg(elzeReg), GetReg(reg));
+			mRegisterManager->Free(elzeReg);
+		}
+
+		Emit("..%i:", end);
+
 		return reg;
 	}
 

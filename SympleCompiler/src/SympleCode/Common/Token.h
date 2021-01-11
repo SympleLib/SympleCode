@@ -42,6 +42,9 @@ namespace Symple
 			Comma,
 			Semicolon,
 			Period,
+			Colon,
+
+			QuestionMark,
 
 			OpenBracket,
 			CloseBracket,
@@ -102,7 +105,8 @@ namespace Symple
 			"PlusPlus", "MinusMinus",
 			"EqualEqual", "ExclamationEqual", "PlusEqual", "MinusEqual", "AsteriskEqual", "SlashEqual", "PercentageEqual",
 			"LeftArrowEqual", "RightArrowEqual", "LeftArrowArrow", "RightArrowArrow",
-			"Comma", "Semicolon", "Period",
+			"Comma", "Semicolon", "Period", "Colon",
+			"QuestionMark",
 			"OpenBrace", "CloseBrace", "OpenBracket", "CloseBracket", "OpenParenthesis", "CloseParenthesis",
 			"LeftArrow", "RightArrow",
 			"Null", "Auto",

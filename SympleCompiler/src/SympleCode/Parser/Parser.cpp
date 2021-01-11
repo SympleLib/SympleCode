@@ -574,8 +574,13 @@ namespace Symple
 		mPosition = pPosition;
 
 		ExpressionNode* expression = ParseBinaryExpression();
-		if (Peek()->Is(Token::Kind::OpenBracket))
-			return ParsePointerIndexExpression(expression);
+		while (Peek()->IsEither({ Token::Kind::OpenBracket, Token::Kind::QuestionMark }))
+		{
+			if (Peek()->Is(Token::Kind::OpenBracket))
+				expression = ParsePointerIndexExpression(expression);
+			else if (Peek()->Is(Token::Kind::QuestionMark))
+				expression = ParseTernaryExpression(expression);
+		}
 		return expression;
 	}
 
@@ -669,6 +674,16 @@ namespace Symple
 		return new ListExpressionNode(open, expressions, close);
 	}
 
+	TernaryExpressionNode* Parser::ParseTernaryExpression(ExpressionNode* condition)
+	{
+		const Token* questionMark = Match(Token::Kind::QuestionMark);
+		ExpressionNode* then = ParseExpression();
+		const Token* colon = Match(Token::Kind::Colon);
+		ExpressionNode* elze = ParseExpression();
+
+		return new TernaryExpressionNode(condition, questionMark, then, colon, elze);
+	}
+
 	ParenthesizedExpressionNode* Parser::ParseParenthesizedExpression()
 	{
 		const Token* open = Match(Token::Kind::OpenParenthesis);
@@ -715,8 +730,8 @@ namespace Symple
 		}
 		
 	CheckIfField:
-		if (Peek()->Is(Token::Kind::Period))
-			return ParseFieldExpression(expression);
+		while (Peek()->Is(Token::Kind::Period))
+			expression = ParseFieldExpression(expression);
 		return expression;
 	}
 

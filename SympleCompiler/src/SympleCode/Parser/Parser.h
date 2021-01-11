@@ -24,6 +24,7 @@
 #include "SympleCode/Node/Expression/ExpressionNode.h"
 #include "SympleCode/Node/Expression/CastExpressionNode.h"
 #include "SympleCode/Node/Expression/ListExpressionNode.h"
+#include "SympleCode/Node/Expression/TernaryExpressionNode.h"
 #include "SympleCode/Node/Expression/FunctionCallExpressionNode.h"
 #include "SympleCode/Node/Expression/ParenthesizedExpressionNode.h"
 #include "SympleCode/Node/Expression/StructInitializerExpressionNode.h"
@@ -95,6 +96,7 @@ namespace Symple
 
 		CastExpressionNode* ParseCastExpression();
 		ListExpressionNode* ParseListExpression();
+		TernaryExpressionNode* ParseTernaryExpression(ExpressionNode* condition);
 		ParenthesizedExpressionNode* ParseParenthesizedExpression();
 		StructInitializerExpressionNode* ParseStructInitializerExpression();
 

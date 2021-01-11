@@ -16,8 +16,5 @@ int main()
 	
 	printf("IsSympleCodeGood = %i\n", IsSympleCodeGood);
 	
-	if (!me.Age)
-		0;
-	else
-		1;
+	!me.Age ? 0 : 1;
 };

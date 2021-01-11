@@ -59,8 +59,12 @@ namespace Symple
 			return Atom(Token::Kind::Comma);
 		case '.':
 			return Atom(Token::Kind::Period);
+		case ':':
+			return Atom(Token::Kind::Colon);
 		case '@':
 			return Atom(Token::Kind::At);
+		case '?':
+			return Atom(Token::Kind::QuestionMark);
 		case '|':
 			return Equal();
 		case '&':
