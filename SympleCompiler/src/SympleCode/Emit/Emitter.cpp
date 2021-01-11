@@ -123,12 +123,17 @@ namespace Symple
 			EmitReturnStatement(statement->Cast<ReturnStatementNode>());
 		if (statement->Is<ExpressionStatementNode>())
 			EmitExpressionStatement(statement->Cast<ExpressionStatementNode>());
+		if (statement->Is<VariableDeclarationNode>())
+			EmitVariableDeclaration(statement->Cast<VariableDeclarationNode>());
 	}
 
 	void Emitter::EmitBlockStatement(const BlockStatementNode* block, bool funcdecl)
 	{
 		if (block->GetStackUsage())
+		{
 			Emit("\tsubl    $%i, %%esp", block->GetStackUsage());
+			mStack += block->GetStackUsage();
+		}
 
 		Debug::BeginScope();
 
@@ -171,6 +176,36 @@ namespace Symple
 		mRegisterManager->Free(exprReg);
 	}
 
+	void Emitter::EmitVariableDeclaration(const VariableDeclarationNode* statement)
+	{
+		Debug::VariableDeclaration(statement);
+
+		std::string nameStr(statement->GetName()->GetLex());
+		const char* name = nameStr.c_str();
+
+		Emit("_%s@ = -%i", name, mStack);
+		if (statement->GetInitializer())
+		{
+			if (statement->GetInitializer()->Is<StructInitializerExpressionNode>())
+			{
+				Register ptr = mRegisterManager->Alloc();
+				Emit("\tlea%c    _%s@(%%ebp), %s", Suf(), name, GetReg(ptr));
+				EmitStructInitializerExpression(statement->GetInitializer()->Cast<StructInitializerExpressionNode>(), ptr);
+				mRegisterManager->Free(ptr);
+			}
+			else
+			{
+				Register init = EmitExpression(statement->GetInitializer());
+				Emit("\tmov%c    %s, _%s@(%%ebp)", Suf(), GetReg(init), name);
+				mRegisterManager->Free(init);
+			}
+		}
+
+		if (statement->GetNext())
+			EmitVariableDeclaration(statement->GetNext());
+	}
+
+
 	Register Emitter::EmitExpression(const ExpressionNode* expression)
 	{
 		if (expression->Is<CastExpressionNode>())
@@ -185,13 +220,15 @@ namespace Symple
 			return EmitModifiableExpression(expression->Cast<ModifiableExpressionNode>());
 		if (expression->Is<FunctionCallExpressionNode>())
 			return EmitFunctionCallExpression(expression->Cast<FunctionCallExpressionNode>());
+		if (expression->Is<ParenthesizedExpressionNode>())
+			return EmitParenthesizedExpression(expression->Cast<ParenthesizedExpressionNode>());
 		
 		return nullreg;
 	}
 
 	Register Emitter::EmitCastExpression(const CastExpressionNode* expression)
 	{
-		return EmitExpression(expression);
+		return EmitExpression(expression->GetExpression());
 	}
 
 	Register Emitter::EmitListExpression(const ListExpressionNode* expression)
@@ -223,13 +260,13 @@ namespace Symple
 		for (int i = 0; i < NumRegisters; i++)
 			if (!mRegisterManager->GetFree()[i])
 			{
-				if (i == regax);
-				//{
-				//	reg = mRegisterManager->Alloc();
-				//	mRegisterManager->Free(i);
-				//	Emit("\tmov%c    %s, %%eax", Suf(), GetReg(reg));
-				//	Push(reg);
-				//}
+				if (i == regax)
+				{
+					Register reg = mRegisterManager->Alloc();
+					mRegisterManager->Free(i);
+					Emit("\tmov%c    %%eax, %s", Suf(), GetReg(reg));
+					Push(reg);
+				}
 				else
 					Push(i);
 			}
@@ -251,6 +288,38 @@ namespace Symple
 				Pop(i);
 
 		return mRegisterManager->Alloc(regax);
+	}
+
+	Register Emitter::EmitParenthesizedExpression(const ParenthesizedExpressionNode* expression)
+	{
+		return EmitExpression(expression->GetExpression());
+	}
+
+	Register Emitter::EmitVariableAddressExpression(const VariableAddressExpressionNode* expression)
+	{
+		return EmitVariableExpression(expression->GetVariable(), true);
+	}
+
+	void Emitter::EmitStructInitializerExpression(const StructInitializerExpressionNode* expression, Register to)
+	{
+		int off = 0;
+		for (const ExpressionNode* item : expression->GetExpressions())
+		{
+			Register reg = EmitExpression(item);
+			Emit("\tmov%c    %s, %i(%s)", Suf(), GetReg(reg), off, GetReg(to));
+			mRegisterManager->Free(reg);
+
+			off += item->GetType()->GetSize();
+		}
+	}
+
+	void Emitter::EmitStructInitializerExpression(const StructInitializerExpressionNode* expression, const ModifiableExpressionNode* exprTo)
+	{
+		Register to = EmitModifiableExpression(exprTo, true);
+
+		EmitStructInitializerExpression(expression, to);
+
+		mRegisterManager->Free(to);
 	}
 
 
@@ -275,17 +344,15 @@ namespace Symple
 		Register callee = EmitModifiableExpression(expression->GetCallee(), true);
 		unsigned int off = expression->GetOffset();
 
-		Register reg = mRegisterManager->Alloc();
-
 		Emit("\tadd%c    $%i, %s", Suf(), off, GetReg(callee));
-		mRegisterManager->Free(callee);
 
 		if (retptr)
-			return reg;
+			return callee;
 
 		Register val = mRegisterManager->CAlloc();
 		unsigned int sz = expression->GetType()->GetSize();
-		Emit("\tmov%c    (%s), %s", Suf(sz), GetReg(reg), GetReg(val, sz));
+		Emit("\tmov%c    (%s), %s", Suf(sz), GetReg(callee), GetReg(val, sz));
+		mRegisterManager->Free(callee);
 		return val;
 	}
 
@@ -309,9 +376,16 @@ namespace Symple
 
 	Register Emitter::EmitAssignmentExpression(const AssignmentExpressionNode* expression, bool retptr)
 	{
+
 		unsigned int sz = expression->GetLeft()->GetType()->GetSize();
 		Register left = EmitModifiableExpression(expression->GetLeft(), true);
 		Register right = EmitExpression(expression->GetRight());
+
+		if (expression->GetRight()->Is<StructInitializerExpressionNode>())
+		{
+			EmitStructInitializerExpression(expression->GetRight()->Cast<StructInitializerExpressionNode>(), expression->GetLeft());
+			goto Ret;
+		}
 
 		switch (expression->GetOperator()->GetKind())
 		{

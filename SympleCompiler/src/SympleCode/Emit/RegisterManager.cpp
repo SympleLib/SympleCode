@@ -25,7 +25,7 @@ namespace Symple
 	{
 		if (reg != nullreg)
 		{
-			Emit("\t# Reserving Reg: %s (%i)", GetRegister(reg), reg);
+			//Emit("\t# Reserving Reg: %s (%i)", GetRegister(reg), reg);
 
 			if (!mFreeRegisters[reg])
 			{
@@ -43,11 +43,11 @@ namespace Symple
 			{
 				mFreeRegisters[reg] = false;
 
-				Emit("\t# Allocated Reg: %s (%i)", GetRegister(reg), reg);
+				//Emit("\t# Allocated Reg: %s (%i)", GetRegister(reg), reg);
 				return reg;
 			}
 
-		Emit("\t# Spilled Reg: %s (%i)", GetRegister(reg), reg);
+		//Emit("\t# Spilled Reg: %s (%i)", GetRegister(reg), reg);
 
 		mSpilledRegisters[reg]++;
 		mEmitter->Push(reg);
@@ -64,7 +64,7 @@ namespace Symple
 
 	void RegisterManager::Free(Register reg)
 	{
-		Emit("\t# Free Reg: %s (%i)", GetRegister(reg), reg);
+		//Emit("\t# Free Reg: %s (%i)", GetRegister(reg), reg);
 
 		if (reg == nullreg)
 			return;

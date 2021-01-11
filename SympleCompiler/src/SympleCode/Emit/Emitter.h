@@ -15,6 +15,7 @@
 #include "SympleCode/Node/Expression/ListExpressionNode.h"
 #include "SympleCode/Node/Expression/FunctionCallExpressionNode.h"
 #include "SympleCode/Node/Expression/ParenthesizedExpressionNode.h"
+#include "SympleCode/Node/Expression/StructInitializerExpressionNode.h"
 
 #include "SympleCode/Node/Expression/Literal/NullLiteralExpressionNode.h"
 #include "SympleCode/Node/Expression/Literal/NumberLiteralExpressionNode.h"
@@ -75,11 +76,16 @@ namespace Symple
 		void EmitBlockStatement(const BlockStatementNode*, bool = false);
 		void EmitReturnStatement(const ReturnStatementNode*);
 		void EmitExpressionStatement(const ExpressionStatementNode*);
+		void EmitVariableDeclaration(const VariableDeclarationNode*);
 
 		Register EmitExpression(const ExpressionNode*);
 		Register EmitCastExpression(const CastExpressionNode*);
 		Register EmitListExpression(const ListExpressionNode*);
 		Register EmitFunctionCallExpression(const FunctionCallExpressionNode*);
+		Register EmitParenthesizedExpression(const ParenthesizedExpressionNode*);
+		Register EmitVariableAddressExpression(const VariableAddressExpressionNode*);
+		void EmitStructInitializerExpression(const StructInitializerExpressionNode*, Register);
+		void EmitStructInitializerExpression(const StructInitializerExpressionNode*, const ModifiableExpressionNode*);
 
 		Register EmitModifiableExpression(const ModifiableExpressionNode*, bool retptr = false);
 		Register EmitFieldExpression(const FieldExpressionNode*, bool retptr = false);
