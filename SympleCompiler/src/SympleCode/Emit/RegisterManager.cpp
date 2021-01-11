@@ -4,25 +4,27 @@
 
 #include "SympleCode/Analysis/Diagnostics.h"
 
-#define Emit(fmt, ...) fprintf(Emiter::mFile, fmt "\n", __VA_ARGS__)
-#define EmitLiteral(fmt, ...) fprintf_s(Emiter::mLiteralFile, fmt "\n", __VA_ARGS__)
+#define Emit(fmt, ...) fprintf(mEmitter->mFile, fmt "\n", __VA_ARGS__)
+#define EmitLiteral(fmt, ...) fprintf_s(mEmitter->mLiteralFile, fmt "\n", __VA_ARGS__)
 
 namespace Symple
 {
-	const char* const RegisterManager::sRegisters64[NumRegisters] = { "%rax", "%rdx", "%rcx", "%rbx", "%rdi", "%rsi",
-			"%r8", "%r9", "%r10", "%r11", "%r12", "%r13", };
-	const char* const RegisterManager::sRegisters32[NumRegisters] = { "%eax", "%edx", "%ecx", "%ebx", "%edi", "%esi",
-		"%r8d", "%r9d", "%r10d", "%r11d", "%r12d", "%r13d", };
-	const char* const RegisterManager::sRegisters16[NumRegisters] = { "%ax",  "%dx",  "%cx",  "%bx",  "%di",  "%si",
-		"%r8w", "%r9w", "%r10w", "%r11w", "%r12w", "%r13w", };
-	const char* const RegisterManager::sRegisters8[NumRegisters] = { "%al",  "%dl",  "%cl",  "%bl",  "%dil", "%sil",
-		"%r8b", "%r9b", "%r10b", "%r11b", "%r12b", "%r13b", };
+	const char* const RegisterManager::sRegisters64[NumRegisters] = { "%rdx", "%rcx", "%rbx", "%rdi", "%rsi",
+			"%r8", "%r9", "%r10", "%r11", "%r12", "%r13", "%rax", };
+	const char* const RegisterManager::sRegisters32[NumRegisters] = { "%edx", "%ecx", "%ebx", "%edi", "%esi",
+		"%r8d", "%r9d", "%r10d", "%r11d", "%r12d", "%r13d","%eax", };
+	const char* const RegisterManager::sRegisters16[NumRegisters] = { "%dx",  "%cx",  "%bx",  "%di",  "%si",
+		"%r8w", "%r9w", "%r10w", "%r11w", "%r12w", "%r13w","%ax", };
+	const char* const RegisterManager::sRegisters8[NumRegisters] = { "%dl",  "%cl",  "%bl",  "%dil", "%sil",
+		"%r8b", "%r9b", "%r10b", "%r11b", "%r12b", "%r13b", "%al", };
 
 	RegisterManager::RegisterManager(Emitter* emitter)
 		: mEmitter(emitter) {}
 
 	Register RegisterManager::Alloc(Register reg)
 	{
+		Emit("\t# Allocate Reg: %s (%i)", GetRegister(reg), reg);
+
 		if (reg != nullreg)
 		{
 			if (!mFreeRegisters[reg])
@@ -53,6 +55,8 @@ namespace Symple
 
 	void RegisterManager::Free(Register reg)
 	{
+		Emit("\t# Free Reg: %i", reg);
+
 		if (reg == nullreg)
 			return;
 
@@ -74,6 +78,12 @@ namespace Symple
 	{
 		for (int i = 0; i < NumRegisters; i++)
 			mFreeRegisters[i] = true;
+	}
+
+
+	const bool* RegisterManager::GetFree() const
+	{
+		return mFreeRegisters;
 	}
 
 	const char* RegisterManager::GetRegister(Register reg, int sz)

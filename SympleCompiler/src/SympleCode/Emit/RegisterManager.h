@@ -1,7 +1,7 @@
 #pragma once
 
 #define nullreg (-1)
-#define regax (0)
+#define regax (11)
 
 namespace Symple
 {
@@ -31,6 +31,8 @@ namespace Symple
 		Register Alloc(Register = nullreg);
 		void Free(Register);
 		void FreeAll();
+
+		const bool* GetFree() const;
 
 		static const char* GetRegister(Register reg, int size = 4);
 	};

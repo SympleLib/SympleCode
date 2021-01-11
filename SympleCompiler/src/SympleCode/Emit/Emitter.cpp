@@ -120,6 +120,8 @@ namespace Symple
 
 	void Emitter::EmitStatement(const StatementNode* statement)
 	{
+		if (statement->Is<BlockStatementNode>())
+			EmitBlockStatement(statement->Cast<BlockStatementNode>());
 		if (statement->Is<ExpressionStatementNode>())
 			EmitExpressionStatement(statement->Cast<ExpressionStatementNode>());
 	}
@@ -153,9 +155,8 @@ namespace Symple
 
 	void Emitter::EmitExpressionStatement(const ExpressionStatementNode* statement)
 	{
-		Register reg = mRegisterManager->Alloc(regax);
-
 		Register exprReg = EmitExpression(statement->GetExpression());
+		Register reg = mRegisterManager->Alloc(regax);
 		Emit("\tmovl    %s, %s", GetReg(exprReg), GetReg(reg));
 		mRegisterManager->Free(exprReg);
 
@@ -174,6 +175,21 @@ namespace Symple
 
 	Register Emitter::EmitFunctionCallExpression(const FunctionCallExpressionNode* expression)
 	{
+		Register reg = nullreg;
+
+		for (int i = 0; i < NumRegisters; i++)
+			if (!mRegisterManager->GetFree()[i])
+			{
+				if (i == regax)
+				{
+					reg = mRegisterManager->Alloc();
+					mRegisterManager->Free(i);
+					Push(reg);
+				}
+				else
+					Push(i);
+			}
+
 		for (unsigned int i = expression->GetArguments()->GetArguments().size(); i; i--)
 		{
 			Register argReg = EmitExpression(expression->GetArguments()->GetArguments()[i - 1]);
@@ -185,6 +201,10 @@ namespace Symple
 
 		Emit("\tcalll   %s", function->GetAsmName().c_str());
 		Emit("\taddl    $%i, %%esp", expression->GetArguments()->GetArguments().size() * 4);
+
+		for (int i = 0; i < NumRegisters; i++)
+			if (i != reg && !mRegisterManager->GetFree()[i])
+				Pop(i);
 
 		return mRegisterManager->Alloc(regax);
 	}
