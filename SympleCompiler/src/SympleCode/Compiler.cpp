@@ -50,21 +50,21 @@ namespace Symple
 			Parser parser(source, path);
 			CompilationUnitNode* unit = parser.ParseCompilationUnit();
 
-			//FILE* treef;
-			//errno_t err;
-			//if (!(err = fopen_s(&treef, syt, "w")) && treef)
-			//{
-			//	fputs(unit->ToString().c_str(), treef);
-			//	fclose(treef);
-			//}
-			//else
-			//{
-			//	char errMsg[32];
-			//	if (!strerror_s(errMsg, err))
-			//		std::cerr << "[!]: Error opening file '" << syt << "': " << errMsg << "!\n";
-			//	else
-			//		std::cerr << "[!]: Unkown Error opening file '" << syt << "'!\n";
-			//}
+			FILE* treef;
+			errno_t err;
+			if (!(err = fopen_s(&treef, syt, "w")) && treef)
+			{
+				fputs(unit->ToString().c_str(), treef);
+				fclose(treef);
+			}
+			else
+			{
+				char errMsg[32];
+				if (!strerror_s(errMsg, err))
+					std::cerr << "[!]: Error opening file '" << syt << "': " << errMsg << "!\n";
+				else
+					std::cerr << "[!]: Unkown Error opening file '" << syt << "'!\n";
+			}
 
 			unsigned int parseErrors = Diagnostics::GetErrors().size();
 			if (parseErrors)
