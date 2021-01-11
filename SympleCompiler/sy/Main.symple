@@ -1,27 +1,23 @@
-\\ #include "libc/io.sy"
+#include "libc/io.sy"
 
-\\ struct Person
-\\ {
-	\\ mut char* Name;
-	\\ mut int Age;
-\\ };
+struct Person
+{
+	mut char* Name;
+	mut int Age;
+};
 
-\\ bool IsSympleCodeGood = true;
+bool IsSympleCodeGood = true;
 
-\\ int main()
-\\ {
-	\\ Person me = Person { "Teddy", 12 };
+int main()
+{
+	Person me = Person { "Teddy", 12 };
 	
-	\\ printf("Name: %s, Age: %i\n", me.Name, me.Age);
+	printf("Name: %s, Age: %i\n", me.Name, me.Age);
 	
-	\\ printf("IsSympleCodeGood = %i\n", IsSympleCodeGood);
+	printf("IsSympleCodeGood = %i\n", IsSympleCodeGood);
 	
-	\\ if (!me.Age)
-		\\ 0;
-	\\ else
-		\\ 1;
-\\ };
-
-bool test = true;
-
-int main() test;
+	if (!me.Age)
+		0;
+	else
+		1;
+};
