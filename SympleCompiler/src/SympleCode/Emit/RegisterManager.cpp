@@ -57,11 +57,13 @@ namespace Symple
 	{
 		reg = Alloc(reg);
 		Emit("\txor%c    %s, %s", mEmitter->Suf(), GetRegister(reg), GetRegister(reg));
+
+		return reg;
 	}
 
 	void RegisterManager::Free(Register reg)
 	{
-		Emit("\t# Free Reg: %i", reg);
+		Emit("\t# Free Reg: %s (%i)", GetRegister(reg), reg);
 
 		if (reg == nullreg)
 			return;
@@ -94,17 +96,17 @@ namespace Symple
 
 	const char* RegisterManager::GetRegister(Register reg, int sz)
 	{
-		if (reg <= nullreg)
+		if (reg == nullreg)
 			return nullptr;
 
-		if (reg <= 1)
+		if (sz <= 1)
 			return sRegisters8[reg];
-		if (reg <= 2)
+		if (sz <= 2)
 			return sRegisters16[reg];
-		if (reg <= 4)
+		if (sz <= 4)
 			return sRegisters32[reg];
-		if (reg <= 8)
-			return sRegisters64[reg];
+		//if (sz <= 8)
+		//	return sRegisters64[reg];
 
 		return nullptr;
 	}

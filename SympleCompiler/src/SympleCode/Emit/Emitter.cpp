@@ -5,7 +5,7 @@
 #define Emit(fmt, ...) fprintf(mFile, fmt "\n", __VA_ARGS__)
 #define EmitLiteral(fmt, ...) fprintf_s(mLiteralFile, fmt "\n", __VA_ARGS__)
 
-#define GetReg(reg, ...) RegisterManager::GetRegister(reg, __VA_ARGS__)
+#define GetReg RegisterManager::GetRegister
 
 namespace Symple
 {
@@ -342,16 +342,20 @@ namespace Symple
 		switch (expression->GetOperator()->GetKind())
 		{
 		case Token::Kind::Exclamation:
+		{
 			Register out = mRegisterManager->CAlloc();
 
 			Emit("\tcmp%c    $0, %s", Suf(), GetReg(reg));
 			mRegisterManager->Free(reg);
 			Emit("\tsete    %s", GetReg(out, 1));
 			return out;
+		}
 		case Token::Kind::Minus:
 			Emit("\tneg%c    %s", Suf(), GetReg(reg));
 			return reg;
 		}
+
+		return nullreg;
 	}
 
 	Register Emitter::EmitBinaryExpression(const BinaryExpressionNode* expression)
@@ -371,6 +375,8 @@ namespace Symple
 			Emit("\timul%c   %s, %s", Suf(), GetReg(right), GetReg(left));
 			goto Ret;
 		}
+
+		return nullreg;
 
 	Ret:
 		mRegisterManager->Free(right);
