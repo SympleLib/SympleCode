@@ -10,7 +10,7 @@
 namespace Symple
 {
 	Emitter::Emitter(const char* path)
-		: mPath(path), mFile(), mLiteralFile(), mData(), mReturn(), mStack(),
+		: mPath(path), mFile(), mLiteralFile(), mData(), mReturn(), mStack(), mInits(),
 			mReturning(), mRegisterManager(new RegisterManager(this))
 	{
 		while (OpenFile());
@@ -65,6 +65,8 @@ namespace Symple
 			EmitGlobalStatement(member->Cast<GlobalStatementNode>());
 		if (member->Is<FunctionDeclarationNode>())
 			EmitFunctionDeclaration(member->Cast<FunctionDeclarationNode>());
+		if (member->Is<GlobalVariableDeclarationNode>())
+			EmitGlobalVariableDeclaration(member->Cast<GlobalVariableDeclarationNode>());
 	}
 
 	void Emitter::EmitGlobalStatement(const GlobalStatementNode* member)
@@ -97,6 +99,10 @@ namespace Symple
 		Emit("\tpushl   %%ebp");
 		Emit("\tmovl    %%esp, %%ebp");
 
+		if (member->IsMain())
+			for (unsigned int i = 0; i < mInits; i++)
+				Emit("\tcall%c   ..%i.", Suf(), i);
+
 		mReturning = false;
 		for (const StatementNode* statement : member->GetBody()->GetStatements())
 			if (statement->Is<ReturnStatementNode>() && statement != member->GetBody()->GetStatements().back())
@@ -114,17 +120,94 @@ namespace Symple
 		Emit("\tret");
 	}
 
+	void Emitter::EmitGlobalVariableDeclaration(const GlobalVariableDeclarationNode* member)
+	{
+		std::string nstr(member->GetName()->GetLex());
+		const char* name = nstr.c_str();
+
+		Emit("\t.bss");
+		if (member->GetModifiers()->IsPrivate())
+			Emit("\t.local   _%s@", name);
+		else
+			Emit("\t.globl   _%s@", name);
+		Emit("_%s@:", name);
+		Emit("\t.zero %i", member->GetType()->GetSize());
+		Emit("\t.text");
+
+		if (member->GetInitializer())
+		{
+			Emit("..%i.:", mInits++);
+			if (member->GetInitializer()->Is<StructInitializerExpressionNode>())
+			{
+				Register ptr = mRegisterManager->Alloc();
+				Emit("\tmov%c    $_%s@, %s", Suf(), name, GetReg(ptr));
+				EmitStructInitializerExpression(member->GetInitializer()->Cast<StructInitializerExpressionNode>(), ptr);
+				mRegisterManager->Free(ptr);
+			}
+			else
+			{
+				unsigned int sz = member->GetType()->GetSize();
+
+				Register init = EmitExpression(member->GetInitializer());
+				Emit("\tmov%c    %s, _%s@", Suf(sz), GetReg(init, sz), name);
+				mRegisterManager->Free(init);
+			}
+			Emit("\tret");
+		}
+	}
+
 
 	void Emitter::EmitStatement(const StatementNode* statement)
 	{
+		if (statement->Is<IfStatementNode>())
+			EmitIfStatement(statement->Cast<IfStatementNode>());
 		if (statement->Is<BlockStatementNode>())
 			EmitBlockStatement(statement->Cast<BlockStatementNode>());
+		if (statement->Is<BreakStatementNode>())
+			EmitBreakStatement(statement->Cast<BreakStatementNode>());
+		if (statement->Is<WhileStatementNode>())
+			EmitWhileStatement(statement->Cast<WhileStatementNode>());
 		if (statement->Is<ReturnStatementNode>())
 			EmitReturnStatement(statement->Cast<ReturnStatementNode>());
 		if (statement->Is<ExpressionStatementNode>())
 			EmitExpressionStatement(statement->Cast<ExpressionStatementNode>());
 		if (statement->Is<VariableDeclarationNode>())
 			EmitVariableDeclaration(statement->Cast<VariableDeclarationNode>());
+	}
+
+	void Emitter::EmitIfStatement(const IfStatementNode* statement)
+	{
+		if (statement->GetElse())
+		{
+			unsigned int elze = mData++, end = mData++;
+
+			Register cond = EmitExpression(statement->GetCondition());
+			Emit("\tcmp%c    $0, %s", Suf(), GetReg(cond));
+			Emit("\tje      ..%i", elze);
+
+			EmitBlockStatement(statement->GetThen());
+
+			Emit("\tjmp     ..%i", end);
+			Emit("..%i:", elze);
+
+			EmitBlockStatement(statement->GetElse());
+
+			Emit("..%i:", end);
+		}
+		else
+		{
+			unsigned int end = mData++;
+
+			Register cond = EmitExpression(statement->GetCondition());
+			Emit("\tcmp%c    $0, %s", Suf(), GetReg(cond));
+			Emit("\tje      ..%i", end);
+
+			EmitBlockStatement(statement->GetThen());
+
+			Emit("..%i:", end);
+
+			EmitBlockStatement(statement->GetElse());
+		}
 	}
 
 	void Emitter::EmitBlockStatement(const BlockStatementNode* block, bool funcdecl)
@@ -143,6 +226,28 @@ namespace Symple
 		Debug::EndScope();
 
 		mRegisterManager->FreeAll();
+	}
+
+	void Emitter::EmitBreakStatement(const BreakStatementNode* statement)
+	{
+		Emit("\tjmp     ..%i", mBreak);
+	}
+
+	void Emitter::EmitWhileStatement(const WhileStatementNode* statement)
+	{
+		unsigned int loop = mData++;
+		mBreak = mData++;
+
+		Emit("..%i:", loop);
+
+		Register cond = EmitExpression(statement->GetCondition());
+		Emit("\tcmp%c    $0, %s", Suf(), GetReg(cond));
+		Emit("\tjne     ..%i", mBreak);
+
+		EmitBlockStatement(statement->GetBody());
+
+		Emit("\tjmp     ..%i", loop);
+		Emit("..%i:", mBreak);
 	}
 
 	void Emitter::EmitReturnStatement(const ReturnStatementNode* statement)
@@ -358,17 +463,40 @@ namespace Symple
 
 	Register Emitter::EmitVariableExpression(const VariableExpressionNode* expression, bool retptr)
 	{
+		const VariableDeclaration* var = Debug::GetVariable(expression->GetName()->GetLex());
 		Register reg = mRegisterManager->Alloc();
 
+		if (var->Is<VariableDeclarationNode>())
+		{
+			if (retptr)
+				Emit("\tlea%c    _%s@(%%ebp), %s", Suf(), std::string(expression->GetName()->GetLex()).c_str(), GetReg(reg));
+			else
+			{
+				Emit("\txor%c    %s, %s", Suf(), GetReg(reg), GetReg(reg));
+
+				unsigned int sz = var->GetType()->GetSize();
+				Emit("\tmov%c    _%s@(%%ebp), %s", Suf(sz), std::string(expression->GetName()->GetLex()).c_str(), GetReg(reg, sz));
+			}
+
+			return reg;
+		}
+
 		if (retptr)
-			Emit("\tlea%c    _%s@(%%ebp), %s", Suf(), std::string(expression->GetName()->GetLex()).c_str(), GetReg(reg));
+			Emit("\tmov%c    $_%s@, %s", Suf(), std::string(expression->GetName()->GetLex()).c_str(), GetReg(reg));
 		else
 		{
-			Emit("\txor%c    %s, %s", Suf(), GetReg(reg), GetReg(reg));
+			if (var->GetType()->GetType()->Is<StructDeclarationNode>() && !var->GetType()->HasContinue(Token::Kind::Asterisk))
+			{
+				Diagnostics::ReportError(Token::Default, "Not Implemented!");
+				return nullreg;
+			}
+			else
+			{
+				Emit("\txor%c    %s, %s", Suf(), GetReg(reg), GetReg(reg));
 
-			const VariableDeclaration* var = Debug::GetVariable(expression->GetName()->GetLex());
-			unsigned int sz = var->GetType()->GetSize();
-			Emit("\tmov%c    _%s@(%%ebp), %s", Suf(sz), std::string(expression->GetName()->GetLex()).c_str(), GetReg(reg, sz));
+				unsigned int sz = var->GetType()->GetSize();
+				Emit("\tmov%c    _%s@, %s", Suf(sz), std::string(expression->GetName()->GetLex()).c_str(), GetReg(reg, sz));
+			}
 		}
 
 		return reg;

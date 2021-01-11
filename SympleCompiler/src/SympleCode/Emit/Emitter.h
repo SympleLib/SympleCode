@@ -4,8 +4,11 @@
 
 #include "SympleCode/Node/Member/GlobalStatementNode.h"
 #include "SympleCode/Node/Member/FunctionDeclarationNode.h"
+#include "SympleCode/Node/Member/GlobalVariableDeclarationNode.h"
 
+#include "SympleCode/Node/Statement/IfStatementNode.h"
 #include "SympleCode/Node/Statement/BlockStatementNode.h"
+#include "SympleCode/Node/Statement/BreakStatementNode.h"
 #include "SympleCode/Node/Statement/WhileStatementNode.h"
 #include "SympleCode/Node/Statement/ReturnStatementNode.h"
 #include "SympleCode/Node/Statement/ExpressionStatementNode.h"
@@ -54,6 +57,7 @@ namespace Symple
 		unsigned int mReturn;
 		unsigned int mBreak;
 		unsigned int mStack;
+		unsigned int mInits;
 
 		bool mReturning;
 		bool mReturnStatement;
@@ -71,9 +75,13 @@ namespace Symple
 		void EmitMember(const MemberNode*);
 		void EmitGlobalStatement(const GlobalStatementNode*);
 		void EmitFunctionDeclaration(const FunctionDeclarationNode*);
+		void EmitGlobalVariableDeclaration(const GlobalVariableDeclarationNode*);
 
 		void EmitStatement(const StatementNode*);
-		void EmitBlockStatement(const BlockStatementNode*, bool = false);
+		void EmitIfStatement(const IfStatementNode*);
+		void EmitBlockStatement(const BlockStatementNode*, bool funcdecl = false);
+		void EmitBreakStatement(const BreakStatementNode*);
+		void EmitWhileStatement(const WhileStatementNode*);
 		void EmitReturnStatement(const ReturnStatementNode*);
 		void EmitExpressionStatement(const ExpressionStatementNode*);
 		void EmitVariableDeclaration(const VariableDeclarationNode*);

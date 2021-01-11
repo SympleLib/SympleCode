@@ -75,6 +75,13 @@ namespace Symple
 			return ss.str();
 		}
 
+		bool IsMain() const
+		{
+			return mName->GetLex() == "main" && mArguments->GetArguments().empty() &&
+				!(mModifiers->GetFormatType() && mModifiers->GetFormatType()->GetModifier()->IsEither({ Token::Kind::SympleCall, Token::Kind::StdCall })) &&
+				!mModifiers->IsPrivate();
+		}
+
 		const Token* GetName() const
 		{
 			return mName;

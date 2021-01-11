@@ -82,6 +82,8 @@ namespace Symple
 
 		bool CanImplicitlyCastTo(const TypeNode* other) const
 		{
+			if (HasContinue(Token::Kind::Asterisk) && (other->GetType() == Type::PrimitiveType::Void && other->HasContinue(Token::Kind::Asterisk)))
+				return true;
 			bool type = mType == other->mType;
 			bool hasContinue = mContinue && other->mContinue;
 			bool contjnue = hasContinue && (mContinue->CanImplicitlyCastTo(other->mContinue) || mContinue == other->mContinue);

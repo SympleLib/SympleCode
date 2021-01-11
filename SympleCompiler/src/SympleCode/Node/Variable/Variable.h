@@ -4,6 +4,11 @@ namespace Symple
 {
 	class Variable
 	{
+	private:
+		virtual void _for_polyfomism()
+		{
+
+		}
 	public:
 		template<typename T>
 		bool Is() const
