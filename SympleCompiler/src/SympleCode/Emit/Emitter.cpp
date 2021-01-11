@@ -346,7 +346,11 @@ namespace Symple
 		if (expression->CanEvaluate())
 		{
 			Register reg = mRegisterManager->Alloc();
-			Emit("\tmov%c    $%i, %s", Suf(), expression->Evaluate(), GetReg(reg));
+
+			if (expression->Evaluate())
+				Emit("\tmov%c    $%d, %s", Suf(), expression->Evaluate(), GetReg(reg));
+			else
+				Emit("\txor%c    %s, %s", Suf(), GetReg(reg), GetReg(reg));
 			return reg;
 		}
 
