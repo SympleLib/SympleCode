@@ -49,9 +49,12 @@ namespace Symple
 			IfStatement,
 			BlockStatement,
 			BreakStatement,
+			
 			WhileStatement,
 			GlobalStatement,
 			ReturnStatement,
+
+			ForLoopStatement,
 			VariableDeclaration,
 			ExpressionStatement,
 
@@ -93,7 +96,8 @@ namespace Symple
 			"FunctionPointerExpression", "CharacterLiteralExpression",
 			"Member", "CompilationUnit", "FunctionDeclaration",
 			"Statement", "IfStatement", "BlockStatement", "BreakStatement",
-			"WhileStatement", "GlobalStatement", "ReturnStatement", "VariableDeclaration", "ExpressionStatement",
+			"WhileStatement", "GlobalStatement", "ReturnStatement",
+			"ForLoopStatement", "VariableDeclaration", "ExpressionStatement",
 			"FunctionNode", "FunctionHint", "ExternFunction",  "FunctionModifier",
 			"FunctionArgument", "FunctionArguments", "FunctionModifiers", "FunctionCallArguments",
 			"VariableModifier", "VariableModifiers", "VariableAddressExpression", "DereferencePointerExpression",

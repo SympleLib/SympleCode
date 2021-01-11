@@ -71,6 +71,7 @@ namespace Symple
 			True,
 			False,
 			While,
+			For,
 			Break,
 
 			Hint,
@@ -110,7 +111,7 @@ namespace Symple
 			"OpenBrace", "CloseBrace", "OpenBracket", "CloseBracket", "OpenParenthesis", "CloseParenthesis",
 			"LeftArrow", "RightArrow",
 			"Null", "Auto",
-			"True", "False", "While", "Break",
+			"True", "False", "While", "For", "Break",
 			"At", "Pipe", "PipePipe", "PipeEqual",
 			"Ampersand", "AmpersandAmpersand", "AmpersandEqual",
 			"Hint", "Return", "Extern", "Static",

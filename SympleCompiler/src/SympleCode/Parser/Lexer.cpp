@@ -154,6 +154,8 @@ namespace Symple
 			return new Token(Token::Kind::Break, beg, mCurrent, mFile, mLine, bColumn);
 		if (identifier == "while")
 			return new Token(Token::Kind::While, beg, mCurrent, mFile, mLine, bColumn);
+		if (identifier == "for")
+			return new Token(Token::Kind::For, beg, mCurrent, mFile, mLine, bColumn);
 		if (identifier == "extern")
 			return new Token(Token::Kind::Extern, beg, mCurrent, mFile, mLine, bColumn);
 		if (identifier == "static")

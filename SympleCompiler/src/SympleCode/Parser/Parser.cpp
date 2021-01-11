@@ -400,6 +400,8 @@ namespace Symple
 			return ParseReturnStatement();
 		if (Peek()->Is(Token::Kind::While))
 			return ParseWhileStatement();
+		if (Peek()->Is(Token::Kind::For))
+			return ParseForLoopStatement();
 		if (Peek()->Is(Token::Kind::If))
 			return ParseIfStatement();
 		if (Peek()->Is(Token::Kind::Break))
@@ -446,7 +448,6 @@ namespace Symple
 		const Token* open = Match(Token::Kind::While);
 		ExpressionNode* condition = ParseExpression();
 		BlockStatementNode* body = ParseBlockStatement();
-		Match(Token::Kind::Semicolon);
 
 		return new WhileStatementNode(open, condition, body);
 	}
@@ -478,6 +479,7 @@ namespace Symple
 				Next();
 		}
 		const Token* close = Match(Token::Kind::CloseBrace);
+		Match(Token::Kind::Semicolon);
 		Debug::EndScope();
 
 		return new BlockStatementNode(open, statements, close);
@@ -494,6 +496,27 @@ namespace Symple
 	GlobalStatementNode* Parser::ParseGlobalStatement()
 	{
 		return new GlobalStatementNode(ParseStatement());
+	}
+
+	ForLoopStatementNode* Parser::ParseForLoopStatement()
+	{
+		const Token* open = Match(Token::Kind::For);
+
+		bool parentithized = Peek()->Is(Token::Kind::OpenParenthesis);
+		if (parentithized)
+			Next();
+
+		StatementNode* initializer = ParseStatement();
+		ExpressionNode* condition = ParseExpression();
+		Match(Token::Kind::Semicolon);
+		StatementNode* step = ParseStatement();
+		
+		if (parentithized)
+			Match(Token::Kind::CloseParenthesis);
+
+		BlockStatementNode* body = ParseBlockStatement();
+
+		return new ForLoopStatementNode(open, initializer, condition, step, body);
 	}
 
 	VariableDeclarationNode* Parser::ParseVariableDeclaration(const TypeNode* type)

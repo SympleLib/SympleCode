@@ -12,6 +12,7 @@
 #include "SympleCode/Node/Statement/BlockStatementNode.h"
 #include "SympleCode/Node/Statement/WhileStatementNode.h"
 #include "SympleCode/Node/Statement/ReturnStatementNode.h"
+#include "SympleCode/Node/Statement/ForLoopStatementNode.h"
 #include "SympleCode/Node/Statement/VariableDeclarationNode.h"
 
 #include "SympleCode/Node/Member/FunctionHintNode.h"
@@ -83,6 +84,7 @@ namespace Symple
 		BlockStatementNode* ParseBlockStatement();
 		ReturnStatementNode* ParseReturnStatement();
 		GlobalStatementNode* ParseGlobalStatement();
+		ForLoopStatementNode* ParseForLoopStatement();
 		VariableDeclarationNode* ParseVariableDeclaration(const TypeNode* type = nullptr);
 		VariableModifiersNode* ParseVariableModifiers();
 		VariableModifierNode* ParseVariableModifier();

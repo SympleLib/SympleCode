@@ -11,6 +11,7 @@
 #include "SympleCode/Node/Statement/BreakStatementNode.h"
 #include "SympleCode/Node/Statement/WhileStatementNode.h"
 #include "SympleCode/Node/Statement/ReturnStatementNode.h"
+#include "SympleCode/Node/Statement/ForLoopStatementNode.h"
 #include "SympleCode/Node/Statement/ExpressionStatementNode.h"
 #include "SympleCode/Node/Statement/VariableDeclarationNode.h"
 
@@ -84,6 +85,7 @@ namespace Symple
 		void EmitBreakStatement(const BreakStatementNode*);
 		void EmitWhileStatement(const WhileStatementNode*);
 		void EmitReturnStatement(const ReturnStatementNode*);
+		void EmitForLoopStatement(const ForLoopStatementNode*);
 		void EmitExpressionStatement(const ExpressionStatementNode*);
 		void EmitVariableDeclaration(const VariableDeclarationNode*);
 

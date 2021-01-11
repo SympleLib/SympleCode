@@ -169,6 +169,8 @@ namespace Symple
 			EmitWhileStatement(statement->Cast<WhileStatementNode>());
 		if (statement->Is<ReturnStatementNode>())
 			EmitReturnStatement(statement->Cast<ReturnStatementNode>());
+		if (statement->Is<ForLoopStatementNode>())
+			EmitForLoopStatement(statement->Cast<ForLoopStatementNode>());
 		if (statement->Is<ExpressionStatementNode>())
 			EmitExpressionStatement(statement->Cast<ExpressionStatementNode>());
 		if (statement->Is<VariableDeclarationNode>())
@@ -269,6 +271,30 @@ namespace Symple
 
 		if (mReturning)
 			Emit("\tjmp     ..%i", mReturn);
+	}
+
+	void Emitter::EmitForLoopStatement(const ForLoopStatementNode* statement)
+	{
+		unsigned int loop = mData++;
+		mBreak = mData++;
+
+		EmitStatement(statement->GetInitializer());
+
+		Emit("..%i:", loop);
+
+		Debug::BeginScope();
+
+		Register cond = EmitExpression(statement->GetCondition());
+		Emit("\ttest%c   %s, %s", Suf(), GetReg(cond), GetReg(cond));
+		Emit("\tjne     ..%i", mBreak);
+		mRegisterManager->Free(cond);
+
+		EmitBlockStatement(statement->GetBody());
+		EmitStatement(statement->GetStep());
+		Debug::EndScope();
+
+		Emit("\tjmp     ..%i", loop);
+		Emit("..%i:", mBreak);
 	}
 
 	void Emitter::EmitExpressionStatement(const ExpressionStatementNode* statement)
@@ -400,19 +426,19 @@ namespace Symple
 
 	Register Emitter::EmitFunctionCallExpression(const FunctionCallExpressionNode* expression)
 	{
-		for (int i = 0; i < NumRegisters; i++)
-			if (!mRegisterManager->GetFree()[i])
-			{
-				if (i == regax)
-				{
-					Register reg = mRegisterManager->Alloc();
-					mRegisterManager->Free(i);
-					Emit("\tmov%c    %%eax, %s", Suf(), GetReg(reg));
-					Push(reg);
-				}
-				else
-					Push(i);
-			}
+		//for (int i = 0; i < NumRegisters; i++)
+		//	if (!mRegisterManager->GetFree()[i])
+		//	{
+		//		if (i == regax)
+		//		{
+		//			Register reg = mRegisterManager->Alloc();
+		//			mRegisterManager->Free(i);
+		//			Emit("\tmov%c    %%eax, %s", Suf(), GetReg(reg));
+		//			Push(reg);
+		//		}
+		//		else
+		//			Push(i);
+		//	}
 
 		for (unsigned int i = expression->GetArguments()->GetArguments().size(); i; i--)
 		{
@@ -426,9 +452,9 @@ namespace Symple
 		Emit("\tcalll   %s", function->GetAsmName().c_str());
 		Emit("\taddl    $%i, %%esp", expression->GetArguments()->GetArguments().size() * 4);
 
-		for (int i = 0; i < NumRegisters; i++)
-			if (i != regax && !mRegisterManager->GetFree()[i])
-				Pop(i);
+		//for (int i = 0; i < NumRegisters; i++)
+		//	if (i != regax && !mRegisterManager->GetFree()[i])
+		//		Pop(i);
 
 		return mRegisterManager->Alloc(regax);
 	}
@@ -510,9 +536,10 @@ namespace Symple
 				Emit("\tlea%c    _%s@(%%ebp), %s", Suf(), std::string(expression->GetName()->GetLex()).c_str(), GetReg(reg));
 			else
 			{
-				Emit("\txor%c    %s, %s", Suf(), GetReg(reg), GetReg(reg));
-
 				unsigned int sz = var->GetType()->GetSize();
+
+				if (sz != 4)
+					Emit("\txor%c    %s, %s", Suf(), GetReg(reg), GetReg(reg));
 				Emit("\tmov%c    _%s@(%%ebp), %s", Suf(sz), std::string(expression->GetName()->GetLex()).c_str(), GetReg(reg, sz));
 			}
 
@@ -528,9 +555,10 @@ namespace Symple
 				Emit("\tmov%c    $_%s@, %s", Suf(), std::string(expression->GetName()->GetLex()).c_str(), GetReg(reg));
 			else
 			{
-				Emit("\txor%c    %s, %s", Suf(), GetReg(reg), GetReg(reg));
-
 				unsigned int sz = var->GetType()->GetSize();
+
+				if (sz != 4)
+					Emit("\txor%c    %s, %s", Suf(), GetReg(reg), GetReg(reg));
 				Emit("\tmov%c    _%s@, %s", Suf(sz), std::string(expression->GetName()->GetLex()).c_str(), GetReg(reg, sz));
 			}
 		}
@@ -555,6 +583,9 @@ namespace Symple
 		{
 		case Token::Kind::Equal:
 			Emit("\tmov%c    %s, (%s)", Suf(sz), GetReg(right, sz), GetReg(left));
+			goto Ret;
+		case Token::Kind::PlusEqual:
+			Emit("\tadd%c    %s, (%s)", Suf(sz), GetReg(right, sz), GetReg(left));
 			goto Ret;
 		}
 
@@ -652,6 +683,26 @@ namespace Symple
 			goto Ret;
 		case Token::Kind::Asterisk:
 			Emit("\timul%c   %s, %s", Suf(), GetReg(right), GetReg(left));
+			goto Ret;
+		case Token::Kind::LeftArrow:
+			Emit("\tcmp%c    %s, %s", Suf(), GetReg(right), GetReg(left));
+			Emit("\tsetl    %s", GetReg(left, 1));
+			Emit("\tmovz%c%c  %s, %s", Suf(1), Suf(), GetReg(left, 1), GetReg(left));
+			goto Ret;
+		case Token::Kind::LeftArrowEqual:
+			Emit("\tcmp%c    %s, %s", Suf(), GetReg(left), GetReg(right));
+			Emit("\tsetle   %s", GetReg(left, 1));
+			Emit("\tmovz%c%c  %s, %s", Suf(1), Suf(), GetReg(left, 1), GetReg(left));
+			goto Ret;
+		case Token::Kind::RightArrow:
+			Emit("\tcmp%c    %s, %s", Suf(), GetReg(left), GetReg(right));
+			Emit("\tsetg    %s", GetReg(left, 1));
+			Emit("\tmovz%c%c  %s, %s", Suf(1), Suf(), GetReg(left, 1), GetReg(left));
+			goto Ret;
+		case Token::Kind::RightArrowEqual:
+			Emit("\tcmp%c    %s, %s", Suf(), GetReg(left), GetReg(right));
+			Emit("\tsetge   %s", GetReg(left, 1));
+			Emit("\tmovz%c%c  %s, %s", Suf(1), Suf(), GetReg(left, 1), GetReg(left));
 			goto Ret;
 		}
 
