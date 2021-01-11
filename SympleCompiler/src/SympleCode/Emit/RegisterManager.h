@@ -29,6 +29,7 @@ namespace Symple
 		RegisterManager(Emitter* emitter);
 
 		Register Alloc(Register = nullreg);
+		Register CAlloc(Register = nullreg);
 		void Free(Register);
 		void FreeAll();
 

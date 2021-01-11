@@ -37,17 +37,14 @@ namespace Symple
 
 	char Emitter::Suf(int sz)
 	{
-		switch (sz)
-		{
-		case 1:
+		if (sz <= 1)
 			return 'b';
-		case 2:
+		if (sz <= 2)
 			return 'w';
-		case 4:
+		if (sz <= 4)
 			return 'l';
-		case 8:
-			return 'q';
-		}
+		//if (sz <= 8)
+		//	return 'q';
 
 		return 0;
 	}
@@ -137,6 +134,8 @@ namespace Symple
 			EmitStatement(statement);
 
 		Debug::EndScope();
+
+		mRegisterManager->FreeAll();
 	}
 
 	void Emitter::EmitReturnStatement(const ReturnStatementNode* statement)
@@ -167,6 +166,10 @@ namespace Symple
 	{
 		if (expression->Is<LiteralExpressionNode>())
 			return EmitLiteralExpression(expression->Cast<LiteralExpressionNode>());
+		if (expression->Is<OperatorExpressionNode>())
+			return EmitOperatorExpression(expression->Cast<OperatorExpressionNode>());
+		if (expression->Is<ModifiableExpressionNode>())
+			return EmitModifiableExpression(expression->Cast<ModifiableExpressionNode>());
 		if (expression->Is<FunctionCallExpressionNode>())
 			return EmitFunctionCallExpression(expression->Cast<FunctionCallExpressionNode>());
 		
@@ -209,6 +212,172 @@ namespace Symple
 		return mRegisterManager->Alloc(regax);
 	}
 
+
+	Register Emitter::EmitModifiableExpression(const ModifiableExpressionNode* expression, bool retptr)
+	{
+		if (expression->Is<FieldExpressionNode>())
+			return EmitFieldExpression(expression->Cast<FieldExpressionNode>(), retptr);
+		if (expression->Is<VariableExpressionNode>())
+			return EmitVariableExpression(expression->Cast<VariableExpressionNode>(), retptr);
+		if (expression->Is<AssignmentExpressionNode>())
+			return EmitAssignmentExpression(expression->Cast<AssignmentExpressionNode>(), retptr);
+		if (expression->Is<PointerIndexExpressionNode>())
+			return EmitPointerIndexExpression(expression->Cast<PointerIndexExpressionNode>(), retptr);
+		if (expression->Is<DereferencePointerExpressionNode>())
+			return EmitDereferencePointerExpression(expression->Cast<DereferencePointerExpressionNode>(), retptr);
+
+		return nullreg;
+	}
+
+	Register Emitter::EmitFieldExpression(const FieldExpressionNode* expression, bool retptr)
+	{
+		Register callee = EmitModifiableExpression(expression->GetCallee(), true);
+		unsigned int off = expression->GetOffset();
+
+		Register reg = mRegisterManager->Alloc();
+
+		Emit("\tadd%c    $%i, %s", Suf(), off, GetReg(callee));
+		mRegisterManager->Free(callee);
+
+		if (retptr)
+			return reg;
+
+		Register val = mRegisterManager->CAlloc();
+		unsigned int sz = expression->GetType()->GetSize();
+		Emit("\tmov%c    (%s), %s", Suf(sz), GetReg(reg), GetReg(val, sz));
+		return val;
+	}
+
+	Register Emitter::EmitVariableExpression(const VariableExpressionNode* expression, bool retptr)
+	{
+		Register reg = mRegisterManager->Alloc();
+
+		if (retptr)
+			Emit("\tlea%c    _%s@(%%ebp), %s", Suf(), std::string(expression->GetName()->GetLex()).c_str(), GetReg(reg));
+		else
+		{
+			Emit("\txor%c    %s, %s", Suf(), GetReg(reg), GetReg(reg));
+
+			const VariableDeclaration* var = Debug::GetVariable(expression->GetName()->GetLex());
+			unsigned int sz = var->GetType()->GetSize();
+			Emit("\tmov%c    _%s@(%%ebp), %s", Suf(sz), std::string(expression->GetName()->GetLex()).c_str(), GetReg(reg, sz));
+		}
+
+		return reg;
+	}
+
+	Register Emitter::EmitAssignmentExpression(const AssignmentExpressionNode* expression, bool retptr)
+	{
+		unsigned int sz = expression->GetLeft()->GetType()->GetSize();
+		Register left = EmitModifiableExpression(expression->GetLeft(), true);
+		Register right = EmitExpression(expression->GetRight());
+
+		switch (expression->GetOperator()->GetKind())
+		{
+		case Token::Kind::Equal:
+			Emit("\tmov%c    %s, (%s)", Suf(sz), GetReg(right, sz), GetReg(left));
+			goto Ret;
+		}
+
+		return nullreg;
+
+	Ret:
+		if (retptr)
+		{
+			mRegisterManager->Free(right);
+			return left;
+		}
+
+		Register reg = mRegisterManager->Alloc();
+		Emit("\tmov%c    (%s), %s", Suf(sz), GetReg(left), GetReg(right));
+		mRegisterManager->Free(left);
+		mRegisterManager->Free(right);
+		return reg;
+	}
+
+	Register Emitter::EmitPointerIndexExpression(const PointerIndexExpressionNode* expression, bool retptr)
+	{
+		Register reg = EmitExpression(expression->GetAddress());
+		Register off = EmitExpression(expression->GetIndex());
+
+		Emit("\tadd%c    %s, %s", Suf(), GetReg(off), GetReg(reg));
+
+		if (retptr)
+			return reg;
+
+		Register val = mRegisterManager->CAlloc();
+		unsigned int sz = expression->GetType()->GetSize();
+		Emit("\tmov%c    (%s), %s", Suf(sz), GetReg(reg), GetReg(val, sz));
+		return val;
+	}
+
+	Register Emitter::EmitDereferencePointerExpression(const DereferencePointerExpressionNode* expression, bool retptr)
+	{
+		Register reg = EmitExpression(expression->GetAddress());
+
+		if (retptr)
+			return reg;
+
+		Register val = mRegisterManager->CAlloc();
+		unsigned int sz = expression->GetType()->GetSize();
+		Emit("\tmov%c    (%s), %s", Suf(sz), GetReg(reg), GetReg(val, sz));
+		return val;
+	}
+
+
+	Register Emitter::EmitOperatorExpression(const OperatorExpressionNode* expression)
+	{
+		if (expression->Is<UnaryExpressionNode>())
+			return EmitUnaryExpression(expression->Cast<UnaryExpressionNode>());
+		if (expression->Is<BinaryExpressionNode>())
+			return EmitBinaryExpression(expression->Cast<BinaryExpressionNode>());
+
+		return nullreg;
+	}
+
+	Register Emitter::EmitUnaryExpression(const UnaryExpressionNode* expression)
+	{
+		Register reg = EmitExpression(expression->GetValue());
+
+		switch (expression->GetOperator()->GetKind())
+		{
+		case Token::Kind::Exclamation:
+			Register out = mRegisterManager->CAlloc();
+
+			Emit("\tcmp%c    $0, %s", Suf(), GetReg(reg));
+			mRegisterManager->Free(reg);
+			Emit("\tsete    %s", GetReg(out, 1));
+			return out;
+		case Token::Kind::Minus:
+			Emit("\tneg%c    %s", Suf(), GetReg(reg));
+			return reg;
+		}
+	}
+
+	Register Emitter::EmitBinaryExpression(const BinaryExpressionNode* expression)
+	{
+		Register right = EmitExpression(expression->GetRight());
+		Register left = EmitExpression(expression->GetLeft());
+
+		switch (expression->GetOperator()->GetKind())
+		{
+		case Token::Kind::Plus:
+			Emit("\tadd%c    %s, %s", Suf(), GetReg(right), GetReg(left));
+			goto Ret;
+		case Token::Kind::Minus:
+			Emit("\tsub%c    %s, %s", Suf(), GetReg(right), GetReg(left));
+			goto Ret;
+		case Token::Kind::Asterisk:
+			Emit("\timul%c   %s, %s", Suf(), GetReg(right), GetReg(left));
+			goto Ret;
+		}
+
+	Ret:
+		mRegisterManager->Free(right);
+		return left;
+	}
+
+
 	Register Emitter::EmitLiteralExpression(const LiteralExpressionNode* expression)
 	{
 		if (expression->Is<NumberLiteralExpressionNode>())
@@ -217,6 +386,15 @@ namespace Symple
 			return EmitStringLiteralExpression(expression->Cast<StringLiteralExpressionNode>());
 
 		return nullreg;
+	}
+
+	Register Emitter::EmitNullLiteralExpression(const NullLiteralExpressionNode*)
+	{
+		Register reg = mRegisterManager->Alloc();
+
+		Emit("\txor%c    %s, %s", Suf(), GetReg(reg), GetReg(reg));
+
+		return reg;
 	}
 
 	Register Emitter::EmitNumberLiteralExpression(const NumberLiteralExpressionNode* expression)
@@ -239,6 +417,30 @@ namespace Symple
 
 		EmitLiteral("..%i:", mData++);
 		EmitLiteral("\t.string  \"%s\"", std::string(expression->GetLiteral()->GetLex()).c_str());
+
+		return reg;
+	}
+
+	Register Emitter::EmitBooleanLiteralExpression(const BooleanLiteralExpressionNode* expression)
+	{
+		Register reg = mRegisterManager->Alloc();
+
+		if (expression->Evaluate())
+			Emit("\tmov%c    $1, %s", Suf(), GetReg(reg));
+		else
+			Emit("\txor%c    %s, %s", Suf(), GetReg(reg), GetReg(reg));
+
+		return reg;
+	}
+
+	Register Emitter::EmitCharacterLiteralExpression(const CharacterLiteralExpressionNode* expression)
+	{
+		Register reg = mRegisterManager->Alloc();
+
+		if (expression->Evaluate())
+			Emit("\tmov%c    $%i, %s", Suf(), expression->Evaluate(), GetReg(reg));
+		else
+			Emit("\txor%c    %s, %s", Suf(), GetReg(reg), GetReg(reg));
 
 		return reg;
 	}

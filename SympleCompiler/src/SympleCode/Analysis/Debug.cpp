@@ -143,6 +143,30 @@ namespace Symple
 		return nullptr;
 	}
 
+	int Debug::GetFieldIndex(const FieldListNode* list, const std::string_view& name)
+	{
+		for (unsigned int i = 0; i < list->GetFields().size(); i++)
+			if (list->GetFields()[i]->GetName()->GetLex() == name)
+				return i;
+
+		return -1;
+	}
+
+	int Debug::GetFieldOffset(const FieldListNode* list, const std::string_view& name)
+	{
+		int offset = 0;
+
+		for (unsigned int i = 0; i < list->GetFields().size(); i++)
+		{
+			if (list->GetFields()[i]->GetName()->GetLex() == name)
+				return offset;
+
+			offset += list->GetFields()[i]->GetType()->GetSize();
+		}
+
+		return -1;
+	}
+
 	const StructDeclarationNode* Debug::GetStruct(const std::string_view& name)
 	{
 		for (const StructDeclarationNode* ztruct : sStructs)

@@ -12,10 +12,12 @@ namespace Symple
 	private:
 		const ModifiableExpressionNode* mCallee;
 		const Token* mName;
+
+		unsigned int mOffset;
 	public:
 		FieldExpressionNode(const ModifiableExpressionNode* callee, const Token* name)
 			: ModifiableExpressionNode(Debug::GetField(callee->GetType()->GetType()->Cast<StructDeclarationNode>()->GetFields(), name->GetLex())->GetType()),
-			mCallee(callee), mName(name)
+			mCallee(callee), mName(name), mOffset(Debug::GetFieldOffset(callee->GetType()->GetType()->Cast<StructDeclarationNode>()->GetFields(), name->GetLex()))
 		{
 			Diagnostics::ReportError(Debug::GetField(callee->GetType()->GetType()->Cast<StructDeclarationNode>()->GetFields(), name->GetLex())
 				->GetModifiers()->IsPrivate(), name, "Field is Private");
@@ -52,6 +54,11 @@ namespace Symple
 		const Token* GetName() const
 		{
 			return mName;
+		}
+
+		unsigned int GetOffset() const
+		{
+			return mOffset;
 		}
 
 		bool IsMutable() const override

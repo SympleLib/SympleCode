@@ -45,6 +45,8 @@ namespace Symple
 		static const std::vector<const Type*>& GetTypes();
 
 		static const VariableDeclarationNode* GetField(const FieldListNode* list, const std::string_view& name);
+		static int GetFieldIndex(const FieldListNode* list, const std::string_view& name);
+		static int GetFieldOffset(const FieldListNode* list, const std::string_view& name);
 		static const StructDeclarationNode* GetStruct(const std::string_view& name);
 		static const std::vector<const StructDeclarationNode*>& GetStructs();
 	};

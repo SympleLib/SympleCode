@@ -79,9 +79,23 @@ namespace Symple
 		Register EmitExpression(const ExpressionNode*);
 		Register EmitFunctionCallExpression(const FunctionCallExpressionNode*);
 
+		Register EmitModifiableExpression(const ModifiableExpressionNode*, bool retptr = false);
+		Register EmitFieldExpression(const FieldExpressionNode*, bool retptr = false);
+		Register EmitVariableExpression(const VariableExpressionNode*, bool retptr = false);
+		Register EmitAssignmentExpression(const AssignmentExpressionNode*, bool retptr = false);
+		Register EmitPointerIndexExpression(const PointerIndexExpressionNode*, bool retptr = false);
+		Register EmitDereferencePointerExpression(const DereferencePointerExpressionNode*, bool retptr = false);
+
+		Register EmitOperatorExpression(const OperatorExpressionNode*);
+		Register EmitUnaryExpression(const UnaryExpressionNode*);
+		Register EmitBinaryExpression(const BinaryExpressionNode*);
+
 		Register EmitLiteralExpression(const LiteralExpressionNode*);
+		Register EmitNullLiteralExpression(const NullLiteralExpressionNode*);
 		Register EmitNumberLiteralExpression(const NumberLiteralExpressionNode*);
 		Register EmitStringLiteralExpression(const StringLiteralExpressionNode*);
+		Register EmitBooleanLiteralExpression(const BooleanLiteralExpressionNode*);
+		Register EmitCharacterLiteralExpression(const CharacterLiteralExpressionNode*);
 
 		bool OpenFile();
 		bool OpenLiteralFile();
