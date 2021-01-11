@@ -8,7 +8,7 @@ namespace Symple
 	{
 	public:
 		ModifiableExpressionNode(const TypeNode* type)
-			: ExpressionNode(type) {}
+			: ExpressionNode(type){}
 
 		Kind GetKind() const override
 		{

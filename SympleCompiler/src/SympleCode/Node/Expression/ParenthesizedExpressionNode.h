@@ -20,6 +20,16 @@ namespace Symple
 			return Kind::ParenthesizedExpression;
 		}
 
+		bool CanEvaluate() const override
+		{
+			return mExpression->CanEvaluate();
+		}
+
+		int Evaluate() const override
+		{
+			return mExpression->Evaluate();
+		}
+
 		std::string ToString(const std::string& indent = "", bool last = true) const override
 		{
 			std::stringstream ss;
@@ -50,11 +60,6 @@ namespace Symple
 		const Token* GetClose() const
 		{
 			return mClose;
-		}
-
-		int Evaluate() const override
-		{
-			return mExpression->Evaluate();
 		}
 	};
 }

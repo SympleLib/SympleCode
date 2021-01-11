@@ -14,6 +14,11 @@ namespace Symple
 		{
 			return Kind::StringLiteralExpression;
 		}
+		
+		bool CanEvaluate() const override
+		{
+			return false;
+		}
 
 		std::string ToString(const std::string& indent = "", bool last = true) const override
 		{

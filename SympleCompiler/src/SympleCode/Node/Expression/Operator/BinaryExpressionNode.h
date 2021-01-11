@@ -11,24 +11,89 @@ namespace Symple
 		const ExpressionNode* mLeft;
 		const ExpressionNode* mRight;
 
-		const TypeNode* ResolveType(const ExpressionNode* left, const ExpressionNode* right)
-		{
-			if (left->GetType()->GetType()->GetSize() >= right->GetType()->GetType()->GetSize())
-			{
-				return left->GetType();
-			}
-			else
-			{
-				return right->GetType();
-			}
-		}
+		int mEvaluate;
 	public:
 		BinaryExpressionNode(const Token* oqerator, const ExpressionNode* left, const ExpressionNode* right)
-			: OperatorExpressionNode(ResolveType(left, right), oqerator), mLeft(left), mRight(right) {}
+			: OperatorExpressionNode(left->GetType(), oqerator), mLeft(left), mRight(right),
+				mEvaluate()
+		{
+			Diagnostics::ReportError(!mRight->GetType()->CanImplicitlyCastTo(mLeft->GetType()), mOperator, "Unmatched Types:\n%s,\n%s",
+				mLeft->GetType()->ToString("", false).c_str(), mRight->GetType()->ToString().c_str());
+
+			switch (mOperator->GetKind())
+			{
+			case Token::Kind::Pipe:
+				mEvaluate = mLeft->Evaluate() | mRight->Evaluate();
+				break;
+			case Token::Kind::Ampersand:
+				mEvaluate = mLeft->Evaluate() & mRight->Evaluate();
+				break;
+
+			case Token::Kind::EqualEqual:
+				mEvaluate = mLeft->Evaluate() == mRight->Evaluate();
+				break;
+			case Token::Kind::ExclamationEqual:
+				mEvaluate = mLeft->Evaluate() != mRight->Evaluate();
+				break;
+			case Token::Kind::PipePipe:
+				mEvaluate = mLeft->Evaluate() || mRight->Evaluate();
+				break;
+			case Token::Kind::AmpersandAmpersand:
+				mEvaluate = mLeft->Evaluate() && mRight->Evaluate();
+				break;
+			case Token::Kind::LeftArrow:
+				mEvaluate = mLeft->Evaluate() < mRight->Evaluate();
+				break;
+			case Token::Kind::RightArrow:
+				mEvaluate = mLeft->Evaluate() > mRight->Evaluate();
+				break;
+			case Token::Kind::LeftArrowEqual:
+				mEvaluate = mLeft->Evaluate() <= mRight->Evaluate();
+				break;
+			case Token::Kind::RightArrowEqual:
+				mEvaluate = mLeft->Evaluate() >= mRight->Evaluate();
+				break;
+
+			case Token::Kind::LeftArrowArrow:
+				mEvaluate = mLeft->Evaluate() << mRight->Evaluate();
+				break;
+			case Token::Kind::RightArrowArrow:
+				mEvaluate = mLeft->Evaluate() >> mRight->Evaluate();
+				break;
+
+			case Token::Kind::Plus:
+				mEvaluate = mLeft->Evaluate() + mRight->Evaluate();
+				break;
+			case Token::Kind::Minus:
+				mEvaluate = mLeft->Evaluate() - mRight->Evaluate();
+				break;
+			case Token::Kind::Asterisk:
+				mEvaluate = mLeft->Evaluate() * mRight->Evaluate();
+				break;
+			case Token::Kind::Slash:
+				mEvaluate = mLeft->Evaluate() / mRight->Evaluate();
+				break;
+			case Token::Kind::Percentage:
+				mEvaluate = mLeft->Evaluate() % mRight->Evaluate();
+				break;
+			default:
+				Diagnostics::ReportError(mOperator, "Invalid Operation!");
+			}
+		}
 
 		Kind GetKind() const override
 		{
 			return Kind::BinaryExpression;
+		}
+
+		bool CanEvaluate() const override
+		{
+			return mLeft->CanEvaluate() && mRight->CanEvaluate();
+		}
+
+		int Evaluate() const override
+		{
+			return mEvaluate;
 		}
 
 		std::string ToString(const std::string& indent = "", bool last = true) const override

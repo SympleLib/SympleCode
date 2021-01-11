@@ -18,6 +18,11 @@ namespace Symple
 			return Kind::LiteralExpression;
 		}
 
+		virtual bool CanEvaluate() const override
+		{
+			return true;
+		}
+
 		virtual std::string ToString(const std::string& indent = "", bool last = true) const override
 		{
 			std::stringstream ss;

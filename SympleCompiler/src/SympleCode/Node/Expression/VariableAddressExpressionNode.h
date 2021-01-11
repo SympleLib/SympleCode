@@ -8,9 +8,9 @@ namespace Symple
 	{
 	private:
 		const Token* mSymbol;
-		const VariableExpressionNode* mVariable;
+		const ModifiableExpressionNode* mVariable;
 	public:
-		VariableAddressExpressionNode(const Token* symbol, const VariableExpressionNode* variable)
+		VariableAddressExpressionNode(const Token* symbol, const ModifiableExpressionNode* variable)
 			: ExpressionNode(new TypeNode(variable->GetType()->GetType(), MutModifiers,
 				new TypeContinueNode(PtrToken, variable->GetType()->GetModifiers(), variable->GetType()->GetContinue()))), mSymbol(symbol), mVariable(variable) {}
 
@@ -41,7 +41,7 @@ namespace Symple
 			return mSymbol;
 		}
 
-		const VariableExpressionNode* GetVariable() const
+		const ModifiableExpressionNode* GetVariable() const
 		{
 			return mVariable;
 		}

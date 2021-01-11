@@ -18,10 +18,13 @@ namespace Symple
 			return Kind::Expression;
 		}
 
-		virtual int Evaluate() const
+		virtual bool CanEvaluate() const
 		{
-			return -1;
+			return false;
 		}
+
+		virtual int Evaluate() const
+		{ return 0; }
 
 		const TypeNode* GetType() const
 		{

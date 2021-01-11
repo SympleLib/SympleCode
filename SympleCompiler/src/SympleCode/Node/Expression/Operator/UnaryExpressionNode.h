@@ -9,13 +9,39 @@ namespace Symple
 	{
 	private:
 		const ExpressionNode* mValue;
+
+		int mEvaluate;
 	public:
 		UnaryExpressionNode(const Token* oqerator, const ExpressionNode* value)
-			: OperatorExpressionNode(value->GetType(), oqerator), mValue(value) {}
+			: OperatorExpressionNode(value->GetType(), oqerator), mValue(value),
+				mEvaluate()
+		{
+			switch (mOperator->GetKind())
+			{
+			case Token::Kind::Exclamation:
+				mEvaluate = !mValue->Evaluate();
+				break;
+			case Token::Kind::Minus:
+				mEvaluate = -mValue->Evaluate();
+				break;
+			default:
+				Diagnostics::ReportError(mOperator, "Invalid Operation!");
+			}
+		}
 
 		Kind GetKind() const override
 		{
 			return Kind::UnaryExpression;
+		}
+
+		bool CanEvaluate() const override
+		{
+			return mValue->CanEvaluate();
+		}
+
+		int Evaluate() const override
+		{
+			return mEvaluate;
 		}
 
 		std::string ToString(const std::string& indent = "", bool last = true) const override

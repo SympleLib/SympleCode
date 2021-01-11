@@ -343,6 +343,13 @@ namespace Symple
 
 	Register Emitter::EmitExpression(const ExpressionNode* expression)
 	{
+		if (expression->CanEvaluate())
+		{
+			Register reg = mRegisterManager->Alloc();
+			Emit("\tmov%c    $%i, %s", Suf(), expression->Evaluate(), GetReg(reg));
+			return reg;
+		}
+
 		if (expression->Is<CastExpressionNode>())
 			return EmitCastExpression(expression->Cast<CastExpressionNode>());
 		if (expression->Is<ListExpressionNode>())
@@ -466,7 +473,7 @@ namespace Symple
 
 	Register Emitter::EmitVariableAddressExpression(const VariableAddressExpressionNode* expression)
 	{
-		return EmitVariableExpression(expression->GetVariable(), true);
+		return EmitModifiableExpression(expression->GetVariable(), true);
 	}
 
 	void Emitter::EmitStructInitializerExpression(const StructInitializerExpressionNode* expression, Register to)

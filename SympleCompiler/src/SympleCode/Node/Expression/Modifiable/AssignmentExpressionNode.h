@@ -21,7 +21,6 @@ namespace Symple
 			Diagnostics::ReportError(!mRight->GetType()->CanImplicitlyCastTo(mLeft->GetType()), mOperator, "Unmatched Types:\n%s,\n%s",
 				mLeft->GetType()->ToString("", false).c_str(), mRight->GetType()->ToString().c_str());
 		}
-
 		Kind GetKind() const override
 		{
 			return Kind::AssignmentExpression;
@@ -52,10 +51,5 @@ namespace Symple
 		const ExpressionNode* GetRight() const { return mRight; }
 
 		bool IsMutable() const { return true; }
-
-		int Evaluate() const override
-		{
-			return mRight->Evaluate();
-		}
 	};
 }

@@ -26,6 +26,16 @@ namespace Symple
 			return Kind::CastExpression;
 		}
 
+		bool CanEvaluate() const override
+		{
+			return mExpression->CanEvaluate();
+		}
+
+		int Evaluate() const override
+		{
+			return mExpression->Evaluate();
+		}
+
 		std::string ToString(const std::string& indent = "", bool last = true) const override
 		{
 			std::stringstream ss;
