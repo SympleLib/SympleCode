@@ -486,10 +486,8 @@ namespace Symple
 		else
 		{
 			if (var->GetType()->GetType()->Is<StructDeclarationNode>() && !var->GetType()->HasContinue(Token::Kind::Asterisk))
-			{
-				Diagnostics::ReportError(Token::Default, "Not Implemented!");
-				return nullreg;
-			}
+				// Just move a pointer since you cant cast a struct to any other type
+				Emit("\tmov%c    $_%s@, %s", Suf(), std::string(expression->GetName()->GetLex()).c_str(), GetReg(reg));
 			else
 			{
 				Emit("\txor%c    %s, %s", Suf(), GetReg(reg), GetReg(reg));
