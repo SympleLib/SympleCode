@@ -158,6 +158,8 @@ namespace Symple
 			return new Token(Token::Kind::For, beg, mCurrent, mFile, mLine, bColumn);
 		if (identifier == "extern")
 			return new Token(Token::Kind::Extern, beg, mCurrent, mFile, mLine, bColumn);
+		if (identifier == "shared")
+			return new Token(Token::Kind::Shared, beg, mCurrent, mFile, mLine, bColumn);
 		if (identifier == "static")
 			return new Token(Token::Kind::Static, beg, mCurrent, mFile, mLine, bColumn);
 

@@ -9,8 +9,10 @@
 
 namespace Symple
 {
+	unsigned int Emitter::sInits = 0;
+
 	Emitter::Emitter(const char* path)
-		: mPath(path), mFile(), mLiteralFile(), mData(), mReturn(), mStack(), mInits(),
+		: mPath(path), mFile(), mLiteralFile(), mData(), mReturn(), mStack(),
 			mReturning(), mRegisterManager(new RegisterManager(this))
 	{
 		while (OpenFile());
@@ -34,6 +36,18 @@ namespace Symple
 		for (const MemberNode* member : unit->GetMembers())
 			EmitMember(member);
 	}
+
+	void Emitter::EmitStaticInitialization()
+	{
+		Emit("\t.globl   ._STATIC_INIT_.");
+		Emit("._STATIC_INIT_.:");
+
+		for (unsigned int i = 0; i < sInits; i++)
+			Emit("\tcall%c   ..%i.", Suf(), i);
+
+		Emit("\tret");
+	}
+
 
 	char Emitter::Suf(int sz)
 	{
@@ -100,8 +114,7 @@ namespace Symple
 		Emit("\tmovl    %%esp, %%ebp");
 
 		if (member->IsMain())
-			for (unsigned int i = 0; i < mInits; i++)
-				Emit("\tcall%c   ..%i.", Suf(), i);
+			Emit("\tcall%c   ._STATIC_INIT_.", Suf());
 
 		mReturning = false;
 		for (const StatementNode* statement : member->GetBody()->GetStatements())
@@ -122,6 +135,9 @@ namespace Symple
 
 	void Emitter::EmitGlobalVariableDeclaration(const GlobalVariableDeclarationNode* member)
 	{
+		if (member->GetKind() == Node::Kind::SharedVariable)
+			return;
+
 		std::string nstr(member->GetName()->GetLex());
 		const char* name = nstr.c_str();
 
@@ -136,7 +152,8 @@ namespace Symple
 
 		if (member->GetInitializer())
 		{
-			Emit("..%i.:", mInits++);
+			Emit("\t.globl   ..%i.", sInits);
+			Emit("..%i.:", sInits++);
 			if (member->GetInitializer()->Is<StructInitializerExpressionNode>())
 			{
 				Register ptr = mRegisterManager->Alloc();

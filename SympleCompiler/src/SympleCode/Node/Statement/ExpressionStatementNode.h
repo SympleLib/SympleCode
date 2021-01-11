@@ -31,7 +31,8 @@ namespace Symple
 			const char* newIndent = " \t";
 			if (!last)
 				newIndent = "|\t";
-			ss << '\n' << mExpression->ToString(indent + newIndent);
+			if (mExpression)
+				ss << '\n' << mExpression->ToString(indent + newIndent);
 			return ss.str();
 		}
 

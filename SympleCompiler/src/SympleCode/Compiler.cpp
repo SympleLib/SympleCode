@@ -127,6 +127,20 @@ namespace Symple
 
 	void Compiler::Link(const char* output, const std::vector<const char*> libraries)
 	{
+		// Static Initialization
+		{
+			{
+				Emitter emitter("__staticinit.s");
+				emitter.EmitStaticInitialization();
+			}
+
+			char command[128];
+			sprintf_s(command, "clang -c %s -o %s", "__staticinit.s", "__staticinit.o");
+			int compileStatis = system(command);
+
+			mObjectFiles.push_back("__staticinit.o");
+		}
+
 		mOutput = output;
 		
 		std::stringstream ss;

@@ -17,6 +17,7 @@
 
 #include "SympleCode/Node/Member/FunctionHintNode.h"
 #include "SympleCode/Node/Member/ExternFunctionNode.h"
+#include "SympleCode/Node/Member/SharedVariableNode.h"
 #include "SympleCode/Node/Member/GlobalStatementNode.h"
 #include "SympleCode/Node/Member/StructDeclarationNode.h"
 #include "SympleCode/Node/Member/FunctionDeclarationNode.h"
@@ -71,6 +72,7 @@ namespace Symple
 		FunctionModifiersNode* ParseFunctionModifiers();
 		FunctionModifierNode* ParseFunctionModifier();
 		FunctionArgumentNode* ParseFunctionArgument();
+		SharedVariableNode* ParseSharedVariable(const TypeNode* type = nullptr);
 		ExternFunctionNode* ParseExternFunction();
 		FunctionHintNode* ParseFunctionHint();
 		GlobalVariableDeclarationNode* ParseGlobalVariableDeclaration(const TypeNode* type = nullptr);

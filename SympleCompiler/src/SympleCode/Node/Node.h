@@ -72,6 +72,7 @@ namespace Symple
 			VariableAddressExpression,
 			DereferencePointerExpression,
 
+			SharedVariable,
 			GlobalVariableDeclaration,
 
 			Type,
@@ -101,7 +102,7 @@ namespace Symple
 			"FunctionNode", "FunctionHint", "ExternFunction",  "FunctionModifier",
 			"FunctionArgument", "FunctionArguments", "FunctionModifiers", "FunctionCallArguments",
 			"VariableModifier", "VariableModifiers", "VariableAddressExpression", "DereferencePointerExpression",
-			"GlobalVariableDeclaration",
+			"SharedVariable", "GlobalVariableDeclaration",
 			"Type", "TypeModifier", "TypeModifiers", "TypeContinue",
 			"CastExpression",
 			"StructDeclaration", "FieldList",

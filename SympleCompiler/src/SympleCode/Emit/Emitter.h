@@ -2,6 +2,7 @@
 
 #include "SympleCode/Node/CompilationUnitNode.h"
 
+#include "SympleCode/Node/Member/SharedVariableNode.h"
 #include "SympleCode/Node/Member/GlobalStatementNode.h"
 #include "SympleCode/Node/Member/FunctionDeclarationNode.h"
 #include "SympleCode/Node/Member/GlobalVariableDeclarationNode.h"
@@ -59,7 +60,8 @@ namespace Symple
 		unsigned int mReturn;
 		unsigned int mBreak;
 		unsigned int mStack;
-		unsigned int mInits;
+
+		static unsigned int sInits;
 
 		bool mReturning;
 		bool mReturnStatement;
@@ -68,6 +70,7 @@ namespace Symple
 		~Emitter();
 
 		void EmitCompilationUnit(const CompilationUnitNode*);
+		void EmitStaticInitialization();
 	private:
 		char Suf(int sz = 4);
 

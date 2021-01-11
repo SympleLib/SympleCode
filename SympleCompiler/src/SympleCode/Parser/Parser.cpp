@@ -188,6 +188,8 @@ namespace Symple
 			return ParseFunctionHint();
 		if (Peek()->Is(Token::Kind::Extern))
 			return ParseExternFunction();
+		if (Peek()->Is(Token::Kind::Shared))
+			return ParseSharedVariable();
 		if (Peek()->Is(Token::Kind::Struct))
 			return ParseStructDeclaration();
 
@@ -266,6 +268,33 @@ namespace Symple
 		return argument;
 	}
 
+	SharedVariableNode* Parser::ParseSharedVariable(const TypeNode* type)
+	{
+		if (!type)
+		{
+			Match(Token::Kind::Shared);
+			type = ParseType();
+		}
+		const Token* name = Match(Token::Kind::Identifier);
+
+		VariableModifiersNode* modifiers = ParseVariableModifiers();
+
+		SharedVariableNode* declaration = nullptr;
+		SharedVariableNode* next = nullptr;
+
+		if (Peek()->Is(Token::Kind::Comma))
+		{
+			Next();
+			next = ParseSharedVariable(type);
+		}
+
+		Match(Token::Kind::Semicolon);
+
+		declaration = new SharedVariableNode(name, type, modifiers, next);
+		Debug::VariableDeclaration(declaration);
+		return declaration;
+	}
+
 	FunctionHintNode* Parser::ParseFunctionHint()
 	{
 		Match(Token::Kind::Hint);
@@ -284,7 +313,7 @@ namespace Symple
 	{
 		if (!type)
 			type = ParseType();
-		const Token* name = Next();
+		const Token* name = Match(Token::Kind::Identifier);
 
 		VariableModifiersNode* modifiers = ParseVariableModifiers();
 
@@ -523,7 +552,7 @@ namespace Symple
 	{
 		if (!type)
 			type = ParseType();
-		const Token* name = Next();
+		const Token* name = Match(Token::Kind::Identifier);
 
 		VariableModifiersNode* modifiers = ParseVariableModifiers();
 

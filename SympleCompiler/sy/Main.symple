@@ -1,34 +1,3 @@
-#include "libc/io.sy"
+shared bool doesItWork;
 
-\\ struct Person
-\\ {
-	\\ mut char* Name;
-	\\ mut int Age;
-\\ };
-
-\\ bool IsSympleCodeGood = true;
-
-\\ int main()
-\\ {
-	\\ int* luckyNums = [ 69, 420, 1337, 69420 ];
-	\\ int luckyNumsLength = 4;
-	\\ printf("Lucky Numbers are: [");
-	\\ for (mut int i = 0; i < 4; i = i + 1;)
-		\\ printf("%i, ", luckyNums[i]);
-	\\ printf("]!\n");
-
-	\\ Person me = Person { "Teddy", 12 };
-	
-	\\ printf("Name: %s, Age: %i\n", me.Name, me.Age);
-	
-	\\ printf("IsSympleCodeGood = %i\n", IsSympleCodeGood);
-	
-	\\ !me.Age ? 0 : 1;
-\\ };
-
-int main()
-{
-	for (mut int i = 0; i < 4; i += 1;)
-		puts("Hello!");
-	0;
-};
+int main() doesItWork;

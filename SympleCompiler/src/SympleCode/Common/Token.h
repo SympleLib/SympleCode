@@ -77,6 +77,7 @@ namespace Symple
 			Hint,
 			Return,
 			Extern,
+			Shared,
 			Static,
 
 			If,
@@ -114,7 +115,7 @@ namespace Symple
 			"True", "False", "While", "For", "Break",
 			"At", "Pipe", "PipePipe", "PipeEqual",
 			"Ampersand", "AmpersandAmpersand", "AmpersandEqual",
-			"Hint", "Return", "Extern", "Static",
+			"Hint", "Return", "Extern", "Shared", "Static",
 			"If", "Else",
 			"SympleCall", "StdCall", "CCall",
 			"Mutable", "Private", "Signed", "Unsigned"
