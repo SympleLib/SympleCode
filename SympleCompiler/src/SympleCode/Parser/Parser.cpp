@@ -25,7 +25,7 @@
 namespace Symple
 {
 	Parser::Parser(const char* source, const char* file)
-		: mPreprocessor(source, file), mPosition(0), mTokens(mPreprocessor.GetTokens()), mTypes(Type::PrimitiveTypes)
+		: mPreprocessor(source, file), mPosition(0), mTokens(mPreprocessor.GetTokens())
 	{
 		//for (auto tok : mTokens)
 		//	std::cout << Token::KindString(tok->GetKind()) << '#' << (int)tok->GetKind() << '|' << tok->GetLex() << '\n';

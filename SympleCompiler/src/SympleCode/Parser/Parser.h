@@ -45,7 +45,6 @@ namespace Symple
 		Preprocessor mPreprocessor;
 
 		std::vector<const Token*> mTokens;
-		std::vector<const Type*> mTypes;
 		size_t mPosition;
 	public:
 		Parser(const char* source = "", const char* file = "");
