@@ -426,19 +426,19 @@ namespace Symple
 
 	Register Emitter::EmitFunctionCallExpression(const FunctionCallExpressionNode* expression)
 	{
-		//for (int i = 0; i < NumRegisters; i++)
-		//	if (!mRegisterManager->GetFree()[i])
-		//	{
-		//		if (i == regax)
-		//		{
-		//			Register reg = mRegisterManager->Alloc();
-		//			mRegisterManager->Free(i);
-		//			Emit("\tmov%c    %%eax, %s", Suf(), GetReg(reg));
-		//			Push(reg);
-		//		}
-		//		else
-		//			Push(i);
-		//	}
+		for (int i = 0; i < NumRegisters; i++)
+			if (!mRegisterManager->GetFree()[i])
+			{
+				if (i == regax)
+				{
+					Register reg = mRegisterManager->Alloc();
+					mRegisterManager->Free(i);
+					Emit("\tmov%c    %%eax, %s", Suf(), GetReg(reg));
+					Push(reg);
+				}
+				else
+					Push(i);
+			}
 
 		for (unsigned int i = expression->GetArguments()->GetArguments().size(); i; i--)
 		{
@@ -452,9 +452,9 @@ namespace Symple
 		Emit("\tcalll   %s", function->GetAsmName().c_str());
 		Emit("\taddl    $%i, %%esp", expression->GetArguments()->GetArguments().size() * 4);
 
-		//for (int i = 0; i < NumRegisters; i++)
-		//	if (i != regax && !mRegisterManager->GetFree()[i])
-		//		Pop(i);
+		for (int i = 0; i < NumRegisters; i++)
+			if (i != regax && !mRegisterManager->GetFree()[i])
+				Pop(i);
 
 		return mRegisterManager->Alloc(regax);
 	}
