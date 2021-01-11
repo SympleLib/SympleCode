@@ -88,9 +88,8 @@ namespace Symple
 		return token->IsEither({ Token::Kind::Asterisk });
 	}
 
-	TypeNode* Parser::ParseType()
+	TypeNode* Parser::ParseType(const Type* type)
 	{
-		const Type* type = nullptr;
 		std::vector<const TypeModifierNode*> modifiers;
 		const TypeContinueNode* contjnue = nullptr;
 
@@ -268,13 +267,14 @@ namespace Symple
 		return argument;
 	}
 
-	SharedVariableNode* Parser::ParseSharedVariable(const TypeNode* type)
+	SharedVariableNode* Parser::ParseSharedVariable(const Type* type)
 	{
 		if (!type)
 		{
 			Match(Token::Kind::Shared);
-			type = ParseType();
+			type = GetType(Next());
 		}
+		const TypeNode* ty = ParseType(type);
 		const Token* name = Match(Token::Kind::Identifier);
 
 		VariableModifiersNode* modifiers = ParseVariableModifiers();
@@ -290,7 +290,7 @@ namespace Symple
 
 		Match(Token::Kind::Semicolon);
 
-		declaration = new SharedVariableNode(name, type, modifiers, next);
+		declaration = new SharedVariableNode(name, ty, modifiers, next);
 		Debug::VariableDeclaration(declaration);
 		return declaration;
 	}
@@ -309,10 +309,11 @@ namespace Symple
 		return hint;
 	}
 
-	GlobalVariableDeclarationNode* Parser::ParseGlobalVariableDeclaration(const TypeNode* type)
+	GlobalVariableDeclarationNode* Parser::ParseGlobalVariableDeclaration(const Type* type)
 	{
 		if (!type)
-			type = ParseType();
+			type = GetType(Next());
+		const TypeNode* ty = ParseType(type);
 		const Token* name = Match(Token::Kind::Identifier);
 
 		VariableModifiersNode* modifiers = ParseVariableModifiers();
@@ -333,7 +334,7 @@ namespace Symple
 
 			Match(Token::Kind::Semicolon);
 
-			declaration = new GlobalVariableDeclarationNode(name, type, modifiers, expression, next);
+			declaration = new GlobalVariableDeclarationNode(name, ty, modifiers, expression, next);
 			Debug::VariableDeclaration(declaration);
 			return declaration;
 		}
@@ -348,7 +349,7 @@ namespace Symple
 
 		Match(Token::Kind::Semicolon);
 
-		declaration = new GlobalVariableDeclarationNode(name, type, modifiers, nullptr, next);
+		declaration = new GlobalVariableDeclarationNode(name, ty, modifiers, nullptr, next);
 		Debug::VariableDeclaration(declaration);
 		return declaration;
 	}
@@ -376,11 +377,11 @@ namespace Symple
 			VariableDeclarationNode* field = ParseField();
 			fields.push_back(field);
 
-			type = field->GetType();
+			const Type* ty = field->GetType()->GetType();
 			while (Peek()->Is(Token::Kind::Comma))
 			{
 				Next();
-				fields.push_back(ParseField(type));
+				fields.push_back(ParseField(ty));
 			}
 			Match(Token::Kind::Semicolon);
 		}
@@ -388,10 +389,11 @@ namespace Symple
 		return new FieldListNode(fields);
 	}
 
-	VariableDeclarationNode* Parser::ParseField(const TypeNode* type)
+	VariableDeclarationNode* Parser::ParseField(const Type* type)
 	{
 		if (!type)
-			type = ParseType();
+			type = GetType(Next());
+		TypeNode* ty = ParseType(type);
 		const Token* name = Next();
 
 		VariableModifiersNode* modifiers = ParseVariableModifiers();
@@ -401,10 +403,10 @@ namespace Symple
 			Next();
 			ExpressionNode* expression = ParseExpression();
 
-			return new VariableDeclarationNode(name, type, modifiers, expression, nullptr);
+			return new VariableDeclarationNode(name, ty, modifiers, expression, nullptr);
 		}
 
-		return new VariableDeclarationNode(name, type, modifiers, nullptr, nullptr);
+		return new VariableDeclarationNode(name, ty, modifiers, nullptr, nullptr);
 	}
 
 	ExternFunctionNode* Parser::ParseExternFunction()
@@ -548,10 +550,11 @@ namespace Symple
 		return new ForLoopStatementNode(open, initializer, condition, step, body);
 	}
 
-	VariableDeclarationNode* Parser::ParseVariableDeclaration(const TypeNode* type)
+	VariableDeclarationNode* Parser::ParseVariableDeclaration(const Type* type)
 	{
 		if (!type)
-			type = ParseType();
+			type = GetType(Next());
+		const TypeNode* ty = ParseType(type);
 		const Token* name = Match(Token::Kind::Identifier);
 
 		VariableModifiersNode* modifiers = ParseVariableModifiers();
@@ -572,7 +575,7 @@ namespace Symple
 			
 			Match(Token::Kind::Semicolon);
 
-			declaration = new VariableDeclarationNode(name, type, modifiers, expression, next);
+			declaration = new VariableDeclarationNode(name, ty, modifiers, expression, next);
 			Debug::VariableDeclaration(declaration);
 			return declaration;
 		}
@@ -587,7 +590,7 @@ namespace Symple
 
 		Match(Token::Kind::Semicolon);
 
-		declaration = new VariableDeclarationNode(name, type, modifiers, nullptr, next);
+		declaration = new VariableDeclarationNode(name, ty, modifiers, nullptr, next);
 		Debug::VariableDeclaration(declaration);
 		return declaration;
 	}

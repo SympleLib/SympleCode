@@ -60,7 +60,7 @@ namespace Symple
 
 		static bool IsTypeNodeable(const Token* token);
 		static bool IsTypeContinue(const Token* token);
-		TypeNode* ParseType();
+		TypeNode* ParseType(const Type* type = nullptr);
 		TypeContinueNode* ParseTypeContinue();
 
 		const std::vector<const MemberNode*> ParseMembers();
@@ -71,13 +71,13 @@ namespace Symple
 		FunctionModifiersNode* ParseFunctionModifiers();
 		FunctionModifierNode* ParseFunctionModifier();
 		FunctionArgumentNode* ParseFunctionArgument();
-		SharedVariableNode* ParseSharedVariable(const TypeNode* type = nullptr);
+		SharedVariableNode* ParseSharedVariable(const Type* type = nullptr);
 		ExternFunctionNode* ParseExternFunction();
 		FunctionHintNode* ParseFunctionHint();
-		GlobalVariableDeclarationNode* ParseGlobalVariableDeclaration(const TypeNode* type = nullptr);
+		GlobalVariableDeclarationNode* ParseGlobalVariableDeclaration(const Type* type = nullptr);
 		StructDeclarationNode* ParseStructDeclaration();
 		FieldListNode* ParseFieldList();
-		VariableDeclarationNode* ParseField(const TypeNode* type = nullptr);
+		VariableDeclarationNode* ParseField(const Type* type = nullptr);
 
 		StatementNode* ParseStatement();
 		IfStatementNode* ParseIfStatement();
@@ -86,7 +86,7 @@ namespace Symple
 		ReturnStatementNode* ParseReturnStatement();
 		GlobalStatementNode* ParseGlobalStatement();
 		ForLoopStatementNode* ParseForLoopStatement();
-		VariableDeclarationNode* ParseVariableDeclaration(const TypeNode* type = nullptr);
+		VariableDeclarationNode* ParseVariableDeclaration(const Type* type = nullptr);
 		VariableModifiersNode* ParseVariableModifiers();
 		VariableModifierNode* ParseVariableModifier();
 	

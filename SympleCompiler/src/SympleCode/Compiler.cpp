@@ -130,15 +130,15 @@ namespace Symple
 		// Static Initialization
 		{
 			{
-				Emitter emitter("__staticinit.s");
+				Emitter emitter("bin\\__staticinit.s");
 				emitter.EmitStaticInitialization();
 			}
 
 			char command[128];
-			sprintf_s(command, "clang -c %s -o %s", "__staticinit.s", "__staticinit.o");
+			sprintf_s(command, "clang -c %s -o %s", "bin\\__staticinit.s", "bin\\__staticinit.o");
 			int compileStatis = system(command);
 
-			mObjectFiles.push_back("__staticinit.o");
+			mObjectFiles.push_back("bin\\__staticinit.o");
 		}
 
 		mOutput = output;
