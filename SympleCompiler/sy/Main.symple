@@ -4,5 +4,5 @@ int main()
 {
 	puts("Hello, world!");
 
-	return !false;
+	return !null;
 };

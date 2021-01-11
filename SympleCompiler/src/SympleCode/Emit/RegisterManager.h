@@ -16,10 +16,10 @@ namespace Symple
 	private:
 		Emitter* mEmitter;
 
-		int mSpilledRegisters = 0;
-
 		bool mFreeRegisters[NumRegisters] = { true, true, true, true, true, true,
 			true, true, true, true, true, true, };
+
+		int mSpilledRegisters[NumRegisters] = {};
 
 		static const char* const sRegisters64[NumRegisters];
 		static const char* const sRegisters32[NumRegisters];

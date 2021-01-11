@@ -119,6 +119,8 @@ namespace Symple
 	{
 		if (statement->Is<BlockStatementNode>())
 			EmitBlockStatement(statement->Cast<BlockStatementNode>());
+		if (statement->Is<ReturnStatementNode>())
+			EmitReturnStatement(statement->Cast<ReturnStatementNode>());
 		if (statement->Is<ExpressionStatementNode>())
 			EmitExpressionStatement(statement->Cast<ExpressionStatementNode>());
 	}
@@ -140,13 +142,16 @@ namespace Symple
 
 	void Emitter::EmitReturnStatement(const ReturnStatementNode* statement)
 	{
-		Register reg = mRegisterManager->Alloc(regax);
-
 		Register exprReg = EmitExpression(statement->GetExpression());
-		Emit("\tmovl    %s, %s", GetReg(exprReg), GetReg(reg));
-		mRegisterManager->Free(exprReg);
+		if (exprReg != regax)
+		{
+			Register reg = mRegisterManager->Alloc(regax);
+			Emit("\tmov%c    %s, %s", Suf(), GetReg(exprReg), GetReg(reg));
 
-		mRegisterManager->Free(reg);
+			mRegisterManager->Free(reg);
+		}
+
+		mRegisterManager->Free(exprReg);
 
 		if (mReturning)
 			Emit("\tjmp     ..%i", mReturn);
@@ -155,15 +160,23 @@ namespace Symple
 	void Emitter::EmitExpressionStatement(const ExpressionStatementNode* statement)
 	{
 		Register exprReg = EmitExpression(statement->GetExpression());
-		Register reg = mRegisterManager->Alloc(regax);
-		Emit("\tmovl    %s, %s", GetReg(exprReg), GetReg(reg));
-		mRegisterManager->Free(exprReg);
+		if (exprReg != regax)
+		{
+			Register reg = mRegisterManager->Alloc(regax);
+			Emit("\tmov%c    %s, %s", Suf(), GetReg(exprReg), GetReg(reg));
 
-		mRegisterManager->Free(reg);
+			mRegisterManager->Free(reg);
+		}
+
+		mRegisterManager->Free(exprReg);
 	}
 
 	Register Emitter::EmitExpression(const ExpressionNode* expression)
 	{
+		if (expression->Is<CastExpressionNode>())
+			return EmitCastExpression(expression->Cast<CastExpressionNode>());
+		if (expression->Is<ListExpressionNode>())
+			return EmitListExpression(expression->Cast<ListExpressionNode>());
 		if (expression->Is<LiteralExpressionNode>())
 			return EmitLiteralExpression(expression->Cast<LiteralExpressionNode>());
 		if (expression->Is<OperatorExpressionNode>())
@@ -176,19 +189,47 @@ namespace Symple
 		return nullreg;
 	}
 
+	Register Emitter::EmitCastExpression(const CastExpressionNode* expression)
+	{
+		return EmitExpression(expression);
+	}
+
+	Register Emitter::EmitListExpression(const ListExpressionNode* expression)
+	{
+		Register reg = mRegisterManager->CAlloc();
+		if (expression->GetExpressions().empty())
+			return reg;
+
+		unsigned int sz = expression->GetExpressions().size() * expression->GetExpressionType()->GetSize();
+		Emit("\tsub%c   $%i, %%esp", Suf(), sz);
+
+		mStack += sz;
+		for (const ExpressionNode* item : expression->GetExpressions())
+		{
+			Register itemReg = EmitExpression(item);
+			Emit("\tmov%c    %s, -%i(%%ebp)", Suf(), GetReg(itemReg), mStack);
+			mRegisterManager->Free(itemReg);
+
+			mStack -= item->GetType()->GetSize();
+		}
+		mStack += sz;
+
+		Emit("\tlea%c    -%i(%%ebp), %s", Suf(), mStack, GetReg(reg));
+		return reg;
+	}
+
 	Register Emitter::EmitFunctionCallExpression(const FunctionCallExpressionNode* expression)
 	{
-		Register reg = nullreg;
-
 		for (int i = 0; i < NumRegisters; i++)
 			if (!mRegisterManager->GetFree()[i])
 			{
-				if (i == regax)
-				{
-					reg = mRegisterManager->Alloc();
-					mRegisterManager->Free(i);
-					Push(reg);
-				}
+				if (i == regax);
+				//{
+				//	reg = mRegisterManager->Alloc();
+				//	mRegisterManager->Free(i);
+				//	Emit("\tmov%c    %s, %%eax", Suf(), GetReg(reg));
+				//	Push(reg);
+				//}
 				else
 					Push(i);
 			}
@@ -206,7 +247,7 @@ namespace Symple
 		Emit("\taddl    $%i, %%esp", expression->GetArguments()->GetArguments().size() * 4);
 
 		for (int i = 0; i < NumRegisters; i++)
-			if (i != reg && !mRegisterManager->GetFree()[i])
+			if (i != regax && !mRegisterManager->GetFree()[i])
 				Pop(i);
 
 		return mRegisterManager->Alloc(regax);
@@ -289,7 +330,7 @@ namespace Symple
 		}
 
 		Register reg = mRegisterManager->Alloc();
-		Emit("\tmov%c    (%s), %s", Suf(sz), GetReg(left), GetReg(right));
+		Emit("\tmov%c    (%s), %s", Suf(sz), GetReg(left), GetReg(reg));
 		mRegisterManager->Free(left);
 		mRegisterManager->Free(right);
 		return reg;
@@ -386,10 +427,16 @@ namespace Symple
 
 	Register Emitter::EmitLiteralExpression(const LiteralExpressionNode* expression)
 	{
+		if (expression->Is<NullLiteralExpressionNode>())
+			return EmitNullLiteralExpression(expression->Cast<NullLiteralExpressionNode>());
 		if (expression->Is<NumberLiteralExpressionNode>())
 			return EmitNumberLiteralExpression(expression->Cast<NumberLiteralExpressionNode>());
 		if (expression->Is<StringLiteralExpressionNode>())
 			return EmitStringLiteralExpression(expression->Cast<StringLiteralExpressionNode>());
+		if (expression->Is<BooleanLiteralExpressionNode>())
+			return EmitBooleanLiteralExpression(expression->Cast<BooleanLiteralExpressionNode>());
+		if (expression->Is<CharacterLiteralExpressionNode>())
+			return EmitCharacterLiteralExpression(expression->Cast<CharacterLiteralExpressionNode>());
 
 		return nullreg;
 	}

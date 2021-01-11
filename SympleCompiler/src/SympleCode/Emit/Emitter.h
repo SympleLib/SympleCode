@@ -77,6 +77,8 @@ namespace Symple
 		void EmitExpressionStatement(const ExpressionStatementNode*);
 
 		Register EmitExpression(const ExpressionNode*);
+		Register EmitCastExpression(const CastExpressionNode*);
+		Register EmitListExpression(const ListExpressionNode*);
 		Register EmitFunctionCallExpression(const FunctionCallExpressionNode*);
 
 		Register EmitModifiableExpression(const ModifiableExpressionNode*, bool retptr = false);

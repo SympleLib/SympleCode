@@ -10,12 +10,12 @@
 namespace Symple
 {
 	const char* const RegisterManager::sRegisters64[NumRegisters] = { "%rdx", "%rcx", "%rbx", "%rdi", "%rsi",
-			"%r8", "%r9", "%r10", "%r11", "%r12", "%r13", "%rax", };
+		"%r8",  "%r9",  "%r10",  "%r11",  "%r12",  "%r13",  "%rax", };
 	const char* const RegisterManager::sRegisters32[NumRegisters] = { "%edx", "%ecx", "%ebx", "%edi", "%esi",
-		"%r8d", "%r9d", "%r10d", "%r11d", "%r12d", "%r13d","%eax", };
-	const char* const RegisterManager::sRegisters16[NumRegisters] = { "%dx",  "%cx",  "%bx",  "%di",  "%si",
-		"%r8w", "%r9w", "%r10w", "%r11w", "%r12w", "%r13w","%ax", };
-	const char* const RegisterManager::sRegisters8[NumRegisters] = { "%dl",  "%cl",  "%bl",  "%dil", "%sil",
+		"%r8d", "%r9d", "%r10d", "%r11d", "%r12d", "%r13d", "%eax", };
+	const char* const RegisterManager::sRegisters16[NumRegisters] = { "%dx",  "%cx",  "%bx",  "%di",  "%si" ,
+		"%r8w", "%r9w", "%r10w", "%r11w", "%r12w", "%r13w", "%ax", };
+	const char* const RegisterManager::sRegisters8[NumRegisters]  = { "%dl",  "%cl",  "%bl",  "%dil", "%sil",
 		"%r8b", "%r9b", "%r10b", "%r11b", "%r12b", "%r13b", "%al", };
 
 	RegisterManager::RegisterManager(Emitter* emitter)
@@ -23,32 +23,33 @@ namespace Symple
 
 	Register RegisterManager::Alloc(Register reg)
 	{
-		Emit("\t# Allocate Reg: %s (%i)", GetRegister(reg), reg);
-
 		if (reg != nullreg)
 		{
+			Emit("\t# Reserving Reg: %s (%i)", GetRegister(reg), reg);
+
 			if (!mFreeRegisters[reg])
 			{
-				reg = mSpilledRegisters % NumRegisters;
-				mSpilledRegisters++;
-
+				mSpilledRegisters[reg]++;
 				mEmitter->Push(reg);
 				return reg;
 			}
 
 			mFreeRegisters[reg] = false;
+			return reg;
 		}
 
 		for (reg = 0; reg < NumRegisters; reg++)
 			if (mFreeRegisters[reg])
 			{
 				mFreeRegisters[reg] = false;
+
+				Emit("\t# Allocated Reg: %s (%i)", GetRegister(reg), reg);
 				return reg;
 			}
 
-		reg = mSpilledRegisters % NumRegisters;
-		mSpilledRegisters++;
+		Emit("\t# Spilled Reg: %s (%i)", GetRegister(reg), reg);
 
+		mSpilledRegisters[reg]++;
 		mEmitter->Push(reg);
 		return reg;
 	}
@@ -71,11 +72,9 @@ namespace Symple
 		if (mFreeRegisters[reg])
 			return Diagnostics::ReportError(Token::Default, "Trying to Free Free Register");
 
-		if (mSpilledRegisters)
+		if (mSpilledRegisters[reg])
 		{
-			mSpilledRegisters--;
-			reg = mSpilledRegisters % NumRegisters;
-
+			mSpilledRegisters[reg]--;
 			mEmitter->Pop(reg);
 		}
 		else
