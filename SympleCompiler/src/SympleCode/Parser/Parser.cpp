@@ -443,6 +443,11 @@ namespace Symple
 			return ParseForLoopStatement(matchSemicolon);
 		if (Peek()->Is(Token::Kind::If))
 			return ParseIfStatement(matchSemicolon);
+		if (Peek()->Is(Token::Kind::Else))
+		{
+			Diagnostics::ReportError(Next(), "Else Statement Without Matching If");
+			return new StatementNode;
+		}
 		if (Peek()->Is(Token::Kind::Asm))
 			return ParseAsmStatement(matchSemicolon);
 		if (Peek()->Is(Token::Kind::Break))
@@ -469,7 +474,7 @@ namespace Symple
 			Next();
 			elze = ParseBlockStatement(matchSemicolon);
 		}
-		else if (matchSemicolon)
+		else if (matchSemicolon && then->GetOpen() != then->GetClose())
 			Match(Token::Kind::Semicolon);
 
 		return new IfStatementNode(open, condition, then, elze);
@@ -499,8 +504,7 @@ namespace Symple
 	{
 		const Token* open = Match(Token::Kind::While);
 		ExpressionNode* condition = ParseExpression();
-		BlockStatementNode* body = ParseBlockStatement();
-		Match(Token::Kind::Semicolon);
+		BlockStatementNode* body = ParseBlockStatement(matchSemicolon);
 
 		return new WhileStatementNode(open, condition, body);
 	}
@@ -510,7 +514,7 @@ namespace Symple
 		Debug::BeginScope();
 		if (!Peek()->Is(Token::Kind::OpenBrace))
 		{
-			StatementNode* statement = ParseStatement(matchSemicolon);
+			StatementNode* statement = ParseStatement();
 			Debug::EndScope();
 			return new BlockStatementNode(Peek(), { statement }, Peek());
 		}

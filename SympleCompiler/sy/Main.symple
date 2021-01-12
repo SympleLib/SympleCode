@@ -1,9 +1,5 @@
-\\ #include "libc/io.sy"
-\\ #include "libc/memory.sy"
-#lib "legacy_stdio_definitions.lib"
-extern void* malloc(int) ccall;
-extern int printf(char*) ccall;
-extern int putchar(char) ccall;
+#include "libc/io.sy"
+#include "libc/memory.sy"
 
 #define Board mut char* mut
 
@@ -31,16 +27,29 @@ int GetWinner(Board this)
 {
 	char mut c;
 	
-	asm "\t# Hello!";
-	
 	if (c = this[0]) != '#'
-	{
-		if this[1] == c && this[2] == c
+		if this[1] != c && this[2] != c
+		\\ if true && true
 		{
-			return c == 'X' ?
-				1 : 2;
+			puts("COOL");
+			return c == 'X' ? 1 : 2;
 		};
-	};
+		else if this[3] == c && this[6] == c
+			return c == 'X' ? 1 : 2;
+		else if this[4] == c && this[8] == c
+			return c == 'X' ? 1 : 2;
+	else if (c = this[4]) != '#'
+		if this[3] == c && this[5] == c
+			return c == 'X' ? 1 : 2;
+		else if this[1] == c && this[7] == c
+			return c == 'X' ? 1 : 2;
+		else if this[2] == c && this[6] == c
+			return c == 'X' ? 1 : 2;
+	else if (c = this[8]) != '#'
+		if this[2] == c && this[5] == c
+			return c == 'X' ? 1 : 2;
+		else if this[6] == c && this[7] == c
+			return c == 'X' ? 1 : 2;
 	
 	return 0;
 };

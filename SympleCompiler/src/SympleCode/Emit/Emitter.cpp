@@ -39,11 +39,14 @@ namespace Symple
 
 	void Emitter::EmitStaticInitialization()
 	{
-		Emit("\t.globl   ._STATIC_INIT_.");
-		Emit("._STATIC_INIT_.:");
+		Emit("\t.globl   _main");
+		Emit("_main:");
 
 		for (unsigned int i = 0; i < sInits; i++)
 			Emit("\tcall%c   ..%i.", Suf(), i);
+
+		Emit("\txor%c    %s, %s", Suf(), GetReg(regax), GetReg(regax));
+		Emit("\tcall%c   main", Suf());
 
 		Emit("\tret");
 	}
@@ -113,13 +116,6 @@ namespace Symple
 		if (member->GetKind() != Node::Kind::FunctionDeclaration)
 			return;
 
-		const char* name = member->GetAsmName().c_str();
-
-		if (member->GetModifiers()->IsPrivate())
-			Emit("\t.local   %s .type %s, @function", name, name);
-		else
-			Emit("\t.globl   %s", name);
-
 		Debug::BeginScope();
 
 		int argOff = 4;
@@ -131,16 +127,23 @@ namespace Symple
 		}
 
 		mStack = 0;
-
-		Emit("%s:", name);
-		Emit("\tpush%c   %s", Suf(), GetReg(regbp));
-		Emit("\tmov%c    %s, %s", Suf(), GetReg(regsp), GetReg(regbp));
-
 		if (member->IsMain())
 		{
-			Emit("\txor%c    %s, %s", Suf(), GetReg(regax), GetReg(regax));
-			Emit("\tcall%c   ._STATIC_INIT_.", Suf());
+			Emit("\t.globl   main");
+			Emit("main:");
 		}
+		else
+		{
+			const char* name = member->GetAsmName().c_str();
+
+			if (member->GetModifiers()->IsPrivate())
+				Emit("\t.local   %s .type %s, @function", name, name);
+			else
+				Emit("\t.globl   %s", name);
+			Emit("%s:", name);
+		}
+		Emit("\tpush%c   %s", Suf(), GetReg(regbp));
+		Emit("\tmov%c    %s, %s", Suf(), GetReg(regsp), GetReg(regbp));
 
 		mReturning = false;
 		for (const StatementNode* statement : member->GetBody()->GetStatements())
@@ -156,7 +159,7 @@ namespace Symple
 		if (mReturning)
 			Emit("..%i:", mReturn);
 		Emit("\tmov%c    %s, %s", Suf(), GetReg(regbp), GetReg(regsp));
-		Emit("\tpop%c   %s", Suf(), GetReg(regbp));
+		Emit("\tpop%c    %s", Suf(), GetReg(regbp));
 		Emit("\tret");
 	}
 
@@ -300,7 +303,6 @@ namespace Symple
 
 			Register cond = EmitExpression(statement->GetCondition());
 
-
 			Emit("\ttest%c   %s, %s", Suf(), GetReg(cond), GetReg(cond));
 			Emit("\tje      ..%i", end);
 			mRegisterManager->Free(cond);
@@ -421,7 +423,8 @@ namespace Symple
 		const char* name = nameStr.c_str();
 
 		Emit("_%s@ = -%i", name, mStack);
-		mStack += statement->GetType()->GetSize();
+		unsigned int sz = statement->GetType()->GetSize();
+		mStack += sz;
 		if (statement->GetInitializer())
 		{
 			if (statement->GetInitializer()->Is<StructInitializerExpressionNode>())
@@ -434,7 +437,7 @@ namespace Symple
 			else
 			{
 				Register init = EmitExpression(statement->GetInitializer());
-				Emit("\tmov%c    %s, _%s@(%s)", Suf(), GetReg(init), name, GetReg(regbp));
+				Emit("\tmov%c    %s, _%s@(%s)", Suf(sz), GetReg(init, sz), name, GetReg(regbp));
 				mRegisterManager->Free(init);
 			}
 		}
@@ -734,13 +737,20 @@ namespace Symple
 	Register Emitter::EmitPointerIndexExpression(const PointerIndexExpressionNode* expression, bool retptr)
 	{
 		Register reg = EmitExpression(expression->GetAddress());
-		if (expression->GetType()->GetSize() > 1)
-			Emit("\timul%c   $%i, %s", Suf(), expression->GetType()->GetSize(), GetReg(reg));
-
-		Register off = EmitExpression(expression->GetIndex());
-
-		Emit("\tadd%c    %s, %s", Suf(), GetReg(off), GetReg(reg));
-		mRegisterManager->Free(off);
+		if (expression->GetType()->GetSize())
+			if (expression->GetIndex()->CanEvaluate())
+			{
+				if (expression->GetIndex()->Evaluate())
+					Emit("\tadd%c    $%i, %s", Suf(), expression->GetIndex()->Evaluate() * expression->GetType()->GetSize(), GetReg(reg));
+			}
+			else
+			{
+				Register off = EmitExpression(expression->GetIndex());
+				if (expression->GetType()->GetSize() > 1)
+					Emit("\timul%c   $%i, %s", Suf(), expression->GetType()->GetSize(), GetReg(off));
+				Emit("\tadd%c    %s, %s", Suf(), GetReg(off), GetReg(reg));
+				mRegisterManager->Free(off);
+			}
 
 		if (retptr)
 			return reg;
@@ -817,17 +827,17 @@ namespace Symple
 			goto Ret;
 
 		case Token::Kind::EqualEqual:
-			Emit("\tcmp%c    %s, %s", Suf(), GetReg(right), GetReg(left));
+			Emit("\tcmp%c    %s, %s", Suf(), GetReg(left), GetReg(right));
 			Emit("\tsete    %s", GetReg(left, 1));
 			Emit("\tmovz%c%c  %s, %s", Suf(1), Suf(), GetReg(left, 1), GetReg(left));
 			goto Ret;
 		case Token::Kind::ExclamationEqual:
-			Emit("\tcmp%c    %s, %s", Suf(), GetReg(right), GetReg(left));
+			Emit("\tcmp%c    %s, %s", Suf(), GetReg(left), GetReg(right));
 			Emit("\tsetne   %s", GetReg(left, 1));
 			Emit("\tmovz%c%c  %s, %s", Suf(1), Suf(), GetReg(left, 1), GetReg(left));
 			goto Ret;
 		case Token::Kind::LeftArrow:
-			Emit("\tcmp%c    %s, %s", Suf(), GetReg(right), GetReg(left));
+			Emit("\tcmp%c    %s, %s", Suf(), GetReg(left), GetReg(right));
 			Emit("\tsetl    %s", GetReg(left, 1));
 			Emit("\tmovz%c%c  %s, %s", Suf(1), Suf(), GetReg(left, 1), GetReg(left));
 			goto Ret;
