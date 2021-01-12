@@ -30,7 +30,6 @@ namespace Symple
 
 	void Debug::VariableDeclaration(const VariableDeclarationNode* variable)
 	{
-		std::cout << "New Var: " << variable->GetName()->GetLex() << '\n';
 		sVariables.push_back(variable);
 	}
 
@@ -48,11 +47,6 @@ namespace Symple
 	void Debug::BeginScope()
 	{
 		pVariables.push_back(sVariables.size());
-
-		puts("Begin Scope\n");
-		for (const VariableDeclarationNode* var : sVariables)
-			std::cout << var->GetName()->GetLex() << '\n';
-		puts("\n\n");
 	}
 
 	void Debug::EndScope()
@@ -61,11 +55,6 @@ namespace Symple
 			sVariables.pop_back();
 
 		pVariables.pop_back();
-
-		puts("End Scope\n");
-		for (const VariableDeclarationNode* var : sVariables)
-			std::cout << var->GetName()->GetLex() << '\n';
-		puts("\n\n");
 	}
 
 	const FunctionDeclarationNode* Debug::GetFunction(const std::string_view& name, const FunctionCallArgumentsNode* arguments)

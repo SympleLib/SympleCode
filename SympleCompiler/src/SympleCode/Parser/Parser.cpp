@@ -461,15 +461,9 @@ namespace Symple
 	{
 		const Token* open = Match(Token::Kind::If);
 		ExpressionNode* condition = ParseExpression();
-		BlockStatementNode* then;
-		if (Peek()->Is(Token::Kind::OpenBrace))
-		{
-			then = ParseBlockStatement();
-			if (!Peek()->Is(Token::Kind::Else))
-				Match(Token::Kind::Semicolon);
-		}
-		else
-			then = new BlockStatementNode(Peek(), { ParseStatement() }, Peek());
+		BlockStatementNode* then  = ParseBlockStatement();
+		if (!Peek()->Is(Token::Kind::Else))
+			Match(Token::Kind::Semicolon);
 		BlockStatementNode* elze = nullptr;
 		if (Peek()->Is(Token::Kind::Else))
 		{
@@ -713,15 +707,7 @@ namespace Symple
 		}
 		mPosition = pPosition;
 
-		ExpressionNode* expression = ParseBinaryExpression();
-		while (Peek()->IsEither({ Token::Kind::OpenBracket, Token::Kind::QuestionMark }))
-		{
-			if (Peek()->Is(Token::Kind::OpenBracket))
-				expression = ParsePointerIndexExpression(expression);
-			else if (Peek()->Is(Token::Kind::QuestionMark))
-				expression = ParseTernaryExpression(expression);
-		}
-		return expression;
+		return ParseBinaryExpression();
 	}
 
 	ExpressionNode* Parser::ParseUnaryExpression(int parentPriority)
@@ -734,12 +720,25 @@ namespace Symple
 			return new UnaryExpressionNode(oqerator, value);
 		}
 
-		return ParsePrimaryExpression();
+		ExpressionNode* expression = ParsePrimaryExpression();
+		while (Peek()->IsEither({ Token::Kind::OpenBracket, Token::Kind::QuestionMark }))
+		{
+			if (Peek()->Is(Token::Kind::OpenBracket))
+				expression = ParsePointerIndexExpression(expression);
+			else if (Peek()->Is(Token::Kind::QuestionMark))
+				expression = ParseTernaryExpression(expression);
+		}
+		return expression;
 	}
 
 	ExpressionNode* Parser::ParseBinaryExpression(int parentPriority)
 	{
 		ExpressionNode* left = ParseUnaryExpression();
+		if (!left)
+		{
+			Diagnostics::ReportError(Peek(), "Left Hand Side is Null");
+			return new BinaryExpressionNode(Token::Default, new ExpressionNode(ErrorType), new ExpressionNode(ErrorType));
+		}
 
 		while (!Peek()->Is(Token::Kind::EndOfFile))
 		{

@@ -7,43 +7,47 @@ extern int putchar(char) ccall;
 
 #define Board mut char* mut
 
-\\ Board CreateBoard()
-\\ {
-	\\ Board this = (Board)malloc(9);
-	\\ for (int mut i = 0; i < 9; i = i + 1;)
-		\\ this[i] = ' ';
-		
-	\\ this;
-\\ };
-
-\\ void PrintBoard(Board this)
-\\ {
-	\\ this[0] = ' ';
-	\\ putchar(this[0]);
-
-	\\ printf("%c | %c | %c\n", this[0], this[1], this[2]);
-	\\ printf("%c | %c | %c\n", this[3], this[4], this[5]);
-	\\ printf("%c | %c | %c\n", this[6], this[7], this[8]);
-	
-	\\ printf("%c | %c | %c\n", ' ', ' ', ' ');
-	\\ printf("%c | %c | %c\n", ' ', ' ', ' ');
-	\\ printf("%c | %c | %c\n", ' ', ' ', ' ');
-\\ };
-
-void Test(Board this)
+Board CreateBoard()
 {
-	printf("%p\n", this);
+	Board this = (Board)malloc(9);
+	for (int mut i = 0; i < 9; i = i + 1;)
+		this[i] = '#';
+		
+	this;
+};
+
+void PrintBoard(Board this)
+{
+	printf("%c | %c | %c\n", this[0], this[1], this[2]);
+	printf("%c | %c | %c\n", this[3], this[4], this[5]);
+	printf("%c | %c | %c\n", this[6], this[7], this[8]);
+};
+
+\\ 1 | . | .
+\\ . | 2 | .
+\\ . | . | 3
+
+int GetWinner(Board this)
+{
+	char mut c;
+	
+	if (c = this[0]) != '#'
+	{
+		if this[1] == c
+		{
+			return c == 'X' ?
+				1 : 2;
+		};
+	};
+	
+	return 0;
 };
 
 int main()
 {
-	Board board = (Board)malloc(9);
+	Board board = CreateBoard();
+	PrintBoard(board);
 	
-	printf("%p\n", board);
-	Test(board);
-	
-	board[0] = 'X';
-	putchar(board[0]);
 	
 	0;
 };

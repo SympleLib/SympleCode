@@ -26,7 +26,7 @@ namespace Symple
 		Type::PrimitiveType::WChar,
 	};
 
-	const TypeModifierNode* const MutModifier = new TypeModifierNode(new Token(Token::Kind::Mutable, "mutable", 1, ""));
+	const TypeModifierNode* const MutModifier = new TypeModifierNode(new Token(Token::Kind::Mutable, "mutable", 7, ""));
 	const TypeModifiersNode* const MutModifiers = new TypeModifiersNode({ MutModifier });
 	const TypeModifiersNode* const EmptyModifiers = new TypeModifiersNode({});
 

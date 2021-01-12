@@ -114,11 +114,14 @@ namespace Symple
 		else
 			Emit("\t.globl   %s", name);
 
+		Debug::BeginScope();
+
 		int argOff = 4;
 		for (const FunctionArgumentNode* arg : member->GetArguments()->GetArguments())
 		{
-			Emit("_%s@ = %i", std::string(arg->GetName()->GetLex()).c_str(), argOff);
 			argOff += 4;
+			Debug::VariableDeclaration(arg);
+			Emit("_%s@ = %i", std::string(arg->GetName()->GetLex()).c_str(), argOff);
 		}
 
 		mStack = 0;
@@ -142,6 +145,7 @@ namespace Symple
 			mReturn = mData++;
 
 		EmitBlockStatement(member->GetBody());
+		Debug::EndScope();
 
 		if (mReturning)
 			Emit("..%i:", mReturn);
@@ -152,6 +156,8 @@ namespace Symple
 
 	void Emitter::EmitGlobalVariableDeclaration(const GlobalVariableDeclarationNode* member)
 	{
+		Debug::VariableDeclaration(member);
+
 		if (member->GetKind() == Node::Kind::SharedVariable)
 			return;
 
