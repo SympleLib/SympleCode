@@ -48,12 +48,10 @@ namespace Symple
 
 			printf("Parsing...\n");
 			Parser parser(source, path);
-			CompilationUnitNode* unit = parser.ParseCompilationUnit();
-
 			unsigned int parseErrors = Diagnostics::GetErrors().size();
 			if (parseErrors)
 			{
-				printf("Compiled %s with %i errors, %i warnings (total: %i)\n", path, Diagnostics::GetErrors().size(), Diagnostics::GetWarnings().size(), Diagnostics::GetMessages().size());
+				printf("Lexed/Preprocessed %s with %i errors, %i warnings (total: %i)\n", path, Diagnostics::GetErrors().size(), Diagnostics::GetWarnings().size(), Diagnostics::GetMessages().size());
 
 				SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), FOREGROUND_RED | FOREGROUND_INTENSITY);
 				for (const Message* error : Diagnostics::GetErrors())
@@ -66,29 +64,12 @@ namespace Symple
 			}
 			else
 			{
-				FILE* treef;
-				errno_t err;
-				if (!(err = fopen_s(&treef, syt, "w")) && treef)
-				{
-					fputs(unit->ToString().c_str(), treef);
-					fclose(treef);
-				}
-				else
-				{
-					char errMsg[32];
-					if (!strerror_s(errMsg, err))
-						std::cerr << "[!]: Error opening file '" << syt << "': " << errMsg << "!\n";
-					else
-						std::cerr << "[!]: Unkown Error opening file '" << syt << "'!\n";
-				}
+				CompilationUnitNode* unit = parser.ParseCompilationUnit();
 
+				parseErrors = Diagnostics::GetErrors().size();
+				if (parseErrors)
 				{
-					printf("Generating...\n");
-					
-					Emitter emitter(asmS);
-					emitter.EmitCompilationUnit(unit);
-
-					printf("Compiled %s with %i errors, %i warnings (total: %i)\n", path, Diagnostics::GetErrors().size(), Diagnostics::GetWarnings().size(), Diagnostics::GetMessages().size());
+					printf("Parsed %s with %i errors, %i warnings (total: %i)\n", path, Diagnostics::GetErrors().size(), Diagnostics::GetWarnings().size(), Diagnostics::GetMessages().size());
 
 					SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), FOREGROUND_RED | FOREGROUND_INTENSITY);
 					for (const Message* error : Diagnostics::GetErrors())
@@ -99,34 +80,70 @@ namespace Symple
 						std::cout << "[?](" << warning->Token->GetFile() << ")<" << warning->Token->GetLine() << ':' << warning->Token->GetColumn() << ">: " << warning->Message << '\n';
 					SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), FOREGROUND_RED | FOREGROUND_GREEN | FOREGROUND_BLUE);
 				}
-
-				if (!Diagnostics::GetErrors().size())
-					//return true;
+				else
 				{
-					char command[128];
+					FILE* treef;
+					errno_t err;
+					if (!(err = fopen_s(&treef, syt, "w")) && treef)
+					{
+						fputs(unit->ToString().c_str(), treef);
+						fclose(treef);
+					}
+					else
+					{
+						char errMsg[32];
+						if (!strerror_s(errMsg, err))
+							std::cerr << "[!]: Error opening file '" << syt << "': " << errMsg << "!\n";
+						else
+							std::cerr << "[!]: Unkown Error opening file '" << syt << "'!\n";
+					}
+
+					{
+						printf("Generating...\n");
+
+						Emitter emitter(asmS);
+						emitter.EmitCompilationUnit(unit);
+
+						printf("Compiled %s with %i errors, %i warnings (total: %i)\n", path, Diagnostics::GetErrors().size(), Diagnostics::GetWarnings().size(), Diagnostics::GetMessages().size());
+
+						SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), FOREGROUND_RED | FOREGROUND_INTENSITY);
+						for (const Message* error : Diagnostics::GetErrors())
+							std::cout << "[!](" << error->Token->GetFile() << ")<" << error->Token->GetLine() << ':' << error->Token->GetColumn() << ">: " << error->Message << '\n';
+
+						SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), FOREGROUND_RED | FOREGROUND_GREEN | FOREGROUND_INTENSITY);
+						for (const Message* warning : Diagnostics::GetWarnings())
+							std::cout << "[?](" << warning->Token->GetFile() << ")<" << warning->Token->GetLine() << ':' << warning->Token->GetColumn() << ">: " << warning->Message << '\n';
+						SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), FOREGROUND_RED | FOREGROUND_GREEN | FOREGROUND_BLUE);
+					}
+
+					if (!Diagnostics::GetErrors().size())
+						//return true;
+					{
+						char command[128];
 #if SY_32
-					sprintf_s(command, "clang_x86 -c %s -o %s", asmS, obj);
+						sprintf_s(command, "clang_x86 -c %s -o %s", asmS, obj);
 #else
-					sprintf_s(command, "clang_x64 -c %s -o %s", asmS, obj);
+						sprintf_s(command, "clang_x64 -c %s -o %s", asmS, obj);
 #endif
-					int compileStatis = system(command);
+						int compileStatis = system(command);
 
-					mObjectFiles.push_back(objStr);
+						mObjectFiles.push_back(objStr);
 
-					return !compileStatis;
+						return !compileStatis;
+					}
 				}
+				printf("No Code Generated :(\n");
+
+				return false;
 			}
-			printf("No Code Generated :(\n");
+			char errMsg[32];
+			if (!strerror_s(errMsg, err))
+				std::cerr << "[!]: Error opening file '" << path << "': " << errMsg << "!\n";
+			else
+				std::cerr << "[!]: Unkown Error opening file '" << path << "'!\n";
 
 			return false;
 		}
-		char errMsg[32];
-		if (!strerror_s(errMsg, err))
-			std::cerr << "[!]: Error opening file '" << path << "': " << errMsg << "!\n";
-		else
-			std::cerr << "[!]: Unkown Error opening file '" << path << "'!\n";
-
-		return false;
 	}
 
 	void Compiler::Link(const char* output, const std::vector<const char*> libraries)
@@ -139,7 +156,11 @@ namespace Symple
 			}
 
 			char command[128];
-			sprintf_s(command, "clang -c %s -o %s", "bin\\__staticinit.s", "bin\\__staticinit.o");
+#if SY_32
+			sprintf_s(command, "clang_x86 -c %s -o %s", "bin\\__staticinit.s", "bin\\__staticinit.o");
+#else
+			sprintf_s(command, "clang_x64 -c %s -o %s", "bin\\__staticinit.s", "bin\\__staticinit.o");
+#endif
 			int compileStatis = system(command);
 
 			mObjectFiles.push_back("bin\\__staticinit.o");

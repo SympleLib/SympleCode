@@ -47,6 +47,7 @@ namespace Symple
 
 			Statement,
 			IfStatement,
+			AsmStatement,
 			BlockStatement,
 			BreakStatement,
 			
@@ -96,7 +97,7 @@ namespace Symple
 			"StringLiteralExpression", "NumberLiteralExpression", "BooleanLiteralExpression",
 			"FunctionPointerExpression", "CharacterLiteralExpression",
 			"Member", "CompilationUnit", "FunctionDeclaration",
-			"Statement", "IfStatement", "BlockStatement", "BreakStatement",
+			"Statement", "IfStatement", "AsmStatement", "BlockStatement", "BreakStatement",
 			"WhileStatement", "GlobalStatement", "ReturnStatement",
 			"ForLoopStatement", "VariableDeclaration", "ExpressionStatement",
 			"FunctionNode", "FunctionHint", "ExternFunction",  "FunctionModifier",

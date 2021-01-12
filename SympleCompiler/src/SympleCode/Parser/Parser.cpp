@@ -27,7 +27,9 @@ namespace Symple
 	Parser::Parser(const char* source, const char* file)
 		: mPreprocessor(source, file), mPosition(0), mTokens(mPreprocessor.GetTokens())
 	{
-		//for (auto tok : mTokens)
+		for (auto tok : mTokens)
+			if (tok->Is(Token::Kind::Unknown))
+				Diagnostics::ReportError(tok, "Unknown Token!");
 		//	std::cout << Token::KindString(tok->GetKind()) << '#' << (int)tok->GetKind() << '|' << tok->GetLex() << '\n';
 	}
 
@@ -441,6 +443,8 @@ namespace Symple
 			return ParseForLoopStatement(matchSemicolon);
 		if (Peek()->Is(Token::Kind::If))
 			return ParseIfStatement(matchSemicolon);
+		if (Peek()->Is(Token::Kind::Asm))
+			return ParseAsmStatement(matchSemicolon);
 		if (Peek()->Is(Token::Kind::Break))
 			return ParseBreakStatement(matchSemicolon);
 		if (Peek()->Is(Token::Kind::OpenBrace))
@@ -469,6 +473,16 @@ namespace Symple
 			Match(Token::Kind::Semicolon);
 
 		return new IfStatementNode(open, condition, then, elze);
+	}
+
+	AsmStatementNode* Parser::ParseAsmStatement(bool matchSemicolon)
+	{
+		Match(Token::Kind::Asm);
+		const Token* instructions = Match(Token::Kind::String);
+		if (matchSemicolon)
+			Match(Token::Kind::Semicolon);
+
+		return new AsmStatementNode(instructions);
 	}
 
 	BreakStatementNode* Parser::ParseBreakStatement(bool matchSemicolon)

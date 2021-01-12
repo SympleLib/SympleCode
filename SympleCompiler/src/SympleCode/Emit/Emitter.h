@@ -8,6 +8,7 @@
 #include "SympleCode/Node/Member/GlobalVariableDeclarationNode.h"
 
 #include "SympleCode/Node/Statement/IfStatementNode.h"
+#include "SympleCode/Node/Statement/AsmStatementNode.h"
 #include "SympleCode/Node/Statement/BlockStatementNode.h"
 #include "SympleCode/Node/Statement/BreakStatementNode.h"
 #include "SympleCode/Node/Statement/WhileStatementNode.h"
@@ -87,6 +88,7 @@ namespace Symple
 
 		void EmitStatement(const StatementNode*);
 		void EmitIfStatement(const IfStatementNode*);
+		void EmitAsmStatement(const AsmStatementNode*);
 		void EmitBlockStatement(const BlockStatementNode*, bool funcdecl = false);
 		void EmitBreakStatement(const BreakStatementNode*);
 		void EmitWhileStatement(const WhileStatementNode*);

@@ -9,6 +9,7 @@
 #include "SympleCode/Node/CompilationUnitNode.h"
 
 #include "SympleCode/Node/Statement/IfStatementNode.h"
+#include "SympleCode/Node/Statement/AsmStatementNode.h"
 #include "SympleCode/Node/Statement/BlockStatementNode.h"
 #include "SympleCode/Node/Statement/WhileStatementNode.h"
 #include "SympleCode/Node/Statement/ReturnStatementNode.h"
@@ -82,6 +83,7 @@ namespace Symple
 
 		StatementNode* ParseStatement(bool matchSemicolon = true);
 		IfStatementNode* ParseIfStatement(bool matchSemicolon = true);
+		AsmStatementNode* ParseAsmStatement(bool matchSemicolon = true);
 		BreakStatementNode* ParseBreakStatement(bool matchSemicolon = true);
 		WhileStatementNode* ParseWhileStatement(bool matchSemicolon = true);
 		BlockStatementNode* ParseBlockStatement(bool matchSemicolon = true);

@@ -65,6 +65,7 @@ namespace Symple
 			AmpersandAmpersand,
 			AmpersandEqual,
 
+			Asm,
 			Null,
 			Auto,
 
@@ -112,7 +113,7 @@ namespace Symple
 			"QuestionMark",
 			"OpenBrace", "CloseBrace", "OpenBracket", "CloseBracket", "OpenParenthesis", "CloseParenthesis",
 			"LeftArrow", "RightArrow",
-			"Null", "Auto",
+			"Asm", "Null", "Auto",
 			"True", "False", "While", "For", "Break",
 			"At", "Pipe", "PipePipe", "PipeEqual",
 			"Ampersand", "AmpersandAmpersand", "AmpersandEqual",

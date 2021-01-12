@@ -93,6 +93,8 @@ namespace Symple
 
 	void Emitter::EmitMember(const MemberNode* member)
 	{
+		Emit("\t# Member of Kind: %s", Node::KindString(member->GetKind()));
+
 		if (member->Is<GlobalStatementNode>())
 			EmitGlobalStatement(member->Cast<GlobalStatementNode>());
 		if (member->Is<FunctionDeclarationNode>())
@@ -249,8 +251,12 @@ namespace Symple
 
 	void Emitter::EmitStatement(const StatementNode* statement)
 	{
+		Emit("\t# Statement of Kind: %s", Node::KindString(statement->GetKind()));
+
 		if (statement->Is<IfStatementNode>())
 			EmitIfStatement(statement->Cast<IfStatementNode>());
+		if (statement->Is<AsmStatementNode>())
+			EmitAsmStatement(statement->Cast<AsmStatementNode>());
 		if (statement->Is<BlockStatementNode>())
 			EmitBlockStatement(statement->Cast<BlockStatementNode>());
 		if (statement->Is<BreakStatementNode>())
@@ -274,6 +280,7 @@ namespace Symple
 			unsigned int elze = mData++, end = mData++;
 
 			Register cond = EmitExpression(statement->GetCondition());
+
 			Emit("\ttest%c   %s, %s", Suf(), GetReg(cond), GetReg(cond));
 			Emit("\tje      ..%i", elze);
 			mRegisterManager->Free(cond);
@@ -292,6 +299,8 @@ namespace Symple
 			unsigned int end = mData++;
 
 			Register cond = EmitExpression(statement->GetCondition());
+
+
 			Emit("\ttest%c   %s, %s", Suf(), GetReg(cond), GetReg(cond));
 			Emit("\tje      ..%i", end);
 			mRegisterManager->Free(cond);
@@ -300,6 +309,11 @@ namespace Symple
 
 			Emit("..%i:", end);
 		}
+	}
+
+	void Emitter::EmitAsmStatement(const AsmStatementNode* statement)
+	{
+		Emit("%s", std::string(statement->GetInstructions()->GetLex()).c_str());
 	}
 
 	void Emitter::EmitBlockStatement(const BlockStatementNode* block, bool funcdecl)
@@ -434,6 +448,8 @@ namespace Symple
 	{
 		if (expression->CanEvaluate())
 		{
+			Emit("\t# Expression of Kind: %s = %i", Node::KindString(expression->GetKind()), expression->Evaluate());
+
 			Register reg = mRegisterManager->Alloc();
 
 			if (expression->Evaluate())
@@ -442,6 +458,8 @@ namespace Symple
 				Emit("\txor%c    %s, %s", Suf(), GetReg(reg), GetReg(reg));
 			return reg;
 		}
+
+		Emit("\t# Expression of Kind: %s", Node::KindString(expression->GetKind()));
 
 		if (expression->Is<CastExpressionNode>())
 			return EmitCastExpression(expression->Cast<CastExpressionNode>());
@@ -797,6 +815,17 @@ namespace Symple
 		case Token::Kind::Asterisk:
 			Emit("\timul%c   %s, %s", Suf(), GetReg(right), GetReg(left));
 			goto Ret;
+
+		case Token::Kind::EqualEqual:
+			Emit("\tcmp%c    %s, %s", Suf(), GetReg(right), GetReg(left));
+			Emit("\tsete    %s", GetReg(left, 1));
+			Emit("\tmovz%c%c  %s, %s", Suf(1), Suf(), GetReg(left, 1), GetReg(left));
+			goto Ret;
+		case Token::Kind::ExclamationEqual:
+			Emit("\tcmp%c    %s, %s", Suf(), GetReg(right), GetReg(left));
+			Emit("\tsetne   %s", GetReg(left, 1));
+			Emit("\tmovz%c%c  %s, %s", Suf(1), Suf(), GetReg(left, 1), GetReg(left));
+			goto Ret;
 		case Token::Kind::LeftArrow:
 			Emit("\tcmp%c    %s, %s", Suf(), GetReg(right), GetReg(left));
 			Emit("\tsetl    %s", GetReg(left, 1));
@@ -815,6 +844,29 @@ namespace Symple
 		case Token::Kind::RightArrowEqual:
 			Emit("\tcmp%c    %s, %s", Suf(), GetReg(left), GetReg(right));
 			Emit("\tsetge   %s", GetReg(left, 1));
+			Emit("\tmovz%c%c  %s, %s", Suf(1), Suf(), GetReg(left, 1), GetReg(left));
+			goto Ret;
+
+		case Token::Kind::Ampersand:
+			Emit("\tand%c    %s, %s", Suf(), GetReg(right), GetReg(left));
+			goto Ret;
+		case Token::Kind::Pipe:
+			Emit("\tor%c     %s, %s", Suf(), GetReg(right), GetReg(left));
+			goto Ret;
+		case Token::Kind::AmpersandAmpersand:
+			Emit("\ttest%c   %s, %s", Suf(), GetReg(left), GetReg(left));
+			Emit("\tsetne   %s", GetReg(left, 1));
+			Emit("\ttest%c   %s, %s", Suf(), GetReg(right), GetReg(right));
+			Emit("\tsetne   %s", GetReg(right, 1));
+			Emit("\tand%c    %s, %s", Suf(1), GetReg(right, 1), GetReg(left, 1));
+			Emit("\tmovz%c%c  %s, %s", Suf(1), Suf(), GetReg(left, 1), GetReg(left));
+			goto Ret;
+		case Token::Kind::PipePipe:
+			Emit("\ttest%c   %s, %s", Suf(), GetReg(left), GetReg(left));
+			Emit("\tsetne   %s", GetReg(left, 1));
+			Emit("\ttest%c   %s, %s", Suf(), GetReg(right), GetReg(right));
+			Emit("\tsetne   %s", GetReg(right, 1));
+			Emit("\tor%c   %s, %s", Suf(1), GetReg(right, 1), GetReg(left, 1));
 			Emit("\tmovz%c%c  %s, %s", Suf(1), Suf(), GetReg(left, 1), GetReg(left));
 			goto Ret;
 		}

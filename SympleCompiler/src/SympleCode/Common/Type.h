@@ -56,7 +56,7 @@ namespace Symple
 			static const Type* const Byte;
 			static const Type* const Short;
 			static const Type* const Int;
-			static const Type* const Long;
+			//static const Type* const Long;
 
 			static const Type* const Bool;
 			static const Type* const Char;

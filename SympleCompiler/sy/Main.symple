@@ -31,9 +31,11 @@ int GetWinner(Board this)
 {
 	char mut c;
 	
+	asm "\t# Hello!";
+	
 	if (c = this[0]) != '#'
 	{
-		if this[1] == c
+		if this[1] == c && this[2] == c
 		{
 			return c == 'X' ?
 				1 : 2;
@@ -46,8 +48,7 @@ int GetWinner(Board this)
 int main()
 {
 	Board board = CreateBoard();
+	board[0] = board[1] = board[2] = 'X';
 	PrintBoard(board);
-	
-	
-	0;
+	GetWinner(board);
 };

@@ -1,5 +1,7 @@
 #include "SympleCode/Parser/Lexer.h"
 
+#include <sstream>
+
 namespace Symple
 {
 	Lexer::Lexer(const char* source, const char* file)
@@ -138,16 +140,18 @@ namespace Symple
 		while (IsIdentifier(Peek()))
 			Get();
 		std::string_view identifier(beg, std::distance(beg, mCurrent));
-		if (identifier == "hint")
-			return new Token(Token::Kind::Hint, beg, mCurrent, mFile, mLine, bColumn);
+		if (identifier == "asm")
+			return new Token(Token::Kind::Asm, beg, mCurrent, mFile, mLine, bColumn);
 		if (identifier == "null")
 			return new Token(Token::Kind::Null, beg, mCurrent, mFile, mLine, bColumn);
+
 		if (identifier == "auto" || identifier == "var")
 			return new Token(Token::Kind::Auto, beg, mCurrent, mFile, mLine, bColumn);
 		if (identifier == "true")
 			return new Token(Token::Kind::True, beg, mCurrent, mFile, mLine, bColumn);
 		if (identifier == "false")
 			return new Token(Token::Kind::False, beg, mCurrent, mFile, mLine, bColumn);
+
 		if (identifier == "return")
 			return new Token(Token::Kind::Return, beg, mCurrent, mFile, mLine, bColumn);
 		if (identifier == "break")
@@ -156,6 +160,9 @@ namespace Symple
 			return new Token(Token::Kind::While, beg, mCurrent, mFile, mLine, bColumn);
 		if (identifier == "for")
 			return new Token(Token::Kind::For, beg, mCurrent, mFile, mLine, bColumn);
+
+		if (identifier == "hint")
+			return new Token(Token::Kind::Hint, beg, mCurrent, mFile, mLine, bColumn);
 		if (identifier == "extern")
 			return new Token(Token::Kind::Extern, beg, mCurrent, mFile, mLine, bColumn);
 		if (identifier == "shared")
@@ -225,6 +232,8 @@ namespace Symple
 				return new Token(Token::Kind::Character, "\t", 1, mFile, mLine, bColumn);
 			case '\'':
 				return new Token(Token::Kind::Character, "\'", 1, mFile, mLine, bColumn);
+			case '\\':
+				return new Token(Token::Kind::Character, "\\", 1, mFile, mLine, bColumn);
 			}
 		}
 		if (Get() == '\'')
@@ -277,10 +286,43 @@ namespace Symple
 		Get();
 		const char* beg = mCurrent;
 		int bLine = mLine, bColumn = mColumn;
-		while (Peek() != '"' || Peek(-1) == '\\')
-			Get();
+
+		std::stringstream ss;
+		while (Peek() != '"')
+		{
+			char c = Get();
+			if (c == '\\')
+			{
+				char c = Get();
+
+				switch (c)
+				{
+				case 'n':
+					ss << '\n';
+					break;
+				case 'r':
+					ss << '\r';
+					break;
+				case 't':
+					ss << '\t';
+					break;
+				case '\"':
+					ss << '\"';
+					break;
+				case '\\':
+					ss << '\\';
+					break;
+				default:
+					return new Token(Token::Kind::Unknown, beg, mCurrent, mFile, bLine, bColumn);
+				}
+			}
+			else
+				ss << c;
+		}
 		Get();
-		return new Token(Token::Kind::String, beg, mCurrent - 1, mFile, bLine, bColumn);
+
+		std::string* str = new std::string(ss.str());
+		return new Token(Token::Kind::String, str->c_str(), str->length(), mFile, bLine, bColumn);
 	}
 
 	Token* Lexer::Equal()
