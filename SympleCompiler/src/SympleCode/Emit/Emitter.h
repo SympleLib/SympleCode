@@ -72,11 +72,11 @@ namespace Symple
 		void EmitCompilationUnit(const CompilationUnitNode*);
 		void EmitStaticInitialization();
 	private:
-		char Suf(int sz = 4);
-		const char* Word(int sz = 4);
+		char Suf(int sz = 8);
+		const char* Word(int sz = 8);
 
-		void Push(Register, int sz = 4);
-		void Pop(Register, int sz = 4);
+		void Push(Register);
+		void Pop(Register);
 
 		void EmitMember(const MemberNode*);
 		void EmitGlobalStatement(const GlobalStatementNode*);

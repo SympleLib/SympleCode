@@ -21,7 +21,7 @@ namespace Symple
 				Diagnostics::ReportError(mBracket, "Internal Error");
 				return;
 			}
-			Diagnostics::ReportError(mAddress->GetType()->GetSize() != 4, mBracket, "Address Not Pointer Type");
+			Diagnostics::ReportError(mAddress->GetType()->GetSize() != 8, mBracket, "Address Not Pointer Type");
 		}
 
 		Kind GetKind() const override

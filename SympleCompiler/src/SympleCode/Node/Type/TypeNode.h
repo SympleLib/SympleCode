@@ -60,7 +60,7 @@ namespace Symple
 
 		unsigned int GetSize() const
 		{
-			return HasContinue(Token::Kind::Asterisk) ? 4 : mType->GetSize();
+			return HasContinue(Token::Kind::Asterisk) ? 8 : mType->GetSize();
 		}
 
 		bool HasContinue(Token::Kind kind) const

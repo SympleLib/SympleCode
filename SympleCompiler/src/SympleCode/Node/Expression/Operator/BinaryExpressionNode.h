@@ -17,8 +17,13 @@ namespace Symple
 			: OperatorExpressionNode(left->GetType(), oqerator), mLeft(left), mRight(right),
 				mEvaluate()
 		{
-			Diagnostics::ReportError(!mRight->GetType()->CanImplicitlyCastTo(mLeft->GetType()), mOperator, "Unmatched Types:\n%s,\n%s",
-				mLeft->GetType()->ToString("", false).c_str(), mRight->GetType()->ToString().c_str());
+			if (!mRight->GetType()->CanImplicitlyCastTo(mLeft->GetType()))
+			{
+				Diagnostics::ReportError(mOperator, "Unmatched Types:\n%s,\n%s",
+					mLeft->GetType()->ToString("", false).c_str(), mRight->GetType()->ToString().c_str());
+				Diagnostics::ReportError(mOperator, "Left: %s, Right: %s",
+					KindString(mLeft->GetKind()), KindString(mRight->GetKind()));
+			}
 
 			switch (mOperator->GetKind())
 			{

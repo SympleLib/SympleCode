@@ -8,6 +8,7 @@ namespace Symple
 	const Type* const Type::PrimitiveType::Byte = new Type("byte", 1);
 	const Type* const Type::PrimitiveType::Short = new Type("short", 2);
 	const Type* const Type::PrimitiveType::Int = new Type("int", 4);
+	const Type* const Type::PrimitiveType::Long = new Type("long", 8);
 
 	const Type* const Type::PrimitiveType::Bool = new Type("bool", 1);
 	const Type* const Type::PrimitiveType::Char = new Type("char", 1);
@@ -20,6 +21,7 @@ namespace Symple
 		Type::PrimitiveType::Byte,
 		Type::PrimitiveType::Short,
 		Type::PrimitiveType::Int,
+		Type::PrimitiveType::Long,
 
 		Type::PrimitiveType::Bool,
 		Type::PrimitiveType::Char,

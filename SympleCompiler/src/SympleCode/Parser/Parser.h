@@ -12,6 +12,7 @@
 #include "SympleCode/Node/Statement/BlockStatementNode.h"
 #include "SympleCode/Node/Statement/WhileStatementNode.h"
 #include "SympleCode/Node/Statement/ReturnStatementNode.h"
+#include "SympleCode/Node/Statement/BreakStatementNode.h"
 #include "SympleCode/Node/Statement/ForLoopStatementNode.h"
 #include "SympleCode/Node/Statement/VariableDeclarationNode.h"
 
@@ -79,16 +80,17 @@ namespace Symple
 		FieldListNode* ParseFieldList();
 		VariableDeclarationNode* ParseField(const Type* type = nullptr);
 
-		StatementNode* ParseStatement();
-		IfStatementNode* ParseIfStatement();
-		WhileStatementNode* ParseWhileStatement();
-		BlockStatementNode* ParseBlockStatement();
-		ReturnStatementNode* ParseReturnStatement();
-		GlobalStatementNode* ParseGlobalStatement();
-		ForLoopStatementNode* ParseForLoopStatement();
-		GlobalVariableDeclarationNode* ParseEnumDeclaration();
+		StatementNode* ParseStatement(bool matchSemicolon = true);
+		IfStatementNode* ParseIfStatement(bool matchSemicolon = true);
+		BreakStatementNode* ParseBreakStatement(bool matchSemicolon = true);
+		WhileStatementNode* ParseWhileStatement(bool matchSemicolon = true);
+		BlockStatementNode* ParseBlockStatement(bool matchSemicolon = true);
+		ReturnStatementNode* ParseReturnStatement(bool matchSemicolon = true);
+		GlobalStatementNode* ParseGlobalStatement(bool matchSemicolon = true);
+		ForLoopStatementNode* ParseForLoopStatement(bool matchSemicolon = true);
+		GlobalVariableDeclarationNode* ParseEnumDeclaration(bool matchSemicolon = true);
 		GlobalVariableDeclarationNode* ParseEnumField(const TypeNode* type, int before = 0);
-		VariableDeclarationNode* ParseVariableDeclaration(const Type* type = nullptr);
+		VariableDeclarationNode* ParseVariableDeclaration(bool matchSemicolon = true, const Type* type = nullptr);
 		VariableModifiersNode* ParseVariableModifiers();
 		VariableModifierNode* ParseVariableModifier();
 	

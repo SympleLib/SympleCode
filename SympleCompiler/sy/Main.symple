@@ -10,7 +10,7 @@ extern int putchar(char) ccall;
 Board CreateBoard()
 {
 	Board this = (Board)malloc(9);
-	for (int mut i = 0; i < 9; i = i + 1;)
+	for int mut i = 0; i < 9; i = i + 1
 		this[i] = '#';
 		
 	this;

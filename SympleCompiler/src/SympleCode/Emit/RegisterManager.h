@@ -1,7 +1,9 @@
 #pragma once
 
 #define nullreg (-1)
-#define regax (11)
+#define regax (0)
+#define regsp (-2)
+#define regbp (-3)
 
 namespace Symple
 {
@@ -35,6 +37,6 @@ namespace Symple
 
 		const bool* GetFree() const;
 
-		static const char* GetRegister(Register reg, int size = 4);
+		static const char* GetRegister(Register reg, int size = 8);
 	};
 }

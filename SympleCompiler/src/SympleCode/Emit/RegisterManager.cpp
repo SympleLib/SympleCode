@@ -9,14 +9,14 @@
 
 namespace Symple
 {
-	const char* const RegisterManager::sRegisters64[NumRegisters] = { "%rdx", "%rcx", "%rbx", "%rdi", "%rsi",
-		"%r8",  "%r9",  "%r10",  "%r11",  "%r12",  "%r13",  "%rax", };
-	const char* const RegisterManager::sRegisters32[NumRegisters] = { "%edx", "%ecx", "%ebx", "%edi", "%esi",
-		"%r8d", "%r9d", "%r10d", "%r11d", "%r12d", "%r13d", "%eax", };
-	const char* const RegisterManager::sRegisters16[NumRegisters] = { "%dx",  "%cx",  "%bx",  "%di",  "%si" ,
-		"%r8w", "%r9w", "%r10w", "%r11w", "%r12w", "%r13w", "%ax", };
-	const char* const RegisterManager::sRegisters8[NumRegisters]  = { "%dl",  "%cl",  "%bl",  "%dil", "%sil",
-		"%r8b", "%r9b", "%r10b", "%r11b", "%r12b", "%r13b", "%al", };
+	const char* const RegisterManager::sRegisters64[NumRegisters] = { "%rax", "%rdx", "%rcx", "%rbx", "%rdi", "%rsi",
+		"%r8",  "%r9",  "%r10",  "%r11",  "%r12",  "%r13",  };
+	const char* const RegisterManager::sRegisters32[NumRegisters] = { "%eax", "%edx", "%ecx", "%ebx", "%edi", "%esi",
+		"%r8d", "%r9d", "%r10d", "%r11d", "%r12d", "%r13d", };
+	const char* const RegisterManager::sRegisters16[NumRegisters] = { "%ax", "%dx",  "%cx",  "%bx",  "%di",  "%si" ,
+		"%r8w", "%r9w", "%r10w", "%r11w", "%r12w", "%r13w", };
+	const char* const RegisterManager::sRegisters8[NumRegisters]  = { "%al", "%dl",  "%cl",  "%bl",  "%dil", "%sil",
+		"%r8b", "%r9b", "%r10b", "%r11b", "%r12b", "%r13b", };
 
 	RegisterManager::RegisterManager(Emitter* emitter)
 		: mEmitter(emitter) {}
@@ -98,14 +98,34 @@ namespace Symple
 		if (reg == nullreg)
 			return nullptr;
 
+		if (reg == regsp)
+		{
+			if (sz <= 2)
+				return "%sp";
+			if (sz <= 4)
+				return "%esp";
+			if (sz <= 8)
+				return "%rsp";
+		}
+
+		if (reg == regbp)
+		{
+			if (sz <= 2)
+				return "%bp";
+			if (sz <= 4)
+				return "%ebp";
+			if (sz <= 8)
+				return "%rbp";
+		}
+
 		if (sz <= 1)
 			return sRegisters8[reg];
 		if (sz <= 2)
 			return sRegisters16[reg];
 		if (sz <= 4)
 			return sRegisters32[reg];
-		//if (sz <= 8)
-		//	return sRegisters64[reg];
+		if (sz <= 8)
+			return sRegisters64[reg];
 
 		return nullptr;
 	}

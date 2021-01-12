@@ -429,66 +429,74 @@ namespace Symple
 		return exjern;
 	}
 
-	StatementNode* Parser::ParseStatement()
+	StatementNode* Parser::ParseStatement(bool matchSemicolon)
 	{
 		if (Peek()->Is(Token::Kind::Semicolon))
 			return new StatementNode; // Empty Statement;
 		if (Peek()->Is(Token::Kind::Return))
-			return ParseReturnStatement();
+			return ParseReturnStatement(matchSemicolon);
 		if (Peek()->Is(Token::Kind::While))
-			return ParseWhileStatement();
+			return ParseWhileStatement(matchSemicolon);
 		if (Peek()->Is(Token::Kind::For))
-			return ParseForLoopStatement();
+			return ParseForLoopStatement(matchSemicolon);
 		if (Peek()->Is(Token::Kind::If))
-			return ParseIfStatement();
+			return ParseIfStatement(matchSemicolon);
 		if (Peek()->Is(Token::Kind::Break))
-			return new BreakStatementNode(Next());
+			return ParseBreakStatement(matchSemicolon);
+		if (Peek()->Is(Token::Kind::OpenBrace))
+			return ParseBlockStatement(matchSemicolon);
 		if (IsTypeNodeable(Peek()))
 			return ParseVariableDeclaration();
-		if (Peek()->Is(Token::Kind::OpenBrace))
-		{
-			StatementNode* statement = ParseBlockStatement();
-			Match(Token::Kind::Semicolon);
-			return statement;
-		}
 
 		ExpressionNode* expression = ParseExpression();
-		Match(Token::Kind::Semicolon);
+		if (matchSemicolon)
+			Match(Token::Kind::Semicolon);
 		return new ExpressionStatementNode(expression);
 	}
 
-	IfStatementNode* Parser::ParseIfStatement()
+	IfStatementNode* Parser::ParseIfStatement(bool matchSemicolon)
 	{
 		const Token* open = Match(Token::Kind::If);
 		ExpressionNode* condition = ParseExpression();
-		BlockStatementNode* then  = ParseBlockStatement();
-		if (!Peek()->Is(Token::Kind::Else))
-			Match(Token::Kind::Semicolon);
+		BlockStatementNode* then  = ParseBlockStatement(false);
 		BlockStatementNode* elze = nullptr;
 		if (Peek()->Is(Token::Kind::Else))
 		{
 			Next();
-			elze = ParseBlockStatement();
+			elze = ParseBlockStatement(matchSemicolon);
 		}
+		else if (matchSemicolon)
+			Match(Token::Kind::Semicolon);
 
 		return new IfStatementNode(open, condition, then, elze);
 	}
 
-	WhileStatementNode* Parser::ParseWhileStatement()
+	BreakStatementNode* Parser::ParseBreakStatement(bool matchSemicolon)
+	{
+		const Token* dreak = Match(Token::Kind::Break);
+		BreakStatementNode* statement = new BreakStatementNode(dreak);
+		if (matchSemicolon)
+			Match(Token::Kind::Semicolon);
+
+		return statement;
+	}
+
+	WhileStatementNode* Parser::ParseWhileStatement(bool matchSemicolon)
 	{
 		const Token* open = Match(Token::Kind::While);
 		ExpressionNode* condition = ParseExpression();
 		BlockStatementNode* body = ParseBlockStatement();
+		Match(Token::Kind::Semicolon);
 
 		return new WhileStatementNode(open, condition, body);
 	}
 
-	BlockStatementNode* Parser::ParseBlockStatement()
+	BlockStatementNode* Parser::ParseBlockStatement(bool matchSemicolon)
 	{
 		Debug::BeginScope();
 		if (!Peek()->Is(Token::Kind::OpenBrace))
 		{
-			StatementNode* statement = ParseStatement();
+			StatementNode* statement = ParseStatement(matchSemicolon);
 			Debug::EndScope();
 			return new BlockStatementNode(Peek(), { statement }, Peek());
 		}
@@ -510,26 +518,28 @@ namespace Symple
 				Next();
 		}
 		const Token* close = Match(Token::Kind::CloseBrace);
-		Match(Token::Kind::Semicolon);
+		if (matchSemicolon)
+			Match(Token::Kind::Semicolon);
 		Debug::EndScope();
 
 		return new BlockStatementNode(open, statements, close);
 	}
 
-	ReturnStatementNode* Parser::ParseReturnStatement()
+	ReturnStatementNode* Parser::ParseReturnStatement(bool matchSemicolon)
 	{
 		Match(Token::Kind::Return);
 		ExpressionNode* expression = ParseExpression();
-		Match(Token::Kind::Semicolon);
+		if (matchSemicolon)
+			Match(Token::Kind::Semicolon);
 		return new ReturnStatementNode(expression);
 	}
 
-	GlobalStatementNode* Parser::ParseGlobalStatement()
+	GlobalStatementNode* Parser::ParseGlobalStatement(bool matchSemicolon)
 	{
 		return new GlobalStatementNode(ParseStatement());
 	}
 
-	ForLoopStatementNode* Parser::ParseForLoopStatement()
+	ForLoopStatementNode* Parser::ParseForLoopStatement(bool matchSemicolon)
 	{
 		const Token* open = Match(Token::Kind::For);
 
@@ -541,18 +551,18 @@ namespace Symple
 		StatementNode* initializer = ParseStatement();
 		ExpressionNode* condition = ParseExpression();
 		Match(Token::Kind::Semicolon);
-		StatementNode* step = ParseStatement();
-		
+		StatementNode* step = ParseStatement(false);
+
 		if (parentithized)
 			Match(Token::Kind::CloseParenthesis);
 
-		BlockStatementNode* body = ParseBlockStatement();
+		BlockStatementNode* body = ParseBlockStatement(matchSemicolon);
 		Debug::EndScope();
 
 		return new ForLoopStatementNode(open, initializer, condition, step, body);
 	}
 
-	GlobalVariableDeclarationNode* Parser::ParseEnumDeclaration()
+	GlobalVariableDeclarationNode* Parser::ParseEnumDeclaration(bool matchSemicolon)
 	{
 		Match(Token::Kind::Enum);
 		const Type* type = Type::PrimitiveType::Int;
@@ -565,7 +575,8 @@ namespace Symple
 		Match(Token::Kind::OpenBracket);
 		GlobalVariableDeclarationNode* declaration = ParseEnumField(new TypeNode(type, EmptyModifiers, nullptr));
 		Match(Token::Kind::CloseBracket);
-		Match(Token::Kind::Semicolon);
+		if (matchSemicolon)
+			Match(Token::Kind::Semicolon);
 
 		return declaration;
 	}
@@ -615,7 +626,7 @@ namespace Symple
 		return declaration;
 	}
 
-	VariableDeclarationNode* Parser::ParseVariableDeclaration(const Type* type)
+	VariableDeclarationNode* Parser::ParseVariableDeclaration(bool matchSemicolon, const Type* type)
 	{
 		if (!type)
 			type = GetType(Next());
@@ -635,10 +646,11 @@ namespace Symple
 			if (Peek()->Is(Token::Kind::Comma))
 			{
 				Next();
-				next = ParseVariableDeclaration(type);
+				next = ParseVariableDeclaration(false, type);
 			}
-			
-			Match(Token::Kind::Semicolon);
+
+			if (matchSemicolon)
+				Match(Token::Kind::Semicolon);
 
 			declaration = new VariableDeclarationNode(name, ty, modifiers, expression, next);
 			Debug::VariableDeclaration(declaration);
@@ -650,10 +662,11 @@ namespace Symple
 		if (Peek()->Is(Token::Kind::Comma))
 		{
 			Next();
-			next = ParseVariableDeclaration(type);
+			next = ParseVariableDeclaration(false, type);
 		}
 
-		Match(Token::Kind::Semicolon);
+		if (matchSemicolon)
+			Match(Token::Kind::Semicolon);
 
 		declaration = new VariableDeclarationNode(name, ty, modifiers, nullptr, next);
 		Debug::VariableDeclaration(declaration);
@@ -695,19 +708,25 @@ namespace Symple
 		if (left && !prority)
 		{
 			ExpressionNode* right = ParseExpression();
-			while (Peek()->IsEither({ Token::Kind::OpenBracket, Token::Kind::QuestionMark }))
+			while (Peek()->IsEither({ Token::Kind::OpenBracket }))
 			{
 				if (Peek()->Is(Token::Kind::OpenBracket))
 					right = ParsePointerIndexExpression(right);
-				else if (Peek()->Is(Token::Kind::QuestionMark))
-					right = ParseTernaryExpression(right);
 			}
 
 			return new AssignmentExpressionNode(oqerator, left, right);
 		}
 		mPosition = pPosition;
 
-		return ParseBinaryExpression();
+		ExpressionNode* expression = ParseBinaryExpression();
+
+		while (Peek()->IsEither({ Token::Kind::QuestionMark }))
+		{
+			if (Peek()->Is(Token::Kind::QuestionMark))
+				expression = ParseTernaryExpression(expression);
+		}
+
+		return expression;
 	}
 
 	ExpressionNode* Parser::ParseUnaryExpression(int parentPriority)
@@ -721,12 +740,10 @@ namespace Symple
 		}
 
 		ExpressionNode* expression = ParsePrimaryExpression();
-		while (Peek()->IsEither({ Token::Kind::OpenBracket, Token::Kind::QuestionMark }))
+		while (Peek()->IsEither({ Token::Kind::OpenBracket }))
 		{
 			if (Peek()->Is(Token::Kind::OpenBracket))
 				expression = ParsePointerIndexExpression(expression);
-			else if (Peek()->Is(Token::Kind::QuestionMark))
-				expression = ParseTernaryExpression(expression);
 		}
 		return expression;
 	}

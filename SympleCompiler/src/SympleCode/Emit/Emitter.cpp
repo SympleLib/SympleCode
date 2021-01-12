@@ -57,8 +57,8 @@ namespace Symple
 			return 'w';
 		if (sz <= 4)
 			return 'l';
-		//if (sz <= 8)
-		//	return 'q';
+		if (sz <= 8)
+			return 'q';
 
 		return 0;
 	}
@@ -71,20 +71,20 @@ namespace Symple
 			return "value";
 		if (sz <= 4)
 			return "long";
-		//if (sz <= 8)
-		//	return "quad";
+		if (sz <= 8)
+			return "quad";
 
 		return nullptr;
 	}
 
-	void Emitter::Push(Register reg, int sz)
+	void Emitter::Push(Register reg)
 	{
-		Emit("\tpush%c   %s", Suf(sz), GetReg(reg, sz));
+		Emit("\tpush%c   %s", Suf(), GetReg(reg));
 	}
 
-	void Emitter::Pop(Register reg, int sz)
+	void Emitter::Pop(Register reg)
 	{
-		Emit("\tpop%c    %s", Suf(sz), GetReg(reg, sz));
+		Emit("\tpop%c    %s", Suf(), GetReg(reg));
 	}
 
 	void Emitter::EmitMember(const MemberNode* member)
@@ -127,12 +127,12 @@ namespace Symple
 		mStack = 0;
 
 		Emit("%s:", name);
-		Emit("\tpushl   %%ebp");
-		Emit("\tmovl    %%esp, %%ebp");
+		Emit("\tpush%c   %s", Suf(), GetReg(regbp));
+		Emit("\tmov%c    %s, %s", Suf(), GetReg(regsp), GetReg(regbp));
 
 		if (member->IsMain())
 		{
-			Emit("\txorl    %%eax, %%eax");
+			Emit("\txor%c    %s, %s", Suf(), GetReg(regax), GetReg(regax));
 			Emit("\tcall%c   ._STATIC_INIT_.", Suf());
 		}
 
@@ -149,8 +149,8 @@ namespace Symple
 
 		if (mReturning)
 			Emit("..%i:", mReturn);
-		Emit("\tmovl    %%ebp, %%esp");
-		Emit("\tpopl    %%ebp");
+		Emit("\tmov%c    %s, %s", Suf(), GetReg(regbp), GetReg(regsp));
+		Emit("\tpop%c   %s", Suf(), GetReg(regbp));
 		Emit("\tret");
 	}
 
@@ -295,8 +295,6 @@ namespace Symple
 			EmitBlockStatement(statement->GetThen());
 
 			Emit("..%i:", end);
-
-			EmitBlockStatement(statement->GetElse());
 		}
 	}
 
@@ -304,7 +302,7 @@ namespace Symple
 	{
 		if (block->GetStackUsage())
 		{
-			Emit("\tsubl    $%i, %%esp", block->GetStackUsage());
+			Emit("\tsub%c    $%i, %s", Suf(), block->GetStackUsage(), GetReg(regsp));
 			mStack += block->GetStackUsage();
 		}
 
@@ -411,14 +409,14 @@ namespace Symple
 			if (statement->GetInitializer()->Is<StructInitializerExpressionNode>())
 			{
 				Register ptr = mRegisterManager->Alloc();
-				Emit("\tlea%c    _%s@(%%ebp), %s", Suf(), name, GetReg(ptr));
+				Emit("\tlea%c    _%s@(%s), %s", Suf(), name, GetReg(regbp), GetReg(ptr));
 				EmitStructInitializerExpression(statement->GetInitializer()->Cast<StructInitializerExpressionNode>(), ptr);
 				mRegisterManager->Free(ptr);
 			}
 			else
 			{
 				Register init = EmitExpression(statement->GetInitializer());
-				Emit("\tmov%c    %s, _%s@(%%ebp)", Suf(), GetReg(init), name);
+				Emit("\tmov%c    %s, _%s@(%s)", Suf(), GetReg(init), name, GetReg(regbp));
 				mRegisterManager->Free(init);
 			}
 		}
@@ -473,20 +471,20 @@ namespace Symple
 			return reg;
 
 		unsigned int sz = expression->GetExpressions().size() * expression->GetExpressionType()->GetSize();
-		Emit("\tsub%c   $%i, %%esp", Suf(), sz);
+		Emit("\tsub%c   $%i, %s", Suf(), sz, GetReg(regsp));
 
 		mStack += sz;
 		for (const ExpressionNode* item : expression->GetExpressions())
 		{
 			Register itemReg = EmitExpression(item);
-			Emit("\tmov%c    %s, -%i(%%ebp)", Suf(), GetReg(itemReg), mStack);
+			Emit("\tmov%c    %s, -%i(%s)", Suf(), GetReg(itemReg), mStack, GetReg(regbp));
 			mRegisterManager->Free(itemReg);
 
 			mStack -= item->GetType()->GetSize();
 		}
 		mStack += sz;
 
-		Emit("\tlea%c    -%i(%%ebp), %s", Suf(), mStack, GetReg(reg));
+		Emit("\tlea%c    -%i(%s), %s", Suf(), mStack, GetReg(regbp), GetReg(reg));
 		return reg;
 	}
 
@@ -531,7 +529,7 @@ namespace Symple
 				{
 					Register reg = mRegisterManager->Alloc();
 					mRegisterManager->Free(i);
-					Emit("\tmov%c    %%eax, %s", Suf(), GetReg(reg));
+					Emit("\tmov%c    %s, %s", Suf(), GetReg(regax), GetReg(reg));
 					Push(reg);
 				}
 				else
@@ -547,9 +545,9 @@ namespace Symple
 
 		const FunctionDeclarationNode* function = Debug::GetFunction(expression->GetName()->GetLex(), expression->GetArguments());
 
-		Emit("\tcalll   %s", function->GetAsmName().c_str());
+		Emit("\tcall%c   %s", Suf(), function->GetAsmName().c_str());
 		if (expression->GetArguments()->GetArguments().size())
-			Emit("\taddl    $%i, %%esp", expression->GetArguments()->GetArguments().size() * 4);
+			Emit("\tadd%c    $%i, %s", Suf(), expression->GetArguments()->GetArguments().size() * 4, GetReg(regsp));
 
 		for (int i = 0; i < NumRegisters; i++)
 			if (i != regax && !mRegisterManager->GetFree()[i])
@@ -612,14 +610,15 @@ namespace Symple
 		Register callee = EmitModifiableExpression(expression->GetCallee(), true);
 		unsigned int off = expression->GetOffset();
 
-		Emit("\tadd%c    $%i, %s", Suf(), off, GetReg(callee));
-
 		if (retptr)
+		{
+			Emit("\tadd%c    $%i, %s", Suf(), off, GetReg(callee));
 			return callee;
+		}
 
 		Register val = mRegisterManager->CAlloc();
 		unsigned int sz = expression->GetType()->GetSize();
-		Emit("\tmov%c    (%s), %s", Suf(sz), GetReg(callee), GetReg(val, sz));
+		Emit("\tmov%c    %i(%s), %s", Suf(sz), off, GetReg(callee), GetReg(val, sz));
 		mRegisterManager->Free(callee);
 		return val;
 	}
@@ -632,14 +631,14 @@ namespace Symple
 		if (!var->Is<GlobalVariableDeclarationNode>())
 		{
 			if (retptr)
-				Emit("\tlea%c    _%s@(%%ebp), %s", Suf(), std::string(expression->GetName()->GetLex()).c_str(), GetReg(reg));
+				Emit("\tlea%c    _%s@(%s), %s", Suf(), std::string(expression->GetName()->GetLex()).c_str(), GetReg(regbp), GetReg(reg));
 			else
 			{
 				unsigned int sz = var->GetType()->GetSize();
 
 				if (sz != 4)
 					Emit("\txor%c    %s, %s", Suf(), GetReg(reg), GetReg(reg));
-				Emit("\tmov%c    _%s@(%%ebp), %s", Suf(sz), std::string(expression->GetName()->GetLex()).c_str(), GetReg(reg, sz));
+				Emit("\tmov%c    _%s@(%s), %s", Suf(sz), std::string(expression->GetName()->GetLex()).c_str(), GetReg(regbp), GetReg(reg, sz));
 			}
 
 			return reg;
@@ -685,6 +684,12 @@ namespace Symple
 			goto Ret;
 		case Token::Kind::PlusEqual:
 			Emit("\tadd%c    %s, (%s)", Suf(sz), GetReg(right, sz), GetReg(left));
+			goto Ret;
+		case Token::Kind::MinusEqual:
+			Emit("\tsub%c    %s, (%s)", Suf(sz), GetReg(right, sz), GetReg(left));
+			goto Ret;
+		case Token::Kind::AsteriskEqual:
+			Emit("\tmul%c    %s, (%s)", Suf(sz), GetReg(right, sz), GetReg(left));
 			goto Ret;
 		}
 
@@ -859,7 +864,7 @@ namespace Symple
 	{
 		Register reg = mRegisterManager->Alloc();
 
-		Emit("\tmovl    $..%i, %s", mData, GetReg(reg));
+		Emit("\tmov%c    $..%i, %s", Suf(), mData, GetReg(reg));
 
 		EmitLiteral("..%i:", mData++);
 		EmitLiteral("\t.string  \"%s\"", std::string(expression->GetLiteral()->GetLex()).c_str());
