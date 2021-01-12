@@ -191,6 +191,8 @@ namespace Symple
 			return ParseSharedVariable();
 		if (Peek()->Is(Token::Kind::Struct))
 			return ParseStructDeclaration();
+		if (Peek()->Is(Token::Kind::Enum))
+			return ParseEnumDeclaration();
 
 		return ParseGlobalStatement();
 	}
@@ -548,6 +550,69 @@ namespace Symple
 		BlockStatementNode* body = ParseBlockStatement();
 
 		return new ForLoopStatementNode(open, initializer, condition, step, body);
+	}
+
+	GlobalVariableDeclarationNode* Parser::ParseEnumDeclaration()
+	{
+		Match(Token::Kind::Enum);
+		const Type* type = Type::PrimitiveType::Int;
+		if (Peek()->Is(Token::Kind::Colon))
+		{
+			Next();
+			type = GetType(Next());
+		}
+
+		Match(Token::Kind::OpenBracket);
+		GlobalVariableDeclarationNode* declaration = ParseEnumField(new TypeNode(type, EmptyModifiers, nullptr));
+		Match(Token::Kind::CloseBracket);
+		Match(Token::Kind::Semicolon);
+
+		return declaration;
+	}
+
+	static VariableModifiersNode* EmptyVarModifiers = new VariableModifiersNode({});
+
+	GlobalVariableDeclarationNode* Parser::ParseEnumField(const TypeNode* ty, int before)
+	{
+		const Token* name = Match(Token::Kind::Identifier);
+		GlobalVariableDeclarationNode* declaration = nullptr;
+		if (Peek()->Is(Token::Kind::Equal))
+		{
+			Next();
+			ExpressionNode* expression = ParseExpression();
+			if (expression->CanEvaluate())
+				before = expression->Evaluate();
+			else
+				Diagnostics::ReportError(name, "Must be Constant Value");
+
+			GlobalVariableDeclarationNode* next = nullptr;
+
+			if (Peek()->Is(Token::Kind::Comma))
+			{
+				Next();
+				next = ParseEnumField(ty, before+1);
+			}
+
+			declaration = new GlobalVariableDeclarationNode(name, ty, EmptyVarModifiers, expression, next);
+			Debug::VariableDeclaration(declaration);
+			return declaration;
+		}
+
+		GlobalVariableDeclarationNode* next = nullptr;
+
+		if (Peek()->Is(Token::Kind::Comma))
+		{
+			Next();
+			next = ParseEnumField(ty, before+1);
+		}
+
+		std::stringstream ss;
+		ss << before;
+		std::string* str = new std::string(ss.str());
+
+		declaration = new GlobalVariableDeclarationNode(name, ty, EmptyVarModifiers, new NumberLiteralExpressionNode(new Token(Token::Kind::Number, str->c_str(), str->length(), "")), next);
+		Debug::VariableDeclaration(declaration);
+		return declaration;
 	}
 
 	VariableDeclarationNode* Parser::ParseVariableDeclaration(const Type* type)

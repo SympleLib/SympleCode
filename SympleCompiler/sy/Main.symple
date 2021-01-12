@@ -1,8 +1,28 @@
-#define size int
+#include "libc/io.sy"
+
+#define type int
+
+enum
+[
+	TY_BOOL,
+	TY_SHORT,
+	TY_INT
+];
+
+struct Person
+{
+	char* Name;
+	int Age;
+};
+
+Person me = Person { "Teddy", 12 };
 
 int main()
 {
-	size szofint = 4;
+	printf("Me { Name: %s, Age: %i }\n", me.Name, me.Age);
+
+	type retType = TY_INT;
+	printf("Return Type=%i", TY_INT);
 	
-	szofint;
+	3;
 };

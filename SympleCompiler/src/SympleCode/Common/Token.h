@@ -93,6 +93,7 @@ namespace Symple
 			Unsigned,
 
 			Struct,
+			Enum,
 
 			Comment,
 			Preprocess,
@@ -119,7 +120,7 @@ namespace Symple
 			"If", "Else",
 			"SympleCall", "StdCall", "CCall",
 			"Mutable", "Private", "Signed", "Unsigned"
-			"Struct",
+			"Struct", "Enum",
 			"Comment", "Preprocess",
 		};
 

@@ -86,6 +86,8 @@ namespace Symple
 		ReturnStatementNode* ParseReturnStatement();
 		GlobalStatementNode* ParseGlobalStatement();
 		ForLoopStatementNode* ParseForLoopStatement();
+		GlobalVariableDeclarationNode* ParseEnumDeclaration();
+		GlobalVariableDeclarationNode* ParseEnumField(const TypeNode* type, int before = 0);
 		VariableDeclarationNode* ParseVariableDeclaration(const Type* type = nullptr);
 		VariableModifiersNode* ParseVariableModifiers();
 		VariableModifierNode* ParseVariableModifier();

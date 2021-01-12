@@ -63,6 +63,20 @@ namespace Symple
 		return 0;
 	}
 
+	const char* Emitter::Word(int sz)
+	{
+		if (sz <= 1)
+			return "byte";
+		if (sz <= 2)
+			return "value";
+		if (sz <= 4)
+			return "long";
+		//if (sz <= 8)
+		//	return "quad";
+
+		return nullptr;
+	}
+
 	void Emitter::Push(Register reg, int sz)
 	{
 		Emit("\tpush%c   %s", Suf(sz), GetReg(reg, sz));
@@ -141,36 +155,82 @@ namespace Symple
 		std::string nstr(member->GetName()->GetLex());
 		const char* name = nstr.c_str();
 
-		Emit("\t.bss");
+		if (member->GetType()->GetModifiers()->IsMutable())
+			Emit("\t.bss");
 		if (member->GetModifiers()->IsPrivate())
 			Emit("\t.local   _%s@", name);
 		else
 			Emit("\t.globl   _%s@", name);
 		Emit("_%s@:", name);
-		Emit("\t.zero %i", member->GetType()->GetSize());
-		Emit("\t.text");
 
 		if (member->GetInitializer())
 		{
-			Emit("\t.globl   ..%i.", sInits);
-			Emit("..%i.:", sInits++);
-			if (member->GetInitializer()->Is<StructInitializerExpressionNode>())
+			if (member->GetInitializer()->CanEvaluate())
 			{
-				Register ptr = mRegisterManager->Alloc();
-				Emit("\tmov%c    $_%s@, %s", Suf(), name, GetReg(ptr));
-				EmitStructInitializerExpression(member->GetInitializer()->Cast<StructInitializerExpressionNode>(), ptr);
-				mRegisterManager->Free(ptr);
+				if (member->GetInitializer()->Is<StructInitializerExpressionNode>())
+				{
+					for (const ExpressionNode* item : member->GetInitializer()->Cast<StructInitializerExpressionNode>()->GetExpressions())
+					{
+						if (item->Is<StringLiteralExpressionNode>())
+						{
+							EmitLiteral("..%i:", mData);
+							EmitLiteral("\t.string  \"%s\"", std::string(item->Cast<StringLiteralExpressionNode>()->GetLiteral()->GetLex()).c_str());
+
+							Emit("\t.%s ..%i", Word(), mData++);
+						}
+						else
+						{
+							unsigned int sz = item->GetType()->GetSize();
+
+							Emit("\t.%s %i", Word(sz), item->Evaluate());
+						}
+					}
+				}
+				else
+				{
+					unsigned int sz = member->GetType()->GetSize();
+					
+					Emit("\t.%s %i", Word(sz), member->GetInitializer()->Evaluate());
+				}
+
+				Emit("\t.text");
+			}
+			else if (member->GetInitializer()->Is<StringLiteralExpressionNode>())
+			{
+				EmitLiteral("..%i:", mData);
+				EmitLiteral("\t.string  \"%s\"", std::string(member->GetInitializer()->Cast<StringLiteralExpressionNode>()->GetLiteral()->GetLex()).c_str());
+
+				Emit("\t.%s ..%i", Word(), mData++);
 			}
 			else
 			{
-				unsigned int sz = member->GetType()->GetSize();
+				Emit("\t.zero %i", member->GetType()->GetSize());
 
-				Register init = EmitExpression(member->GetInitializer());
-				Emit("\tmov%c    %s, _%s@", Suf(sz), GetReg(init, sz), name);
-				mRegisterManager->Free(init);
+				Emit("\t.text");
+
+				Emit("\t.globl   ..%i.", sInits);
+				Emit("..%i.:", sInits++);
+				if (member->GetInitializer()->Is<StructInitializerExpressionNode>())
+				{
+					Register ptr = mRegisterManager->Alloc();
+					Emit("\tmov%c    $_%s@, %s", Suf(), name, GetReg(ptr));
+					EmitStructInitializerExpression(member->GetInitializer()->Cast<StructInitializerExpressionNode>(), ptr);
+					mRegisterManager->Free(ptr);
+				}
+				else
+				{
+					unsigned int sz = member->GetType()->GetSize();
+
+					Register init = EmitExpression(member->GetInitializer());
+					Emit("\tmov%c    %s, _%s@", Suf(sz), GetReg(init, sz), name);
+					mRegisterManager->Free(init);
+				}
+				Emit("\tret");
 			}
-			Emit("\tret");
 		}
+
+		if (member->GetNext())
+			EmitGlobalVariableDeclaration(member->GetNext());
 	}
 
 

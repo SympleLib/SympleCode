@@ -186,6 +186,8 @@ namespace Symple
 
 		if (identifier == "struct")
 			return new Token(Token::Kind::Struct, beg, mCurrent, mFile, mLine, bColumn);
+		if (identifier == "enum")
+			return new Token(Token::Kind::Enum, beg, mCurrent, mFile, mLine, bColumn);
 		return new Token(Token::Kind::Identifier, beg, mCurrent, mFile, mLine, bColumn);
 	}
 

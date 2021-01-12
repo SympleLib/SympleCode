@@ -9,6 +9,8 @@
 
 namespace Symple
 {
+	class StringLiteralExpressionNode;
+
 	class StructInitializerExpressionNode : public ExpressionNode
 	{
 	private:
@@ -17,10 +19,12 @@ namespace Symple
 		const Token* mOpen;
 		const std::vector<const ExpressionNode*> mExpressions;
 		const Token* mClose;
+
+		bool mCanEvaluate;
 	public:
 		StructInitializerExpressionNode(const Token* name, const Token* open, const std::vector<const ExpressionNode*> expressions, const Token* close)
 			: ExpressionNode(new TypeNode(Debug::GetStruct(name->GetLex()), MutModifiers, nullptr)),
-			mName(name), mOpen(open), mExpressions(expressions), mClose(close)
+			mName(name), mOpen(open), mExpressions(expressions), mClose(close), mCanEvaluate(true)
 		{
 			if (mExpressions.size() > mType->GetType()->Cast<StructDeclarationNode>()->GetFields()->GetFields().size())
 			{
@@ -35,12 +39,19 @@ namespace Symple
 					mOpen, "Unmatched Types : \n % s, \n % s",
 					mType->GetType()->Cast<StructDeclarationNode>()
 						->GetFields()->GetFields()[i]->GetType()->ToString("", i == mExpressions.size() - 1).c_str(), mExpressions[i]->GetType()->ToString().c_str());
+
+				mCanEvaluate &= mExpressions[i]->CanEvaluate() || mExpressions[i]->Is<StringLiteralExpressionNode>();
 			}
 		}
 
 		Kind GetKind() const override
 		{
 			return Kind::ListExpression;
+		}
+
+		bool CanEvaluate() const override
+		{
+			return mCanEvaluate;
 		}
 
 		std::string ToString(const std::string& indent = "", bool last = true) const override
