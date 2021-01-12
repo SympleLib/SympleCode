@@ -9,6 +9,11 @@
 
 namespace Symple
 {
+#if SY_32
+	const char* const RegisterManager::sRegisters32[NumRegisters] = { "%eax", "%edx", "%ecx", "%ebx", };
+	const char* const RegisterManager::sRegisters16[NumRegisters] = { "%ax", "%dx",  "%cx",  "%bx", };
+	const char* const RegisterManager::sRegisters8[NumRegisters] = { "%al", "%dl",  "%cl",  "%bl", };
+#else
 	const char* const RegisterManager::sRegisters64[NumRegisters] = { "%rax", "%rdx", "%rcx", "%rbx", "%rdi", "%rsi",
 		"%r8",  "%r9",  "%r10",  "%r11",  "%r12",  "%r13",  };
 	const char* const RegisterManager::sRegisters32[NumRegisters] = { "%eax", "%edx", "%ecx", "%ebx", "%edi", "%esi",
@@ -17,6 +22,7 @@ namespace Symple
 		"%r8w", "%r9w", "%r10w", "%r11w", "%r12w", "%r13w", };
 	const char* const RegisterManager::sRegisters8[NumRegisters]  = { "%al", "%dl",  "%cl",  "%bl",  "%dil", "%sil",
 		"%r8b", "%r9b", "%r10b", "%r11b", "%r12b", "%r13b", };
+#endif
 
 	RegisterManager::RegisterManager(Emitter* emitter)
 		: mEmitter(emitter) {}
@@ -47,6 +53,18 @@ namespace Symple
 				return reg;
 			}
 
+		int psreg = mSpilledRegisters[NumRegisters-1];
+		for (int i = 0; i < NumRegisters; i++)
+		{
+			if (psreg > mSpilledRegisters[(i + 1) % NumRegisters])
+				reg = i;
+
+			if (i)
+				psreg = mSpilledRegisters[i];
+		}
+
+		if (reg == NumRegisters)
+			reg = 0;
 		//Emit("\t# Spilled Reg: %s (%i)", GetRegister(reg), reg);
 
 		mSpilledRegisters[reg]++;
@@ -104,8 +122,10 @@ namespace Symple
 				return "%sp";
 			if (sz <= 4)
 				return "%esp";
+#if SY_64
 			if (sz <= 8)
 				return "%rsp";
+#endif
 		}
 
 		if (reg == regbp)
@@ -114,9 +134,12 @@ namespace Symple
 				return "%bp";
 			if (sz <= 4)
 				return "%ebp";
+#if SY_64
 			if (sz <= 8)
 				return "%rbp";
+#endif
 		}
+
 
 		if (sz <= 1)
 			return sRegisters8[reg];
@@ -124,8 +147,10 @@ namespace Symple
 			return sRegisters16[reg];
 		if (sz <= 4)
 			return sRegisters32[reg];
+#if SY_64
 		if (sz <= 8)
 			return sRegisters64[reg];
+#endif
 
 		return nullptr;
 	}

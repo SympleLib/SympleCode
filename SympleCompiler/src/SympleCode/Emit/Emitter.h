@@ -38,6 +38,8 @@
 #include "SympleCode/Node/Expression/Operator/UnaryExpressionNode.h"
 #include "SympleCode/Node/Expression/Operator/BinaryExpressionNode.h"
 
+#include "SympleCode/Compiler.h"
+
 #include <cstdio>
 
 namespace Symple
@@ -72,8 +74,8 @@ namespace Symple
 		void EmitCompilationUnit(const CompilationUnitNode*);
 		void EmitStaticInitialization();
 	private:
-		char Suf(int sz = 8);
-		const char* Word(int sz = 8);
+		char Suf(int sz = platsize);
+		const char* Word(int sz = platsize);
 
 		void Push(Register);
 		void Pop(Register);

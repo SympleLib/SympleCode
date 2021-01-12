@@ -4,6 +4,8 @@
 #include "SympleCode/Node/Type/TypeContinueNode.h"
 #include "SympleCode/Node/Type/TypeModifiersNode.h"
 
+#include "SympleCode/Compiler.h"
+
 #include <iostream>
 
 namespace Symple
@@ -60,7 +62,7 @@ namespace Symple
 
 		unsigned int GetSize() const
 		{
-			return HasContinue(Token::Kind::Asterisk) ? 8 : mType->GetSize();
+			return HasContinue(Token::Kind::Asterisk) ? platsize : mType->GetSize();
 		}
 
 		bool HasContinue(Token::Kind kind) const

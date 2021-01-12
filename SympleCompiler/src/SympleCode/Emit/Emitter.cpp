@@ -57,8 +57,10 @@ namespace Symple
 			return 'w';
 		if (sz <= 4)
 			return 'l';
+#if SY_64
 		if (sz <= 8)
 			return 'q';
+#endif
 
 		return 0;
 	}
@@ -71,8 +73,10 @@ namespace Symple
 			return "value";
 		if (sz <= 4)
 			return "long";
+#if SY_64
 		if (sz <= 8)
 			return "quad";
+#endif
 
 		return nullptr;
 	}

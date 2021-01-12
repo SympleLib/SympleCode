@@ -2,6 +2,8 @@
 
 #include "SympleCode/Node/Expression/VariableAddressExpressionNode.h"
 
+#include "SympleCode/Compiler.h"
+
 namespace Symple
 {
 	class PointerIndexExpressionNode : public ModifiableExpressionNode
@@ -21,7 +23,7 @@ namespace Symple
 				Diagnostics::ReportError(mBracket, "Internal Error");
 				return;
 			}
-			Diagnostics::ReportError(mAddress->GetType()->GetSize() != 8, mBracket, "Address Not Pointer Type");
+			Diagnostics::ReportError(mAddress->GetType()->GetSize() != platsize, mBracket, "Address Not Pointer Type");
 		}
 
 		Kind GetKind() const override

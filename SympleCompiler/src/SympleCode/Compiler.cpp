@@ -104,7 +104,11 @@ namespace Symple
 					//return true;
 				{
 					char command[128];
-					sprintf_s(command, "clang -c %s -o %s", asmS, obj);
+#if SY_32
+					sprintf_s(command, "clang_x86 -c %s -o %s", asmS, obj);
+#else
+					sprintf_s(command, "clang_x64 -c %s -o %s", asmS, obj);
+#endif
 					int compileStatis = system(command);
 
 					mObjectFiles.push_back(objStr);
@@ -144,7 +148,12 @@ namespace Symple
 		mOutput = output;
 		
 		std::stringstream ss;
-		ss << "clang -o " << output << " --optimize=3";
+#if SY_32
+		ss << "clang_x86";
+#else
+		ss << "clang_x64";
+#endif
+		ss << " -o " << output << " --optimize=3";
 		for (const std::string& objFile : mObjectFiles)
 			ss << ' ' << objFile;
 		for (const char* library : libraries)
