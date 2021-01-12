@@ -128,7 +128,10 @@ namespace Symple
 		Emit("\tmovl    %%esp, %%ebp");
 
 		if (member->IsMain())
+		{
+			Emit("\txorl    %%eax, %%eax");
 			Emit("\tcall%c   ._STATIC_INIT_.", Suf());
+		}
 
 		mReturning = false;
 		for (const StatementNode* statement : member->GetBody()->GetStatements())
