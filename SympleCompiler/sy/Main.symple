@@ -39,8 +39,8 @@ int main()
 {
 	Board board = (Board)malloc(9);
 	
-	printf("%p\n", this);
-	Test(this);
+	printf("%p\n", board);
+	Test(board);
 	
 	board[0] = 'X';
 	putchar(board[0]);

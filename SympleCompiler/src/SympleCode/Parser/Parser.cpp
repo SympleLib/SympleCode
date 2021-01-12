@@ -302,7 +302,9 @@ namespace Symple
 		Match(Token::Kind::Hint);
 		const TypeNode* type = ParseType();
 		const Token* name = Next();
+		Debug::BeginScope();
 		FunctionArgumentsNode* arguments = ParseFunctionArguments();
+		Debug::EndScope();
 		FunctionModifiersNode* modifiers = ParseFunctionModifiers();
 		Match(Token::Kind::Semicolon);
 
@@ -416,7 +418,9 @@ namespace Symple
 		Match(Token::Kind::Extern);
 		const TypeNode* type = ParseType();
 		const Token* name = Next();
+		Debug::BeginScope();
 		FunctionArgumentsNode* arguments = ParseFunctionArguments();
+		Debug::EndScope();
 		FunctionModifiersNode* modifiers = ParseFunctionModifiers();
 		Match(Token::Kind::Semicolon);
 

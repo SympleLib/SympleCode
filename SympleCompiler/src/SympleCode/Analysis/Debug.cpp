@@ -7,7 +7,7 @@ namespace Symple
 {
 	std::vector<const FunctionDeclarationNode*> Debug::sFunctions;
 	std::vector<const VariableDeclarationNode*> Debug::sVariables;
-	std::vector<const VariableDeclarationNode*> Debug::pVariables;
+	std::vector<unsigned int> Debug::pVariables;
 	std::vector<const GlobalVariableDeclarationNode*> Debug::sGlobalVariables;
 
 	std::vector<const Type*> Debug::sTypes;
@@ -30,6 +30,7 @@ namespace Symple
 
 	void Debug::VariableDeclaration(const VariableDeclarationNode* variable)
 	{
+		std::cout << "New Var: " << variable->GetName()->GetLex() << '\n';
 		sVariables.push_back(variable);
 	}
 
@@ -46,12 +47,25 @@ namespace Symple
 
 	void Debug::BeginScope()
 	{
-		pVariables = sVariables;
+		pVariables.push_back(sVariables.size());
+
+		puts("Begin Scope\n");
+		for (const VariableDeclarationNode* var : sVariables)
+			std::cout << var->GetName()->GetLex() << '\n';
+		puts("\n\n");
 	}
 
 	void Debug::EndScope()
 	{
-		sVariables = pVariables;
+		for (unsigned int i = sVariables.size(); i > pVariables.back(); i--)
+			sVariables.pop_back();
+
+		pVariables.pop_back();
+
+		puts("End Scope\n");
+		for (const VariableDeclarationNode* var : sVariables)
+			std::cout << var->GetName()->GetLex() << '\n';
+		puts("\n\n");
 	}
 
 	const FunctionDeclarationNode* Debug::GetFunction(const std::string_view& name, const FunctionCallArgumentsNode* arguments)
@@ -82,7 +96,7 @@ namespace Symple
 						break;
 					}
 
-					same &= arguments->GetArguments()[i]->GetType()->GetType() == function->GetArguments()->GetArguments()[i]->GetType()->GetType();
+					same &= function->GetArguments()->GetArguments()[i]->GetType()->GetType() == arguments->GetArguments()[i]->GetType()->GetType();
 				}
 
 				if (same)
@@ -100,9 +114,9 @@ namespace Symple
 
 	const VariableDeclaration* Debug::GetVariable(const std::string_view& name)
 	{
-		for (const VariableDeclarationNode* variable : sVariables)
-			if (variable->GetName()->GetLex() == name)
-				return variable;
+		for (unsigned int i = sVariables.size(); i > 0; i--)
+			if (sVariables[i-1]->GetName()->GetLex() == name)
+				return sVariables[i-1];
 		for (const GlobalVariableDeclarationNode* variable : sGlobalVariables)
 			if (variable->GetName()->GetLex() == name)
 				return variable;

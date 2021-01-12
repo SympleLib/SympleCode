@@ -18,7 +18,7 @@ namespace Symple
 	private:
 		static std::vector<const FunctionDeclarationNode*> sFunctions;
 		static std::vector<const VariableDeclarationNode*> sVariables;
-		static std::vector<const VariableDeclarationNode*> pVariables;
+		static std::vector<unsigned int> pVariables;
 		static std::vector<const GlobalVariableDeclarationNode*> sGlobalVariables;
 
 		static std::vector<const Type*> sTypes;
