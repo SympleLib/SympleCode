@@ -117,7 +117,7 @@ namespace Symple
 		int argOff = 4;
 		for (const FunctionArgumentNode* arg : member->GetArguments()->GetArguments())
 		{
-			Emit("_%s$ = %i", std::string(arg->GetName()->GetLex()).c_str(), argOff);
+			Emit("_%s@ = %i", std::string(arg->GetName()->GetLex()).c_str(), argOff);
 			argOff += 4;
 		}
 
@@ -399,6 +399,7 @@ namespace Symple
 		const char* name = nameStr.c_str();
 
 		Emit("_%s@ = -%i", name, mStack);
+		mStack += statement->GetType()->GetSize();
 		if (statement->GetInitializer())
 		{
 			if (statement->GetInitializer()->Is<StructInitializerExpressionNode>())
@@ -541,7 +542,8 @@ namespace Symple
 		const FunctionDeclarationNode* function = Debug::GetFunction(expression->GetName()->GetLex(), expression->GetArguments());
 
 		Emit("\tcalll   %s", function->GetAsmName().c_str());
-		Emit("\taddl    $%i, %%esp", expression->GetArguments()->GetArguments().size() * 4);
+		if (expression->GetArguments()->GetArguments().size())
+			Emit("\taddl    $%i, %%esp", expression->GetArguments()->GetArguments().size() * 4);
 
 		for (int i = 0; i < NumRegisters; i++)
 			if (i != regax && !mRegisterManager->GetFree()[i])
@@ -621,7 +623,7 @@ namespace Symple
 		const VariableDeclaration* var = Debug::GetVariable(expression->GetName()->GetLex());
 		Register reg = mRegisterManager->Alloc();
 
-		if (var->Is<VariableDeclarationNode>())
+		if (!var->Is<GlobalVariableDeclarationNode>())
 		{
 			if (retptr)
 				Emit("\tlea%c    _%s@(%%ebp), %s", Suf(), std::string(expression->GetName()->GetLex()).c_str(), GetReg(reg));
@@ -690,7 +692,7 @@ namespace Symple
 		}
 
 		Register reg = mRegisterManager->Alloc();
-		Emit("\tmov%c    (%s), %s", Suf(sz), GetReg(left), GetReg(reg));
+		Emit("\tmov%c    (%s), %s", Suf(sz), GetReg(left), GetReg(reg, sz));
 		mRegisterManager->Free(left);
 		mRegisterManager->Free(right);
 		return reg;
@@ -699,9 +701,13 @@ namespace Symple
 	Register Emitter::EmitPointerIndexExpression(const PointerIndexExpressionNode* expression, bool retptr)
 	{
 		Register reg = EmitExpression(expression->GetAddress());
+		if (expression->GetType()->GetSize() > 1)
+			Emit("\timul%c   $%i, %s", Suf(), expression->GetType()->GetSize(), GetReg(reg));
+
 		Register off = EmitExpression(expression->GetIndex());
 
 		Emit("\tadd%c    %s, %s", Suf(), GetReg(off), GetReg(reg));
+		mRegisterManager->Free(off);
 
 		if (retptr)
 			return reg;
@@ -709,6 +715,7 @@ namespace Symple
 		Register val = mRegisterManager->CAlloc();
 		unsigned int sz = expression->GetType()->GetSize();
 		Emit("\tmov%c    (%s), %s", Suf(sz), GetReg(reg), GetReg(val, sz));
+		mRegisterManager->Free(reg);
 		return val;
 	}
 

@@ -14,7 +14,10 @@ namespace Symple
 		const Token* mName;
 	public:
 		VariableExpressionNode(const Token* name)
-			: ModifiableExpressionNode(Debug::GetVariable(name->GetLex())->GetType()), mName(name) {}
+			: ModifiableExpressionNode(Debug::GetVariable(name->GetLex()) ? Debug::GetVariable(name->GetLex())->GetType() : ErrorType), mName(name)
+		{
+			Diagnostics::ReportError(!Debug::GetVariable(name->GetLex()), name, "Variable Doesn't Exist!");
+		}
 
 		Kind GetKind() const override
 		{

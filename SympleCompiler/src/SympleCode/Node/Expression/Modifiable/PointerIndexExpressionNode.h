@@ -12,11 +12,16 @@ namespace Symple
 		const ExpressionNode* mIndex;
 	public:
 		PointerIndexExpressionNode(const ExpressionNode* address, const Token* bracket, const ExpressionNode* index)
-			: ModifiableExpressionNode(new TypeNode(address->GetType()->GetType(),
+			: ModifiableExpressionNode(address ? new TypeNode(address->GetType()->GetType(),
 				address->GetType()->GetContinue() ? address->GetType()->GetContinue()->GetModifiers() : MutModifiers,
-				address->GetType()->GetContinue() ? address->GetType()->GetContinue()->GetContinue() : nullptr)), mIndex(index), mBracket(bracket), mAddress(address)
+				address->GetType()->GetContinue() ? address->GetType()->GetContinue()->GetContinue() : nullptr) : ErrorType), mIndex(index), mBracket(bracket), mAddress(address)
 		{
-			Diagnostics::ReportError(address->GetType()->GetSize() != 4, mBracket, "Address Not Pointer Type");
+			if (!mAddress)
+			{
+				Diagnostics::ReportError(mBracket, "Internal Error");
+				return;
+			}
+			Diagnostics::ReportError(mAddress->GetType()->GetSize() != 4, mBracket, "Address Not Pointer Type");
 		}
 
 		Kind GetKind() const override
@@ -37,7 +42,8 @@ namespace Symple
 			const char* newIndent = " \t";
 			if (!last)
 				newIndent = "|\t";
-			ss << '\n' << mAddress->ToString(indent + newIndent, false);
+			if (mAddress)
+				ss << '\n' << mAddress->ToString(indent + newIndent, false);
 			ss << '\n' << mIndex->ToString(indent + newIndent);
 			return ss.str();
 		}

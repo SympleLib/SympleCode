@@ -539,6 +539,7 @@ namespace Symple
 		if (parentithized)
 			Next();
 
+		Debug::BeginScope();
 		StatementNode* initializer = ParseStatement();
 		ExpressionNode* condition = ParseExpression();
 		Match(Token::Kind::Semicolon);
@@ -548,6 +549,7 @@ namespace Symple
 			Match(Token::Kind::CloseParenthesis);
 
 		BlockStatementNode* body = ParseBlockStatement();
+		Debug::EndScope();
 
 		return new ForLoopStatementNode(open, initializer, condition, step, body);
 	}
@@ -684,11 +686,25 @@ namespace Symple
 	{
 		unsigned int pPosition = mPosition;
 		ModifiableExpressionNode* left = ParseModifiableExpression();
+		while (Peek()->IsEither({ Token::Kind::OpenBracket }))
+		{
+			if (Peek()->Is(Token::Kind::OpenBracket))
+				left = ParsePointerIndexExpression(left);
+		}
+
 		const Token* oqerator = Next();
 		int prority = Priority::AssignmentOperatorPriority(oqerator);
 		if (left && !prority)
 		{
 			ExpressionNode* right = ParseExpression();
+			while (Peek()->IsEither({ Token::Kind::OpenBracket, Token::Kind::QuestionMark }))
+			{
+				if (Peek()->Is(Token::Kind::OpenBracket))
+					right = ParsePointerIndexExpression(right);
+				else if (Peek()->Is(Token::Kind::QuestionMark))
+					right = ParseTernaryExpression(right);
+			}
+
 			return new AssignmentExpressionNode(oqerator, left, right);
 		}
 		mPosition = pPosition;
@@ -871,7 +887,7 @@ namespace Symple
 	VariableAddressExpressionNode* Parser::ParseVariableAddressExpression()
 	{
 		const Token* symbol = Match(Token::Kind::At);
-		VariableExpressionNode* variable = ParseVariableExpression();
+		ModifiableExpressionNode* variable = ParseModifiableExpression();
 
 		return new VariableAddressExpressionNode(symbol, variable);
 	}

@@ -12,8 +12,10 @@ namespace Symple
 		const FunctionCallArgumentsNode* mArguments;
 	public:
 		FunctionCallExpressionNode(const Token* name, const FunctionCallArgumentsNode* arguments)
-			: ExpressionNode(Debug::GetFunction(name->GetLex(), arguments)->GetType()), mName(name), mArguments(arguments)
-		{}
+			: ExpressionNode(Debug::GetFunction(name->GetLex(), arguments) ? Debug::GetFunction(name->GetLex(), arguments)->GetType() : ErrorType), mName(name), mArguments(arguments)
+		{
+			Diagnostics::ReportError(!Debug::GetFunction(name->GetLex(), arguments), name, "Function Doesn't Exist");
+		}
 
 		Kind GetKind() const
 		{
