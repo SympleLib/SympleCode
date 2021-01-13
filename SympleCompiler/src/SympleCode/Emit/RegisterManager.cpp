@@ -27,9 +27,8 @@ namespace Symple
 	RegisterManager::RegisterManager(Emitter* emitter)
 		: mEmitter(emitter) {}
 
-	Register RegisterManager::Alloc()
+	Register RegisterManager::Alloc(Register reg)
 	{
-		Register reg;
 		for (reg = 0; reg < NumRegisters; reg++)
 			if (mFreeRegisters[reg])
 			{
@@ -45,9 +44,9 @@ namespace Symple
 		return reg;
 	}
 
-	Register RegisterManager::CAlloc()
+	Register RegisterManager::CAlloc(Register reg)
 	{
-		Register reg = Alloc();
+		reg = Alloc(reg);
 		Emit("\txor%c    %s, %s", mEmitter->Suf(), GetRegister(reg), GetRegister(reg));
 
 		return reg;
