@@ -347,13 +347,14 @@ namespace Symple
 	void Emitter::EmitWhileStatement(const WhileStatementNode* statement)
 	{
 		unsigned int loop = mData++;
+		unsigned int pBreak = mBreak;
 		mBreak = mData++;
 
 		Emit("..%i:", loop);
 
 		Register cond = EmitExpression(statement->GetCondition());
 		Emit("\ttest%c   %s, %s", Suf(), GetReg(cond), GetReg(cond));
-		Emit("\tjne     ..%i", mBreak);
+		Emit("\tje      ..%i", mBreak);
 		mRegisterManager->Free(cond);
 
 		EmitBlockStatement(statement->GetBody());
@@ -361,6 +362,7 @@ namespace Symple
 		Emit("\tjmp     ..%i", loop);
 		Emit("..%i:", mBreak);
 
+		mBreak = pBreak;
 	}
 
 	void Emitter::EmitReturnStatement(const ReturnStatementNode* statement)
@@ -393,7 +395,7 @@ namespace Symple
 
 		Register cond = EmitExpression(statement->GetCondition());
 		Emit("\ttest%c   %s, %s", Suf(), GetReg(cond), GetReg(cond));
-		Emit("\tjne     ..%i", mBreak);
+		Emit("\tje      ..%i", mBreak);
 		mRegisterManager->Free(cond);
 
 		EmitBlockStatement(statement->GetBody());
@@ -483,6 +485,8 @@ namespace Symple
 			return EmitFunctionCallExpression(expression->Cast<FunctionCallExpressionNode>());
 		if (expression->Is<ParenthesizedExpressionNode>())
 			return EmitParenthesizedExpression(expression->Cast<ParenthesizedExpressionNode>());
+		if (expression->Is<VariableAddressExpressionNode>())
+			return EmitVariableAddressExpression(expression->Cast<VariableAddressExpressionNode>());
 		
 		return nullreg;
 	}

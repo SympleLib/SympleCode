@@ -14,6 +14,8 @@ struct _file {};
 
 #define EOF -1
 
+extern int scanf(char* fmt) ccall;
+
 extern int printf(char* fmt) ccall;
 extern int puts(char* str) ccall;
 extern int putchar(char c) ccall;

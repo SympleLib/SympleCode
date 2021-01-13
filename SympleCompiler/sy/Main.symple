@@ -29,9 +29,7 @@ int GetWinner(Board this)
 	
 	if (c = this[0]) != '#'
 		if this[1] == c && this[2] == c
-		{
 			return c == 'X' ? 1 : 2;
-		};
 		else if this[3] == c && this[6] == c
 			return c == 'X' ? 1 : 2;
 		else if this[4] == c && this[8] == c
@@ -54,8 +52,29 @@ int GetWinner(Board this)
 
 int main()
 {
+	int s = 1;
+	printf("%i\n", s > 1);
+	return 0;
+
+	bool mut playerTurn = true;
 	Board board = CreateBoard();
-	board[0] = board[1] = board[2] = 'X';
 	PrintBoard(board);
+	
+	while !GetWinner(board)
+	{
+		int turn = 0;
+		
+		printf("%i, %i", turn, turn < 1 || turn > 9);
+		while turn < 1 || turn > 9
+		{
+			printf("Player '%c', pick a number from 1-10...\n", playerTurn ? 'X' : 'O');
+			scanf("%i", @turn);
+		};
+		
+		board[turn] = playerTurn ? 'X' : 'O';
+		playerTurn = !playerTurn;
+		PrintBoard(board);
+	};
+	
 	GetWinner(board);
 };
