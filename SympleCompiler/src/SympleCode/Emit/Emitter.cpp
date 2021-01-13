@@ -548,20 +548,14 @@ namespace Symple
 		{
 			reg = mRegisterManager->Alloc();
 			Emit("\tmov%c    %s, %s", Suf(), GetReg(then), GetReg(reg));
-			mRegisterManager->Free(reg);
+			mRegisterManager->Free(then);
 		}
-		mRegisterManager->Free(then);
 
 		Emit("\tjmp     ..%i", end);
 		Emit("..%i:", elze);
 
 		Register elzeReg = EmitExpression(expression->GetElse());
-		if (elzeReg == reg)
-		{
-			mRegisterManager->Free(elzeReg);
-			reg = mRegisterManager->Alloc();
-		}
-		else
+		if (elzeReg != reg)
 		{
 			reg = mRegisterManager->Alloc();
 			Emit("\tmov%c    %s, %s", Suf(), GetReg(elzeReg), GetReg(reg));

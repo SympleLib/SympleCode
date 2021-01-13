@@ -54,10 +54,10 @@ int main()
 {
 	bool mut playerTurn = true;
 	Board board = CreateBoard();
-	PrintBoard(board);
 	
 	while !GetWinner(board)
 	{
+		PrintBoard(board);
 		int turn = 0;
 		
 		while turn < 1 || turn > 9
@@ -68,8 +68,8 @@ int main()
 		
 		board[turn - 1] = playerTurn ? 'X' : 'O';
 		playerTurn = !playerTurn;
-		PrintBoard(board);
 	};
 	
+	PrintBoard(board);
 	GetWinner(board);
 };
