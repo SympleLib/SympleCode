@@ -132,10 +132,12 @@ namespace Symple
 						return !compileStatis;
 					}
 				}
+
 				printf("No Code Generated :(\n");
 
 				return false;
 			}
+
 			char errMsg[32];
 			if (!strerror_s(errMsg, err))
 				std::cerr << "[!]: Error opening file '" << path << "': " << errMsg << "!\n";
@@ -144,6 +146,10 @@ namespace Symple
 
 			return false;
 		}
+
+		printf("No Code Generated :(\n");
+
+		return false;
 	}
 
 	void Compiler::Link(const char* output, const std::vector<const char*> libraries)

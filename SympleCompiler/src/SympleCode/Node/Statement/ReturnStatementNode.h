@@ -18,6 +18,11 @@ namespace Symple
 			return Kind::ReturnStatement;
 		}
 
+		bool IsReturn() const override
+		{
+			return true;
+		}
+
 		std::string ToString(const std::string& indent = "", bool last = true) const override
 		{
 			std::stringstream ss;

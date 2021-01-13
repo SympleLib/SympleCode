@@ -17,9 +17,11 @@ namespace Symple
 
 		std::map<std::string_view, const VariableDeclarationNode*> mVariables;
 		unsigned int mStackUsage;
+
+		bool mReturning;
 	public:
 		BlockStatementNode(const Token* open, const std::vector<const StatementNode*>& statements, const Token* close)
-			: mOpen(open), mStatements(statements), mClose(close), mStackUsage()
+			: mOpen(open), mStatements(statements), mClose(close), mStackUsage(), mReturning()
 		{
 			for (const StatementNode* statement : mStatements)
 				if (statement->Is<VariableDeclarationNode>())
@@ -27,11 +29,18 @@ namespace Symple
 					mVariables.insert({ statement->Cast<VariableDeclarationNode>()->GetName()->GetLex(), statement->Cast<VariableDeclarationNode>() });
 					mStackUsage += statement->Cast<VariableDeclarationNode>()->GetType()->GetSize();
 				}
+				else if (statement->IsReturn())
+					mReturning = true;
 		}
 
 		Kind GetKind() const override
 		{
 			return Kind::BlockStatement;
+		}
+		
+		bool IsReturn() const override
+		{
+			return mReturning;
 		}
 
 		const Token* GetOpen() const

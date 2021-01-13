@@ -23,6 +23,11 @@ namespace Symple
 			return Kind::ForLoopStatement;
 		}
 
+		bool IsReturn() const override
+		{
+			return mBody->IsReturn();
+		}
+
 		std::string ToString(const std::string& indent = "", bool last = true) const override
 		{
 			std::stringstream ss;

@@ -22,6 +22,11 @@ namespace Symple
 			return Kind::IfStatement;
 		}
 
+		bool IsReturn() const override
+		{
+			return mThen->IsReturn() || (mElse && mElse->IsReturn());
+		}
+
 		std::string ToString(const std::string& indent = "", bool last = true) const override
 		{
 			std::stringstream ss;

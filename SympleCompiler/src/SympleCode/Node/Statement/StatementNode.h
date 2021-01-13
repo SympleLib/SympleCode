@@ -11,5 +11,10 @@ namespace Symple
 		{
 			return Kind::Statement;
 		}
+
+		virtual bool IsReturn() const
+		{
+			return false;
+		}
 	};
 }

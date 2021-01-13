@@ -21,6 +21,11 @@ namespace Symple
 			return Kind::WhileStatement;
 		}
 
+		bool IsReturn() const override
+		{
+			return mBody->IsReturn();
+		}
+
 		std::string ToString(const std::string& indent = "", bool last = true) const override
 		{
 			std::stringstream ss;

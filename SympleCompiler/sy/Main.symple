@@ -30,7 +30,6 @@ int GetWinner(Board this)
 	if (c = this[0]) != '#'
 		if this[1] == c && this[2] == c
 		{
-			printf("Cool %i\n", c == 'X' ? 2 : 1);
 			return c == 'X' ? 1 : 2;
 		};
 		else if this[3] == c && this[6] == c

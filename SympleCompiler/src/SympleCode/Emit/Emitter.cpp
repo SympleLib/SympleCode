@@ -147,11 +147,8 @@ namespace Symple
 
 		mReturning = false;
 		for (const StatementNode* statement : member->GetBody()->GetStatements())
-			if (statement->Is<ReturnStatementNode>() && statement != member->GetBody()->GetStatements().back())
+			if (statement->IsReturn() && statement != member->GetBody()->GetStatements().back())
 			{
-				puts(name);
-				puts("Returning");
-
 				mReturning = true;
 				break;
 			}
@@ -531,17 +528,24 @@ namespace Symple
 		Register then = EmitExpression(expression->GetThen());
 		if (then != reg)
 		{
+			reg = mRegisterManager->Alloc();
 			Emit("\tmov%c    %s, %s", Suf(), GetReg(then), GetReg(reg));
-			mRegisterManager->Free(then);
+			mRegisterManager->Free(reg);
 		}
+		mRegisterManager->Free(then);
 
-		mRegisterManager->Free(reg);
 		Emit("\tjmp     ..%i", end);
 		Emit("..%i:", elze);
 
 		Register elzeReg = EmitExpression(expression->GetElse());
-		if (elzeReg != reg)
+		if (elzeReg == reg)
 		{
+			mRegisterManager->Free(elzeReg);
+			reg = mRegisterManager->Alloc();
+		}
+		else
+		{
+			reg = mRegisterManager->Alloc();
 			Emit("\tmov%c    %s, %s", Suf(), GetReg(elzeReg), GetReg(reg));
 			mRegisterManager->Free(elzeReg);
 		}
