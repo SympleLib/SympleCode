@@ -34,28 +34,28 @@ namespace Symple
 				mEvaluate = mLeft->Evaluate() & mRight->Evaluate();
 				break;
 
-			case Token::Kind::EqualEqual:
+			case Token::Kind::EqualEqual: mType = BoolType;
 				mEvaluate = mLeft->Evaluate() == mRight->Evaluate();
 				break;
-			case Token::Kind::ExclamationEqual:
+			case Token::Kind::ExclamationEqual: mType = BoolType;
 				mEvaluate = mLeft->Evaluate() != mRight->Evaluate();
 				break;
-			case Token::Kind::PipePipe:
+			case Token::Kind::PipePipe: mType = BoolType;
 				mEvaluate = mLeft->Evaluate() || mRight->Evaluate();
 				break;
-			case Token::Kind::AmpersandAmpersand:
+			case Token::Kind::AmpersandAmpersand: mType = BoolType;
 				mEvaluate = mLeft->Evaluate() && mRight->Evaluate();
 				break;
-			case Token::Kind::LeftArrow:
+			case Token::Kind::LeftArrow: mType = BoolType;
 				mEvaluate = mLeft->Evaluate() < mRight->Evaluate();
 				break;
-			case Token::Kind::RightArrow:
+			case Token::Kind::RightArrow: mType = BoolType;
 				mEvaluate = mLeft->Evaluate() > mRight->Evaluate();
 				break;
-			case Token::Kind::LeftArrowEqual:
+			case Token::Kind::LeftArrowEqual: mType = BoolType;
 				mEvaluate = mLeft->Evaluate() <= mRight->Evaluate();
 				break;
-			case Token::Kind::RightArrowEqual:
+			case Token::Kind::RightArrowEqual: mType = BoolType;
 				mEvaluate = mLeft->Evaluate() >= mRight->Evaluate();
 				break;
 

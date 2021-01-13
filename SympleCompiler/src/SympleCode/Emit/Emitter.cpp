@@ -824,7 +824,7 @@ namespace Symple
 		{
 			Register out = mRegisterManager->CAlloc();
 
-			Emit("\tcmp%c    $0, %s", Suf(), GetReg(reg));
+			Emit("\ttest%c   $0, %s", Suf(), GetReg(reg));
 			mRegisterManager->Free(reg);
 			Emit("\tsete    %s", GetReg(out, 1));
 			return out;

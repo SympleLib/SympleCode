@@ -18,7 +18,8 @@ namespace Symple
 			: ExpressionNode(type), mOpen(open), mClose(close), mExpression(expression)
 		{
 			if (!mExpression->GetType()->CanCastTo(mType))
-				Diagnostics::ReportError(open, "Illegal Cast");
+				Diagnostics::ReportError(mClose, "Connot Cast from \n%s, \n%s",
+					mExpression->GetType()->ToString("", false).c_str(), mType->ToString().c_str());
 		}
 
 		Kind GetKind() const override

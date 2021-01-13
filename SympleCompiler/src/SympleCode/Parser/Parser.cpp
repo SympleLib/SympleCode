@@ -826,7 +826,7 @@ namespace Symple
 		const TypeNode* type = ParseType();
 		const Token* close = Match(Token::Kind::CloseParenthesis);
 
-		ExpressionNode* expression = ParseExpression();
+		ExpressionNode* expression = ParsePrimaryExpression();
 
 		return new CastExpressionNode(open, type, close, expression);
 	}
