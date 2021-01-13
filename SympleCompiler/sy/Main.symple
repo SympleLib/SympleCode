@@ -28,21 +28,15 @@ int GetWinner(Board this)
 	char mut c;
 	
 	if (c = this[0]) != '#'
-	{
-		printf("%i = %i\n", !(this[1] - c) && !(this[2] - c), this[1] == c && this[2] == c);
-		printf("%i = %i\n", !(c - c) && !(c - c), c == c && c == c);
-	
-		if this[1] != c && this[2] != c
-		\\ if true && true
+		if this[1] == c && this[2] == c
 		{
-			puts("COOL");
+			printf("Cool %i\n", c == 'X' ? 2 : 1);
 			return c == 'X' ? 1 : 2;
-		}
+		};
 		else if this[3] == c && this[6] == c
 			return c == 'X' ? 1 : 2;
 		else if this[4] == c && this[8] == c
 			return c == 'X' ? 1 : 2;
-	};
 	if (c = this[4]) != '#'
 		if this[3] == c && this[5] == c
 			return c == 'X' ? 1 : 2;

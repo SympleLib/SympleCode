@@ -28,12 +28,12 @@ namespace Symple
 
 		bool CanEvaluate() const override
 		{
-			return mCondition->CanEvaluate() && mCondition->Evaluate() ? mThen->CanEvaluate() : mElse->CanEvaluate();
+			return mCondition->CanEvaluate() && (mCondition->Evaluate() ? mThen->CanEvaluate() : mElse->CanEvaluate());
 		}
 
 		int Evaluate() const override
 		{
-			return mCondition->Evaluate() ? mThen->CanEvaluate() : mElse->CanEvaluate();
+			return mCondition->Evaluate() ? mThen->Evaluate() : mElse->Evaluate();
 		}
 
 		std::string ToString(const std::string& indent = "", bool last = true) const override

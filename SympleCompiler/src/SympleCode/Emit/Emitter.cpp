@@ -126,6 +126,8 @@ namespace Symple
 			Emit("_%s@ = %i", std::string(arg->GetName()->GetLex()).c_str(), argOff);
 		}
 
+		const char* name = member->GetAsmName().c_str();
+
 		mStack = 0;
 		if (member->IsMain())
 		{
@@ -134,8 +136,6 @@ namespace Symple
 		}
 		else
 		{
-			const char* name = member->GetAsmName().c_str();
-
 			if (member->GetModifiers()->IsPrivate())
 				Emit("\t.local   %s .type %s, @function", name, name);
 			else
@@ -148,7 +148,13 @@ namespace Symple
 		mReturning = false;
 		for (const StatementNode* statement : member->GetBody()->GetStatements())
 			if (statement->Is<ReturnStatementNode>() && statement != member->GetBody()->GetStatements().back())
+			{
+				puts(name);
+				puts("Returning");
+
 				mReturning = true;
+				break;
+			}
 
 		if (mReturning)
 			mReturn = mData++;

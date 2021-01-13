@@ -19,19 +19,19 @@ namespace Symple
 	{
 		switch (token->GetKind())
 		{
+		case Token::Kind::Pipe:
+		case Token::Kind::PipePipe:
+		case Token::Kind::Ampersand:
+		case Token::Kind::AmpersandAmpersand:
+			return 0;
+		case Token::Kind::LeftArrowArrow:
+		case Token::Kind::RightArrowArrow:
 		case Token::Kind::EqualEqual:
 		case Token::Kind::ExclamationEqual:
 		case Token::Kind::LeftArrow:
 		case Token::Kind::RightArrow:
 		case Token::Kind::LeftArrowEqual:
 		case Token::Kind::RightArrowEqual:
-			return 0;
-		case Token::Kind::LeftArrowArrow:
-		case Token::Kind::RightArrowArrow:
-		case Token::Kind::Pipe:
-		case Token::Kind::PipePipe:
-		case Token::Kind::Ampersand:
-		case Token::Kind::AmpersandAmpersand:
 			return 1;
 		case Token::Kind::Plus:
 		case Token::Kind::Minus:
