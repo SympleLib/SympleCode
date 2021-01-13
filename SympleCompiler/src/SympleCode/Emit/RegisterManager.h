@@ -30,21 +30,19 @@ namespace Symple
 #else
 		bool mFreeRegisters[NumRegisters] = { true, true, true, true, true, true,
 			true, true, true, true, true, true, };
-#endif
 
-		int mSpilledRegisters[NumRegisters] = {};
-
-#if SY_64
 		static const char* const sRegisters64[NumRegisters];
 #endif
+		int mSpillRegister = 0;
+
 		static const char* const sRegisters32[NumRegisters];
 		static const char* const sRegisters16[NumRegisters];
 		static const char* const sRegisters8[NumRegisters];
 	public:
 		RegisterManager(Emitter* emitter);
 
-		Register Alloc(Register = nullreg);
-		Register CAlloc(Register = nullreg);
+		Register Alloc();
+		Register CAlloc();
 		void Free(Register);
 		void FreeAll();
 

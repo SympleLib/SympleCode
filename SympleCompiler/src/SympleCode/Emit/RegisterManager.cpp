@@ -27,54 +27,27 @@ namespace Symple
 	RegisterManager::RegisterManager(Emitter* emitter)
 		: mEmitter(emitter) {}
 
-	Register RegisterManager::Alloc(Register reg)
+	Register RegisterManager::Alloc()
 	{
-		if (reg != nullreg)
-		{
-			//Emit("\t# Reserving Reg: %s (%i)", GetRegister(reg), reg);
-
-			if (!mFreeRegisters[reg])
-			{
-				mSpilledRegisters[reg]++;
-				mEmitter->Push(reg);
-				return reg;
-			}
-
-			mFreeRegisters[reg] = false;
-			return reg;
-		}
-
+		Register reg;
 		for (reg = 0; reg < NumRegisters; reg++)
 			if (mFreeRegisters[reg])
 			{
+				Emit("\t# Alloc Reg: %s (%i)", GetRegister(reg), reg);
 				mFreeRegisters[reg] = false;
-
-				//Emit("\t# Allocated Reg: %s (%i)", GetRegister(reg), reg);
 				return reg;
 			}
 
-		int psreg = mSpilledRegisters[NumRegisters-1];
-		for (int i = 0; i < NumRegisters; i++)
-		{
-			if (psreg > mSpilledRegisters[(i + 1) % NumRegisters])
-				reg = i;
-
-			if (i)
-				psreg = mSpilledRegisters[i];
-		}
-
-		if (reg == NumRegisters)
-			reg = 0;
-		//Emit("\t# Spilled Reg: %s (%i)", GetRegister(reg), reg);
-
-		mSpilledRegisters[reg]++;
+		reg = mSpillRegister % NumRegisters;
+		Emit("\t# Spill Register %s (0x%x)", GetRegister(reg), reg);
 		mEmitter->Push(reg);
+		mSpillRegister++;
 		return reg;
 	}
 
-	Register RegisterManager::CAlloc(Register reg)
+	Register RegisterManager::CAlloc()
 	{
-		reg = Alloc(reg);
+		Register reg = Alloc();
 		Emit("\txor%c    %s, %s", mEmitter->Suf(), GetRegister(reg), GetRegister(reg));
 
 		return reg;
@@ -82,18 +55,23 @@ namespace Symple
 
 	void RegisterManager::Free(Register reg)
 	{
-		//Emit("\t# Free Reg: %s (%i)", GetRegister(reg), reg);
+		Emit("\t# Free Reg: %s (%i)", GetRegister(reg), reg);
 
 		if (reg == nullreg)
 			return;
 
 		if (mFreeRegisters[reg])
-			return Diagnostics::ReportError(Token::Default, "Trying to Free Free Register");
-
-		if (mSpilledRegisters[reg])
 		{
-			mSpilledRegisters[reg]--;
-			mEmitter->Pop(reg);
+			Emit("\t# Trying to Free Free Register: %s (%i)", GetRegister(reg), reg);
+			return Diagnostics::ReportError(Token::Default, "Trying to Free Free Register: %s (%i)", GetRegister(reg), reg);
+		}
+
+		if (mSpillRegister)
+		{
+			mSpillRegister--;
+			reg = mSpillRegister % NumRegisters;
+			mEmitter->Pop(mSpillRegister);
+			Emit("\t# Restore Register %s (0x%x)", GetRegister(reg), reg);
 		}
 		else
 			mFreeRegisters[reg] = true;

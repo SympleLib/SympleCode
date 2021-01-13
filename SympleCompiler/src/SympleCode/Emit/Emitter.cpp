@@ -350,6 +350,12 @@ namespace Symple
 
 		Debug::EndScope();
 
+		if (block->GetStackUsage())
+		{
+			Emit("\tadd%c    $%i, %s", Suf(), block->GetStackUsage(), GetReg(regsp));
+			mStack -= block->GetStackUsage();
+		}
+
 		mRegisterManager->FreeAll();
 	}
 
@@ -383,12 +389,7 @@ namespace Symple
 	{
 		Register exprReg = EmitExpression(statement->GetExpression());
 		if (exprReg != regax)
-		{
-			Register reg = mRegisterManager->Alloc(regax);
-			Emit("\tmov%c    %s, %s", Suf(), GetReg(exprReg), GetReg(reg));
-
-			mRegisterManager->Free(reg);
-		}
+			Emit("\tmov%c    %s, %s", Suf(), GetReg(exprReg), GetReg(regax));
 
 		mRegisterManager->Free(exprReg);
 
@@ -423,13 +424,8 @@ namespace Symple
 	void Emitter::EmitExpressionStatement(const ExpressionStatementNode* statement)
 	{
 		Register exprReg = EmitExpression(statement->GetExpression());
-		if (exprReg != regax)
-		{
-			Register reg = mRegisterManager->Alloc(regax);
-			Emit("\tmov%c    %s, %s", Suf(), GetReg(exprReg), GetReg(reg));
-
-			mRegisterManager->Free(reg);
-		}
+		//if (exprReg != regax)
+		//	Emit("\tmov%c    %s, %s", Suf(), GetReg(exprReg), GetReg(regax));
 
 		mRegisterManager->Free(exprReg);
 	}
@@ -569,19 +565,11 @@ namespace Symple
 
 	Register Emitter::EmitFunctionCallExpression(const FunctionCallExpressionNode* expression)
 	{
+		Register reg = mRegisterManager->Alloc();
+
 		for (int i = 0; i < NumRegisters; i++)
-			if (!mRegisterManager->GetFree()[i])
-			{
-				if (i == regax)
-				{
-					Register reg = mRegisterManager->Alloc();
-					mRegisterManager->Free(i);
-					Emit("\tmov%c    %s, %s", Suf(), GetReg(regax), GetReg(reg));
-					Push(reg);
-				}
-				else
-					Push(i);
-			}
+			if (i != reg && !mRegisterManager->GetFree()[i])
+				Push(i);
 
 		for (unsigned int i = expression->GetArguments()->GetArguments().size(); i; i--)
 		{
@@ -600,7 +588,12 @@ namespace Symple
 			if (i != regax && !mRegisterManager->GetFree()[i])
 				Pop(i);
 
-		return mRegisterManager->Alloc(regax);
+		if (reg != regax)
+			Emit("\tmov%c    %s, %s", Suf(), GetReg(regax), GetReg(reg));
+		for (int i = 0; i < NumRegisters; i++)
+			if (i != reg && !mRegisterManager->GetFree()[i])
+				Pop(i);
+		return reg;
 	}
 
 	Register Emitter::EmitParenthesizedExpression(const ParenthesizedExpressionNode* expression)
