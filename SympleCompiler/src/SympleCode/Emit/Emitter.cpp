@@ -147,7 +147,7 @@ namespace Symple
 
 		mReturning = false;
 		for (const StatementNode* statement : member->GetBody()->GetStatements())
-			if (statement->IsReturn() && statement != member->GetBody()->GetStatements().back())
+			if (statement->IsReturn() == 1 && statement != member->GetBody()->GetStatements().back())
 			{
 				mReturning = true;
 				break;
@@ -156,7 +156,21 @@ namespace Symple
 		if (mReturning)
 			mReturn = mData++;
 
-		EmitBlockStatement(member->GetBody());
+
+		if (member->GetBody()->GetStackUsage())
+		{
+			Emit("\tsub%c    $%i, %s", Suf(), member->GetBody()->GetStackUsage(), GetReg(regsp));
+			mStack += member->GetBody()->GetStackUsage();
+		}
+
+		for (const StatementNode* statement : member->GetBody()->GetStatements())
+		{
+			EmitStatement(statement);
+			if (statement->IsReturn() == 2)
+				break;
+		}
+
+		mRegisterManager->FreeAll();
 		Debug::EndScope();
 
 		if (mReturning)
@@ -841,32 +855,32 @@ namespace Symple
 			goto Ret;
 
 		case Token::Kind::EqualEqual:
-			Emit("\tcmp%c    %s, %s", Suf(), GetReg(left), GetReg(right));
+			Emit("\tcmp%c    %s, %s", Suf(), GetReg(right), GetReg(left));
 			Emit("\tsete    %s", GetReg(left, 1));
 			Emit("\tmovz%c%c  %s, %s", Suf(1), Suf(), GetReg(left, 1), GetReg(left));
 			goto Ret;
 		case Token::Kind::ExclamationEqual:
-			Emit("\tcmp%c    %s, %s", Suf(), GetReg(left), GetReg(right));
+			Emit("\tcmp%c    %s, %s", Suf(), GetReg(right), GetReg(left));
 			Emit("\tsetne   %s", GetReg(left, 1));
 			Emit("\tmovz%c%c  %s, %s", Suf(1), Suf(), GetReg(left, 1), GetReg(left));
 			goto Ret;
 		case Token::Kind::LeftArrow:
-			Emit("\tcmp%c    %s, %s", Suf(), GetReg(left), GetReg(right));
+			Emit("\tcmp%c    %s, %s", Suf(), GetReg(right), GetReg(left));
 			Emit("\tsetl    %s", GetReg(left, 1));
 			Emit("\tmovz%c%c  %s, %s", Suf(1), Suf(), GetReg(left, 1), GetReg(left));
 			goto Ret;
 		case Token::Kind::LeftArrowEqual:
-			Emit("\tcmp%c    %s, %s", Suf(), GetReg(left), GetReg(right));
+			Emit("\tcmp%c    %s, %s", Suf(), GetReg(right), GetReg(left));
 			Emit("\tsetle   %s", GetReg(left, 1));
 			Emit("\tmovz%c%c  %s, %s", Suf(1), Suf(), GetReg(left, 1), GetReg(left));
 			goto Ret;
 		case Token::Kind::RightArrow:
-			Emit("\tcmp%c    %s, %s", Suf(), GetReg(left), GetReg(right));
+			Emit("\tcmp%c    %s, %s", Suf(), GetReg(right), GetReg(left));
 			Emit("\tsetg    %s", GetReg(left, 1));
 			Emit("\tmovz%c%c  %s, %s", Suf(1), Suf(), GetReg(left, 1), GetReg(left));
 			goto Ret;
 		case Token::Kind::RightArrowEqual:
-			Emit("\tcmp%c    %s, %s", Suf(), GetReg(left), GetReg(right));
+			Emit("\tcmp%c    %s, %s", Suf(), GetReg(right), GetReg(left));
 			Emit("\tsetge   %s", GetReg(left, 1));
 			Emit("\tmovz%c%c  %s, %s", Suf(1), Suf(), GetReg(left, 1), GetReg(left));
 			goto Ret;

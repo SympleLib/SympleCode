@@ -402,9 +402,9 @@ namespace Symple
 		case '%':
 			return new Token(Token::Kind::Percentage, beg, mCurrent, mFile, bLine, bColumn);
 		case '<':
-			return new Token(Token::Kind::LeftArrowEqual, beg, mCurrent, mFile, bLine, bColumn);
+			return new Token(Token::Kind::LeftArrow, beg, mCurrent, mFile, bLine, bColumn);
 		case '>':
-			return new Token(Token::Kind::RightArrowEqual, beg, mCurrent, mFile, bLine, bColumn);
+			return new Token(Token::Kind::RightArrow, beg, mCurrent, mFile, bLine, bColumn);
 		case '|':
 			return new Token(Token::Kind::Pipe, beg, mCurrent, mFile, bLine, bColumn);
 		case '&':

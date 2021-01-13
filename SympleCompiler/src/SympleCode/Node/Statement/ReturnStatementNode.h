@@ -18,9 +18,9 @@ namespace Symple
 			return Kind::ReturnStatement;
 		}
 
-		bool IsReturn() const override
+		int IsReturn() const override
 		{
-			return true;
+			return 2;
 		}
 
 		std::string ToString(const std::string& indent = "", bool last = true) const override

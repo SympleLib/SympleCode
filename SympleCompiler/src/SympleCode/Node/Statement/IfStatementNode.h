@@ -22,7 +22,7 @@ namespace Symple
 			return Kind::IfStatement;
 		}
 
-		bool IsReturn() const override
+		int IsReturn() const override
 		{
 			return mThen->IsReturn() || (mElse && mElse->IsReturn());
 		}
