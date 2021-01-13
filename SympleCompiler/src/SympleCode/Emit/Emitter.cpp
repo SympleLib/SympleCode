@@ -96,7 +96,7 @@ namespace Symple
 
 	void Emitter::EmitMember(const MemberNode* member)
 	{
-		Emit("\t# Member of Kind: %s", Node::KindString(member->GetKind()));
+		//Emit("\t# Member of Kind: %s", Node::KindString(member->GetKind()));
 
 		if (member->Is<GlobalStatementNode>())
 			EmitGlobalStatement(member->Cast<GlobalStatementNode>());
@@ -271,7 +271,7 @@ namespace Symple
 
 	void Emitter::EmitStatement(const StatementNode* statement)
 	{
-		Emit("\t# Statement of Kind: %s", Node::KindString(statement->GetKind()));
+		//Emit("\t# Statement of Kind: %s", Node::KindString(statement->GetKind()));
 
 		if (statement->Is<IfStatementNode>())
 			EmitIfStatement(statement->Cast<IfStatementNode>());
@@ -470,7 +470,7 @@ namespace Symple
 	{
 		if (expression->CanEvaluate())
 		{
-			Emit("\t# Expression of Kind: %s = %i", Node::KindString(expression->GetKind()), expression->Evaluate());
+			//Emit("\t# Expression of Kind: %s = %i", Node::KindString(expression->GetKind()), expression->Evaluate());
 
 			Register reg = mRegisterManager->Alloc();
 
@@ -481,7 +481,7 @@ namespace Symple
 			return reg;
 		}
 
-		Emit("\t# Expression of Kind: %s", Node::KindString(expression->GetKind()));
+		//Emit("\t# Expression of Kind: %s", Node::KindString(expression->GetKind()));
 
 		if (expression->Is<CastExpressionNode>())
 			return EmitCastExpression(expression->Cast<CastExpressionNode>());
