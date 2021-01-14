@@ -26,7 +26,7 @@ namespace Symple
 			system(cmd.c_str());
 
 		std::string sytStr = "bin\\" + pathStr.substr(0, pathStr.find_last_of('.')) + ".syt";
-		std::string asmSStr = "bin\\" + pathStr.substr(0, pathStr.find_last_of('.')) + ".s";
+		std::string asmSStr = "bin\\" + pathStr.substr(0, pathStr.find_last_of('.')) + ".S";
 		std::string objStr = "bin\\" + pathStr.substr(0, pathStr.find_last_of('.')) + ".o";
 
 		const char* path = pathStr.c_str();

@@ -498,7 +498,7 @@ namespace Symple
 		if (expression->Is<VariableAddressExpressionNode>())
 			return EmitVariableAddressExpression(expression->Cast<VariableAddressExpressionNode>());
 		
-		return nullptr;
+		return nullreg;
 	}
 
 	Register Emitter::EmitCastExpression(const CastExpressionNode* expression)
@@ -631,7 +631,7 @@ namespace Symple
 		if (expression->Is<DereferencePointerExpressionNode>())
 			return EmitDereferencePointerExpression(expression->Cast<DereferencePointerExpressionNode>(), retptr);
 
-		return nullptr;
+		return nullreg;
 	}
 
 	Register Emitter::EmitFieldExpression(const FieldExpressionNode* expression, bool retptr)
@@ -722,7 +722,7 @@ namespace Symple
 			goto Ret;
 		}
 
-		return nullptr;
+		return nullreg;
 
 	Ret:
 		if (retptr)
@@ -787,7 +787,7 @@ namespace Symple
 		if (expression->Is<BinaryExpressionNode>())
 			return EmitBinaryExpression(expression->Cast<BinaryExpressionNode>());
 
-		return nullptr;
+		return nullreg;
 	}
 
 	Register Emitter::EmitUnaryExpression(const UnaryExpressionNode* expression)
@@ -810,7 +810,7 @@ namespace Symple
 			return reg;
 		}
 
-		return nullptr;
+		return nullreg;
 	}
 
 	Register Emitter::EmitBinaryExpression(const BinaryExpressionNode* expression)
@@ -904,7 +904,7 @@ namespace Symple
 		if (expression->Is<CharacterLiteralExpressionNode>())
 			return EmitCharacterLiteralExpression(expression->Cast<CharacterLiteralExpressionNode>());
 
-		return nullptr;
+		return nullreg;
 	}
 
 	Register Emitter::EmitNullLiteralExpression(const NullLiteralExpressionNode*)
