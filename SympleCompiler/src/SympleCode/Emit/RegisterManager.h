@@ -10,6 +10,9 @@
 namespace Symple
 {
 	class Emitter;
+	struct _Register;
+	typedef int AsmRegister;
+	typedef _Register *Register;
 
 #if SY_32
 	constexpr int NumRegisters = 4;
@@ -17,14 +20,11 @@ namespace Symple
 	constexpr int NumRegisters = 12;
 #endif
 
-	typedef int Register;
-
 	class RegisterManager
 	{
 	private:
 		Emitter* mEmitter;
 
-		
 #if SY_32
 		bool mFreeRegisters[NumRegisters] = { true, true, true, true, };
 #else
@@ -33,7 +33,7 @@ namespace Symple
 
 		static const char* const sRegisters64[NumRegisters];
 #endif
-		int mSpillRegister = 0;
+		std::vector<_Register*> mRegisters[NumRegisters];
 
 		static const char* const sRegisters32[NumRegisters];
 		static const char* const sRegisters16[NumRegisters];
@@ -41,13 +41,14 @@ namespace Symple
 	public:
 		RegisterManager(Emitter* emitter);
 
-		Register Alloc(Register = nullreg);
-		Register CAlloc(Register = nullreg);
+		Register Alloc(AsmRegister = nullreg);
+		Register CAlloc(AsmRegister = nullreg);
 		void Free(Register);
 		void FreeAll();
 
 		const bool* GetFree() const;
 
+		static const char* GetRegister(AsmRegister reg, int size = platsize);
 		static const char* GetRegister(Register reg, int size = platsize);
 	};
 }

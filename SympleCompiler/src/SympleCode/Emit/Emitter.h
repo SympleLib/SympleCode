@@ -45,7 +45,17 @@
 
 namespace Symple
 {
-	typedef int Register;
+	typedef int AsmRegister;
+
+	typedef struct _Register
+	{
+		AsmRegister AsmRegister;
+		union
+		{
+			int StackPos;
+			int IsSpilled;
+		};
+	} *Register;
 
 	class Emitter
 	{

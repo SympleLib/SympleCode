@@ -27,26 +27,42 @@ namespace Symple
 	RegisterManager::RegisterManager(Emitter* emitter)
 		: mEmitter(emitter) {}
 
-	Register RegisterManager::Alloc(Register reg)
+	Register RegisterManager::Alloc(AsmRegister asmreg)
 	{
-		for (reg = 0; reg < NumRegisters; reg++)
-			if (mFreeRegisters[reg])
+		Register reg = nullptr;
+
+		for (asmreg = 0; asmreg < NumRegisters; asmreg++)
+			if (mFreeRegisters[asmreg])
 			{
-				Emit("\t# Alloc Reg: %s (%i)", GetRegister(reg), reg);
-				mFreeRegisters[reg] = false;
-				return reg;
+				//Emit("\t# Alloc Reg: %s (%i)", GetRegister(asmreg), asmreg);
+				mFreeRegisters[asmreg] = false;
+				reg = new _Register { asmreg };
+				goto Return;
 			}
 
-		reg = mSpillRegister % NumRegisters;
-		Emit("\t# Spill Register %s (0x%x)", GetRegister(reg), reg);
-		mEmitter->Push(reg);
-		mSpillRegister++;
+		for (asmreg = 0; asmreg < NumRegisters; asmreg++)
+			if (mRegisters[asmreg] > mRegisters[(asmreg + 1) % NumRegisters])
+			{
+				asmreg++;
+				break;
+			}
+		if (asmreg >= NumRegisters)
+			asmreg = 0;
+
+		mEmitter->mStack += platsize;
+		mRegisters[asmreg].back()->IsSpilled = mEmitter->mStack;
+		mEmitter->Push(mRegisters[asmreg].back());
+		reg = new _Register{ asmreg };
+		goto Return;
+		
+	Return:
+		mRegisters[asmreg].push_back(reg);
 		return reg;
 	}
 
-	Register RegisterManager::CAlloc(Register reg)
+	Register RegisterManager::CAlloc(AsmRegister asmreg)
 	{
-		reg = Alloc(reg);
+		Register reg = Alloc(asmreg);
 		Emit("\txor%c    %s, %s", mEmitter->Suf(), GetRegister(reg), GetRegister(reg));
 
 		return reg;
@@ -54,32 +70,33 @@ namespace Symple
 
 	void RegisterManager::Free(Register reg)
 	{
-		Emit("\t# Free Reg: %s (%i)", GetRegister(reg), reg);
+		Emit("\t# Free Reg: %s (%i)", GetRegister(reg->AsmRegister), reg->AsmRegister);
 
-		if (reg == nullreg)
-			return;
-
-		if (mFreeRegisters[reg])
+		if (reg->AsmRegister == nullreg)
 		{
-			Emit("\t# Trying to Free Free Register: %s (%i)", GetRegister(reg), reg);
-			return Diagnostics::ReportError(Token::Default, "Trying to Free Free Register: %s (%i)", GetRegister(reg), reg);
+			Emit("\t# Trying to Free Null Register");
+			return Diagnostics::ReportError(Token::Default, " Trying to Free Null Register");
 		}
 
-		if (mSpillRegister)
+		if (mFreeRegisters[reg->AsmRegister])
 		{
-			mSpillRegister--;
-			reg = mSpillRegister % NumRegisters;
-			mEmitter->Pop(mSpillRegister);
-			Emit("\t# Restore Register %s (0x%x)", GetRegister(reg), reg);
+			Emit("\t# Trying to Free Free Register: %s (%i)", GetRegister(reg->AsmRegister), reg->AsmRegister);
+			return Diagnostics::ReportError(Token::Default, "Trying to Free Free Register: %s (%i)", GetRegister(reg->AsmRegister), reg->AsmRegister);
+		}
+
+		if (mRegisters[reg->AsmRegister].size() > 1 && mRegisters[reg->AsmRegister][mRegisters[reg->AsmRegister].size() - 2]->IsSpilled)
+		{
+			mRegisters[reg->AsmRegister][mRegisters[reg->AsmRegister].size() - 2]->IsSpilled = false;
 		}
 		else
-			mFreeRegisters[reg] = true;
+			mFreeRegisters[reg->AsmRegister] = true;
+
+		mRegisters[reg->AsmRegister].pop_back();
 	}
 
 	void RegisterManager::FreeAll()
 	{
-		for (int i = 0; i < NumRegisters; i++)
-			mFreeRegisters[i] = true;
+		
 	}
 
 
@@ -88,7 +105,7 @@ namespace Symple
 		return mFreeRegisters;
 	}
 
-	const char* RegisterManager::GetRegister(Register reg, int sz)
+	const char* RegisterManager::GetRegister(AsmRegister reg, int sz)
 	{
 		if (reg == nullreg)
 			return nullptr;
@@ -130,5 +147,17 @@ namespace Symple
 #endif
 
 		return nullptr;
+	}
+
+	const char* RegisterManager::GetRegister(Register reg, int sz)
+	{
+		if (reg->IsSpilled)
+		{
+			char* str = new char[12];
+			sprintf_s(str, 12, "-%i(%s)", reg->StackPos, GetRegister(regbp));
+			return str;
+		}
+
+		return GetRegister(reg->AsmRegister, sz);
 	}
 }

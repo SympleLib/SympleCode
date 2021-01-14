@@ -498,7 +498,7 @@ namespace Symple
 		if (expression->Is<VariableAddressExpressionNode>())
 			return EmitVariableAddressExpression(expression->Cast<VariableAddressExpressionNode>());
 		
-		return nullreg;
+		return nullptr;
 	}
 
 	Register Emitter::EmitCastExpression(const CastExpressionNode* expression)
@@ -567,10 +567,6 @@ namespace Symple
 	{
 		Register reg = mRegisterManager->Alloc();
 
-		for (int i = 0; i < NumRegisters; i++)
-			if (i != reg && !mRegisterManager->GetFree()[i])
-				Push(i);
-
 		for (unsigned int i = expression->GetArguments()->GetArguments().size(); i; i--)
 		{
 			Register argReg = EmitExpression(expression->GetArguments()->GetArguments()[i - 1]);
@@ -584,15 +580,8 @@ namespace Symple
 		if (expression->GetArguments()->GetArguments().size())
 			Emit("\tadd%c    $%i, %s", Suf(), expression->GetArguments()->GetArguments().size() * 4, GetReg(regsp));
 
-		for (int i = 0; i < NumRegisters; i++)
-			if (i != regax && !mRegisterManager->GetFree()[i])
-				Pop(i);
-
 		if (reg != regax)
 			Emit("\tmov%c    %s, %s", Suf(), GetReg(regax), GetReg(reg));
-		for (int i = 0; i < NumRegisters; i++)
-			if (i != reg && !mRegisterManager->GetFree()[i])
-				Pop(i);
 		return reg;
 	}
 
@@ -642,7 +631,7 @@ namespace Symple
 		if (expression->Is<DereferencePointerExpressionNode>())
 			return EmitDereferencePointerExpression(expression->Cast<DereferencePointerExpressionNode>(), retptr);
 
-		return nullreg;
+		return nullptr;
 	}
 
 	Register Emitter::EmitFieldExpression(const FieldExpressionNode* expression, bool retptr)
@@ -733,7 +722,7 @@ namespace Symple
 			goto Ret;
 		}
 
-		return nullreg;
+		return nullptr;
 
 	Ret:
 		if (retptr)
@@ -798,7 +787,7 @@ namespace Symple
 		if (expression->Is<BinaryExpressionNode>())
 			return EmitBinaryExpression(expression->Cast<BinaryExpressionNode>());
 
-		return nullreg;
+		return nullptr;
 	}
 
 	Register Emitter::EmitUnaryExpression(const UnaryExpressionNode* expression)
@@ -821,7 +810,7 @@ namespace Symple
 			return reg;
 		}
 
-		return nullreg;
+		return nullptr;
 	}
 
 	Register Emitter::EmitBinaryExpression(const BinaryExpressionNode* expression)
@@ -896,8 +885,6 @@ namespace Symple
 			goto Ret;
 		}
 
-		return nullreg;
-
 	Ret:
 		mRegisterManager->Free(right);
 		return left;
@@ -917,7 +904,7 @@ namespace Symple
 		if (expression->Is<CharacterLiteralExpressionNode>())
 			return EmitCharacterLiteralExpression(expression->Cast<CharacterLiteralExpressionNode>());
 
-		return nullreg;
+		return nullptr;
 	}
 
 	Register Emitter::EmitNullLiteralExpression(const NullLiteralExpressionNode*)
