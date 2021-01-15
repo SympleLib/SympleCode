@@ -40,13 +40,13 @@ namespace Symple
 				switch (c)
 				{
 				case '\n':
-					ss << "\\\n";
+					ss << "\\n";
 					break;
 				case '\r':
-					ss << "\\\r";
+					ss << "\\r";
 					break;
 				case '\t':
-					ss << "\\\t";
+					ss << "\\t";
 					break;
 				case '\"':
 					ss << "\\\"";
