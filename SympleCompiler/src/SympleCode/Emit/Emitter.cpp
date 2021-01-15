@@ -300,10 +300,13 @@ namespace Symple
 			unsigned int elze = mData++, end = mData++;
 
 			Register cond = EmitExpression(statement->GetCondition());
-
-			Emit("\ttest%c   %s, %s", Suf(), GetReg(cond), GetReg(cond));
-			Emit("\tje      ..%i", elze);
+			Register creg = mRegisterManager->Alloc();
+			Emit("\tmov%c    %s, %s", Suf(), GetReg(cond), GetReg(creg));
 			mRegisterManager->Free(cond);
+
+			Emit("\ttest%c   %s, %s", Suf(), GetReg(creg), GetReg(creg));
+			Emit("\tje      ..%i", elze);
+			mRegisterManager->Free(creg);
 
 			EmitBlockStatement(statement->GetThen());
 
@@ -319,10 +322,13 @@ namespace Symple
 			unsigned int end = mData++;
 
 			Register cond = EmitExpression(statement->GetCondition());
-
-			Emit("\ttest%c   %s, %s", Suf(), GetReg(cond), GetReg(cond));
-			Emit("\tje      ..%i", end);
+			Register creg = mRegisterManager->Alloc();
+			Emit("\tmov%c    %s, %s", Suf(), GetReg(cond), GetReg(creg));
 			mRegisterManager->Free(cond);
+
+			Emit("\ttest%c   %s, %s", Suf(), GetReg(creg), GetReg(creg));
+			Emit("\tje      ..%i", end);
+			mRegisterManager->Free(creg);
 
 			EmitBlockStatement(statement->GetThen());
 
@@ -373,9 +379,13 @@ namespace Symple
 		Emit("..%i:", loop);
 
 		Register cond = EmitExpression(statement->GetCondition());
-		Emit("\ttest%c   %s, %s", Suf(), GetReg(cond), GetReg(cond));
-		Emit("\tje      ..%i", mBreak);
+		Register creg = mRegisterManager->Alloc();
+		Emit("\tmov%c    %s, %s", Suf(), GetReg(cond), GetReg(creg));
 		mRegisterManager->Free(cond);
+
+		Emit("\ttest%c   %s, %s", Suf(), GetReg(creg), GetReg(creg));
+		Emit("\tje      ..%i", mBreak);
+		mRegisterManager->Free(creg);
 
 		EmitBlockStatement(statement->GetBody());
 
@@ -469,11 +479,7 @@ namespace Symple
 			//Emit("\t# Expression of Kind: %s = %i", Node::KindString(expression->GetKind()), expression->Evaluate());
 
 			Register reg = mRegisterManager->StAlloc();
-
-			if (expression->Evaluate())
-				Emit("\tmov%c    $%d, %s", Suf(), expression->Evaluate(), GetReg(reg));
-			else
-				Emit("\txor%c    %s, %s", Suf(), GetReg(reg), GetReg(reg));
+			Emit("\tmov%c    $%d, %s", Suf(), expression->Evaluate(), GetReg(reg));
 			return reg;
 		}
 
@@ -534,16 +540,18 @@ namespace Symple
 	{
 		unsigned int elze = mData++, end = mData++;
 
-		Register reg = EmitExpression(expression->GetCondition());
-		Emit("\ttest%c   %s, %s", Suf(), GetReg(reg), GetReg(reg));
-		Emit("\tje      ..%i", elze);
-		mRegisterManager->Free(reg);
+		Register cond = EmitExpression(expression->GetCondition());
+		Register creg = mRegisterManager->Alloc();
+		Emit("\tmov%c    %s, %s", Suf(), GetReg(cond), GetReg(creg));
+		mRegisterManager->Free(cond);
+
+		Emit("\ttest%c   %s, %s", Suf(), GetReg(creg), GetReg(creg));
+		Emit("\tje      ..%i", end);
 
 		Register then = EmitExpression(expression->GetThen());
-		if (then != reg)
+		if (then != creg)
 		{
-			reg = mRegisterManager->StAlloc();
-			Emit("\tmov%c    %s, %s", Suf(), GetReg(then), GetReg(reg));
+			Emit("\tmov%c    %s, %s", Suf(), GetReg(then), GetReg(creg));
 			mRegisterManager->Free(then);
 		}
 
@@ -551,16 +559,15 @@ namespace Symple
 		Emit("..%i:", elze);
 
 		Register elzeReg = EmitExpression(expression->GetElse());
-		if (elzeReg != reg)
+		if (elzeReg != creg)
 		{
-			reg = mRegisterManager->StAlloc();
-			Emit("\tmov%c    %s, %s", Suf(), GetReg(elzeReg), GetReg(reg));
+			Emit("\tmov%c    %s, %s", Suf(), GetReg(elzeReg), GetReg(creg));
 			mRegisterManager->Free(elzeReg);
 		}
 
 		Emit("..%i:", end);
 
-		return reg;
+		return creg;
 	}
 
 	Register Emitter::EmitFunctionCallExpression(const FunctionCallExpressionNode* expression)
@@ -655,11 +662,7 @@ namespace Symple
 	Register Emitter::EmitVariableExpression(const VariableExpressionNode* expression, bool retptr)
 	{
 		const VariableDeclaration* var = Debug::GetVariable(expression->GetName()->GetLex());
-		Register reg;
-		if (retptr)
-			reg = mRegisterManager->Alloc();
-		else
-			reg = mRegisterManager->StAlloc();
+		Register reg = mRegisterManager->Alloc();
 
 		if (!var->Is<GlobalVariableDeclarationNode>())
 		{
@@ -671,7 +674,7 @@ namespace Symple
 
 				if (sz != 4)
 					Emit("\txor%c    %s, %s", Suf(), GetReg(reg), GetReg(reg));
-				Emit("\tmov%c    _%s@(%s), %s", Suf(sz), std::string(expression->GetName()->GetLex()).c_str(), GetReg(regbp), GetReg(reg, sz));
+				Emit("\tmov%c    _%s@(%s)2, %s", Suf(sz), std::string(expression->GetName()->GetLex()).c_str(), GetReg(regbp), GetReg(reg, sz));
 			}
 
 			return reg;
@@ -770,7 +773,7 @@ namespace Symple
 		Register val = mRegisterManager->CAlloc();
 		unsigned int sz = expression->GetType()->GetSize();
 		Emit("\tmov%c    (%s), %s", Suf(sz), GetReg(preg), GetReg(val, sz));
-		mRegisterManager->Free(reg);
+		mRegisterManager->Free(preg);
 		return val;
 	}
 
@@ -787,6 +790,7 @@ namespace Symple
 		Register val = mRegisterManager->CAlloc();
 		unsigned int sz = expression->GetType()->GetSize();
 		Emit("\tmov%c    (%s), %s", Suf(sz), GetReg(preg), GetReg(val, sz));
+		mRegisterManager->Free(preg);
 		return val;
 	}
 
