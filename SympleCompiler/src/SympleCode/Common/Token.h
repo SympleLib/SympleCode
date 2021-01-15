@@ -83,6 +83,7 @@ namespace Symple
 
 			If,
 			Else,
+			Stalloc,
 
 			SympleCall,
 			StdCall,
@@ -99,11 +100,13 @@ namespace Symple
 			Comment,
 			Preprocess,
 
+			Last = Preprocess,
+
 			Unknown = -2,
 			EndOfFile = -1,
 		};
 
-		static constexpr const char* KindMap[] = {
+		static constexpr const char* KindMap[(int)Token::Kind::Last + 1] = {
 			"Identifier", "Number", "String", "Character",
 			"Equal", "Exclamation", "Plus", "Minus", "Asterisk", "Slash", "Percentage",
 			"PlusPlus", "MinusMinus",
@@ -118,9 +121,9 @@ namespace Symple
 			"At", "Pipe", "PipePipe", "PipeEqual",
 			"Ampersand", "AmpersandAmpersand", "AmpersandEqual",
 			"Hint", "Return", "Extern", "Shared", "Static",
-			"If", "Else",
+			"If", "Else", "Stalloc",
 			"SympleCall", "StdCall", "CCall",
-			"Mutable", "Private", "Signed", "Unsigned"
+			"Mutable", "Private", "Signed", "Unsigned",
 			"Struct", "Enum",
 			"Comment", "Preprocess",
 		};

@@ -796,6 +796,8 @@ namespace Symple
 			if (IsTypeNodeable(Peek(1)))
 				return ParseCastExpression();
 			return ParseParenthesizedExpression();
+		case Token::Kind::Stalloc:
+			return ParseStallocExpression();
 		case Token::Kind::Null:
 			return new NullLiteralExpressionNode(Next());
 		case Token::Kind::True:
@@ -846,6 +848,16 @@ namespace Symple
 		const Token* close = Next();
 
 		return new ListExpressionNode(open, expressions, close);
+	}
+
+	StallocExpressionNode* Parser::ParseStallocExpression()
+	{
+		Match(Token::Kind::Stalloc);
+		const Token* open = Match(Token::Kind::OpenParenthesis);
+		ExpressionNode* size = ParseExpression();
+		const Token* close = Match(Token::Kind::CloseParenthesis);
+
+		return new StallocExpressionNode(open, size, close);
 	}
 
 	TernaryExpressionNode* Parser::ParseTernaryExpression(ExpressionNode* condition)

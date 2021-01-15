@@ -19,6 +19,7 @@
 
 #include "SympleCode/Node/Expression/CastExpressionNode.h"
 #include "SympleCode/Node/Expression/ListExpressionNode.h"
+#include "SympleCode/Node/Expression/StallocExpressionNode.h"
 #include "SympleCode/Node/Expression/TernaryExpressionNode.h"
 #include "SympleCode/Node/Expression/FunctionCallExpressionNode.h"
 #include "SympleCode/Node/Expression/ParenthesizedExpressionNode.h"
@@ -124,6 +125,7 @@ namespace Symple
 		Register EmitExpression(const ExpressionNode*);
 		Register EmitCastExpression(const CastExpressionNode*);
 		Register EmitListExpression(const ListExpressionNode*);
+		Register EmitStallocExpression(const StallocExpressionNode*);
 		Register EmitTernaryExpression(const TernaryExpressionNode*);
 		Register EmitFunctionCallExpression(const FunctionCallExpressionNode*);
 		Register EmitParenthesizedExpression(const ParenthesizedExpressionNode*);

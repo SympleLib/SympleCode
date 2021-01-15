@@ -22,6 +22,8 @@ namespace Symple
 			BinaryExpression,
 			TernaryExpression,
 
+			StallocExpression,
+
 			LiteralExpression,
 			VariableExpression,
 			OperatorExpression,
@@ -91,6 +93,7 @@ namespace Symple
 			"Unknown",
 			"Expression", "ListExpression", "UnaryExpression",
 			"FieldExpression", "BinaryExpression", "TernaryExpression",
+			"StallocExpression",
 			"LiteralExpression", "VariableExpression", "OperatorExpression", "AssignmentExpression", "ModifiableExpression",
 			"NullLiteralExpression",
 			"FunctionCallExpression", "PointerIndexExpression", "ParenthesizedExpression",

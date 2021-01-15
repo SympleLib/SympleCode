@@ -51,7 +51,7 @@ namespace Symple
 
 	void Emitter::EmitStaticInitialization()
 	{
-		Emit("\t.globl   ._Sy@StaticInitialization_.");
+		Emit(".global  ._Sy@StaticInitialization_.");
 		Emit("._Sy@StaticInitialization_.:");
 
 		for (unsigned int i = 0; i < sInits; i++)
@@ -327,6 +327,8 @@ namespace Symple
 		{
 		case Node::Kind::CastExpression:
 			return EmitCastExpression(expression->Cast<CastExpressionNode>());
+		case Node::Kind::StallocExpression:
+			return EmitStallocExpression(expression->Cast<StallocExpressionNode>());
 		case Node::Kind::FunctionCallExpression:
 			return EmitFunctionCallExpression(expression->Cast<FunctionCallExpressionNode>());
 		case Node::Kind::StringLiteralExpression:
@@ -341,6 +343,25 @@ namespace Symple
 	Register Emitter::EmitCastExpression(const CastExpressionNode* expression)
 	{
 		return EmitExpression(expression->GetExpression());
+	}
+
+	Register Emitter::EmitStallocExpression(const StallocExpressionNode* expression)
+	{
+		Register reg;
+
+		if (expression->GetSize()->CanEvaluate())
+		{
+			reg = AllocReg();
+			Emit("\tsub     $%i, %s", expression->GetSize()->Evaluate(), GetReg(regsp));
+		}
+		else
+		{
+			reg = EmitExpression(expression->GetSize());
+			Emit("\tsub     %s, %s", GetReg(reg), GetReg(regsp));
+		}
+
+		Emit("\tmov     %s, %s", GetReg(regsp), GetReg(reg));
+		return reg;
 	}
 
 	Register Emitter::EmitFunctionCallExpression(const FunctionCallExpressionNode* expression)

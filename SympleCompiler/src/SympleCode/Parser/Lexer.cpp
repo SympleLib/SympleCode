@@ -174,6 +174,8 @@ namespace Symple
 			return new Token(Token::Kind::If, beg, mCurrent, mFile, mLine, bColumn);
 		if (identifier == "else")
 			return new Token(Token::Kind::Else, beg, mCurrent, mFile, mLine, bColumn);
+		if (identifier == "stalloc")
+			return new Token(Token::Kind::Stalloc, beg, mCurrent, mFile, mLine, bColumn);
 
 		if (identifier == "symplecall")
 			return new Token(Token::Kind::SympleCall, beg, mCurrent, mFile, mLine, bColumn);
