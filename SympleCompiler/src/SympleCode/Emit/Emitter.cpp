@@ -305,6 +305,9 @@ namespace Symple
 				FreeReg(init);
 			}
 		}
+
+		if (statement->GetNext())
+			EmitVariableDeclaration(statement->GetNext());
 	}
 
 

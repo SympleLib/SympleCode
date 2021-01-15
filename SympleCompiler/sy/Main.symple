@@ -3,13 +3,5 @@
 
 int main()
 {
-	char* opening = "Hello, young traveller! What is your name?";
-	puts(opening);
-	
-	mut char* name = (mut char*)stalloc(16);
-	scanf("%s.16", name);
-	
-	printf("Hello %s!\n", name);
-	
 	0;
 };
