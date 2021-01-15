@@ -5,11 +5,6 @@
 #define Emit(fmt, ...) fprintf(mFile, fmt "\n", __VA_ARGS__)
 #define EmitResource(fmt, ...) fprintf_s(mResourceFile, fmt "\n", __VA_ARGS__)
 
-#define nullreg -1
-#define regbp -2
-#define regsp -3
-#define regax 0
-
 namespace Symple
 {
 #if SY_32
@@ -75,10 +70,10 @@ namespace Symple
 			return reg;
 		}
 
-		for (int regid = 0; regid < NumRegisters; regid++)
-			if (mFreeRegisters[regid])
+		for (reg = 0; reg < NumRegisters; reg++)
+			if (mFreeRegisters[reg])
 			{
-				mFreeRegisters[regid] = false;
+				mFreeRegisters[reg] = false;
 				return reg;
 			}
 
@@ -87,6 +82,9 @@ namespace Symple
 
 	void Emitter::FreeReg(Register reg)
 	{
+		if (reg == nullreg)
+			return;
+
 		if (mFreeRegisters[reg])
 			abort();
 
@@ -269,7 +267,75 @@ namespace Symple
 	{
 		FreeAllRegs(); // In Case I forgot to Free a Register
 
-		Emit("\t# Statement");
+		if (statement->Is<ExpressionStatementNode>())
+			return EmitExpressionStatement(statement->Cast<ExpressionStatementNode>());
+	}
+
+	void Emitter::EmitExpressionStatement(const ExpressionStatementNode* statement)
+	{
+		Register reg = EmitExpression(statement->GetExpression());
+		if (reg != regax)
+			Emit("\tmov     %s, %s", GetReg(reg), GetReg(regax));
+
+		FreeAllRegs(); // In Case I forgot to Free a Register
+	}
+
+
+	Register Emitter::EmitExpression(const ExpressionNode* expression)
+	{
+		if (expression->CanEvaluate())
+		{
+			Register reg = AllocReg();
+			if (expression->Evaluate())
+				Emit("mov     $%i, %s", expression->Evaluate(), GetReg(reg));
+			else
+				Emit("xor     %s, %s", GetReg(reg), GetReg(reg));
+			return reg;
+		}
+
+		switch (expression->GetKind())
+		{
+		case Node::Kind::FunctionCallExpression:
+			return EmitFunctionCallExpression(expression->Cast<FunctionCallExpressionNode>());
+		case Node::Kind::StringLiteralExpression:
+			return EmitStringLiteralExpression(expression->Cast<StringLiteralExpressionNode>());
+		}
+	}
+
+	Register Emitter::EmitFunctionCallExpression(const FunctionCallExpressionNode* expression)
+	{
+		bool axUsed = mFreeRegisters[regax];
+		if (axUsed)
+			Push(regax);
+
+		for (const ExpressionNode* argument : expression->GetArguments()->GetArguments())
+		{
+			Register reg = EmitExpression(argument);
+			Push(reg);
+			FreeReg(reg);
+		}
+
+		Emit("\tcall    %s", Debug::GetFunction(expression->GetName()->GetLex(), expression->GetArguments())->GetAsmName().c_str());
+		Emit("\tadd     $%i, %s", expression->GetArguments()->GetArguments().size() * platsize, GetReg(regsp));
+		Register reg = AllocReg(regax);
+		if (reg != regax)
+			Emit("\tmov     %s, %s", GetReg(regax), GetReg(reg));
+
+		if (axUsed)
+			Pop(regax);
+
+		return reg;
+	}
+
+
+	Register Emitter::EmitStringLiteralExpression(const StringLiteralExpressionNode* literal)
+	{
+		EmitResource("..%i:", mData);
+		EmitResource("\t.string \"%s\"", literal->Stringify().c_str());
+
+		Register reg = AllocReg();
+		Emit("\tmov     $..%i, %s", mData++, GetReg(reg));
+		return reg;
 	}
 
 

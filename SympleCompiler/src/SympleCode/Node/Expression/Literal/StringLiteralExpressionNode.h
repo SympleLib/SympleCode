@@ -32,5 +32,33 @@ namespace Symple
 
 			return ss.str();
 		}
+
+		std::string Stringify() const
+		{
+			std::stringstream ss;
+			for (const char c : mLiteral->GetLex())
+				switch (c)
+				{
+				case '\n':
+					ss << "\\\n";
+					break;
+				case '\r':
+					ss << "\\\r";
+					break;
+				case '\t':
+					ss << "\\\t";
+					break;
+				case '\"':
+					ss << "\\\"";
+					break;
+				case '\\':
+					ss << "\\\\";
+					break;
+				default:
+					ss << c;
+				}
+
+			return ss.str();
+		}
 	};
 }

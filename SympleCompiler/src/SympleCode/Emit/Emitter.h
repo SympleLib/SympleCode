@@ -43,6 +43,11 @@
 
 #include <cstdio>
 
+#define nullreg -1
+#define regbp -2
+#define regsp -3
+#define regax 0
+
 namespace Symple
 {
 	typedef int Register;
@@ -87,8 +92,8 @@ namespace Symple
 		void EmitCompilationUnit(const CompilationUnitNode*);
 		void EmitStaticInitialization();
 	private:
-		Register AllocReg(Register);
-		void FreeReg(Register);
+		Register AllocReg(Register = nullreg);
+		void FreeReg(Register = nullreg);
 		void FreeAllRegs();
 		const char* GetReg(Register, int size = platsize);
 
