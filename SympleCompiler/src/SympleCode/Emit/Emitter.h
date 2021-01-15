@@ -45,7 +45,7 @@
 
 namespace Symple
 {
-	typedef int Register;
+	struct Register;
 
 	class Emitter
 	{

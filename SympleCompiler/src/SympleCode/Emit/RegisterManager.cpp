@@ -25,29 +25,55 @@ namespace Symple
 #endif
 
 	RegisterManager::RegisterManager(Emitter* emitter)
-		: mEmitter(emitter), mRegCount() {}
+		: mEmitter(emitter) {}
 
-	Register RegisterManager::Alloc(Register asmreg)
+	Register RegisterManager::Alloc(int regid)
 	{
-		return mRegCount++;
+		if (regid != nullreg && mFreeRegisters[regid])
+		{
+			mFreeRegisters[regid] = false;
+			return { regid };
+		}
+
+		for (int regid = 0; regid < NumRegisters; regid++)
+			if (mFreeRegisters[regid])
+			{
+				mFreeRegisters[regid] = false;
+				return { regid };
+			}
+
+		abort();
 	}
 
-	Register RegisterManager::CAlloc(Register asmreg)
+	Register RegisterManager::StAlloc(int regid)
 	{
-		Register reg = Alloc(asmreg);
-		Emit("\txor%c    %s, %s", mEmitter->Suf(), GetRegister(reg), GetRegister(reg));
+		Emit("\tsub%c    $%i, %s", mEmitter->Suf(), platsize, GetRegister(regsp));
+		mEmitter->mStack += platsize;
+		return { nullreg, mEmitter->mStack };
+	}
 
-		return reg;
+	Register RegisterManager::CAlloc(int regid)
+	{
+		Emit("\tpush%c   $0", mEmitter->Suf());
+		mEmitter->mStack += platsize;
+		return { nullreg, mEmitter->mStack };
 	}
 
 	void RegisterManager::Free(Register reg)
 	{
-		
+		if (reg.IsStack)
+			return;
+
+		if (mFreeRegisters[reg.Id])
+			abort();
+
+		mFreeRegisters[reg.Id] = true;
 	}
 
 	void RegisterManager::FreeAll()
 	{
-		
+		for (int i = 0; i < NumRegisters; i++)
+			mFreeRegisters[i] = true;
 	}
 
 
@@ -56,12 +82,12 @@ namespace Symple
 		return mFreeRegisters;
 	}
 
-	const char* RegisterManager::GetRegister(Register reg, int sz)
+	const char* RegisterManager::GetRegister(int regid, int sz)
 	{
-		if (reg == nullreg)
+		if (regid == nullreg)
 			return nullptr;
 
-		if (reg == regsp)
+		if (regid == regsp)
 		{
 			if (sz <= 2)
 				return "%sp";
@@ -73,7 +99,7 @@ namespace Symple
 #endif
 		}
 
-		if (reg == regbp)
+		if (regid == regbp)
 		{
 			if (sz <= 2)
 				return "%bp";
@@ -85,8 +111,29 @@ namespace Symple
 #endif
 		}
 
-		char* str = new char[16];
-		sprintf_s(str, 16, "%%r%i", reg);
-		return str;
+		if (sz <= 1)
+			return sRegisters8[regid];
+		if (sz <= 2)
+			return sRegisters16[regid];
+		if (sz <= 4)
+			return sRegisters32[regid];
+#if SY_64
+		if (sz <= 8)
+			return sRegisters64[regid];
+#endif
+
+		return nullptr;
+	}
+
+	const char* RegisterManager::GetRegister(Register reg, int sz)
+	{
+		if (reg.IsStack)
+		{
+			char* str = new char[12];
+			sprintf_s(str, 12, "-%i(%s)", reg.StackPos, GetRegister(regbp));
+			return str;
+		}
+
+		return GetRegister(reg.Id);
 	}
 }

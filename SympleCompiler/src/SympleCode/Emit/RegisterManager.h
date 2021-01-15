@@ -10,7 +10,36 @@
 namespace Symple
 {
 	class Emitter;
-	typedef int Register;
+
+	struct Register
+	{
+		int Id = nullreg;
+		union
+		{
+			unsigned int StackPos = 0;
+			unsigned int IsStack;
+		};
+
+		bool operator ==(const Register& other) const
+		{
+			return Id == other.Id && (IsStack ? StackPos == other.StackPos : true);
+		}
+
+		bool operator !=(const Register& other) const
+		{
+			return !operator==(other);
+		}
+
+		bool operator ==(int regid) const
+		{
+			return Id == regid;
+		}
+
+		bool operator !=(int regid) const
+		{
+			return !operator==(regid);
+		}
+	};
 
 #if SY_32
 	constexpr int NumRegisters = 4;
@@ -31,21 +60,21 @@ namespace Symple
 
 		static const char* const sRegisters64[NumRegisters];
 #endif
-		int mRegCount;
-
 		static const char* const sRegisters32[NumRegisters];
 		static const char* const sRegisters16[NumRegisters];
 		static const char* const sRegisters8[NumRegisters];
 	public:
 		RegisterManager(Emitter* emitter);
 
-		Register Alloc(Register = nullreg);
-		Register CAlloc(Register = nullreg);
+		Register Alloc(int regid = nullreg);
+		Register StAlloc(int regid = nullreg);
+		Register CAlloc(int regid = nullreg);
 		void Free(Register);
 		void FreeAll();
 
 		const bool* GetFree() const;
 
-		static const char* GetRegister(Register reg, int size = platsize);
+		static const char* GetRegister(int regid, int size = platsize);
+		static const char* GetRegister(Register, int size = platsize);
 	};
 }
