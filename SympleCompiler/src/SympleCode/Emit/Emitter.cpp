@@ -325,6 +325,8 @@ namespace Symple
 
 		switch (expression->GetKind())
 		{
+		case Node::Kind::CastExpression:
+			return EmitCastExpression(expression->Cast<CastExpressionNode>());
 		case Node::Kind::FunctionCallExpression:
 			return EmitFunctionCallExpression(expression->Cast<FunctionCallExpressionNode>());
 		case Node::Kind::StringLiteralExpression:
@@ -334,6 +336,11 @@ namespace Symple
 		}
 
 		return nullreg;
+	}
+
+	Register Emitter::EmitCastExpression(const CastExpressionNode* expression)
+	{
+		return EmitExpression(expression->GetExpression());
 	}
 
 	Register Emitter::EmitFunctionCallExpression(const FunctionCallExpressionNode* expression)

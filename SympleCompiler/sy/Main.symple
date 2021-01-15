@@ -6,7 +6,11 @@ int main()
 {
 	char* opening = "Hello, young traveller! What is your name?";
 	puts(opening);
-	printf("Stack = 0x%p\n", @opening);
+	
+	mut char* name = (mut char*)malloc(16);
+	scanf("%s.16", name);
+	
+	printf("Hello %s!\n", name);
 	
 	0;
 };
