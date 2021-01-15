@@ -45,17 +45,29 @@
 
 namespace Symple
 {
-	struct Register;
+	typedef int Register;
 
 	class Emitter
 	{
 	private:
-		friend class RegisterManager;
+#if SY_32
+		static const int NumRegisters = 4;
 
-		RegisterManager* mRegisterManager;
+		bool mFreeRegisters[NumRegisters] = { true, true, true, true };
+#else
+		static const int NumRegisters = 12;
+		static const char* const sRegisters64[NumRegisters];
+
+		bool mFreeRegisters[NumRegisters] = { true, true, true, true, true, true,
+			true, true, true, true, true, true };
+#endif
+		static const char* const sRegisters32[NumRegisters];
+		static const char* const sRegisters16[NumRegisters];
+		static const char* const sRegisters8[NumRegisters];
+
 
 		FILE* mFile;
-		FILE* mLiteralFile;
+		FILE* mResourceFile;
 
 		const char* mPath;
 
@@ -75,8 +87,13 @@ namespace Symple
 		void EmitCompilationUnit(const CompilationUnitNode*);
 		void EmitStaticInitialization();
 	private:
-		char Suf(int sz = platsize);
-		const char* Word(int sz = platsize);
+		Register AllocReg(Register);
+		void FreeReg(Register);
+		void FreeAllRegs();
+		const char* GetReg(Register, int size = platsize);
+
+		char Suf(int size = platsize);
+		const char* Word(int size = platsize);
 
 		void Push(Register);
 		void Pop(Register);
@@ -126,8 +143,6 @@ namespace Symple
 		Register EmitCharacterLiteralExpression(const CharacterLiteralExpressionNode*);
 
 		bool OpenFile();
-		bool OpenLiteralFile();
+		bool OpenResourceFile();
 	};
 }
-
-#include "SympleCode/Emit/RegisterManager.h"

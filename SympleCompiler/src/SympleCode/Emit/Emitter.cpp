@@ -3,31 +3,48 @@
 #include <Windows.h>
 
 #define Emit(fmt, ...) fprintf(mFile, fmt "\n", __VA_ARGS__)
-#define EmitLiteral(fmt, ...) fprintf_s(mLiteralFile, fmt "\n", __VA_ARGS__)
+#define EmitResource(fmt, ...) fprintf_s(mResourceFile, fmt "\n", __VA_ARGS__)
 
-#define GetReg RegisterManager::GetRegister
+#define nullreg -1
+#define regbp -2
+#define regsp -3
+#define regax 0
 
 namespace Symple
 {
+#if SY_32
+	const char* const Emitter::sRegisters32[Emitter::NumRegisters] = { "%eax", "%edx", "%ecx", "%ebx", };
+	const char* const Emitter::sRegisters16[Emitter::NumRegisters] = { "%ax", "%dx",  "%cx",  "%bx", };
+	const char* const Emitter::sRegisters8[Emitter::NumRegisters] = { "%al", "%dl",  "%cl",  "%bl", };
+#else
+	const char* const Emitter::sRegisters64[Emitter::NumRegisters] = { "%rax", "%rdx", "%rcx", "%rbx", "%rdi", "%rsi",
+		"%r8",  "%r9",  "%r10",  "%r11",  "%r12",  "%r13", };
+	const char* const Emitter::sRegisters32[Emitter::NumRegisters] = { "%eax", "%edx", "%ecx", "%ebx", "%edi", "%esi",
+		"%r8d", "%r9d", "%r10d", "%r11d", "%r12d", "%r13d", };
+	const char* const Emitter::sRegisters16[Emitter::NumRegisters] = { "%ax", "%dx",  "%cx",  "%bx",  "%di",  "%si" ,
+		"%r8w", "%r9w", "%r10w", "%r11w", "%r12w", "%r13w", };
+	const char* const Emitter::sRegisters8[Emitter::NumRegisters] = { "%al", "%dl",  "%cl",  "%bl",  "%dil", "%sil",
+		"%r8b", "%r9b", "%r10b", "%r11b", "%r12b", "%r13b", };
+#endif
+
 	unsigned int Emitter::sInits = 0;
 
 	Emitter::Emitter(const char* path)
-		: mPath(path), mFile(), mLiteralFile(), mData(), mReturn(), mStack(),
-			mReturning(), mRegisterManager(new RegisterManager(this))
+		: mPath(path), mFile(), mResourceFile(), mData(), mReturn(), mStack(), mReturning()
 	{
 		while (OpenFile());
-		while (OpenLiteralFile());
+		while (OpenResourceFile());
 	}
 
 	Emitter::~Emitter()
 	{
-		rewind(mLiteralFile);
+		rewind(mResourceFile);
 
 		char c;
-		while ((c = getc(mLiteralFile)) != EOF)
+		while ((c = getc(mResourceFile)) != EOF)
 			putc(c, mFile);
 
-		fclose(mLiteralFile);
+		fclose(mResourceFile);
 		fclose(mFile);
 	}
 
@@ -39,16 +56,90 @@ namespace Symple
 
 	void Emitter::EmitStaticInitialization()
 	{
-		Emit("\t.globl   _main");
-		Emit("_main:");
+		Emit("\t.globl   ._Sy@StaticInitialization_.");
+		Emit("._Sy@StaticInitialization_.:");
 
 		for (unsigned int i = 0; i < sInits; i++)
 			Emit("\tcall%c   ..%i.", Suf(), i);
 
 		Emit("\txor%c    %s, %s", Suf(), GetReg(regax), GetReg(regax));
-		Emit("\tcall%c   main", Suf());
-
 		Emit("\tret");
+	}
+
+
+	Register Emitter::AllocReg(Register reg)
+	{
+		if (reg != nullreg && mFreeRegisters[reg])
+		{
+			mFreeRegisters[reg] = false;
+			return reg;
+		}
+
+		for (int regid = 0; regid < NumRegisters; regid++)
+			if (mFreeRegisters[regid])
+			{
+				mFreeRegisters[regid] = false;
+				return reg;
+			}
+
+		abort();
+	}
+
+	void Emitter::FreeReg(Register reg)
+	{
+		if (mFreeRegisters[reg])
+			abort();
+
+		mFreeRegisters[reg] = true;
+	}
+
+	void Emitter::FreeAllRegs()
+	{
+		for (int i = 0; i < NumRegisters; i++)
+			mFreeRegisters[i] = true;
+	}
+
+	const char* Emitter::GetReg(Register reg, int sz)
+	{
+		if (reg == nullreg)
+			return nullptr;
+
+		if (reg == regsp)
+		{
+			if (sz <= 2)
+				return "%sp";
+			if (sz <= 4)
+				return "%esp";
+#if SY_64
+			if (sz <= 8)
+				return "%rsp";
+#endif
+		}
+
+		if (reg == regbp)
+		{
+			if (sz <= 2)
+				return "%bp";
+			if (sz <= 4)
+				return "%ebp";
+#if SY_64
+			if (sz <= 8)
+				return "%rbp";
+#endif
+		}
+
+		if (sz <= 1)
+			return sRegisters8[reg];
+		if (sz <= 2)
+			return sRegisters16[reg];
+		if (sz <= 4)
+			return sRegisters32[reg];
+#if SY_64
+		if (sz <= 8)
+			return sRegisters64[reg];
+#endif
+
+		return nullptr;
 	}
 
 
@@ -84,26 +175,31 @@ namespace Symple
 		return nullptr;
 	}
 
+
 	void Emitter::Push(Register reg)
 	{
-		Emit("\tpush%c   %s", Suf(), GetReg(reg));
+		Emit("\tpush    %s", GetReg(reg));
 	}
 
 	void Emitter::Pop(Register reg)
 	{
-		Emit("\tpop%c    %s", Suf(), GetReg(reg));
+		Emit("\tpop     %s", GetReg(reg));
 	}
+
 
 	void Emitter::EmitMember(const MemberNode* member)
 	{
-		//Emit("\t# Member of Kind: %s", Node::KindString(member->GetKind()));
+		FreeAllRegs(); // In Case I forgot to Free a Register
 
-		if (member->Is<GlobalStatementNode>())
-			EmitGlobalStatement(member->Cast<GlobalStatementNode>());
-		if (member->Is<FunctionDeclarationNode>())
-			EmitFunctionDeclaration(member->Cast<FunctionDeclarationNode>());
-		if (member->Is<GlobalVariableDeclarationNode>())
-			EmitGlobalVariableDeclaration(member->Cast<GlobalVariableDeclarationNode>());
+		switch (member->GetKind())
+		{
+		case Node::Kind::GlobalStatement:
+			return EmitGlobalStatement(member->Cast<GlobalStatementNode>());
+		case Node::Kind::FunctionDeclaration:
+			return EmitFunctionDeclaration(member->Cast<FunctionDeclarationNode>());
+		case Node::Kind::GlobalVariableDeclaration:
+			return EmitGlobalVariableDeclaration(member->Cast<GlobalVariableDeclarationNode>());
+		}
 	}
 
 	void Emitter::EmitGlobalStatement(const GlobalStatementNode* member)
@@ -113,37 +209,21 @@ namespace Symple
 
 	void Emitter::EmitFunctionDeclaration(const FunctionDeclarationNode* member)
 	{
-		if (member->GetKind() != Node::Kind::FunctionDeclaration)
-			return;
-
-		Debug::BeginScope();
-
-		int argOff = 4;
-		for (const FunctionArgumentNode* arg : member->GetArguments()->GetArguments())
-		{
-			argOff += 4;
-			Debug::VariableDeclaration(arg);
-			Emit("_%s@ = %i", std::string(arg->GetName()->GetLex()).c_str(), argOff);
-		}
+		mStack ^= mStack; // Reset stack
 
 		const char* name = member->GetAsmName().c_str();
 
-		mStack = 0;
+		if (!member->GetModifiers()->IsPrivate())
+			Emit("\t.global   %s", name);
+		Emit("%s:", name);
+
+		Push(regbp);
+		Emit("\tmov     %s, %s", GetReg(regsp), GetReg(regbp));
+
 		if (member->IsMain())
-		{
-			Emit("\t.globl   main");
-			Emit("main:");
-		}
-		else
-		{
-			if (member->GetModifiers()->IsPrivate())
-				Emit("\t.local   %s .type %s, @function", name, name);
-			else
-				Emit("\t.globl   %s", name);
-			Emit("%s:", name);
-		}
-		Emit("\tpush%c   %s", Suf(), GetReg(regbp));
-		Emit("\tmov%c    %s, %s", Suf(), GetReg(regsp), GetReg(regbp));
+			Emit("\tcall    ._Sy@StaticInitialization_.");
+
+		Debug::BeginScope();
 
 		mReturning = false;
 		for (const StatementNode* statement : member->GetBody()->GetStatements())
@@ -155,7 +235,6 @@ namespace Symple
 
 		if (mReturning)
 			mReturn = mData++;
-
 
 		if (member->GetBody()->GetStackUsage())
 		{
@@ -170,808 +249,29 @@ namespace Symple
 				break;
 		}
 
-		mRegisterManager->FreeAll();
 		Debug::EndScope();
 
 		if (mReturning)
 			Emit("..%i:", mReturn);
-		Emit("\tmov%c    %s, %s", Suf(), GetReg(regbp), GetReg(regsp));
-		Emit("\tpop%c    %s", Suf(), GetReg(regbp));
+
+		Emit("\tmov     %s, %s", GetReg(regbp), GetReg(regsp));
+		Pop(regbp);
 		Emit("\tret");
 	}
 
 	void Emitter::EmitGlobalVariableDeclaration(const GlobalVariableDeclarationNode* member)
 	{
-		Debug::VariableDeclaration(member);
-
-		if (member->GetKind() == Node::Kind::SharedVariable)
-			return;
-
-		std::string nstr(member->GetName()->GetLex());
-		const char* name = nstr.c_str();
-
-		if (member->GetType()->GetModifiers()->IsMutable())
-			Emit("\t.bss");
-		if (member->GetModifiers()->IsPrivate())
-			Emit("\t.local   _%s@", name);
-		else
-			Emit("\t.globl   _%s@", name);
-		Emit("_%s@:", name);
-
-		if (member->GetInitializer())
-		{
-			if (member->GetInitializer()->CanEvaluate())
-			{
-				if (member->GetInitializer()->Is<StructInitializerExpressionNode>())
-				{
-					for (const ExpressionNode* item : member->GetInitializer()->Cast<StructInitializerExpressionNode>()->GetExpressions())
-					{
-						if (item->Is<StringLiteralExpressionNode>())
-						{
-							EmitLiteral("..%i:", mData);
-							EmitLiteral("\t.string  \"%s\"", std::string(item->Cast<StringLiteralExpressionNode>()->GetLiteral()->GetLex()).c_str());
-
-							Emit("\t.%s ..%i", Word(), mData++);
-						}
-						else
-						{
-							unsigned int sz = item->GetType()->GetSize();
-
-							Emit("\t.%s %i", Word(sz), item->Evaluate());
-						}
-					}
-				}
-				else
-				{
-					unsigned int sz = member->GetType()->GetSize();
-					
-					Emit("\t.%s %i", Word(sz), member->GetInitializer()->Evaluate());
-				}
-
-				Emit("\t.text");
-			}
-			else if (member->GetInitializer()->Is<StringLiteralExpressionNode>())
-			{
-				EmitLiteral("..%i:", mData);
-				EmitLiteral("\t.string  \"%s\"", std::string(member->GetInitializer()->Cast<StringLiteralExpressionNode>()->GetLiteral()->GetLex()).c_str());
-
-				Emit("\t.%s ..%i", Word(), mData++);
-			}
-			else
-			{
-				Emit("\t.zero %i", member->GetType()->GetSize());
-
-				Emit("\t.text");
-
-				Emit("\t.globl   ..%i.", sInits);
-				Emit("..%i.:", sInits++);
-				if (member->GetInitializer()->Is<StructInitializerExpressionNode>())
-				{
-					Register ptr = mRegisterManager->StAlloc();
-					Emit("\tmov%c    $_%s@, %s", Suf(), name, GetReg(ptr));
-					EmitStructInitializerExpression(member->GetInitializer()->Cast<StructInitializerExpressionNode>(), ptr);
-					mRegisterManager->Free(ptr);
-				}
-				else
-				{
-					unsigned int sz = member->GetType()->GetSize();
-
-					Register init = EmitExpression(member->GetInitializer());
-					Emit("\tmov%c    %s, _%s@", Suf(sz), GetReg(init, sz), name);
-					mRegisterManager->Free(init);
-				}
-				Emit("\tret");
-			}
-		}
-
-		if (member->GetNext())
-			EmitGlobalVariableDeclaration(member->GetNext());
+		Emit("\t# Global Variable Declaration");
 	}
 
 
 	void Emitter::EmitStatement(const StatementNode* statement)
 	{
-		//Emit("\t# Statement of Kind: %s", Node::KindString(statement->GetKind()));
+		FreeAllRegs(); // In Case I forgot to Free a Register
 
-		if (statement->Is<IfStatementNode>())
-			EmitIfStatement(statement->Cast<IfStatementNode>());
-		if (statement->Is<AsmStatementNode>())
-			EmitAsmStatement(statement->Cast<AsmStatementNode>());
-		if (statement->Is<BlockStatementNode>())
-			EmitBlockStatement(statement->Cast<BlockStatementNode>());
-		if (statement->Is<BreakStatementNode>())
-			EmitBreakStatement(statement->Cast<BreakStatementNode>());
-		if (statement->Is<WhileStatementNode>())
-			EmitWhileStatement(statement->Cast<WhileStatementNode>());
-		if (statement->Is<ReturnStatementNode>())
-			EmitReturnStatement(statement->Cast<ReturnStatementNode>());
-		if (statement->Is<ForLoopStatementNode>())
-			EmitForLoopStatement(statement->Cast<ForLoopStatementNode>());
-		if (statement->Is<ExpressionStatementNode>())
-			EmitExpressionStatement(statement->Cast<ExpressionStatementNode>());
-		if (statement->Is<VariableDeclarationNode>())
-			EmitVariableDeclaration(statement->Cast<VariableDeclarationNode>());
+		Emit("\t# Statement");
 	}
 
-	void Emitter::EmitIfStatement(const IfStatementNode* statement)
-	{
-		if (statement->GetElse())
-		{
-			unsigned int elze = mData++, end = mData++;
-
-			Register cond = EmitExpression(statement->GetCondition());
-			Register creg = mRegisterManager->Alloc();
-			Emit("\tmov%c    %s, %s", Suf(), GetReg(cond), GetReg(creg));
-			mRegisterManager->Free(cond);
-
-			Emit("\ttest%c   %s, %s", Suf(), GetReg(creg), GetReg(creg));
-			Emit("\tje      ..%i", elze);
-			mRegisterManager->Free(creg);
-
-			EmitBlockStatement(statement->GetThen());
-
-			Emit("\tjmp     ..%i", end);
-			Emit("..%i:", elze);
-
-			EmitBlockStatement(statement->GetElse());
-
-			Emit("..%i:", end);
-		}
-		else
-		{
-			unsigned int end = mData++;
-
-			Register cond = EmitExpression(statement->GetCondition());
-			Register creg = mRegisterManager->Alloc();
-			Emit("\tmov%c    %s, %s", Suf(), GetReg(cond), GetReg(creg));
-			mRegisterManager->Free(cond);
-
-			Emit("\ttest%c   %s, %s", Suf(), GetReg(creg), GetReg(creg));
-			Emit("\tje      ..%i", end);
-			mRegisterManager->Free(creg);
-
-			EmitBlockStatement(statement->GetThen());
-
-			Emit("..%i:", end);
-		}
-	}
-
-	void Emitter::EmitAsmStatement(const AsmStatementNode* statement)
-	{
-		Emit("%s", std::string(statement->GetInstructions()->GetLex()).c_str());
-	}
-
-	void Emitter::EmitBlockStatement(const BlockStatementNode* block, bool funcdecl)
-	{
-		if (block->GetStackUsage())
-		{
-			Emit("\tsub%c    $%i, %s", Suf(), block->GetStackUsage(), GetReg(regsp));
-			mStack += block->GetStackUsage();
-		}
-
-		Debug::BeginScope();
-
-		for (const StatementNode* statement : block->GetStatements())
-			EmitStatement(statement);
-
-		Debug::EndScope();
-
-		if (block->GetStackUsage())
-		{
-			Emit("\tadd%c    $%i, %s", Suf(), block->GetStackUsage(), GetReg(regsp));
-			mStack -= block->GetStackUsage();
-		}
-
-		mRegisterManager->FreeAll();
-	}
-
-	void Emitter::EmitBreakStatement(const BreakStatementNode* statement)
-	{
-		Emit("\tjmp     ..%i", mBreak);
-	}
-
-	void Emitter::EmitWhileStatement(const WhileStatementNode* statement)
-	{
-		unsigned int loop = mData++;
-		unsigned int pBreak = mBreak;
-		mBreak = mData++;
-
-		Emit("..%i:", loop);
-
-		Register cond = EmitExpression(statement->GetCondition());
-		Register creg = mRegisterManager->Alloc();
-		Emit("\tmov%c    %s, %s", Suf(), GetReg(cond), GetReg(creg));
-		mRegisterManager->Free(cond);
-
-		Emit("\ttest%c   %s, %s", Suf(), GetReg(creg), GetReg(creg));
-		Emit("\tje      ..%i", mBreak);
-		mRegisterManager->Free(creg);
-
-		EmitBlockStatement(statement->GetBody());
-
-		Emit("\tjmp     ..%i", loop);
-		Emit("..%i:", mBreak);
-
-		mBreak = pBreak;
-	}
-
-	void Emitter::EmitReturnStatement(const ReturnStatementNode* statement)
-	{
-		Register exprReg = EmitExpression(statement->GetExpression());
-		if (exprReg != regax)
-			Emit("\tmov%c    %s, %s", Suf(), GetReg(exprReg), GetReg(regax));
-
-		mRegisterManager->Free(exprReg);
-
-		if (mReturning)
-			Emit("\tjmp     ..%i", mReturn);
-	}
-
-	void Emitter::EmitForLoopStatement(const ForLoopStatementNode* statement)
-	{
-		unsigned int loop = mData++;
-		mBreak = mData++;
-
-		EmitStatement(statement->GetInitializer());
-
-		Emit("..%i:", loop);
-
-		Debug::BeginScope();
-
-		Register cond = EmitExpression(statement->GetCondition());
-		Emit("\ttest%c   %s, %s", Suf(), GetReg(cond), GetReg(cond));
-		Emit("\tje      ..%i", mBreak);
-		mRegisterManager->Free(cond);
-
-		EmitBlockStatement(statement->GetBody());
-		EmitStatement(statement->GetStep());
-		Debug::EndScope();
-
-		Emit("\tjmp     ..%i", loop);
-		Emit("..%i:", mBreak);
-	}
-
-	void Emitter::EmitExpressionStatement(const ExpressionStatementNode* statement)
-	{
-		Register exprReg = EmitExpression(statement->GetExpression());
-		//if (exprReg != regax)
-		//	Emit("\tmov%c    %s, %s", Suf(), GetReg(exprReg), GetReg(regax));
-
-		mRegisterManager->Free(exprReg);
-	}
-
-	void Emitter::EmitVariableDeclaration(const VariableDeclarationNode* statement)
-	{
-		Debug::VariableDeclaration(statement);
-
-		std::string nameStr(statement->GetName()->GetLex());
-		const char* name = nameStr.c_str();
-
-		Emit("_%s@ = -%i", name, mStack);
-		unsigned int sz = statement->GetType()->GetSize();
-		mStack += sz;
-		if (statement->GetInitializer())
-		{
-			if (statement->GetInitializer()->Is<StructInitializerExpressionNode>())
-			{
-				Register ptr = mRegisterManager->StAlloc();
-				Emit("\tlea%c    _%s@(%s), %s", Suf(), name, GetReg(regbp), GetReg(ptr));
-				EmitStructInitializerExpression(statement->GetInitializer()->Cast<StructInitializerExpressionNode>(), ptr);
-				mRegisterManager->Free(ptr);
-			}
-			else
-			{
-				Register init = EmitExpression(statement->GetInitializer());
-				Emit("\tmov%c    %s, _%s@(%s)", Suf(sz), GetReg(init, sz), name, GetReg(regbp));
-				mRegisterManager->Free(init);
-			}
-		}
-
-		if (statement->GetNext())
-			EmitVariableDeclaration(statement->GetNext());
-	}
-
-
-	Register Emitter::EmitExpression(const ExpressionNode* expression)
-	{
-		if (expression->CanEvaluate())
-		{
-			//Emit("\t# Expression of Kind: %s = %i", Node::KindString(expression->GetKind()), expression->Evaluate());
-
-			Register reg = mRegisterManager->StAlloc();
-			Emit("\tmov%c    $%d, %s", Suf(), expression->Evaluate(), GetReg(reg));
-			return reg;
-		}
-
-		//Emit("\t# Expression of Kind: %s", Node::KindString(expression->GetKind()));
-
-		if (expression->Is<CastExpressionNode>())
-			return EmitCastExpression(expression->Cast<CastExpressionNode>());
-		if (expression->Is<ListExpressionNode>())
-			return EmitListExpression(expression->Cast<ListExpressionNode>());
-		if (expression->Is<LiteralExpressionNode>())
-			return EmitLiteralExpression(expression->Cast<LiteralExpressionNode>());
-		if (expression->Is<TernaryExpressionNode>())
-			return EmitTernaryExpression(expression->Cast<TernaryExpressionNode>());
-		if (expression->Is<OperatorExpressionNode>())
-			return EmitOperatorExpression(expression->Cast<OperatorExpressionNode>());
-		if (expression->Is<ModifiableExpressionNode>())
-			return EmitModifiableExpression(expression->Cast<ModifiableExpressionNode>());
-		if (expression->Is<FunctionCallExpressionNode>())
-			return EmitFunctionCallExpression(expression->Cast<FunctionCallExpressionNode>());
-		if (expression->Is<ParenthesizedExpressionNode>())
-			return EmitParenthesizedExpression(expression->Cast<ParenthesizedExpressionNode>());
-		if (expression->Is<VariableAddressExpressionNode>())
-			return EmitVariableAddressExpression(expression->Cast<VariableAddressExpressionNode>());
-		
-		return {};
-	}
-
-	Register Emitter::EmitCastExpression(const CastExpressionNode* expression)
-	{
-		return EmitExpression(expression->GetExpression());
-	}
-
-	Register Emitter::EmitListExpression(const ListExpressionNode* expression)
-	{
-		Register reg = mRegisterManager->CAlloc();
-		if (expression->GetExpressions().empty())
-			return reg;
-
-		unsigned int sz = expression->GetExpressions().size() * expression->GetExpressionType()->GetSize();
-		Emit("\tsub%c   $%i, %s", Suf(), sz, GetReg(regsp));
-
-		mStack += sz;
-		for (const ExpressionNode* item : expression->GetExpressions())
-		{
-			Register itemReg = EmitExpression(item);
-			Emit("\tmov%c    %s, -%i(%s)", Suf(), GetReg(itemReg), mStack, GetReg(regbp));
-			mRegisterManager->Free(itemReg);
-
-			mStack -= item->GetType()->GetSize();
-		}
-		mStack += sz;
-
-		Emit("\tlea%c    -%i(%s), %s", Suf(), mStack, GetReg(regbp), GetReg(reg));
-		return reg;
-	}
-
-	Register Emitter::EmitTernaryExpression(const TernaryExpressionNode* expression)
-	{
-		unsigned int elze = mData++, end = mData++;
-
-		Register cond = EmitExpression(expression->GetCondition());
-		Register creg = mRegisterManager->Alloc();
-		Emit("\tmov%c    %s, %s", Suf(), GetReg(cond), GetReg(creg));
-		mRegisterManager->Free(cond);
-
-		Emit("\ttest%c   %s, %s", Suf(), GetReg(creg), GetReg(creg));
-		Emit("\tje      ..%i", end);
-
-		Register then = EmitExpression(expression->GetThen());
-		if (then != creg)
-		{
-			Emit("\tmov%c    %s, %s", Suf(), GetReg(then), GetReg(creg));
-			mRegisterManager->Free(then);
-		}
-
-		Emit("\tjmp     ..%i", end);
-		Emit("..%i:", elze);
-
-		Register elzeReg = EmitExpression(expression->GetElse());
-		if (elzeReg != creg)
-		{
-			Emit("\tmov%c    %s, %s", Suf(), GetReg(elzeReg), GetReg(creg));
-			mRegisterManager->Free(elzeReg);
-		}
-
-		Emit("..%i:", end);
-
-		return creg;
-	}
-
-	Register Emitter::EmitFunctionCallExpression(const FunctionCallExpressionNode* expression)
-	{
-		Register reg = mRegisterManager->StAlloc();
-
-		for (unsigned int i = expression->GetArguments()->GetArguments().size(); i; i--)
-		{
-			Register argReg = EmitExpression(expression->GetArguments()->GetArguments()[i - 1]);
-			Push(argReg);
-			mRegisterManager->Free(argReg);
-		}
-
-		const FunctionDeclarationNode* function = Debug::GetFunction(expression->GetName()->GetLex(), expression->GetArguments());
-
-		Emit("\tcall%c   %s", Suf(), function->GetAsmName().c_str());
-		if (expression->GetArguments()->GetArguments().size())
-			Emit("\tadd%c    $%i, %s", Suf(), expression->GetArguments()->GetArguments().size() * 4, GetReg(regsp));
-
-		if (reg != regax)
-			Emit("\tmov%c    %s, %s", Suf(), GetReg(regax), GetReg(reg));
-		return reg;
-	}
-
-	Register Emitter::EmitParenthesizedExpression(const ParenthesizedExpressionNode* expression)
-	{
-		return EmitExpression(expression->GetExpression());
-	}
-
-	Register Emitter::EmitVariableAddressExpression(const VariableAddressExpressionNode* expression)
-	{
-		return EmitModifiableExpression(expression->GetVariable(), true);
-	}
-
-	void Emitter::EmitStructInitializerExpression(const StructInitializerExpressionNode* expression, Register to)
-	{
-		int off = 0;
-		for (const ExpressionNode* item : expression->GetExpressions())
-		{
-			Register reg = EmitExpression(item);
-			Emit("\tmov%c    %s, %i(%s)", Suf(), GetReg(reg), off, GetReg(to));
-			mRegisterManager->Free(reg);
-
-			off += item->GetType()->GetSize();
-		}
-	}
-
-	void Emitter::EmitStructInitializerExpression(const StructInitializerExpressionNode* expression, const ModifiableExpressionNode* exprTo)
-	{
-		Register to = EmitModifiableExpression(exprTo, true);
-
-		EmitStructInitializerExpression(expression, to);
-
-		mRegisterManager->Free(to);
-	}
-
-
-	Register Emitter::EmitModifiableExpression(const ModifiableExpressionNode* expression, bool retptr)
-	{
-		if (expression->Is<FieldExpressionNode>())
-			return EmitFieldExpression(expression->Cast<FieldExpressionNode>(), retptr);
-		if (expression->Is<VariableExpressionNode>())
-			return EmitVariableExpression(expression->Cast<VariableExpressionNode>(), retptr);
-		if (expression->Is<AssignmentExpressionNode>())
-			return EmitAssignmentExpression(expression->Cast<AssignmentExpressionNode>(), retptr);
-		if (expression->Is<PointerIndexExpressionNode>())
-			return EmitPointerIndexExpression(expression->Cast<PointerIndexExpressionNode>(), retptr);
-		if (expression->Is<DereferencePointerExpressionNode>())
-			return EmitDereferencePointerExpression(expression->Cast<DereferencePointerExpressionNode>(), retptr);
-
-		return {};
-	}
-
-	Register Emitter::EmitFieldExpression(const FieldExpressionNode* expression, bool retptr)
-	{
-		Register callee = EmitModifiableExpression(expression->GetCallee(), true);
-		unsigned int off = expression->GetOffset();
-
-		if (retptr)
-		{
-			Emit("\tadd%c    $%i, %s", Suf(), off, GetReg(callee));
-			return callee;
-		}
-
-		Register val = mRegisterManager->CAlloc();
-		unsigned int sz = expression->GetType()->GetSize();
-		Emit("\tmov%c    %i(%s), %s", Suf(sz), off, GetReg(callee), GetReg(val, sz));
-		mRegisterManager->Free(callee);
-		return val;
-	}
-
-	Register Emitter::EmitVariableExpression(const VariableExpressionNode* expression, bool retptr)
-	{
-		const VariableDeclaration* var = Debug::GetVariable(expression->GetName()->GetLex());
-		Register reg = mRegisterManager->Alloc();
-
-		if (!var->Is<GlobalVariableDeclarationNode>())
-		{
-			if (retptr)
-				Emit("\tlea%c    _%s@(%s), %s", Suf(), std::string(expression->GetName()->GetLex()).c_str(), GetReg(regbp), GetReg(reg));
-			else
-			{
-				unsigned int sz = var->GetType()->GetSize();
-
-				if (sz != 4)
-					Emit("\txor%c    %s, %s", Suf(), GetReg(reg), GetReg(reg));
-				Emit("\tmov%c    _%s@(%s)2, %s", Suf(sz), std::string(expression->GetName()->GetLex()).c_str(), GetReg(regbp), GetReg(reg, sz));
-			}
-
-			return reg;
-		}
-
-		if (retptr)
-			Emit("\tmov%c    $_%s@, %s", Suf(), std::string(expression->GetName()->GetLex()).c_str(), GetReg(reg));
-		else
-		{
-			if (var->GetType()->GetType()->Is<StructDeclarationNode>() && !var->GetType()->HasContinue(Token::Kind::Asterisk))
-				// Just move a pointer since you cant cast a struct to any other type
-				Emit("\tmov%c    $_%s@, %s", Suf(), std::string(expression->GetName()->GetLex()).c_str(), GetReg(reg));
-			else
-			{
-				unsigned int sz = var->GetType()->GetSize();
-
-				if (sz != 4)
-					Emit("\txor%c    %s, %s", Suf(), GetReg(reg), GetReg(reg));
-				Emit("\tmov%c    _%s@, %s", Suf(sz), std::string(expression->GetName()->GetLex()).c_str(), GetReg(reg, sz));
-			}
-		}
-
-		return reg;
-	}
-
-	Register Emitter::EmitAssignmentExpression(const AssignmentExpressionNode* expression, bool retptr)
-	{
-
-		unsigned int sz = expression->GetLeft()->GetType()->GetSize();
-		Register left = EmitModifiableExpression(expression->GetLeft(), true);
-		Register right = EmitExpression(expression->GetRight());
-
-		if (expression->GetRight()->Is<StructInitializerExpressionNode>())
-		{
-			EmitStructInitializerExpression(expression->GetRight()->Cast<StructInitializerExpressionNode>(), expression->GetLeft());
-			goto Ret;
-		}
-
-		switch (expression->GetOperator()->GetKind())
-		{
-		case Token::Kind::Equal:
-			Emit("\tmov%c    %s, (%s)", Suf(sz), GetReg(right, sz), GetReg(left));
-			goto Ret;
-		case Token::Kind::PlusEqual:
-			Emit("\tadd%c    %s, (%s)", Suf(sz), GetReg(right, sz), GetReg(left));
-			goto Ret;
-		case Token::Kind::MinusEqual:
-			Emit("\tsub%c    %s, (%s)", Suf(sz), GetReg(right, sz), GetReg(left));
-			goto Ret;
-		case Token::Kind::AsteriskEqual:
-			Emit("\tmul%c    %s, (%s)", Suf(sz), GetReg(right, sz), GetReg(left));
-			goto Ret;
-		}
-
-		return {};
-
-	Ret:
-		if (retptr)
-		{
-			mRegisterManager->Free(right);
-			return left;
-		}
-
-		Register reg = mRegisterManager->StAlloc();
-		Emit("\tmov%c    (%s), %s", Suf(sz), GetReg(left), GetReg(reg, sz));
-		mRegisterManager->Free(left);
-		mRegisterManager->Free(right);
-		return reg;
-	}
-
-	Register Emitter::EmitPointerIndexExpression(const PointerIndexExpressionNode* expression, bool retptr)
-	{
-		Register reg = EmitExpression(expression->GetAddress());
-		Register preg = mRegisterManager->Alloc();
-		Emit("\tmov%c    %s, %s", Suf(), GetReg(reg), GetReg(preg));
-		mRegisterManager->Free(reg);
-
-		if (expression->GetType()->GetSize())
-			if (expression->GetIndex()->CanEvaluate())
-			{
-				if (expression->GetIndex()->Evaluate())
-					Emit("\tadd%c    $%i, %s", Suf(), expression->GetIndex()->Evaluate() * expression->GetType()->GetSize(), GetReg(preg));
-			}
-			else
-			{
-				Register off = EmitExpression(expression->GetIndex());
-				if (expression->GetType()->GetSize() > 1)
-					Emit("\timul%c   $%i, %s", Suf(), expression->GetType()->GetSize(), GetReg(off));
-				Emit("\tadd%c    %s, %s", Suf(), GetReg(off), GetReg(preg));
-				mRegisterManager->Free(off);
-			}
-
-		if (retptr)
-			return preg;
-
-		Register val = mRegisterManager->CAlloc();
-		unsigned int sz = expression->GetType()->GetSize();
-		Emit("\tmov%c    (%s), %s", Suf(sz), GetReg(preg), GetReg(val, sz));
-		mRegisterManager->Free(preg);
-		return val;
-	}
-
-	Register Emitter::EmitDereferencePointerExpression(const DereferencePointerExpressionNode* expression, bool retptr)
-	{
-		Register reg = EmitExpression(expression->GetAddress());
-		Register preg = mRegisterManager->Alloc();
-		Emit("\tmov%c    %s, %s", Suf(), GetReg(reg), GetReg(preg));
-		mRegisterManager->Free(reg);
-
-		if (retptr)
-			return preg;
-
-		Register val = mRegisterManager->CAlloc();
-		unsigned int sz = expression->GetType()->GetSize();
-		Emit("\tmov%c    (%s), %s", Suf(sz), GetReg(preg), GetReg(val, sz));
-		mRegisterManager->Free(preg);
-		return val;
-	}
-
-
-	Register Emitter::EmitOperatorExpression(const OperatorExpressionNode* expression)
-	{
-		if (expression->Is<UnaryExpressionNode>())
-			return EmitUnaryExpression(expression->Cast<UnaryExpressionNode>());
-		if (expression->Is<BinaryExpressionNode>())
-			return EmitBinaryExpression(expression->Cast<BinaryExpressionNode>());
-
-		return {};
-	}
-
-	Register Emitter::EmitUnaryExpression(const UnaryExpressionNode* expression)
-	{
-		Register reg = EmitExpression(expression->GetValue());
-
-		switch (expression->GetOperator()->GetKind())
-		{
-		case Token::Kind::Exclamation:
-		{
-			Register out = mRegisterManager->CAlloc();
-
-			Emit("\ttest%c   $0, %s", Suf(), GetReg(reg));
-			mRegisterManager->Free(reg);
-			Emit("\tsete    %s", GetReg(out, 1));
-			return out;
-		}
-		case Token::Kind::Minus:
-			Emit("\tneg%c    %s", Suf(), GetReg(reg));
-			return reg;
-		}
-
-		return {};
-	}
-
-	Register Emitter::EmitBinaryExpression(const BinaryExpressionNode* expression)
-	{
-		Register right = EmitExpression(expression->GetRight());
-		Register left = EmitExpression(expression->GetLeft());
-
-		switch (expression->GetOperator()->GetKind())
-		{
-		case Token::Kind::Plus:
-			Emit("\tadd%c    %s, %s", Suf(), GetReg(right), GetReg(left));
-			goto Ret;
-		case Token::Kind::Minus:
-			Emit("\tsub%c    %s, %s", Suf(), GetReg(right), GetReg(left));
-			goto Ret;
-		case Token::Kind::Asterisk:
-			Emit("\timul%c   %s, %s", Suf(), GetReg(right), GetReg(left));
-			goto Ret;
-
-		case Token::Kind::EqualEqual:
-			Emit("\tcmp%c    %s, %s", Suf(), GetReg(right), GetReg(left));
-			Emit("\tsete    %s", GetReg(left, 1));
-			Emit("\tmovz%c%c  %s, %s", Suf(1), Suf(), GetReg(left, 1), GetReg(left));
-			goto Ret;
-		case Token::Kind::ExclamationEqual:
-			Emit("\tcmp%c    %s, %s", Suf(), GetReg(right), GetReg(left));
-			Emit("\tsetne   %s", GetReg(left, 1));
-			Emit("\tmovz%c%c  %s, %s", Suf(1), Suf(), GetReg(left, 1), GetReg(left));
-			goto Ret;
-		case Token::Kind::LeftArrow:
-			Emit("\tcmp%c    %s, %s", Suf(), GetReg(right), GetReg(left));
-			Emit("\tsetl    %s", GetReg(left, 1));
-			Emit("\tmovz%c%c  %s, %s", Suf(1), Suf(), GetReg(left, 1), GetReg(left));
-			goto Ret;
-		case Token::Kind::LeftArrowEqual:
-			Emit("\tcmp%c    %s, %s", Suf(), GetReg(right), GetReg(left));
-			Emit("\tsetle   %s", GetReg(left, 1));
-			Emit("\tmovz%c%c  %s, %s", Suf(1), Suf(), GetReg(left, 1), GetReg(left));
-			goto Ret;
-		case Token::Kind::RightArrow:
-			Emit("\tcmp%c    %s, %s", Suf(), GetReg(right), GetReg(left));
-			Emit("\tsetg    %s", GetReg(left, 1));
-			Emit("\tmovz%c%c  %s, %s", Suf(1), Suf(), GetReg(left, 1), GetReg(left));
-			goto Ret;
-		case Token::Kind::RightArrowEqual:
-			Emit("\tcmp%c    %s, %s", Suf(), GetReg(right), GetReg(left));
-			Emit("\tsetge   %s", GetReg(left, 1));
-			Emit("\tmovz%c%c  %s, %s", Suf(1), Suf(), GetReg(left, 1), GetReg(left));
-			goto Ret;
-
-		case Token::Kind::Ampersand:
-			Emit("\tand%c    %s, %s", Suf(), GetReg(right), GetReg(left));
-			goto Ret;
-		case Token::Kind::Pipe:
-			Emit("\tor%c     %s, %s", Suf(), GetReg(right), GetReg(left));
-			goto Ret;
-		case Token::Kind::AmpersandAmpersand:
-			Emit("\ttest%c   %s, %s", Suf(), GetReg(left), GetReg(left));
-			Emit("\tsetne   %s", GetReg(left, 1));
-			Emit("\ttest%c   %s, %s", Suf(), GetReg(right), GetReg(right));
-			Emit("\tsetne   %s", GetReg(right, 1));
-			Emit("\tand%c    %s, %s", Suf(1), GetReg(right, 1), GetReg(left, 1));
-			Emit("\tmovz%c%c  %s, %s", Suf(1), Suf(), GetReg(left, 1), GetReg(left));
-			goto Ret;
-		case Token::Kind::PipePipe:
-			Emit("\ttest%c   %s, %s", Suf(), GetReg(left), GetReg(left));
-			Emit("\tsetne   %s", GetReg(left, 1));
-			Emit("\ttest%c   %s, %s", Suf(), GetReg(right), GetReg(right));
-			Emit("\tsetne   %s", GetReg(right, 1));
-			Emit("\tor%c   %s, %s", Suf(1), GetReg(right, 1), GetReg(left, 1));
-			Emit("\tmovz%c%c  %s, %s", Suf(1), Suf(), GetReg(left, 1), GetReg(left));
-			goto Ret;
-		}
-
-	Ret:
-		mRegisterManager->Free(right);
-		return left;
-	}
-
-
-	Register Emitter::EmitLiteralExpression(const LiteralExpressionNode* expression)
-	{
-		if (expression->Is<NullLiteralExpressionNode>())
-			return EmitNullLiteralExpression(expression->Cast<NullLiteralExpressionNode>());
-		if (expression->Is<NumberLiteralExpressionNode>())
-			return EmitNumberLiteralExpression(expression->Cast<NumberLiteralExpressionNode>());
-		if (expression->Is<StringLiteralExpressionNode>())
-			return EmitStringLiteralExpression(expression->Cast<StringLiteralExpressionNode>());
-		if (expression->Is<BooleanLiteralExpressionNode>())
-			return EmitBooleanLiteralExpression(expression->Cast<BooleanLiteralExpressionNode>());
-		if (expression->Is<CharacterLiteralExpressionNode>())
-			return EmitCharacterLiteralExpression(expression->Cast<CharacterLiteralExpressionNode>());
-
-		return {};
-	}
-
-	Register Emitter::EmitNullLiteralExpression(const NullLiteralExpressionNode*)
-	{
-		Register reg = mRegisterManager->StAlloc();
-
-		Emit("\tmov%c   $0, %s", Suf(), GetReg(reg));
-
-		return reg;
-	}
-
-	Register Emitter::EmitNumberLiteralExpression(const NumberLiteralExpressionNode* expression)
-	{
-		Register reg = mRegisterManager->StAlloc();
-
-		Emit("\tmov%c    $%d, %s", Suf(), expression->Evaluate(), GetReg(reg));
-
-		return reg;
-	}
-
-	Register Emitter::EmitStringLiteralExpression(const StringLiteralExpressionNode* expression)
-	{
-		Register reg = mRegisterManager->StAlloc();
-
-		Emit("\tmov%c    $..%i, %s", Suf(), mData, GetReg(reg));
-
-		EmitLiteral("..%i:", mData++);
-		EmitLiteral("\t.string  \"%s\"", std::string(expression->GetLiteral()->GetLex()).c_str());
-
-		return reg;
-	}
-
-	Register Emitter::EmitBooleanLiteralExpression(const BooleanLiteralExpressionNode* expression)
-	{
-		Register reg = mRegisterManager->StAlloc();
-
-		Emit("\tmov%c    $%i, %s", Suf(), expression->Evaluate(), GetReg(reg));
-
-		return reg;
-	}
-
-	Register Emitter::EmitCharacterLiteralExpression(const CharacterLiteralExpressionNode* expression)
-	{
-		Register reg = mRegisterManager->StAlloc();
-
-		if (expression->Evaluate())
-			Emit("\tmov%c    $%i, %s", Suf(), expression->Evaluate(), GetReg(reg));
-		else
-			Emit("\txor%c    %s, %s", Suf(), GetReg(reg), GetReg(reg));
-
-		return reg;
-	}
 
 	bool Emitter::OpenFile()
 	{
@@ -1013,10 +313,10 @@ namespace Symple
 		return true;
 	}
 
-	bool Emitter::OpenLiteralFile()
+	bool Emitter::OpenResourceFile()
 	{
-		errno_t err = tmpfile_s(&mLiteralFile);
-		if (err && !mLiteralFile)
+		errno_t err = tmpfile_s(&mResourceFile);
+		if (err && !mResourceFile)
 		{
 			char msg[32];
 			if (!strerror_s(msg, err))
