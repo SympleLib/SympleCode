@@ -20,9 +20,9 @@ namespace Symple
 		Debug::Clear();
 		Diagnostics::Clear();
 
-		std::string dir = "bin\\" + pathStr.substr(0, pathStr.find_last_of('\\'));
-		std::string cmd = "mkdir " + dir;
-		if (GetFileAttributesA(dir.c_str()) == INVALID_FILE_ATTRIBUTES)
+		std::string odir = "bin\\" + pathStr.substr(0, pathStr.find_last_of('\\'));
+		std::string cmd = "mkdir " + odir;
+		if (GetFileAttributesA(odir.c_str()) == INVALID_FILE_ATTRIBUTES)
 			system(cmd.c_str());
 
 		std::string sytStr = "bin\\" + pathStr.substr(0, pathStr.find_last_of('.')) + ".syt";
@@ -157,15 +157,15 @@ namespace Symple
 		// Static Initialization
 		{
 			{
-				Emitter emitter("bin\\__staticinit.s");
+				Emitter emitter("bin\\__staticinit.S");
 				emitter.EmitStaticInitialization();
 			}
 
 			char command[128];
 #if SY_32
-			sprintf_s(command, "clang_x86 -c %s -o %s", "bin\\__staticinit.s", "bin\\__staticinit.o");
+			sprintf_s(command, "clang_x86 -c %s -o %s", "bin\\__staticinit.S", "bin\\__staticinit.o");
 #else
-			sprintf_s(command, "clang_x64 -c %s -o %s", "bin\\__staticinit.s", "bin\\__staticinit.o");
+			sprintf_s(command, "clang_x64 -c %s -o %s", "bin\\__staticinit.S", "bin\\__staticinit.o");
 #endif
 			int compileStatis = system(command);
 

@@ -103,6 +103,8 @@ namespace Symple
 		void Push(Register);
 		void Pop(Register);
 
+		void Loc(const Token*);
+
 		void EmitMember(const MemberNode*);
 		void EmitGlobalStatement(const GlobalStatementNode*);
 		void EmitFunctionDeclaration(const FunctionDeclarationNode*);

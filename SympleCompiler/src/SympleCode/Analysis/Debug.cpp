@@ -57,6 +57,11 @@ namespace Symple
 		pVariables.pop_back();
 	}
 
+	unsigned int Debug::GetDepth()
+	{
+		return pVariables.size();
+	}
+
 	const FunctionDeclarationNode* Debug::GetFunction(const std::string_view& name, const FunctionCallArgumentsNode* arguments)
 	{
 		for (const FunctionDeclarationNode* function : sFunctions)
@@ -111,6 +116,23 @@ namespace Symple
 				return variable;
 
 		return nullptr;
+	}
+
+	unsigned int Debug::GetVariableDepth(const std::string_view& name)
+	{
+		for (unsigned int i = sVariables.size(); i > 0; i--)
+			if (sVariables[i - 1]->GetName()->GetLex() == name)
+			{
+				for (unsigned int j = pVariables.size(); j > 0; j--)
+					if (pVariables[j - 1] <= i)
+						return j;
+				return 1;
+			}
+		for (const GlobalVariableDeclarationNode* variable : sGlobalVariables)
+			if (variable->GetName()->GetLex() == name)
+				return 0;
+
+		return -1;
 	}
 
 	const std::vector<const VariableDeclarationNode*>& Debug::GetVariables()

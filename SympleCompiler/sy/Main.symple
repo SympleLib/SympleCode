@@ -1,7 +1,12 @@
 #include "libc/io.sy"
 #include "libc/memory.sy"
 
+
 int main()
 {
-	puts("Hello, young traveller! What is your name?");
+	char* opening = "Hello, young traveller! What is your name?";
+	puts(opening);
+	printf("Stack = 0x%p\n", @opening);
+	
+	0;
 };

@@ -33,11 +33,13 @@ namespace Symple
 
 		static void BeginScope();
 		static void EndScope();
+		static unsigned int GetDepth();
 
 		static const FunctionDeclarationNode* GetFunction(const std::string_view& name, const FunctionCallArgumentsNode* arguments);
 		static const std::vector<const FunctionDeclarationNode*>& GetFunctions();
 
 		static const Symple::VariableDeclaration* GetVariable(const std::string_view& name);
+		static unsigned int GetVariableDepth(const std::string_view& name);
 		static const std::vector<const VariableDeclarationNode*>& GetVariables();
 		static const std::vector<const GlobalVariableDeclarationNode*>& GetGlobalVariables();
 

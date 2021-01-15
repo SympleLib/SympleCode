@@ -185,6 +185,12 @@ namespace Symple
 	}
 
 
+	void Emitter::Loc(const Token* tok)
+	{
+		Emit(".loc 1 %i %i", tok->GetLine(), tok->GetColumn());
+	}
+
+
 	void Emitter::EmitMember(const MemberNode* member)
 	{
 		FreeAllRegs(); // In Case I forgot to Free a Register
@@ -195,8 +201,6 @@ namespace Symple
 			return EmitGlobalStatement(member->Cast<GlobalStatementNode>());
 		case Node::Kind::FunctionDeclaration:
 			return EmitFunctionDeclaration(member->Cast<FunctionDeclarationNode>());
-		case Node::Kind::GlobalVariableDeclaration:
-			return EmitGlobalVariableDeclaration(member->Cast<GlobalVariableDeclarationNode>());
 		}
 	}
 
@@ -235,10 +239,7 @@ namespace Symple
 			mReturn = mData++;
 
 		if (member->GetBody()->GetStackUsage())
-		{
 			Emit("\tsub%c    $%i, %s", Suf(), member->GetBody()->GetStackUsage(), GetReg(regsp));
-			mStack += member->GetBody()->GetStackUsage();
-		}
 
 		for (const StatementNode* statement : member->GetBody()->GetStatements())
 		{
@@ -257,18 +258,18 @@ namespace Symple
 		Emit("\tret");
 	}
 
-	void Emitter::EmitGlobalVariableDeclaration(const GlobalVariableDeclarationNode* member)
-	{
-		Emit("\t# Global Variable Declaration");
-	}
-
 
 	void Emitter::EmitStatement(const StatementNode* statement)
 	{
 		FreeAllRegs(); // In Case I forgot to Free a Register
 
-		if (statement->Is<ExpressionStatementNode>())
+		switch (statement->GetKind())
+		{
+		case Node::Kind::ExpressionStatement:
 			return EmitExpressionStatement(statement->Cast<ExpressionStatementNode>());
+		case Node::Kind::VariableDeclaration:
+			return EmitVariableDeclaration(statement->Cast<VariableDeclarationNode>());
+		}
 	}
 
 	void Emitter::EmitExpressionStatement(const ExpressionStatementNode* statement)
@@ -280,6 +281,32 @@ namespace Symple
 		FreeAllRegs(); // In Case I forgot to Free a Register
 	}
 
+	void Emitter::EmitVariableDeclaration(const VariableDeclarationNode* statement)
+	{
+		Debug::VariableDeclaration(statement);
+
+		std::string nameStr(statement->GetName()->GetLex());
+		const char* name = nameStr.c_str();
+		unsigned int depth = Debug::GetDepth();
+		unsigned int sz = statement->GetType()->GetSize();
+
+		Emit("_%s$%i = -%i", name, depth, mStack += sz);
+
+		if (statement->GetInitializer())
+		{
+			if (statement->GetInitializer()->CanEvaluate())
+			{
+				Emit("\tmov%c    $%i, _%s$%i(%s)", Suf(sz), statement->GetInitializer()->Evaluate(), name, depth, GetReg(regbp));
+			}
+			else
+			{
+				Register init = EmitExpression(statement->GetInitializer());
+				Emit("\tmov     %s, _%s$%i(%s)", GetReg(init), name, depth, GetReg(regbp));
+				FreeReg(init);
+			}
+		}
+	}
+
 
 	Register Emitter::EmitExpression(const ExpressionNode* expression)
 	{
@@ -287,11 +314,14 @@ namespace Symple
 		{
 			Register reg = AllocReg();
 			if (expression->Evaluate())
-				Emit("mov     $%i, %s", expression->Evaluate(), GetReg(reg));
+				Emit("\tmov     $%i, %s", expression->Evaluate(), GetReg(reg));
 			else
-				Emit("xor     %s, %s", GetReg(reg), GetReg(reg));
+				Emit("\txor     %s, %s", GetReg(reg), GetReg(reg));
 			return reg;
 		}
+
+		if (expression->Is<ModifiableExpressionNode>())
+			return EmitModifiableExpression(expression->Cast<ModifiableExpressionNode>());
 
 		switch (expression->GetKind())
 		{
@@ -299,18 +329,22 @@ namespace Symple
 			return EmitFunctionCallExpression(expression->Cast<FunctionCallExpressionNode>());
 		case Node::Kind::StringLiteralExpression:
 			return EmitStringLiteralExpression(expression->Cast<StringLiteralExpressionNode>());
+		case Node::Kind::VariableAddressExpression:
+			return EmitVariableAddressExpression(expression->Cast<VariableAddressExpressionNode>());
 		}
+
+		return nullreg;
 	}
 
 	Register Emitter::EmitFunctionCallExpression(const FunctionCallExpressionNode* expression)
 	{
-		bool axUsed = mFreeRegisters[regax];
+		bool axUsed = !mFreeRegisters[regax];
 		if (axUsed)
 			Push(regax);
 
-		for (const ExpressionNode* argument : expression->GetArguments()->GetArguments())
+		for (unsigned int i = expression->GetArguments()->GetArguments().size(); i > 0; i--)
 		{
-			Register reg = EmitExpression(argument);
+			Register reg = EmitExpression(expression->GetArguments()->GetArguments()[i - 1]);
 			Push(reg);
 			FreeReg(reg);
 		}
@@ -323,6 +357,41 @@ namespace Symple
 
 		if (axUsed)
 			Pop(regax);
+
+		return reg;
+	}
+
+	Register Emitter::EmitVariableAddressExpression(const VariableAddressExpressionNode* expression)
+	{
+		return EmitModifiableExpression(expression->GetVariable(), true);
+	}
+
+
+	Register Emitter::EmitModifiableExpression(const ModifiableExpressionNode* expression, bool retptr)
+	{
+		switch (expression->GetKind())
+		{
+		case Node::Kind::VariableExpression:
+			return EmitVariableExpression(expression->Cast<VariableExpressionNode>(), retptr);
+		}
+
+		return nullreg;
+	}
+
+	Register Emitter::EmitVariableExpression(const VariableExpressionNode* expression, bool retptr)
+	{
+		const VariableDeclaration* decl = Debug::GetVariable(expression->GetName()->GetLex());
+
+		std::string nameStr(decl->GetName()->GetLex());
+		const char* name = nameStr.c_str();
+		unsigned int depth = Debug::GetVariableDepth(expression->GetName()->GetLex());
+		unsigned int sz = decl->GetType()->GetSize();
+
+		Register reg = AllocReg();
+		if (retptr)
+			Emit("\tlea     _%s$%i(%s), %s", name, depth, GetReg(regbp), GetReg(reg));
+		else
+			Emit("\tmov     _%s$%i(%s), %s", name, depth, GetReg(regbp), GetReg(reg, sz));
 
 		return reg;
 	}
