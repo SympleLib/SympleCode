@@ -21,6 +21,11 @@ int main()
 {
 	Vector mut vec = StallocVector;
 	Vector__New(vec);
+	
+	_Vector mut vec;
+	vec.x = 1;
+	vec.y = 2;
+	vec.z = 3;
 
 	0;
 };

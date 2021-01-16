@@ -225,10 +225,9 @@ namespace Symple
 		unsigned int off = platsize;
 		for (const FunctionArgumentNode* argument : member->GetArguments()->GetArguments())
 		{
+			off += platsize;
 			Debug::VariableDeclaration(argument);
 			Emit("_%s$%i = %i", std::string(argument->GetName()->GetLex()).c_str(), depth, off);
-
-			off += platsize;
 		}
 
 		Push(regbp);
@@ -428,13 +427,22 @@ namespace Symple
 
 	Register Emitter::EmitFieldExpression(const FieldExpressionNode* expression, bool retptr)
 	{
-		Register reg = EmitModifiableExpression(expression->GetCallee(), true);
+		Register reg;
 		unsigned int off = expression->GetOffset();
 
-		if (retptr)
-			Emit("\tadd     $%i, %s", off, GetReg(reg));
+		if (off)
+		{
+			reg = EmitModifiableExpression(expression->GetCallee(), true);
+
+			if (retptr)
+				Emit("\tadd     $%i, %s", off, GetReg(reg));
+			else
+				Emit("\tmov     %i(%s), %s", off, GetReg(reg), GetReg(reg));
+		}
+		else if (retptr)
+			reg = EmitModifiableExpression(expression->GetCallee(), true);
 		else
-			Emit("\tmov     %i(%s), %s", off, GetReg(reg), GetReg(reg));
+			reg = EmitExpression(expression->GetCallee());
 
 		return reg;
 	}
