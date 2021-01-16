@@ -340,6 +340,8 @@ namespace Symple
 		{
 		case Node::Kind::CastExpression:
 			return EmitCastExpression(expression->Cast<CastExpressionNode>());
+		case Node::Kind::BinaryExpression:
+			return EmitBinaryExpression(expression->Cast<BinaryExpressionNode>());
 		case Node::Kind::StallocExpression:
 			return EmitStallocExpression(expression->Cast<StallocExpressionNode>());
 		case Node::Kind::FunctionCallExpression:
