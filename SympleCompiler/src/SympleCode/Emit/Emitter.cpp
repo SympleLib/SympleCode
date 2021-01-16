@@ -425,6 +425,8 @@ namespace Symple
 			return EmitVariableExpression(expression->Cast<VariableExpressionNode>(), retptr);
 		case Node::Kind::AssignmentExpression:
 			return EmitAssignmentExpression(expression->Cast<AssignmentExpressionNode>(), retptr);
+		case Node::Kind::PointerIndexExpression:
+			return EmitPointerIndexExpression(expression->Cast<PointerIndexExpressionNode>(), retptr);
 		case Node::Kind::DereferencePointerExpression:
 			return EmitDereferencePointerExpression(expression->Cast<DereferencePointerExpressionNode>(), retptr);
 		}
@@ -556,6 +558,34 @@ namespace Symple
 		}
 	}
 
+	Register Emitter::EmitPointerIndexExpression(const PointerIndexExpressionNode* expression, bool retptr)
+	{
+		unsigned int sz = expression->GetType()->GetSize();
+		Register addr = EmitExpression(expression->GetAddress());
+
+		if (expression->GetIndex()->CanEvaluate())
+		{
+			if (expression->GetIndex()->Evaluate())
+				if (retptr)
+					Emit("\tadd     $%i, %s", expression->GetIndex()->Evaluate() * sz, GetReg(addr));
+				else
+					Emit("\tmov     %i(%s), %s", expression->GetIndex()->Evaluate() * sz, GetReg(addr), GetReg(addr));
+		}
+		else
+		{
+			Register idx = EmitExpression(expression->GetIndex());
+			if (sz != 1)
+				Emit("\timul    $%i, %s", sz, GetReg(idx));
+			Emit("\tadd     %s, %s", GetReg(idx), GetReg(addr));
+			FreeReg(idx);
+
+			if (!retptr)
+				Emit("\tmov     (%s), %s", GetReg(addr), GetReg(addr));
+		}
+
+		return addr;
+	}
+
 	Register Emitter::EmitDereferencePointerExpression(const DereferencePointerExpressionNode* expression, bool retptr)
 	{
 		Register reg = EmitExpression(expression->GetAddress());
@@ -566,6 +596,12 @@ namespace Symple
 			Emit("\tmov     (%s), %s", GetReg(reg), GetReg(reg));
 			return reg;
 		}
+	}
+
+
+	Register Emitter::EmitBinaryExpression(const BinaryExpressionNode* expression)
+	{
+
 	}
 
 

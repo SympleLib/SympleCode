@@ -1,5 +1,8 @@
 int main()
 {
-	int mut l = 5;
-	l *= l;
+	int i0 = 0;
+	int i1 = 1;
+	int* mut ptr = (int* mut)stalloc(8);
+	ptr[i0] = 5;
+	ptr[i1] = 4;
 };

@@ -24,6 +24,7 @@ namespace Symple
 				return;
 			}
 			Diagnostics::ReportError(mAddress->GetType()->GetSize() != platsize, mBracket, "Address Not Pointer Type");
+			Diagnostics::ReportError(!mType->GetSize(), mBracket, "Cannot Get Address from Void Pointer");
 		}
 
 		Kind GetKind() const override
