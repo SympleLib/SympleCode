@@ -1,9 +1,9 @@
 #include "libc/io.sy"
 #include "libc/memory.sy"
 
-#define Vector _Vector mut*
-#define StallocVector (Vector mut)stalloc(12)
-#define MallocVector (Vector mut)malloc(12)
+#define Vector _Vector* mut
+#define StallocVector (mut Vector)stalloc(12)
+#define MallocVector (mut Vector)malloc(12)
 
 struct _Vector
 {
@@ -12,20 +12,28 @@ struct _Vector
 
 void Vector__New(Vector this)
 {
-	this.x = 0;
-	this.y = 0;
-	this.z = 0;
+	&(this).x = 0;
+	&(this).y = 0;
+	&(this).z = 0;
+};
+
+void Vector__Print(Vector this)
+{
+	printf("{ %i, %i, %i }\n", &(this).x, &(this).y, &(this).z);
 };
 
 int main()
 {
-	Vector mut vec = StallocVector;
+	Vector vec = StallocVector;
 	Vector__New(vec);
 	
-	_Vector mut vec;
-	vec.x = 1;
-	vec.y = 2;
-	vec.z = 3;
+	_Vector mut vecs;
+	vecs.x = 1;
+	vecs.y = 2;
+	vecs.z = 3;
+	
+	Vector__Print(vec);
+	Vector__Print(@vecs);
 
 	0;
 };

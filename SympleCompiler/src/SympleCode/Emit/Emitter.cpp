@@ -344,6 +344,8 @@ namespace Symple
 			return EmitStallocExpression(expression->Cast<StallocExpressionNode>());
 		case Node::Kind::FunctionCallExpression:
 			return EmitFunctionCallExpression(expression->Cast<FunctionCallExpressionNode>());
+		case Node::Kind::ParenthesizedExpression:
+			return EmitParenthesizedExpression(expression->Cast<ParenthesizedExpressionNode>());
 		case Node::Kind::StringLiteralExpression:
 			return EmitStringLiteralExpression(expression->Cast<StringLiteralExpressionNode>());
 		case Node::Kind::VariableAddressExpression:
@@ -402,6 +404,11 @@ namespace Symple
 		return reg;
 	}
 
+	Register Emitter::EmitParenthesizedExpression(const ParenthesizedExpressionNode* expression)
+	{
+		return EmitExpression(expression->GetExpression());
+	}
+
 	Register Emitter::EmitVariableAddressExpression(const VariableAddressExpressionNode* expression)
 	{
 		return EmitModifiableExpression(expression->GetVariable(), true);
@@ -442,7 +449,7 @@ namespace Symple
 		else if (retptr)
 			reg = EmitModifiableExpression(expression->GetCallee(), true);
 		else
-			reg = EmitExpression(expression->GetCallee());
+			reg = EmitModifiableExpression(expression->GetCallee(), false);
 
 		return reg;
 	}
@@ -468,31 +475,63 @@ namespace Symple
 	Register Emitter::EmitAssignmentExpression(const AssignmentExpressionNode* expression, bool retptr)
 	{
 		Register left = EmitModifiableExpression(expression->GetLeft(), true);
-		Register right = EmitExpression(expression->GetRight());
 
-		switch (expression->GetOperator()->GetKind())
+		if (expression->GetRight()->CanEvaluate())
 		{
-		case Token::Kind::Equal:
-			Emit("\tmov     %s, (%s)", GetReg(right), GetReg(left));
-			goto Return;
-		}
+			unsigned int sz = expression->GetType()->GetSize();
 
-		return nullreg;
+			switch (expression->GetOperator()->GetKind())
+			{
+			case Token::Kind::Equal:
+				Emit("\tmov%c    $%i, (%s)", Suf(sz), expression->GetRight()->Evaluate(), GetReg(left));
+				goto ReturnEval;
+			}
 
-	Return:
-		if (retptr)
-		{
-			FreeReg(right);
-			return left;
+			return nullreg;
+
+		ReturnEval:
+			if (retptr)
+				return left;
+			else
+			{
+				Register right = AllocReg();
+
+				if (sz != platsize)
+					Emit("\txor     %s, %s", GetReg(right), GetReg(right));
+				Emit("\tmov     (%s), %s", GetReg(left), GetReg(right, sz));
+				FreeReg(left);
+
+				return right;
+			}
 		}
 		else
 		{
-			if (expression->GetLeft()->GetType()->GetSize() != platsize)
-				Emit("\txor     %s, %s", GetReg(right), GetReg(right));
-			Emit("\tmov     (%s), %s", GetReg(left), GetReg(right, expression->GetLeft()->GetType()->GetSize()));
-			FreeReg(left);
+			Register right = EmitExpression(expression->GetRight());
 
-			return right;
+			switch (expression->GetOperator()->GetKind())
+			{
+			case Token::Kind::Equal:
+				Emit("\tmov     %s, (%s)", GetReg(right), GetReg(left));
+				goto Return;
+			}
+
+			return nullreg;
+
+		Return:
+			if (retptr)
+			{
+				FreeReg(right);
+				return left;
+			}
+			else
+			{
+				if (expression->GetType()->GetSize() != platsize)
+					Emit("\txor     %s, %s", GetReg(right), GetReg(right));
+				Emit("\tmov     (%s), %s", GetReg(left), GetReg(right, expression->GetType()->GetSize()));
+				FreeReg(left);
+
+				return right;
+			}
 		}
 	}
 
