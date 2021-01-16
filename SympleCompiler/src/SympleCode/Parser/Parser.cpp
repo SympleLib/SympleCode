@@ -106,14 +106,6 @@ namespace Symple
 				continue;
 			}
 
-			if (IsTypeContinue(Peek()))
-			{
-				if (!type)
-					Diagnostics::ReportError(Next(), "Type Not Specified");
-				
-				break;
-			}
-
 			modifiers.push_back(new TypeModifierNode(Next()));
 		}
 

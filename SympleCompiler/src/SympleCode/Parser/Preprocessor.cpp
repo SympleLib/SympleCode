@@ -77,7 +77,20 @@ namespace Symple
 
 			Token* current;
 			while (!(current = prepoLexer.Next())->Is(Token::Kind::EndOfFile))
-				with.push_back(current);
+				if (current->Is(Token::Kind::Comment));
+				else if (current->Is(Token::Kind::Preprocess))
+					Preprocess(current);
+				else
+				{
+					std::string lex(current->GetLex());
+					if (mDefines.find(lex) == mDefines.end())
+						with.push_back(current);
+					else
+					{
+						for (const Token* deftok : mDefines.at(lex))
+							with.push_back(deftok);
+					}
+				}
 
 			mDefines.insert({ replace, with });
 		}

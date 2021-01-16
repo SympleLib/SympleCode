@@ -1,7 +1,26 @@
 #include "libc/io.sy"
 #include "libc/memory.sy"
 
+#define Vector _Vector mut*
+#define StallocVector (Vector mut)stalloc(12)
+#define MallocVector (Vector mut)malloc(12)
+
+struct _Vector
+{
+	int mut x, mut y, mut z;
+};
+
+void Vector__New(Vector this)
+{
+	this.x = 0;
+	this.y = 0;
+	this.z = 0;
+};
+
 int main()
 {
+	Vector mut vec = StallocVector;
+	Vector__New(vec);
+
 	0;
 };

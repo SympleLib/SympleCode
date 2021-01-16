@@ -219,13 +219,24 @@ namespace Symple
 			Emit("\t.global   %s", name);
 		Emit("%s:", name);
 
+		Debug::BeginScope();
+
+		unsigned int depth = Debug::GetDepth();
+		unsigned int off = platsize;
+		for (const FunctionArgumentNode* argument : member->GetArguments()->GetArguments())
+		{
+			Debug::VariableDeclaration(argument);
+			Emit("_%s$%i = %i", std::string(argument->GetName()->GetLex()).c_str(), depth, off);
+
+			off += platsize;
+		}
+
 		Push(regbp);
 		Emit("\tmov     %s, %s", GetReg(regsp), GetReg(regbp));
 
 		if (member->IsMain())
 			Emit("\tcall    ._Sy@StaticInitialization_.");
 
-		Debug::BeginScope();
 
 		mReturning = false;
 		for (const StatementNode* statement : member->GetBody()->GetStatements())
@@ -402,11 +413,30 @@ namespace Symple
 	{
 		switch (expression->GetKind())
 		{
+		case Node::Kind::FieldExpression:
+			return EmitFieldExpression(expression->Cast<FieldExpressionNode>(), retptr);
 		case Node::Kind::VariableExpression:
 			return EmitVariableExpression(expression->Cast<VariableExpressionNode>(), retptr);
+		case Node::Kind::AssignmentExpression:
+			return EmitAssignmentExpression(expression->Cast<AssignmentExpressionNode>(), retptr);
+		case Node::Kind::DereferencePointerExpression:
+			return EmitDereferencePointerExpression(expression->Cast<DereferencePointerExpressionNode>(), retptr);
 		}
 
 		return nullreg;
+	}
+
+	Register Emitter::EmitFieldExpression(const FieldExpressionNode* expression, bool retptr)
+	{
+		Register reg = EmitModifiableExpression(expression->GetCallee(), true);
+		unsigned int off = expression->GetOffset();
+
+		if (retptr)
+			Emit("\tadd     $%i, %s", off, GetReg(reg));
+		else
+			Emit("\tmov     %i(%s), %s", off, GetReg(reg), GetReg(reg));
+
+		return reg;
 	}
 
 	Register Emitter::EmitVariableExpression(const VariableExpressionNode* expression, bool retptr)
@@ -425,6 +455,49 @@ namespace Symple
 			Emit("\tmov     _%s$%i(%s), %s", name, depth, GetReg(regbp), GetReg(reg, sz));
 
 		return reg;
+	}
+
+	Register Emitter::EmitAssignmentExpression(const AssignmentExpressionNode* expression, bool retptr)
+	{
+		Register left = EmitModifiableExpression(expression->GetLeft(), true);
+		Register right = EmitExpression(expression->GetRight());
+
+		switch (expression->GetOperator()->GetKind())
+		{
+		case Token::Kind::Equal:
+			Emit("\tmov     %s, (%s)", GetReg(right), GetReg(left));
+			goto Return;
+		}
+
+		return nullreg;
+
+	Return:
+		if (retptr)
+		{
+			FreeReg(right);
+			return left;
+		}
+		else
+		{
+			if (expression->GetLeft()->GetType()->GetSize() != platsize)
+				Emit("\txor     %s, %s", GetReg(right), GetReg(right));
+			Emit("\tmov     (%s), %s", GetReg(left), GetReg(right, expression->GetLeft()->GetType()->GetSize()));
+			FreeReg(left);
+
+			return right;
+		}
+	}
+
+	Register Emitter::EmitDereferencePointerExpression(const DereferencePointerExpressionNode* expression, bool retptr)
+	{
+		Register reg = EmitExpression(expression->GetAddress());
+		if (retptr)
+			return reg;
+		else
+		{
+			Emit("\tmov     (%s), %s", GetReg(reg), GetReg(reg));
+			return reg;
+		}
 	}
 
 
