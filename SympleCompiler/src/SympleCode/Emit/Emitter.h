@@ -48,6 +48,18 @@
 #define regbp -2
 #define regsp -3
 #define regax 0
+#define regdx 1
+#define regcx 2
+#define regbx 3
+
+#define regdi 4
+#define regsi 5
+#define regr8 6
+#define regr9 7
+#define regr10 8
+#define regr11 9
+#define regr12 10
+#define regr13 11
 
 namespace Symple
 {

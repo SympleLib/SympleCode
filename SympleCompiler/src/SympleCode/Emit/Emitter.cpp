@@ -474,16 +474,27 @@ namespace Symple
 
 	Register Emitter::EmitAssignmentExpression(const AssignmentExpressionNode* expression, bool retptr)
 	{
+		unsigned int sz = expression->GetType()->GetSize();
 		Register left = EmitModifiableExpression(expression->GetLeft(), true);
-
+		
 		if (expression->GetRight()->CanEvaluate())
 		{
-			unsigned int sz = expression->GetType()->GetSize();
-
 			switch (expression->GetOperator()->GetKind())
 			{
 			case Token::Kind::Equal:
 				Emit("\tmov%c    $%i, (%s)", Suf(sz), expression->GetRight()->Evaluate(), GetReg(left));
+				goto ReturnEval;
+			case Token::Kind::PlusEqual:
+				Emit("\tadd%c    $%i, (%s)", Suf(sz), expression->GetRight()->Evaluate(), GetReg(left));
+				goto ReturnEval;
+			case Token::Kind::MinusEqual:
+				Emit("\tsub%c    $%i, (%s)", Suf(sz), expression->GetRight()->Evaluate(), GetReg(left));
+				goto ReturnEval;
+			case Token::Kind::AsteriskEqual:
+				Register out = AllocReg();
+				Emit("\timul%c   $%i, (%s), %s", Suf(sz), expression->GetRight()->Evaluate(), GetReg(left), GetReg(out, sz));
+				Emit("\tmov     %s, (%s)", GetReg(out, sz), GetReg(left));
+				FreeReg(out);
 				goto ReturnEval;
 			}
 
@@ -511,7 +522,17 @@ namespace Symple
 			switch (expression->GetOperator()->GetKind())
 			{
 			case Token::Kind::Equal:
-				Emit("\tmov     %s, (%s)", GetReg(right), GetReg(left));
+				Emit("\tmov     %s, (%s)", GetReg(right, sz), GetReg(left));
+				goto Return;
+			case Token::Kind::PlusEqual:
+				Emit("\tadd     %s, (%s)", GetReg(right, sz), GetReg(left));
+				goto Return;
+			case Token::Kind::MinusEqual:
+				Emit("\tsub     %s, (%s)", GetReg(right, sz), GetReg(left));
+				goto Return;
+			case Token::Kind::AsteriskEqual:
+				Emit("\timul%c   (%s), %s", Suf(sz), GetReg(left), GetReg(right, sz));
+				Emit("\tmov     %s, (%s)", GetReg(right, sz), GetReg(left));
 				goto Return;
 			}
 

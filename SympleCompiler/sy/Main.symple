@@ -1,39 +1,5 @@
-#include "libc/io.sy"
-#include "libc/memory.sy"
-
-#define Vector _Vector* mut
-#define StallocVector (mut Vector)stalloc(12)
-#define MallocVector (mut Vector)malloc(12)
-
-struct _Vector
-{
-	int mut x, mut y, mut z;
-};
-
-void Vector__New(Vector this)
-{
-	&(this).x = 0;
-	&(this).y = 0;
-	&(this).z = 0;
-};
-
-void Vector__Print(Vector this)
-{
-	printf("{ %i, %i, %i }\n", &(this).x, &(this).y, &(this).z);
-};
-
 int main()
 {
-	Vector vec = StallocVector;
-	Vector__New(vec);
-	
-	_Vector mut vecs;
-	vecs.x = 1;
-	vecs.y = 2;
-	vecs.z = 3;
-	
-	Vector__Print(vec);
-	Vector__Print(@vecs);
-
-	0;
+	int mut l = 5;
+	l *= l;
 };
