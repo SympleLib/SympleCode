@@ -77,11 +77,11 @@ namespace Symple
 				mEvaluate = mLeft->Evaluate() * mRight->Evaluate();
 				break;
 			case Token::Kind::Slash:
-				if (mCanEvaluate &= mRight->Evaluate())
+				if (mCanEvaluate &= (bool)mRight->Evaluate())
 					mEvaluate = mLeft->Evaluate() / mRight->Evaluate();
 				break;
 			case Token::Kind::Percentage:
-				if (mCanEvaluate &= mRight->Evaluate())
+				if (mCanEvaluate &= (bool)mRight->Evaluate())
 					mEvaluate = mLeft->Evaluate() % mRight->Evaluate();
 				break;
 			default:

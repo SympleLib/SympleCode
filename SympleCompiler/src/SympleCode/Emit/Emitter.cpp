@@ -340,6 +340,8 @@ namespace Symple
 		{
 		case Node::Kind::CastExpression:
 			return EmitCastExpression(expression->Cast<CastExpressionNode>());
+		case Node::Kind::UnaryExpression:
+			return EmitUnaryExpression(expression->Cast<UnaryExpressionNode>());
 		case Node::Kind::BinaryExpression:
 			return EmitBinaryExpression(expression->Cast<BinaryExpressionNode>());
 		case Node::Kind::StallocExpression:
@@ -600,6 +602,25 @@ namespace Symple
 		}
 	}
 
+
+	Register Emitter::EmitUnaryExpression(const UnaryExpressionNode* expression)
+	{
+		Register reg = EmitExpression(expression->GetValue());
+
+		switch (expression->GetOperator()->GetKind())
+		{
+		case Token::Kind::Exclamation:
+			Emit("\ttest    %s, %s", GetReg(reg), GetReg(reg));
+			Emit("\tsete    %s", GetReg(reg, 1));
+			Emit("\tmovzb%c  %s, %s", Suf(), GetReg(reg, 1), GetReg(reg));
+			return reg;
+		case Token::Kind::Minus:
+			Emit("\tneg     %s", GetReg(reg));
+			return reg;
+		}
+
+		return nullreg;
+	}
 
 	Register Emitter::EmitBinaryExpression(const BinaryExpressionNode* expression)
 	{
