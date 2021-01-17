@@ -639,6 +639,8 @@ namespace Symple
 				return left;
 			}
 		}
+
+		return nullreg;
 	}
 
 

@@ -5,4 +5,6 @@ int main()
 	int* mut ptr = (int* mut)stalloc(8);
 	ptr[i0] = 5;
 	ptr[i1] = 4;
+	
+	ptr[i0] / ptr[i1];
 };

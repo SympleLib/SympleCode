@@ -12,10 +12,11 @@ namespace Symple
 		const ExpressionNode* mRight;
 
 		int mEvaluate;
+		bool mCanEvaluate;
 	public:
 		BinaryExpressionNode(const Token* oqerator, const ExpressionNode* left, const ExpressionNode* right)
 			: OperatorExpressionNode(left->GetType(), oqerator), mLeft(left), mRight(right),
-				mEvaluate()
+				mEvaluate(), mCanEvaluate(mLeft->CanEvaluate() && mRight->CanEvaluate())
 		{
 			if (!mRight->GetType()->CanImplicitlyCastTo(mLeft->GetType()))
 			{
@@ -76,10 +77,12 @@ namespace Symple
 				mEvaluate = mLeft->Evaluate() * mRight->Evaluate();
 				break;
 			case Token::Kind::Slash:
-				mEvaluate = mLeft->Evaluate() / mRight->Evaluate();
+				if (mCanEvaluate &= mRight->Evaluate())
+					mEvaluate = mLeft->Evaluate() / mRight->Evaluate();
 				break;
 			case Token::Kind::Percentage:
-				mEvaluate = mLeft->Evaluate() % mRight->Evaluate();
+				if (mCanEvaluate &= mRight->Evaluate())
+					mEvaluate = mLeft->Evaluate() % mRight->Evaluate();
 				break;
 			default:
 				Diagnostics::ReportError(mOperator, "Invalid Operation!");
@@ -93,7 +96,7 @@ namespace Symple
 
 		bool CanEvaluate() const override
 		{
-			return mLeft->CanEvaluate() && mRight->CanEvaluate();
+			return mCanEvaluate;
 		}
 
 		int Evaluate() const override
