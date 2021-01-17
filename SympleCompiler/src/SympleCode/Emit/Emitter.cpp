@@ -185,6 +185,15 @@ namespace Symple
 	}
 
 
+	void Emitter::PushStruct(const ExpressionNode* ztruct)
+	{
+		for (unsigned int i = 0; i < ztruct->GetType()->GetSize(); i += platsize)
+		{
+
+		}
+	}
+
+
 	void Emitter::Loc(const Token* tok)
 	{
 		Emit(".loc 1 %i %i", tok->GetLine(), tok->GetColumn());

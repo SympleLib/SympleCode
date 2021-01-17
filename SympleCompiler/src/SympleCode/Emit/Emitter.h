@@ -116,6 +116,8 @@ namespace Symple
 		void Push(Register);
 		void Pop(Register);
 
+		void PushStruct(const ExpressionNode*);
+
 		void Loc(const Token*);
 
 		void EmitMember(const MemberNode*);
@@ -142,8 +144,6 @@ namespace Symple
 		Register EmitFunctionCallExpression(const FunctionCallExpressionNode*);
 		Register EmitParenthesizedExpression(const ParenthesizedExpressionNode*);
 		Register EmitVariableAddressExpression(const VariableAddressExpressionNode*);
-		void EmitStructInitializerExpression(const StructInitializerExpressionNode*, Register);
-		void EmitStructInitializerExpression(const StructInitializerExpressionNode*, const ModifiableExpressionNode*);
 
 		Register EmitModifiableExpression(const ModifiableExpressionNode*, bool retptr = false);
 		Register EmitFieldExpression(const FieldExpressionNode*, bool retptr = false);
