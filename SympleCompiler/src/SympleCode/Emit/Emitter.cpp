@@ -249,7 +249,7 @@ namespace Symple
 			mReturn = mData++;
 
 		if (member->GetBody()->GetStackUsage())
-			Emit("\tsub%c    $%i, %s", Suf(), member->GetBody()->GetStackUsage(), GetReg(regsp));
+			Emit("\tsub     $%i, %s", member->GetBody()->GetStackUsage(), GetReg(regsp));
 
 		for (const StatementNode* statement : member->GetBody()->GetStatements())
 		{
@@ -340,6 +340,8 @@ namespace Symple
 		{
 		case Node::Kind::CastExpression:
 			return EmitCastExpression(expression->Cast<CastExpressionNode>());
+		case Node::Kind::ListExpression:
+			return EmitListExpression(expression->Cast<ListExpressionNode>());
 		case Node::Kind::UnaryExpression:
 			return EmitUnaryExpression(expression->Cast<UnaryExpressionNode>());
 		case Node::Kind::BinaryExpression:
@@ -362,6 +364,34 @@ namespace Symple
 	Register Emitter::EmitCastExpression(const CastExpressionNode* expression)
 	{
 		return EmitExpression(expression->GetExpression());
+	}
+
+	Register Emitter::EmitListExpression(const ListExpressionNode* expression)
+	{
+		unsigned int sz = expression->GetExpressionType()->GetSize();
+
+		Emit("\tsub     $%i, %s", expression->GetExpressions().size() * sz, GetReg(regsp));
+		mStack += expression->GetExpressions().size() * sz;
+		unsigned int off = 0;
+		for (unsigned int i = 0; i < expression->GetExpressions().size(); i++)
+		{
+			const ExpressionNode* item = expression->GetExpressions()[i];
+
+			if (item->CanEvaluate())
+				Emit("\tmov%c    $%i, -%i(%s)", Suf(sz), item->Evaluate(), mStack - off, GetReg(regbp));
+			else
+			{
+				Register ireg = EmitExpression(item);
+				Emit("\tmov%c    %s, -%i(%s)", Suf(sz), GetReg(ireg), mStack - off, GetReg(regbp));
+				FreeReg(ireg);
+			}
+
+			off += sz;
+		}
+
+		Register reg = AllocReg();
+		Emit("\tlea     -%i(%s), %s", mStack, GetReg(regbp), GetReg(reg));
+		return reg;
 	}
 
 	Register Emitter::EmitStallocExpression(const StallocExpressionNode* expression)
@@ -574,6 +604,9 @@ namespace Symple
 					Emit("\tadd     $%i, %s", expression->GetIndex()->Evaluate() * sz, GetReg(addr));
 				else
 					Emit("\tmov     %i(%s), %s", expression->GetIndex()->Evaluate() * sz, GetReg(addr), GetReg(addr));
+			else
+				if (!retptr)
+					Emit("\tmov     (%s), %s", GetReg(addr), GetReg(addr));
 		}
 		else
 		{

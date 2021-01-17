@@ -59,7 +59,7 @@ namespace Symple
 			return mClose;
 		}
 
-		const std::vector<const ExpressionNode*> GetExpressions() const
+		const std::vector<const ExpressionNode*>& GetExpressions() const
 		{
 			return mExpressions;
 		}

@@ -707,11 +707,12 @@ namespace Symple
 	{
 		unsigned int pPosition = mPosition;
 		ModifiableExpressionNode* left = ParseModifiableExpression();
-		while (Peek()->IsEither({ Token::Kind::OpenBracket }))
-		{
-			if (Peek()->Is(Token::Kind::OpenBracket))
-				left = ParsePointerIndexExpression(left);
-		}
+		if (left)
+			while (Peek()->IsEither({ Token::Kind::OpenBracket }))
+			{
+				if (Peek()->Is(Token::Kind::OpenBracket))
+					left = ParsePointerIndexExpression(left);
+			}
 
 		const Token* oqerator = Next();
 		int prority = Priority::AssignmentOperatorPriority(oqerator);
@@ -828,7 +829,7 @@ namespace Symple
 	ListExpressionNode* Parser::ParseListExpression()
 	{
 		const Token* open = Match(Token::Kind::OpenBracket);
-
+		
 		std::vector<const ExpressionNode*> expressions;
 		while (!Peek()->Is(Token::Kind::CloseBracket))
 		{

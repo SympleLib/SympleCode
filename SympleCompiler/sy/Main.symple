@@ -1,10 +1,6 @@
 int main()
 {
-	int i0 = 0;
-	int i1 = 1;
-	int* mut ptr = (int* mut)stalloc(8);
-	ptr[i0] = 5;
-	ptr[i1] = 4;
+	int* mut ptr = [5, 4];
 	
-	!!(ptr[i0] * ptr[i1]);
+	ptr[0] * ptr[1];
 };
