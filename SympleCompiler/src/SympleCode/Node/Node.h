@@ -42,6 +42,7 @@ namespace Symple
 
 			FunctionPointerExpression,
 			CharacterLiteralExpression,
+			StructInitializerExpression,
 
 			Member,
 			CompilationUnit,
@@ -98,7 +99,7 @@ namespace Symple
 			"NullLiteralExpression",
 			"FunctionCallExpression", "PointerIndexExpression", "ParenthesizedExpression",
 			"StringLiteralExpression", "NumberLiteralExpression", "BooleanLiteralExpression",
-			"FunctionPointerExpression", "CharacterLiteralExpression",
+			"FunctionPointerExpression", "CharacterLiteralExpression", "StructInitializerExpression",
 			"Member", "CompilationUnit", "FunctionDeclaration",
 			"Statement", "IfStatement", "AsmStatement", "BlockStatement", "BreakStatement",
 			"WhileStatement", "GlobalStatement", "ReturnStatement",

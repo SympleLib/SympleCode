@@ -46,7 +46,7 @@ namespace Symple
 
 		Kind GetKind() const override
 		{
-			return Kind::ListExpression;
+			return Kind::StructInitializerExpression;
 		}
 
 		bool CanEvaluate() const override

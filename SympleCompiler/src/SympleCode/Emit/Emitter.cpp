@@ -2,7 +2,7 @@
 
 #include <Windows.h>
 
-#define Emit(fmt, ...) fprintf(mFile, fmt "\n", __VA_ARGS__)
+#define Emit(fmt, ...) ((void)fprintf(mFile, fmt "\n", __VA_ARGS__))
 #define EmitResource(fmt, ...) fprintf_s(mResourceFile, fmt "\n", __VA_ARGS__)
 
 namespace Symple
@@ -177,19 +177,41 @@ namespace Symple
 	void Emitter::Push(Register reg)
 	{
 		Emit("\tpush    %s", GetReg(reg));
+		mStack += platsize;
 	}
 
 	void Emitter::Pop(Register reg)
 	{
 		Emit("\tpop     %s", GetReg(reg));
+		mStack -= platsize;
 	}
 
 
-	void Emitter::PushStruct(const ExpressionNode* ztruct)
+	int Emitter::Align(int n, int align)
 	{
-		for (unsigned int i = 0; i < ztruct->GetType()->GetSize(); i += platsize)
-		{
+		return (n + align - 1) / align * align;
+	}
 
+	void Emitter::PushStruct(const StructDeclarationNode* ty, Register ptr)
+	{
+		if (!ty->GetSize())
+			return Emit("\tpush    $0");
+		
+		unsigned int sz = Align(ty->GetSize(), platsize);
+		Emit("\tsub     $%i, %s", sz, GetReg(regsp));
+		mStack += sz;
+
+		for (unsigned int i = 0; i < sz; i += platsize)
+		{
+			Register freg = AllocReg();
+
+			if (i)
+				Emit("\tmov     %i(%s), %s", i, GetReg(ptr), GetReg(freg));
+			else
+				Emit("\tmov     (%s), %s", GetReg(ptr), GetReg(freg));
+
+			Emit("\tmov     %s, %i(%s)", GetReg(freg), i, GetReg(regsp));
+			FreeReg(freg);
 		}
 	}
 
@@ -430,13 +452,25 @@ namespace Symple
 
 		for (unsigned int i = expression->GetArguments()->GetArguments().size(); i > 0; i--)
 		{
-			Register reg = EmitExpression(expression->GetArguments()->GetArguments()[i - 1]);
-			Push(reg);
-			FreeReg(reg);
+			switch (expression->GetArguments()->GetArguments()[i - 1]->GetKind())
+			{
+			case Node::Kind::StructInitializerExpression:
+				Register reg = AllocReg();
+				EmitStruct(expression->GetArguments()->GetArguments()[i - 1]);
+				PushStruct();
+				FreeReg(reg);
+				break;
+			default:
+				Register reg = EmitExpression(expression->GetArguments()->GetArguments()[i - 1]);
+				Push(reg);
+				FreeReg(reg);
+				break;
+			}
 		}
 
 		Emit("\tcall    %s", Debug::GetFunction(expression->GetName()->GetLex(), expression->GetArguments())->GetAsmName().c_str());
 		Emit("\tadd     $%i, %s", expression->GetArguments()->GetArguments().size() * platsize, GetReg(regsp));
+		mStack -= expression->GetArguments()->GetArguments().size() * platsize;
 		Register reg = AllocReg(regax);
 		if (reg != regax)
 			Emit("\tmov     %s, %s", GetReg(regax), GetReg(reg));
