@@ -117,6 +117,7 @@ namespace Symple
 		void Pop(Register);
 
 		int Align(int n, int align);
+		void PushStruct(const StructInitializerExpressionNode* ztruct);
 		void PushStruct(const StructDeclarationNode* ty, Register ptr);
 
 		void Loc(const Token*);

@@ -192,10 +192,29 @@ namespace Symple
 		return (n + align - 1) / align * align;
 	}
 
+	void Emitter::PushStruct(const StructInitializerExpressionNode* ztruct)
+	{
+		const TypeNode* ty = ztruct->GetType();
+
+		if (!ty->GetSize())
+			return;
+
+		unsigned int sz = Align(ty->GetSize(), platsize);
+		Emit("\tsub     $%i, %s", sz, GetReg(regsp));
+		mStack += sz;
+
+		for (unsigned int i = 0; i < sz; i += platsize)
+		{
+			ztruct->GetExpressions();
+
+			Emit("\tmov     $%i, %i(%s)", , i, GetReg(regsp));
+		}
+	}
+
 	void Emitter::PushStruct(const StructDeclarationNode* ty, Register ptr)
 	{
 		if (!ty->GetSize())
-			return Emit("\tpush    $0");
+			return;
 		
 		unsigned int sz = Align(ty->GetSize(), platsize);
 		Emit("\tsub     $%i, %s", sz, GetReg(regsp));
