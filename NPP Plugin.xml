@@ -13,7 +13,7 @@
             <Keywords name="Numbers, suffix1"></Keywords>
             <Keywords name="Numbers, suffix2"></Keywords>
             <Keywords name="Numbers, range"></Keywords>
-            <Keywords name="Operators1">+ - / * ^ &amp; | ~ % ! != == = &amp;&amp; || ^^ : , &gt; &lt; &lt;&lt; &gt;&gt; @ : ; $</Keywords>
+            <Keywords name="Operators1">+ - / * ^ &amp; | ~ % ! != == = &amp;&amp; || ^^ : , &gt; &lt; &lt;&lt; &gt;&gt; @ : ; .</Keywords>
             <Keywords name="Operators2"></Keywords>
             <Keywords name="Folders in code1, open">{ ( [</Keywords>
             <Keywords name="Folders in code1, middle"></Keywords>
@@ -28,7 +28,7 @@
             <Keywords name="Keywords2">0x</Keywords>
             <Keywords name="Keywords3">struct return const mutable mut static hint extern symplecall stdcall ccall private priv</Keywords>
             <Keywords name="Keywords4">#</Keywords>
-            <Keywords name="Keywords5">null asm</Keywords>
+            <Keywords name="Keywords5">null asm stalloc</Keywords>
             <Keywords name="Keywords6"></Keywords>
             <Keywords name="Keywords7"></Keywords>
             <Keywords name="Keywords8"></Keywords>

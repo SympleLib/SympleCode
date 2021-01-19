@@ -62,6 +62,46 @@ namespace Symple
 		return pVariables.size();
 	}
 
+
+	const FunctionDeclarationNode* Debug::GetFunction(const std::string_view& name, const FunctionArgumentsNode* arguments)
+	{
+		for (const FunctionDeclarationNode* function : sFunctions)
+		{
+			if (function->GetName()->GetLex() == name)
+			{
+				if (function->GetModifiers()->GetFormatType())
+					switch (function->GetModifiers()->GetFormatType()->GetModifier()->GetKind())
+					{
+					case Token::Kind::SympleCall:
+						goto SympleCall;
+					case Token::Kind::StdCall:
+					case Token::Kind::CCall:
+						return function;
+					}
+
+			SympleCall:
+				bool same = true;
+
+				for (unsigned int i = 0; i < arguments->GetArguments().size(); i++)
+				{
+					if (i >= function->GetArguments()->GetArguments().size())
+					{
+						same = false;
+
+						break;
+					}
+
+					same &= function->GetArguments()->GetArguments()[i]->GetType()->GetType() == arguments->GetArguments()[i]->GetType()->GetType();
+				}
+
+				if (same)
+					return function;
+			}
+		}
+
+		return nullptr;
+	}
+
 	const FunctionDeclarationNode* Debug::GetFunction(const std::string_view& name, const FunctionCallArgumentsNode* arguments)
 	{
 		for (const FunctionDeclarationNode* function : sFunctions)

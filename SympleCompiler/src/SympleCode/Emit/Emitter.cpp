@@ -217,7 +217,7 @@ namespace Symple
 	{
 		if (!ty->GetSize())
 			return;
-		
+
 		unsigned int sz = Align(ty->GetSize(), platsize);
 		Emit("\tsub     $%i, %s", sz, GetReg(regsp));
 		mStack += sz;
@@ -363,11 +363,18 @@ namespace Symple
 
 		switch (statement->GetKind())
 		{
+		case Node::Kind::AsmStatement:
+			return EmitAsmStatement(statement->Cast<AsmStatementNode>());
 		case Node::Kind::ExpressionStatement:
 			return EmitExpressionStatement(statement->Cast<ExpressionStatementNode>());
 		case Node::Kind::VariableDeclaration:
 			return EmitVariableDeclaration(statement->Cast<VariableDeclarationNode>());
 		}
+	}
+
+	void Emitter::EmitAsmStatement(const AsmStatementNode* statement)
+	{
+		Emit("%s", std::string(statement->GetInstructions()->GetLex()).c_str());
 	}
 
 	void Emitter::EmitExpressionStatement(const ExpressionStatementNode* statement)
@@ -462,6 +469,8 @@ namespace Symple
 			return EmitParenthesizedExpression(expression->Cast<ParenthesizedExpressionNode>());
 		case Node::Kind::StringLiteralExpression:
 			return EmitStringLiteralExpression(expression->Cast<StringLiteralExpressionNode>());
+		case Node::Kind::FunctionPointerExpression:
+			return EmitFunctionPointerExpression(expression->Cast<FunctionPointerExpressionNode>());
 		case Node::Kind::VariableAddressExpression:
 			return EmitVariableAddressExpression(expression->Cast<VariableAddressExpressionNode>());
 		}
@@ -567,6 +576,14 @@ namespace Symple
 	Register Emitter::EmitParenthesizedExpression(const ParenthesizedExpressionNode* expression)
 	{
 		return EmitExpression(expression->GetExpression());
+	}
+
+	Register Emitter::EmitFunctionPointerExpression(const FunctionPointerExpressionNode* expression)
+	{
+		Register reg = AllocReg();
+		Emit("\tmov     $%s, %s", expression->GetFunction()->GetAsmName().c_str(), GetReg(reg));
+
+		return reg;
 	}
 
 	Register Emitter::EmitVariableAddressExpression(const VariableAddressExpressionNode* expression)

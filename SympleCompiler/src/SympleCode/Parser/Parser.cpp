@@ -803,6 +803,8 @@ namespace Symple
 		case Token::Kind::Character:
 			return new CharacterLiteralExpressionNode(Next());
 		case Token::Kind::At:
+			if (Peek(2)->Is(Token::Kind::OpenParenthesis))
+				return ParseFunctionPointerExpression();
 			return ParseVariableAddressExpression();
 		case Token::Kind::OpenBracket:
 			return ParseListExpression();
@@ -870,6 +872,15 @@ namespace Symple
 		const Token* close = Match(Token::Kind::CloseParenthesis);
 
 		return new ParenthesizedExpressionNode(open, expression, close);
+	}
+
+	FunctionPointerExpressionNode* Parser::ParseFunctionPointerExpression()
+	{
+		const Token* symbol = Match(Token::Kind::At);
+		const Token* name = Match(Token::Kind::Identifier);
+		FunctionArgumentsNode* arguments = ParseFunctionArguments();
+		
+		return new FunctionPointerExpressionNode(symbol, name, arguments);
 	}
 
 	StructInitializerExpressionNode* Parser::ParseStructInitializerExpression()

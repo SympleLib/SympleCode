@@ -32,6 +32,7 @@
 #include "SympleCode/Node/Expression/TernaryExpressionNode.h"
 #include "SympleCode/Node/Expression/FunctionCallExpressionNode.h"
 #include "SympleCode/Node/Expression/ParenthesizedExpressionNode.h"
+#include "SympleCode/Node/Expression/FunctionPointerExpressionNode.h"
 #include "SympleCode/Node/Expression/StructInitializerExpressionNode.h"
 
 #include "SympleCode/Node/Expression/Literal/LiteralExpressionNode.h"
@@ -109,6 +110,7 @@ namespace Symple
 		StallocExpressionNode* ParseStallocExpression();
 		TernaryExpressionNode* ParseTernaryExpression(ExpressionNode* condition);
 		ParenthesizedExpressionNode* ParseParenthesizedExpression();
+		FunctionPointerExpressionNode* ParseFunctionPointerExpression();
 		StructInitializerExpressionNode* ParseStructInitializerExpression();
 
 		ModifiableExpressionNode* ParseModifiableExpression();

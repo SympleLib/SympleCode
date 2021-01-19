@@ -1,6 +1,7 @@
 #pragma once
 
 #include "SympleCode/Node/Member/MemberNode.h"
+#include "SympleCode/Node/Member/StructDeclarationNode.h"
 #include "SympleCode/Node/Function/FunctionArgumentsNode.h"
 #include "SympleCode/Node/Function/FunctionModifiersNode.h"
 #include "SympleCode/Node/Statement/BlockStatementNode.h"

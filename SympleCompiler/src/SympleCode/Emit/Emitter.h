@@ -23,6 +23,7 @@
 #include "SympleCode/Node/Expression/TernaryExpressionNode.h"
 #include "SympleCode/Node/Expression/FunctionCallExpressionNode.h"
 #include "SympleCode/Node/Expression/ParenthesizedExpressionNode.h"
+#include "SympleCode/Node/Expression/FunctionPointerExpressionNode.h"
 #include "SympleCode/Node/Expression/StructInitializerExpressionNode.h"
 
 #include "SympleCode/Node/Expression/Literal/NullLiteralExpressionNode.h"
@@ -147,6 +148,7 @@ namespace Symple
 		Register EmitTernaryExpression(const TernaryExpressionNode*);
 		Register EmitFunctionCallExpression(const FunctionCallExpressionNode*);
 		Register EmitParenthesizedExpression(const ParenthesizedExpressionNode*);
+		Register EmitFunctionPointerExpression(const FunctionPointerExpressionNode*);
 		Register EmitVariableAddressExpression(const VariableAddressExpressionNode*);
 
 		Register EmitModifiableExpression(const ModifiableExpressionNode*, bool retptr = false);

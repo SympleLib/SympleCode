@@ -10,6 +10,14 @@ hint void PrintPerson(Person);
 
 int main()
 {
+	void* Print = @printf(char*);
+	
+	"Hello, world!\n";
+	asm "
+	push $..0
+	call *_Print$1(%ebp)
+	";
+
 	Person me = Person { "Teddy", 12 };
 
 	PrintPerson(me);

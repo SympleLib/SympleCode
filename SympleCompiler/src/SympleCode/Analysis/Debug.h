@@ -35,6 +35,7 @@ namespace Symple
 		static void EndScope();
 		static unsigned int GetDepth();
 
+		static const FunctionDeclarationNode* GetFunction(const std::string_view& name, const FunctionArgumentsNode* arguments);
 		static const FunctionDeclarationNode* GetFunction(const std::string_view& name, const FunctionCallArgumentsNode* arguments);
 		static const std::vector<const FunctionDeclarationNode*>& GetFunctions();
 
