@@ -463,6 +463,8 @@ namespace Symple
 			return EmitBinaryExpression(expression->Cast<BinaryExpressionNode>());
 		case Node::Kind::StallocExpression:
 			return EmitStallocExpression(expression->Cast<StallocExpressionNode>());
+		case Node::Kind::TernaryExpression:
+			return EmitTernaryExpression(expression->Cast<TernaryExpressionNode>());
 		case Node::Kind::FunctionCallExpression:
 			return EmitFunctionCallExpression(expression->Cast<FunctionCallExpressionNode>());
 		case Node::Kind::ParenthesizedExpression:
@@ -528,6 +530,27 @@ namespace Symple
 
 		Emit("\tmov     %s, %s", GetReg(regsp), GetReg(reg));
 		return reg;
+	}
+
+	Register Emitter::EmitTernaryExpression(const TernaryExpressionNode* expression)
+	{
+		unsigned int elze = mData++, end = mData++;
+
+		Register cond = EmitExpression(expression->GetCondition());
+		Emit("\ttest    %s, %s", GetReg(cond), GetReg(cond));
+		Emit("\tje      ..%i", elze);
+
+		Register then = EmitExpression(expression->GetThen());
+		FreeReg(then);
+
+		Emit("\tjmp     ..%i", end);
+		Emit("\t..%i:", elze);
+
+		Register elz = EmitExpression(expression->GetElse());
+
+		Emit("\t..%i:", end);
+
+		return then;
 	}
 
 	Register Emitter::EmitFunctionCallExpression(const FunctionCallExpressionNode* expression)

@@ -16,6 +16,7 @@ int main()
 	asm "
 	push $..0
 	call *_Print$1(%ebp)
+	add $4, %esp
 	";
 
 	Person me = Person { "Teddy", 12 };
@@ -28,4 +29,6 @@ int main()
 void PrintPerson(Person p)
 {
 	printf("Name: '%s', Age: %i\n", p.Name, p.Age);
+	
+	printf("%s!\n", !!p.Age ? "You are older than 1" : "You are younger than 1");
 };
