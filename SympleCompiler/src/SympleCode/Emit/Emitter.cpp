@@ -203,11 +203,13 @@ namespace Symple
 		Emit("\tsub     $%i, %s", sz, GetReg(regsp));
 		mStack += sz;
 
-		for (unsigned int i = 0; i < sz; i += platsize)
+		for (unsigned int i = 0, off = 0; i < ztruct->GetExpressions().size(); i++)
 		{
-			ztruct->GetExpressions();
+			Register reg = EmitExpression(ztruct->GetExpressions()[i]);
+			Emit("\tmov     %s, %i(%s)", GetReg(reg), off, GetReg(regsp));
+			FreeReg(reg);
 
-			Emit("\tmov     $%i, %i(%s)", , i, GetReg(regsp));
+			off += ztruct->GetExpressions()[i]->GetType()->GetSize();
 		}
 	}
 
@@ -474,10 +476,7 @@ namespace Symple
 			switch (expression->GetArguments()->GetArguments()[i - 1]->GetKind())
 			{
 			case Node::Kind::StructInitializerExpression:
-				Register reg = AllocReg();
-				EmitStruct(expression->GetArguments()->GetArguments()[i - 1]);
-				PushStruct();
-				FreeReg(reg);
+				PushStruct(expression->GetArguments()->GetArguments()[i - 1]->Cast<StructInitializerExpressionNode>());
 				break;
 			default:
 				Register reg = EmitExpression(expression->GetArguments()->GetArguments()[i - 1]);
@@ -560,6 +559,7 @@ namespace Symple
 		const char* name = nameStr.c_str();
 		unsigned int depth = Debug::GetVariableDepth(expression->GetName()->GetLex());
 		unsigned int sz = decl->GetType()->GetSize();
+		sz = sz > platsize ? platsize : sz;
 
 		Register reg = AllocReg();
 		if (retptr)

@@ -1,6 +1,21 @@
+#include "libc/io.sy"
+
+struct Person
+{
+	char* Name;
+	int Age;
+};
+
+hint void PrintPerson(Person);
+
 int main()
 {
-	int* mut ptr = [5, 4];
+	PrintPerson(Person { "Teddy", 12 });
 	
-	ptr[0] * ptr[1];
+	0;
+};
+
+void PrintPerson(Person p)
+{
+	printf("Name: '%s', Age: %i\n", p.Name, p.Age);
 };
