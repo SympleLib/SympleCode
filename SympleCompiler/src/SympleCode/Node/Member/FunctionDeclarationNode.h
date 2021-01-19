@@ -21,6 +21,12 @@ namespace Symple
 		FunctionDeclarationNode(const TypeNode* type, const Token* name, const FunctionArgumentsNode* arguments, const FunctionModifiersNode* modifiers, const BlockStatementNode* body)
 			: mType(type), mName(name), mArguments(arguments), mModifiers(modifiers), mBody(body)
 		{
+			if (mType->GetType()->Is<StructDeclarationNode>() && !mType->GetContinue())
+			{
+				Diagnostics::ReportError(name, "Struct Return Values are not Supported");
+				return;
+			}
+
 			std::stringstream ss;
 
 			std::stringstream prefix;
