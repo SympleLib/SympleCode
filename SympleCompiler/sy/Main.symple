@@ -10,7 +10,9 @@ hint void PrintPerson(Person);
 
 int main()
 {
-	PrintPerson(Person { "Teddy", 12 });
+	Person me = Person { "Teddy", 12 };
+
+	PrintPerson(me);
 	
 	0;
 };

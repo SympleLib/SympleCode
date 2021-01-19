@@ -39,19 +39,12 @@ namespace Symple
 					mOpen, "Unmatched Types : \n % s, \n % s",
 					mType->GetType()->Cast<StructDeclarationNode>()
 						->GetFields()->GetFields()[i]->GetType()->ToString("", i == mExpressions.size() - 1).c_str(), mExpressions[i]->GetType()->ToString().c_str());
-
-				mCanEvaluate &= mExpressions[i]->CanEvaluate() || mExpressions[i]->Is<StringLiteralExpressionNode>();
 			}
 		}
 
 		Kind GetKind() const override
 		{
 			return Kind::StructInitializerExpression;
-		}
-
-		bool CanEvaluate() const override
-		{
-			return mCanEvaluate;
 		}
 
 		std::string ToString(const std::string& indent = "", bool last = true) const override

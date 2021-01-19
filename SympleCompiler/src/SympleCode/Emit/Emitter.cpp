@@ -222,17 +222,53 @@ namespace Symple
 		Emit("\tsub     $%i, %s", sz, GetReg(regsp));
 		mStack += sz;
 
+		Register freg = AllocReg();
 		for (unsigned int i = 0; i < sz; i += platsize)
 		{
-			Register freg = AllocReg();
-
 			if (i)
 				Emit("\tmov     %i(%s), %s", i, GetReg(ptr), GetReg(freg));
 			else
 				Emit("\tmov     (%s), %s", GetReg(ptr), GetReg(freg));
 
 			Emit("\tmov     %s, %i(%s)", GetReg(freg), i, GetReg(regsp));
-			FreeReg(freg);
+		}
+		FreeReg(freg);
+	}
+
+	void Emitter::MovStruct(const StructDeclarationNode* ty, Register from, Register to)
+	{
+		if (!ty->GetSize())
+			return;
+
+		unsigned int sz = Align(ty->GetSize(), platsize);
+
+		Register freg = AllocReg();
+		for (unsigned int i = 0; i < sz; i += platsize)
+		{
+			if (i)
+				Emit("\tmov     %i(%s), %s", i, GetReg(from), GetReg(freg));
+			else
+				Emit("\tmov     (%s), %s", GetReg(from), GetReg(freg));
+
+			Emit("\tmov     %s, %i(%s)", GetReg(freg), i, GetReg(to));
+		}
+		FreeReg(freg);
+	}
+
+	void Emitter::MovStruct(const StructInitializerExpressionNode* ztruct, Register ptr)
+	{
+		Register reg = AllocReg();
+
+		const TypeNode* ty = ztruct->GetType();
+		unsigned int sz = Align(ty->GetSize(), platsize);
+
+		for (unsigned int i = 0, off = 0; i < ztruct->GetExpressions().size(); i++)
+		{
+			Register reg = EmitExpression(ztruct->GetExpressions()[i]);
+			Emit("\tmov     %s, %i(%s)", GetReg(reg), off, GetReg(ptr));
+			FreeReg(reg);
+
+			off += ztruct->GetExpressions()[i]->GetType()->GetSize();
 		}
 	}
 
@@ -362,9 +398,29 @@ namespace Symple
 			}
 			else
 			{
-				Register init = EmitExpression(statement->GetInitializer());
-				Emit("\tmov     %s, _%s$%i(%s)", GetReg(init), name, depth, GetReg(regbp));
-				FreeReg(init);
+				if (statement->GetInitializer()->GetType()->GetType()->Is<StructDeclarationNode>() && !statement->GetInitializer()->GetType()->GetContinue())
+				{
+					Register left = AllocReg();
+					Emit("\tlea     _%s$%i(%s), %s", name, depth, GetReg(regbp), GetReg(left));
+
+					if (statement->GetInitializer()->Is<StructInitializerExpressionNode>())
+					{
+						MovStruct(statement->GetInitializer()->Cast<StructInitializerExpressionNode>(), left);
+					}
+					else
+					{
+						Register right = EmitModifiableExpression(statement->GetInitializer()->Cast<ModifiableExpressionNode>(), true);
+						MovStruct(statement->GetInitializer()->GetType()->GetType()->Cast<StructDeclarationNode>(), right, left);
+					}
+
+					FreeReg(left);
+				}
+				else
+				{
+					Register init = EmitExpression(statement->GetInitializer());
+					Emit("\tmov     %s, _%s$%i(%s)", GetReg(init), name, depth, GetReg(regbp));
+					FreeReg(init);
+				}
 			}
 		}
 
@@ -479,9 +535,18 @@ namespace Symple
 				PushStruct(expression->GetArguments()->GetArguments()[i - 1]->Cast<StructInitializerExpressionNode>());
 				break;
 			default:
-				Register reg = EmitExpression(expression->GetArguments()->GetArguments()[i - 1]);
-				Push(reg);
-				FreeReg(reg);
+				if (expression->GetArguments()->GetArguments()[i - 1]->GetType()->GetType()->Is<StructDeclarationNode>() && !expression->GetArguments()->GetArguments()[i - 1]->GetType()->GetContinue())
+				{
+					Register reg = EmitModifiableExpression(expression->GetArguments()->GetArguments()[i - 1]->Cast<ModifiableExpressionNode>(), true);
+					PushStruct(expression->GetArguments()->GetArguments()[i - 1]->GetType()->GetType()->Cast<StructDeclarationNode>(), reg);
+					FreeReg(reg);
+				}
+				else
+				{
+					Register reg = EmitExpression(expression->GetArguments()->GetArguments()[i - 1]);
+					Push(reg);
+					FreeReg(reg);
+				}
 				break;
 			}
 		}
@@ -574,8 +639,20 @@ namespace Symple
 	{
 		unsigned int sz = expression->GetType()->GetSize();
 		Register left = EmitModifiableExpression(expression->GetLeft(), true);
-		
-		if (expression->GetRight()->CanEvaluate())
+
+		if (expression->GetRight()->GetType()->GetType()->Is<StructDeclarationNode>() && !expression->GetRight()->GetType()->GetContinue())
+		{
+			if (expression->GetRight()->Is<StructInitializerExpressionNode>())
+			{
+				MovStruct(expression->GetRight()->Cast<StructInitializerExpressionNode>(), left);
+			}
+			else
+			{
+				Register right = EmitModifiableExpression(expression->GetRight()->Cast<ModifiableExpressionNode>(), true);
+				MovStruct(expression->GetRight()->GetType()->GetType()->Cast<StructDeclarationNode>(), right, left);
+			}
+		}
+		else if (expression->GetRight()->CanEvaluate())
 		{
 			switch (expression->GetOperator()->GetKind())
 			{
@@ -652,6 +729,8 @@ namespace Symple
 				return right;
 			}
 		}
+
+		return nullreg;
 	}
 
 	Register Emitter::EmitPointerIndexExpression(const PointerIndexExpressionNode* expression, bool retptr)
