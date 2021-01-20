@@ -363,8 +363,12 @@ namespace Symple
 
 		switch (statement->GetKind())
 		{
+		case Node::Kind::IfStatement:
+			return EmitIfStatement(statement->Cast<IfStatementNode>());
 		case Node::Kind::AsmStatement:
 			return EmitAsmStatement(statement->Cast<AsmStatementNode>());
+		case Node::Kind::BlockStatement:
+			return EmitBlockStatement(statement->Cast<BlockStatementNode>());
 		case Node::Kind::ExpressionStatement:
 			return EmitExpressionStatement(statement->Cast<ExpressionStatementNode>());
 		case Node::Kind::VariableDeclaration:
@@ -372,9 +376,64 @@ namespace Symple
 		}
 	}
 
+	void Emitter::EmitIfStatement(const IfStatementNode* statement)
+	{
+		if (statement->GetElse())
+		{
+			unsigned int elze = mData++, end = mData++;
+
+			Register cond = EmitExpression(statement->GetCondition());
+			Emit("\ttest    %s, %s", GetReg(cond), GetReg(cond));
+			Emit("\tje      ..%i", elze);
+
+			EmitBlockStatement(statement->GetThen());
+
+			Emit("\tjmp     ..%i", end);
+			Emit("\t..%i:", elze);
+
+			EmitBlockStatement(statement->GetElse());
+
+			Emit("\t..%i:", end);
+		}
+		else
+		{
+			unsigned int end = mData++;
+
+			Register cond = EmitExpression(statement->GetCondition());
+			Emit("\ttest    %s, %s", GetReg(cond), GetReg(cond));
+			Emit("\tje      ..%i", end);
+
+			EmitBlockStatement(statement->GetThen());
+
+			Emit("\t..%i:", end);
+		}
+	}
+
 	void Emitter::EmitAsmStatement(const AsmStatementNode* statement)
 	{
 		Emit("%s", std::string(statement->GetInstructions()->GetLex()).c_str());
+	}
+
+	void Emitter::EmitBlockStatement(const BlockStatementNode* statement)
+	{
+		if (statement->GetStackUsage())
+		{
+			Emit("\tsub%c    $%i, %s", Suf(), statement->GetStackUsage(), GetReg(regsp));
+			mStack += statement->GetStackUsage();
+		}
+
+		Debug::BeginScope();
+
+		for (const StatementNode* statement : statement->GetStatements())
+			EmitStatement(statement);
+
+		Debug::EndScope();
+
+		if (statement->GetStackUsage())
+		{
+			Emit("\tadd%c    $%i, %s", Suf(), statement->GetStackUsage(), GetReg(regsp));
+			mStack -= statement->GetStackUsage();
+		}
 	}
 
 	void Emitter::EmitExpressionStatement(const ExpressionStatementNode* statement)
@@ -547,6 +606,12 @@ namespace Symple
 		Emit("\t..%i:", elze);
 
 		Register elz = EmitExpression(expression->GetElse());
+		if (elz != then)
+		{
+			AllocReg(then);
+			FreeReg(elz);
+			Emit("\tmov     %s, %s", GetReg(elz), GetReg(then));
+		}
 
 		Emit("\t..%i:", end);
 

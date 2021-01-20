@@ -133,7 +133,7 @@ namespace Symple
 		void EmitStatement(const StatementNode*);
 		void EmitIfStatement(const IfStatementNode*);
 		void EmitAsmStatement(const AsmStatementNode*);
-		void EmitBlockStatement(const BlockStatementNode*, bool funcdecl = false);
+		void EmitBlockStatement(const BlockStatementNode*);
 		void EmitBreakStatement(const BreakStatementNode*);
 		void EmitWhileStatement(const WhileStatementNode*);
 		void EmitReturnStatement(const ReturnStatementNode*);

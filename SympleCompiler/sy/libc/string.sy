@@ -1,20 +1,20 @@
-extern string strcat(string dest, string source) ccall;
-extern string strchr(string str, char c) ccall;
-extern int strcmp(string left, string right) ccall;
-extern string strcpy(string dest, string source) ccall;
-extern int strcspn(string match, string with) ccall;
+extern char* strcat(char* dest, char* source) ccall;
+extern char* strchr(char* str, char c) ccall;
+extern int strcmp(char* left, char* right) ccall;
+extern char* strcpy(char* dest, char* source) ccall;
+extern int strcspn(char* match, char* with) ccall;
 
-extern string strerror(int err) ccall;
-extern int strlen(string str) ccall;
+extern char* strerror(int err) ccall;
+extern int strlen(char* str) ccall;
 
-extern string strncat(string dest, string source, int max) ccall;
-extern int strncmp(string left, string right, int max) ccall;
-extern string strncpy(string dest, string source, int max) ccall;
-extern int strcmp(string left, string right) ccall;
+extern char* strncat(char* dest, char* source, int max) ccall;
+extern int strncmp(char* left, char* right, int max) ccall;
+extern char* strncpy(char* dest, char* source, int max) ccall;
+extern int strcmp(char* left, char* right) ccall;
 
-extern string strrchr(string str, char c) ccall;
-extern int strspn(string str, string match) ccall;
-extern string strstr(string in, string find) ccall;
-extern string strtok(string str, string del) ccall;
+extern char* strrchr(char* str, char c) ccall;
+extern int strspn(char* str, char* match) ccall;
+extern char* strstr(char* in, char* find) ccall;
+extern char* strtok(char* str, char* del) ccall;
 
-extern int atoi(string str) ccall;
+extern int atoi(char* str) ccall;

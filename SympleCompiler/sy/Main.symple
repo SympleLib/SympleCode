@@ -1,4 +1,5 @@
 #include "libc/io.sy"
+#include "libc/string.sy"
 
 struct Person
 {
@@ -36,4 +37,7 @@ void PrintPerson(Person p)
 	printf("Name: '%s', Age: %i\n", p.Name, p.Age);
 	
 	printf("%s!\n", !!p.Age ? "You are older than 1" : "You are younger than 1");
+	
+	if (!strcmp(p.Name, "Teddy"))
+		puts("You are Teddy!!!");
 };
