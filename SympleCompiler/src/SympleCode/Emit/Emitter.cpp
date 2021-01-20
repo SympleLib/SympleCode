@@ -304,8 +304,6 @@ namespace Symple
 
 	void Emitter::EmitFunctionDeclaration(const FunctionDeclarationNode* member)
 	{
-		mStack ^= mStack; // Reset stack
-
 		const char* name = member->GetAsmName().c_str();
 
 		if (!member->GetModifiers()->IsPrivate())
@@ -329,6 +327,7 @@ namespace Symple
 		if (member->IsMain())
 			Emit("\tcall    ._Sy@StaticInitialization_.");
 
+		mStack ^= mStack; // Reset stack
 
 		mReturning = false;
 		for (const StatementNode* statement : member->GetBody()->GetStatements())
@@ -582,8 +581,8 @@ namespace Symple
 		unsigned int depth = Debug::GetDepth();
 		unsigned int sz = statement->GetType()->GetSize();
 
-		Emit("_%s$%i = -%i", name, depth, mStack);
-		mStack += sz;
+		printf("stack = %i\n", mStack);
+		Emit("_%s$%i = -%i", name, depth, mStack += sz);
 
 		if (statement->GetInitializer())
 		{
