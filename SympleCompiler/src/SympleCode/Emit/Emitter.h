@@ -44,6 +44,9 @@
 #include "SympleCode/Compiler.h"
 
 #include <cstdio>
+#include <map>
+#include <vector>
+#include <string>
 
 #define nullreg -1
 #define regbp -2
@@ -92,8 +95,10 @@ namespace Symple
 
 		unsigned int mData;
 		unsigned int mReturn;
-		unsigned int mBreak;
 		unsigned int mStack;
+		std::vector<unsigned int> mBreak;
+		
+		std::map<std::string, unsigned int> mStrings;
 
 		static unsigned int sInits;
 

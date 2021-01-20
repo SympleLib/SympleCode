@@ -1,47 +1,82 @@
 #include "libc/io.sy"
-#include "libc/string.sy"
+#include "libc/memory.sy"
 
-struct Person
+char* CreateBoard()
 {
-	char* Name;
-	int Age;
+	char* this = (char*)malloc(9);
+	for (int i = 0; i < 9; i += 1)
+		this[i] = '#';
+		
+	return this;
 };
 
-Person me = Person { "Teddy", 12 };
+void PrintBoard(char* this)
+{
+	printf("%c | %c | %c\n", this[0], this[1], this[2]);
+	printf("%c | %c | %c\n", this[3], this[4], this[5]);
+	printf("%c | %c | %c\n", this[6], this[7], this[8]);
+};
 
-hint void PrintPerson(Person);
+\\ 1 | . | .
+\\ . | 2 | .
+\\ . | . | 3
+
+int GetWinner(char* this)
+{
+	char c;
+	
+	if (c = this[0]) != '#'
+	{
+		if this[1] == c && this[2] == c
+			return c == 'X' ? 1 : 2;
+		else if this[3] == c && this[6] == c
+			return c == 'X' ? 1 : 2;
+		else if this[4] == c && this[8] == c
+			return c == 'X' ? 1 : 2;
+	};
+	if (c = this[4]) != '#'
+	{
+		if this[3] == c && this[5] == c
+			return c == 'X' ? 1 : 2;
+		else if this[1] == c && this[7] == c
+			return c == 'X' ? 1 : 2;
+		else if this[2] == c && this[6] == c
+			return c == 'X' ? 1 : 2;
+	};
+	if (c = this[8]) != '#'
+	{
+		if this[2] == c && this[5] == c
+			return c == 'X' ? 1 : 2;
+		else if this[6] == c && this[7] == c
+			return c == 'X' ? 1 : 2;
+	};
+	
+	return 0;
+};
 
 int main()
 {
-	void* Print = @printf(char*);
+	bool playerTurn = true;
+	char* board = CreateBoard();
 	
-	char* heelo = "Hello, world!\n";
-	heelo[1] = 'a';
-	asm "
-	push _heelo$1(%ebp)
-	call *_Print$1(%ebp)
-	add $4, %esp
-	";
-
-	PrintPerson(me);
-	
-	int test = 1;
-	
-	test + (test + (test + (test + test)));
-	(((test + test) + test) + test) + test;
-	
-	test += test += test += test += test;
-};
-
-void PrintPerson(Person p)
-{
-	printf("Name: '%s', Age: %i\n", p.Name, p.Age);
-	
-	printf("%s!\n", !!p.Age ? "You are older than 1" : "You are younger than 1");
-	
-	if (!strcmp(p.Name, "Teddy"))
+	while (!GetWinner(board))
 	{
-		char* text = "You are Teddy!!!";
-		puts(text);
+		PrintBoard(board);
+		int turn = 0;
+		
+		while (turn < 1 || turn > 9)
+		{
+			printf("Player '%c', pick a number from 1-10...\n", playerTurn ? 'X' : 'O');
+			scanf("%i", &turn);
+		};
+		
+		puts("1");
+		board[turn - 1] = playerTurn ? 'X' : 'O';
+		puts("2");
+		playerTurn = !playerTurn;
+		puts("3");
 	};
+	
+	PrintBoard(board);
+	GetWinner(board);
 };

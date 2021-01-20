@@ -30,11 +30,13 @@ namespace Symple
 
 	void Debug::VariableDeclaration(const VariableDeclarationNode* variable)
 	{
+		variable->SetDepth(pVariables.size());
 		sVariables.push_back(variable);
 	}
 
 	void Debug::VariableDeclaration(const GlobalVariableDeclarationNode* variable)
 	{
+		variable->SetDepth(pVariables.size());
 		sGlobalVariables.push_back(variable);
 	}
 
@@ -162,12 +164,7 @@ namespace Symple
 	{
 		for (unsigned int i = sVariables.size(); i > 0; i--)
 			if (sVariables[i - 1]->GetName()->GetLex() == name)
-			{
-				for (unsigned int j = pVariables.size(); j > 0; j--)
-					if (pVariables[j - 1] <= i)
-						return j;
-				return 1;
-			}
+				return sVariables[i - 1]->GetDepth();
 		for (const GlobalVariableDeclarationNode* variable : sGlobalVariables)
 			if (variable->GetName()->GetLex() == name)
 				return 0;

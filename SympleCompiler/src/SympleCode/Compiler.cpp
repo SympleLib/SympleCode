@@ -121,9 +121,9 @@ namespace Symple
 					{
 						char command[128];
 #if SY_32
-						sprintf_s(command, "clang_x86 -c %s -o %s", asmS, obj);
+						sprintf_s(command, "clang_x86 -c %s -o %s --optimize", asmS, obj);
 #else
-						sprintf_s(command, "clang_x64 -c %s -o %s", asmS, obj);
+						sprintf_s(command, "clang_x64 -c %s -o %s --optimize", asmS, obj);
 #endif
 						int compileStatis = system(command);
 
@@ -163,9 +163,9 @@ namespace Symple
 
 			char command[128];
 #if SY_32
-			sprintf_s(command, "clang_x86 -c %s -o %s", "bin\\__staticinit.S", "bin\\__staticinit.o");
+			sprintf_s(command, "clang_x86 -c %s -o %s", "bin\\__staticinit.S", "bin\\__staticinit.o --optimize");
 #else
-			sprintf_s(command, "clang_x64 -c %s -o %s", "bin\\__staticinit.S", "bin\\__staticinit.o");
+			sprintf_s(command, "clang_x64 -c %s -o %s", "bin\\__staticinit.S", "bin\\__staticinit.o --optimize");
 #endif
 			int compileStatis = system(command);
 
@@ -180,7 +180,7 @@ namespace Symple
 #else
 		ss << "clang_x64";
 #endif
-		ss << " -o " << output << " --optimize=3";
+		ss << " -o " << output << " --optimize";
 		for (const std::string& objFile : mObjectFiles)
 			ss << ' ' << objFile;
 		for (const char* library : libraries)

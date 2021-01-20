@@ -452,11 +452,11 @@ namespace Symple
 			EmitBlockStatement(statement->GetThen());
 
 			Emit("\tjmp     ..%i", end);
-			Emit("\t..%i:", elze);
+			Emit("..%i:", elze);
 
 			EmitBlockStatement(statement->GetElse());
 
-			Emit("\t..%i:", end);
+			Emit("..%i:", end);
 		}
 		else
 		{
@@ -468,7 +468,7 @@ namespace Symple
 
 			EmitBlockStatement(statement->GetThen());
 
-			Emit("\t..%i:", end);
+			Emit("..%i:", end);
 		}
 	}
 
@@ -501,24 +501,45 @@ namespace Symple
 
 	void Emitter::EmitBreakStatement(const BreakStatementNode* statement)
 	{
-		Emit("\tjmp     ..%i", mBreak);
+		Emit("\tjmp     ..%i", mBreak.back());
 	}
 
 	void Emitter::EmitWhileStatement(const WhileStatementNode* statement)
 	{
 		unsigned int loop = mData++;
-		mBreak = mData++;
+		mBreak.push_back(mData++);
+
+		Emit("..%i:", loop);
 
 		Register cond = EmitExpression(statement->GetCondition());
 		FreeReg(cond);
 
 		Emit("\ttest    %s, %s", GetReg(cond), GetReg(cond));
-		Emit("\tje      ..%i", mBreak);
+		Emit("\tje      ..%i", mBreak.back());
 
-		EmitBlockStatement(statement->GetBody());
+		if (statement->GetBody()->GetStackUsage())
+		{
+			Emit("\tsub%c    $%i, %s", Suf(), statement->GetBody()->GetStackUsage(), GetReg(regsp));
+			mStack += statement->GetBody()->GetStackUsage();
+		}
+
+		Debug::BeginScope();
+
+		for (const StatementNode* statement : statement->GetBody()->GetStatements())
+			EmitStatement(statement);
+
+		Debug::EndScope();
+
+		if (statement->GetBody()->GetStackUsage())
+		{
+			Emit("\tadd%c    $%i, %s", Suf(), statement->GetBody()->GetStackUsage(), GetReg(regsp));
+			mStack -= statement->GetBody()->GetStackUsage();
+		}
 
 		Emit("\tjmp     ..%i", loop);
-		Emit("..%i:", mBreak);
+		Emit("..%i:", mBreak.back());
+
+		mBreak.pop_back();
 	}
 
 	void Emitter::EmitReturnStatement(const ReturnStatementNode* statement)
@@ -535,7 +556,7 @@ namespace Symple
 	void Emitter::EmitForLoopStatement(const ForLoopStatementNode* statement)
 	{
 		unsigned int loop = mData++;
-		mBreak = mData++;
+		mBreak.push_back(mData++);
 
 		Debug::BeginScope();
 
@@ -546,15 +567,17 @@ namespace Symple
 		Register cond = EmitExpression(statement->GetCondition());
 		FreeReg(cond);
 		Emit("\ttest    %s, %s", GetReg(cond), GetReg(cond));
-		Emit("\tje      ..%i", mBreak);
+		Emit("\tje      ..%i", mBreak.back());
 
 		EmitBlockStatement(statement->GetBody());
 		EmitStatement(statement->GetStep());
 
 		Emit("\tjmp     ..%i", loop);
-		Emit("..%i", mBreak);
+		Emit("..%i:", mBreak.back());
 
 		Debug::EndScope();
+
+		mBreak.pop_back();
 	}
 
 	void Emitter::EmitExpressionStatement(const ExpressionStatementNode* statement)
@@ -724,7 +747,7 @@ namespace Symple
 		FreeReg(then);
 
 		Emit("\tjmp     ..%i", end);
-		Emit("\t..%i:", elze);
+		Emit("..%i:", elze);
 
 		Register elz = EmitExpression(expression->GetElse());
 		if (elz != then)
@@ -734,7 +757,7 @@ namespace Symple
 			Emit("\tmov     %s, %s", GetReg(elz), GetReg(then));
 		}
 
-		Emit("\t..%i:", end);
+		Emit("..%i:", end);
 
 		return then;
 	}
@@ -1039,38 +1062,86 @@ namespace Symple
 
 	Register Emitter::EmitBinaryExpression(const BinaryExpressionNode* expression)
 	{
-		if (expression->GetLeft()->CanEvaluate())
+		if (expression->GetLeft()->CanEvaluate() || expression->GetRight()->CanEvaluate())
 		{
-			Register right = EmitExpression(expression->GetRight());
+			Register set;
+			int eval;
+
+			if (expression->GetLeft()->CanEvaluate())
+			{
+				set = EmitExpression(expression->GetRight());
+				eval = expression->GetLeft()->Evaluate();
+			}
+			else
+			{
+				set = EmitExpression(expression->GetLeft());
+				eval = expression->GetRight()->Evaluate();
+			}
+
 
 			switch (expression->GetOperator()->GetKind())
 			{
 			case Token::Kind::Plus:
-				Emit("\tadd     $%i, %s", expression->GetLeft()->Evaluate(), GetReg(right));
-				return right;
+				Emit("\tadd     $%i, %s", eval, GetReg(set));
+				return set;
 			case Token::Kind::Minus:
-				Emit("\tsub     $%i, %s", expression->GetLeft()->Evaluate(), GetReg(right));
-				return right;
+				Emit("\tsub     $%i, %s", eval, GetReg(set));
+				return set;
 			case Token::Kind::Asterisk:
-				Emit("\timul    $%i, %s, %s", expression->GetLeft()->Evaluate(), GetReg(right), GetReg(right));
-				return right;
-			}
-		}
-		else if (expression->GetRight()->CanEvaluate())
-		{
-			Register left = EmitExpression(expression->GetLeft());
-			
-			switch (expression->GetOperator()->GetKind())
-			{
-			case Token::Kind::Plus:
-				Emit("\tadd     $%i, %s", expression->GetRight()->Evaluate(), GetReg(left));
-				return left;
-			case Token::Kind::Minus:
-				Emit("\tsub     $%i, %s", expression->GetRight()->Evaluate(), GetReg(left));
-				return left;
-			case Token::Kind::Asterisk:
-				Emit("\timul    $%i, %s, %s", expression->GetRight()->Evaluate(), GetReg(left), GetReg(left));
-				return left;
+				Emit("\timul    $%i, %s, %s", eval, GetReg(set), GetReg(set));
+				return set;
+
+			case Token::Kind::EqualEqual:
+				Emit("\tcmp     $%i, %s", eval, GetReg(set));
+				Emit("\tsete    %s", GetReg(set, 1));
+				Emit("\tmovzb%c  %s, %s", Suf(), GetReg(set, 1), GetReg(set));
+				return set;
+			case Token::Kind::ExclamationEqual:
+				Emit("\tcmp     $%i, %s", eval, GetReg(set));
+				Emit("\tsetne   %s", GetReg(set, 1));
+				Emit("\tmovzb%c  %s, %s", Suf(), GetReg(set, 1), GetReg(set));
+				return set;
+			case Token::Kind::LeftArrow:
+				Emit("\tcmp     $%i, %s", eval, GetReg(set));
+				Emit("\tsetl    %s", GetReg(set, 1));
+				Emit("\tmovzb%c  %s, %s", Suf(), GetReg(set, 1), GetReg(set));
+				return set;
+			case Token::Kind::LeftArrowEqual:
+				Emit("\tcmp     $%i, %s", eval, GetReg(set));
+				Emit("\tsetle   %s", GetReg(set, 1));
+				Emit("\tmovzb%c  %s, %s", Suf(), GetReg(set, 1), GetReg(set));
+				return set;
+			case Token::Kind::RightArrow:
+				Emit("\tcmp     $%i, %s", eval, GetReg(set));
+				Emit("\tsetg    %s", GetReg(set, 1));
+				Emit("\tmovzb%c  %s, %s", Suf(), GetReg(set, 1), GetReg(set));
+				return set;
+			case Token::Kind::RightArrowEqual:
+				Emit("\tcmp     $%i, %s", eval, GetReg(set));
+				Emit("\tsetge   %s", GetReg(set, 1));
+				Emit("\tmovzb%c  %s, %s", Suf(), GetReg(set, 1), GetReg(set));
+				return set;
+
+			case Token::Kind::Ampersand:
+				Emit("\tand     $%i, %s", eval, GetReg(set));
+				return set;
+			case Token::Kind::Pipe:
+				Emit("\tor      $%i, %s", eval, GetReg(set));
+				return set;
+			case Token::Kind::AmpersandAmpersand:
+				Emit("\ttest    %s, %s", GetReg(set), GetReg(set));
+				Emit("\tsetne   %s", GetReg(set, 1));
+
+				Emit("\tand     $%i, %s", !!eval, GetReg(set));
+				Emit("\tmovzb%c  %s, %s", Suf(), GetReg(set, 1), GetReg(set));
+				return set;
+			case Token::Kind::PipePipe:
+				Emit("\ttest    %s, %s", GetReg(set), GetReg(set));
+				Emit("\tsetne   %s", GetReg(set, 1));
+
+				Emit("\tor      $%i, %s", !!eval, GetReg(set));
+				Emit("\tmovzb%c  %s, %s", Suf(), GetReg(set, 1), GetReg(set));
+				return set;
 			}
 		}
 		else
@@ -1104,6 +1175,64 @@ namespace Symple
 			case Token::Kind::Asterisk:
 				Emit("\timul    %s, %s", GetReg(right), GetReg(left));
 				return left;
+
+			case Token::Kind::EqualEqual:
+				Emit("\tcmp     %s, %s", GetReg(right), GetReg(left));
+				Emit("\tsete    %s", GetReg(left, 1));
+				Emit("\tmovzb%c  %s, %s", Suf(), GetReg(left, 1), GetReg(left));
+				return left;
+			case Token::Kind::ExclamationEqual:
+				Emit("\tcmp     %s, %s", GetReg(right), GetReg(left));
+				Emit("\tsetne   %s", GetReg(left, 1));
+				Emit("\tmovzb%c  %s, %s", Suf(), GetReg(left, 1), GetReg(left));
+				return left;
+			case Token::Kind::LeftArrow:
+				Emit("\tcmp     %s, %s", GetReg(right), GetReg(left));
+				Emit("\tsetl    %s", GetReg(left, 1));
+				Emit("\tmovzb%c  %s, %s", Suf(), GetReg(left, 1), GetReg(left));
+				return left;
+			case Token::Kind::LeftArrowEqual:
+				Emit("\tcmp     %s, %s", GetReg(right), GetReg(left));
+				Emit("\tsetle   %s", GetReg(left, 1));
+				Emit("\tmovzb%c  %s, %s", Suf(), GetReg(left, 1), GetReg(left));
+				return left;
+			case Token::Kind::RightArrow:
+				Emit("\tcmp     %s, %s", GetReg(right), GetReg(left));
+				Emit("\tsetg    %s", GetReg(left, 1));
+				Emit("\tmovzb%c  %s, %s", Suf(), GetReg(left, 1), GetReg(left));
+				return left;
+			case Token::Kind::RightArrowEqual:
+				Emit("\tcmp     %s, %s", GetReg(right), GetReg(left));
+				Emit("\tsetge   %s", GetReg(left, 1));
+				Emit("\tmovzb%c  %s, %s", Suf(), GetReg(left, 1), GetReg(left));
+				return left;
+
+			case Token::Kind::Ampersand:
+				Emit("\tand     %s, %s", GetReg(right), GetReg(left));
+				return left;
+			case Token::Kind::Pipe:
+				Emit("\tor      %s, %s", GetReg(right), GetReg(left));
+				return left;
+			case Token::Kind::AmpersandAmpersand:
+				Emit("\ttest    %s, %s", GetReg(right), GetReg(right));
+				Emit("\tsetne   %s", GetReg(right, 1));
+
+				Emit("\ttest    %s, %s", GetReg(left), GetReg(left));
+				Emit("\tsetne   %s", GetReg(left, 1));
+
+				Emit("\tand     %s, %s", GetReg(right), GetReg(left));
+				Emit("\tmovzb%c  %s, %s", Suf(), GetReg(left, 1), GetReg(left));
+				return left;
+			case Token::Kind::PipePipe:
+				Emit("\ttest    %s, %s", GetReg(right), GetReg(right));
+				Emit("\tsetne   %s", GetReg(right, 1));
+
+				Emit("\ttest    %s, %s", GetReg(left), GetReg(left));
+				Emit("\tsetne   %s", GetReg(left, 1));
+
+				Emit("\tor      %s, %s", GetReg(right), GetReg(left));
+				Emit("\tmovzb%c  %s, %s", Suf(), GetReg(left, 1), GetReg(left));
+				return left;
 			}
 		}
 
@@ -1113,8 +1242,16 @@ namespace Symple
 
 	Register Emitter::EmitStringLiteralExpression(const StringLiteralExpressionNode* literal)
 	{
+		if (mStrings.find(literal->Stringify()) != mStrings.end())
+		{
+			Register reg = AllocReg();
+			Emit("\tmov     $..%i, %s", mStrings[literal->Stringify()], GetReg(reg));
+			return reg;
+		}
+
 		EmitResource("..%i:", mData);
 		EmitResource("\t.string \"%s\"", literal->Stringify().c_str());
+		mStrings.insert({ literal->Stringify(), mData });
 
 		Register reg = AllocReg();
 		Emit("\tmov     $..%i, %s", mData++, GetReg(reg));
