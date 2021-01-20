@@ -5,7 +5,7 @@
 
 static void FindFiles(const std::string& dir);
 
-static std::vector<std::string> sPaths;
+static std::vector<std::string> sPaths = { "sy\\PushTheButton.symple" };
 
 std::vector<const char*> sLibraries;
 
@@ -13,9 +13,9 @@ int main(unsigned int argc, const char* argv[])
 {
 	SetConsoleTitleA("SympleCode Compiler - Treidex");
 
-	FindFiles("sy\\");
-
 	Symple::Compiler compiler;
+
+	//FindFiles("sy\\");
 	bool compiledGood = true;
 	for (const std::string& path : sPaths)
 	{
@@ -25,7 +25,7 @@ int main(unsigned int argc, const char* argv[])
 
 	if (compiledGood)
 	{
-		compiler.Link("sy\\Main.exe", sLibraries);
+		compiler.Link("bin\\Main.exe", sLibraries);
 		compiler.Run();
 	}
 	

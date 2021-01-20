@@ -1,7 +1,6 @@
 #lib "user32.lib"
 
-#define Window ptr
-#define null 0
+#define Window void*
 
 #define MB_OK 0x0
 #define MB_OKCANCEL 0x1
@@ -27,4 +26,4 @@ extern Window GetConsoleWindow() stdcall;
 extern void ShowWindow(Window window, int show) stdcall;
 
 extern bool MessageBeep(int type) stdcall;
-extern int MessageBoxA(Window window, string text, string title, int type) stdcall;
+extern int MessageBoxA(Window window, char* text, char* title, int type) stdcall;
