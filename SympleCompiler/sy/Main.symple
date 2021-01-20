@@ -28,7 +28,7 @@ int main()
 	test + (test + (test + (test + test)));
 	(((test + test) + test) + test) + test;
 	
-	test = test = test = test = 1;
+	test += test += test += test += test;
 };
 
 void PrintPerson(Person p)
