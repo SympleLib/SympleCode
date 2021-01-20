@@ -865,13 +865,14 @@ namespace Symple
 		return new TernaryExpressionNode(condition, questionMark, then, colon, elze);
 	}
 
-	ParenthesizedExpressionNode* Parser::ParseParenthesizedExpression()
+	ExpressionNode* Parser::ParseParenthesizedExpression()
 	{
 		const Token* open = Match(Token::Kind::OpenParenthesis);
 		ExpressionNode* expression = ParseExpression();
 		const Token* close = Match(Token::Kind::CloseParenthesis);
 
-		return new ParenthesizedExpressionNode(open, expression, close);
+		//return new ParenthesizedExpressionNode(open, expression, close);
+		return expression;
 	}
 
 	FunctionPointerExpressionNode* Parser::ParseFunctionPointerExpression()

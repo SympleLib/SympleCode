@@ -23,7 +23,10 @@ int main()
 
 	PrintPerson(me);
 	
-	0;
+	int test = 1;
+	
+	test + (test + (test + (test + test)));
+	(((test + test) + test) + test) + test;
 };
 
 void PrintPerson(Person p)

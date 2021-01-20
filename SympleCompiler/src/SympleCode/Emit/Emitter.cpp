@@ -838,7 +838,24 @@ namespace Symple
 
 	Register Emitter::EmitBinaryExpression(const BinaryExpressionNode* expression)
 	{
-		if (expression->GetRight()->CanEvaluate())
+		if (expression->GetLeft()->CanEvaluate())
+		{
+			Register right = EmitExpression(expression->GetRight());
+
+			switch (expression->GetOperator()->GetKind())
+			{
+			case Token::Kind::Plus:
+				Emit("\tadd     $%i, %s", expression->GetLeft()->Evaluate(), GetReg(right));
+				return right;
+			case Token::Kind::Minus:
+				Emit("\tsub     $%i, %s", expression->GetLeft()->Evaluate(), GetReg(right));
+				return right;
+			case Token::Kind::Asterisk:
+				Emit("\timul    $%i, %s, %s", expression->GetLeft()->Evaluate(), GetReg(right), GetReg(right));
+				return right;
+			}
+		}
+		else if (expression->GetRight()->CanEvaluate())
 		{
 			Register left = EmitExpression(expression->GetLeft());
 			
@@ -857,9 +874,23 @@ namespace Symple
 		}
 		else
 		{
-			Register left = EmitExpression(expression->GetLeft());
 			Register right = EmitExpression(expression->GetRight());
-			FreeReg(right);
+			Register left;
+
+			if (expression->GetLeft()->Is<BinaryExpressionNode>() || expression->GetRight()->Is<BinaryExpressionNode>())
+			{
+				Push(right);
+				FreeReg(right);
+
+				left = EmitExpression(expression->GetLeft());
+
+				right = AllocReg();
+				Pop(right);
+				FreeReg(right);
+			}
+			else
+				left = EmitExpression(expression->GetLeft());
+			
 			
 			switch (expression->GetOperator()->GetKind())
 			{

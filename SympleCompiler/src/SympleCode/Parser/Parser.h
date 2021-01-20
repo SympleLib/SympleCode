@@ -109,7 +109,7 @@ namespace Symple
 		ListExpressionNode* ParseListExpression();
 		StallocExpressionNode* ParseStallocExpression();
 		TernaryExpressionNode* ParseTernaryExpression(ExpressionNode* condition);
-		ParenthesizedExpressionNode* ParseParenthesizedExpression();
+		ExpressionNode* ParseParenthesizedExpression();
 		FunctionPointerExpressionNode* ParseFunctionPointerExpression();
 		StructInitializerExpressionNode* ParseStructInitializerExpression();
 
