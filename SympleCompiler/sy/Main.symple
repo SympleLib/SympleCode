@@ -7,20 +7,21 @@ struct Person
 	int Age;
 };
 
+Person me = Person { "Teddy", 12 };
+
 hint void PrintPerson(Person);
 
 int main()
 {
 	void* Print = @printf(char*);
 	
-	"Hello, world!\n";
+	char* heelo = "Hello, world!\n";
+	heelo[1] = 'a';
 	asm "
-	push $..0
+	push _heelo$1(%ebp)
 	call *_Print$1(%ebp)
 	add $4, %esp
 	";
-
-	Person me = Person { "Teddy", 12 };
 
 	PrintPerson(me);
 	
@@ -39,5 +40,8 @@ void PrintPerson(Person p)
 	printf("%s!\n", !!p.Age ? "You are older than 1" : "You are younger than 1");
 	
 	if (!strcmp(p.Name, "Teddy"))
-		puts("You are Teddy!!!");
+	{
+		char* text = "You are Teddy!!!";
+		puts(text);
+	};
 };

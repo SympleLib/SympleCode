@@ -29,6 +29,8 @@ namespace Symple
 	{
 		while (OpenFile());
 		while (OpenResourceFile());
+
+		EmitResource(".data");
 	}
 
 	Emitter::~Emitter()
@@ -55,9 +57,9 @@ namespace Symple
 		Emit("._Sy@StaticInitialization_.:");
 
 		for (unsigned int i = 0; i < sInits; i++)
-			Emit("\tcall%c   ..%i.", Suf(), i);
+			Emit("\tcall    ..%i.", i);
 
-		Emit("\txor%c    %s, %s", Suf(), GetReg(regax), GetReg(regax));
+		Emit("\txor     %s, %s", GetReg(regax), GetReg(regax));
 		Emit("\tret");
 	}
 
@@ -289,6 +291,8 @@ namespace Symple
 			return EmitGlobalStatement(member->Cast<GlobalStatementNode>());
 		case Node::Kind::FunctionDeclaration:
 			return EmitFunctionDeclaration(member->Cast<FunctionDeclarationNode>());
+		case Node::Kind::GlobalVariableDeclaration:
+			return EmitGlobalVariableDeclaration(member->Cast<GlobalVariableDeclarationNode>());
 		}
 	}
 
@@ -356,6 +360,56 @@ namespace Symple
 		Emit("\tret");
 	}
 
+	void Emitter::EmitGlobalVariableDeclaration(const GlobalVariableDeclarationNode* member)
+	{
+		Debug::VariableDeclaration(member);
+
+		std::string nstr(member->GetName()->GetLex());
+		const char* name = nstr.c_str();
+
+		if (!member->GetModifiers()->IsPrivate())
+			EmitResource(".global  _%s$0", name);
+		EmitResource("_%s$0:", name);
+
+		if (member->GetInitializer())
+		{
+			EmitResource("\t.zero    %i", member->GetType()->GetSize());
+
+			Emit(".global  ..%i.", sInits);
+			Emit("..%i.:", sInits++);
+
+			if (member->GetInitializer()->Is<StructInitializerExpressionNode>())
+			{
+				Register reg = AllocReg();
+				Emit("\tmov     $_%s$0, %s", name, GetReg(reg));
+				MovStruct(member->GetInitializer()->Cast<StructInitializerExpressionNode>(), reg);
+				FreeReg(reg);
+			}
+			else if (member->GetInitializer()->GetType()->GetType()->Is<StructDeclarationNode>() && !member->GetInitializer()->GetType()->GetContinue())
+			{
+				Register thiz = AllocReg();
+				Emit("\tmov     $_%s$0, %s", name, GetReg(thiz));
+				Register reg = EmitModifiableExpression(member->GetInitializer()->Cast<ModifiableExpressionNode>(), true);
+				MovStruct(member->GetInitializer()->GetType()->GetType()->Cast<StructDeclarationNode>(), reg, thiz);
+				FreeReg(reg);
+				FreeReg(thiz);
+			}
+			else
+			{
+				unsigned int sz = member->GetType()->GetSize();
+
+				Register init = EmitExpression(member->GetInitializer());
+				Emit("\tmov%c    %s, _%s$0", Suf(sz), GetReg(init, sz), name);
+				FreeReg(init);
+			}
+
+			Emit("\tret");
+		}
+
+		if (member->GetNext())
+			EmitGlobalVariableDeclaration(member->GetNext());
+	}
+
 
 	void Emitter::EmitStatement(const StatementNode* statement)
 	{
@@ -369,6 +423,14 @@ namespace Symple
 			return EmitAsmStatement(statement->Cast<AsmStatementNode>());
 		case Node::Kind::BlockStatement:
 			return EmitBlockStatement(statement->Cast<BlockStatementNode>());
+		case Node::Kind::BreakStatement:
+			return EmitBreakStatement(statement->Cast<BreakStatementNode>());
+		case Node::Kind::WhileStatement:
+			return EmitWhileStatement(statement->Cast<WhileStatementNode>());
+		case Node::Kind::ReturnStatement:
+			return EmitReturnStatement(statement->Cast<ReturnStatementNode>());
+		case Node::Kind::ForLoopStatement:
+			return EmitForLoopStatement(statement->Cast<ForLoopStatementNode>());
 		case Node::Kind::ExpressionStatement:
 			return EmitExpressionStatement(statement->Cast<ExpressionStatementNode>());
 		case Node::Kind::VariableDeclaration:
@@ -434,6 +496,64 @@ namespace Symple
 			Emit("\tadd%c    $%i, %s", Suf(), statement->GetStackUsage(), GetReg(regsp));
 			mStack -= statement->GetStackUsage();
 		}
+	}
+
+	void Emitter::EmitBreakStatement(const BreakStatementNode* statement)
+	{
+		Emit("\tjmp     ..%i", mBreak);
+	}
+
+	void Emitter::EmitWhileStatement(const WhileStatementNode* statement)
+	{
+		unsigned int loop = mData++;
+		mBreak = mData++;
+
+		Register cond = EmitExpression(statement->GetCondition());
+		FreeReg(cond);
+
+		Emit("\ttest    %s, %s", GetReg(cond), GetReg(cond));
+		Emit("\tje      ..%i", mBreak);
+
+		EmitBlockStatement(statement->GetBody());
+
+		Emit("\tjmp     ..%i", loop);
+		Emit("..%i:", mBreak);
+	}
+
+	void Emitter::EmitReturnStatement(const ReturnStatementNode* statement)
+	{
+		Register ret = EmitExpression(statement->GetExpression());
+		FreeReg(ret);
+		if (ret != regax)
+			Emit("\tmov     %s, %s", GetReg(ret), GetReg(regax));
+
+		if (mReturning)
+			Emit("\tjmp     ..%i", mReturn);
+	}
+
+	void Emitter::EmitForLoopStatement(const ForLoopStatementNode* statement)
+	{
+		unsigned int loop = mData++;
+		mBreak = mData++;
+
+		Debug::BeginScope();
+
+		EmitStatement(statement->GetInitializer());
+
+		Emit("..%i:", loop);
+
+		Register cond = EmitExpression(statement->GetCondition());
+		FreeReg(cond);
+		Emit("\ttest    %s, %s", GetReg(cond), GetReg(cond));
+		Emit("\tje      ..%i", mBreak);
+
+		EmitBlockStatement(statement->GetBody());
+		EmitStatement(statement->GetStep());
+
+		Emit("\tjmp     ..%i", loop);
+		Emit("..%i", mBreak);
+
+		Debug::EndScope();
 	}
 
 	void Emitter::EmitExpressionStatement(const ExpressionStatementNode* statement)
@@ -732,10 +852,21 @@ namespace Symple
 		sz = sz > platsize ? platsize : sz;
 
 		Register reg = AllocReg();
-		if (retptr)
-			Emit("\tlea     _%s$%i(%s), %s", name, depth, GetReg(regbp), GetReg(reg));
+
+		if (decl->Is<GlobalVariableDeclarationNode>())
+		{
+			if (retptr)
+				Emit("\tmov     $_%s$%i, %s", name, depth, GetReg(reg));
+			else
+				Emit("\tmov     _%s$%i, %s", name, depth, GetReg(reg, sz));
+		}
 		else
-			Emit("\tmov     _%s$%i(%s), %s", name, depth, GetReg(regbp), GetReg(reg, sz));
+		{
+			if (retptr)
+				Emit("\tlea     _%s$%i(%s), %s", name, depth, GetReg(regbp), GetReg(reg));
+			else
+				Emit("\tmov     _%s$%i(%s), %s", name, depth, GetReg(regbp), GetReg(reg, sz));
+		}
 
 		return reg;
 	}
