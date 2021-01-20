@@ -62,7 +62,9 @@ int main()
 	while (!GetWinner(board))
 	{
 		PrintBoard(board);
+		asm "#\n";
 		int turn = 0;
+		asm "#\n";
 		
 		\\ while (turn < 1 || turn > 9)
 		\\ {
@@ -75,6 +77,7 @@ int main()
 		printf("%i\n", turn);
 		asm "\n";
 		puts("2");
+		return 0;
 		board[turn - 1] = playerTurn ? 'X' : 'O';
 		playerTurn = !playerTurn;
 		puts("3");

@@ -479,11 +479,10 @@ namespace Symple
 
 	void Emitter::EmitBlockStatement(const BlockStatementNode* statement)
 	{
+		unsigned int pStack = mStack;
+
 		if (statement->GetStackUsage())
-		{
 			Emit("\tsub     $%i, %s", statement->GetStackUsage(), GetReg(regsp));
-			mStack += statement->GetStackUsage();
-		}
 
 		Debug::BeginScope();
 
@@ -497,6 +496,8 @@ namespace Symple
 			Emit("\tadd     $%i, %s", statement->GetStackUsage(), GetReg(regsp));
 			mStack -= statement->GetStackUsage();
 		}
+
+		mStack = pStack;
 	}
 
 	void Emitter::EmitBreakStatement(const BreakStatementNode* statement)
@@ -517,24 +518,7 @@ namespace Symple
 		Emit("\ttest    %s, %s", GetReg(cond), GetReg(cond));
 		Emit("\tje      ..%i", mBreak.back());
 
-		if (statement->GetBody()->GetStackUsage())
-		{
-			Emit("\tsub     $%i, %s", statement->GetBody()->GetStackUsage(), GetReg(regsp));
-			mStack += statement->GetBody()->GetStackUsage();
-		}
-
-		Debug::BeginScope();
-
-		for (const StatementNode* statement : statement->GetBody()->GetStatements())
-			EmitStatement(statement);
-
-		Debug::EndScope();
-
-		if (statement->GetBody()->GetStackUsage())
-		{
-			Emit("\tadd     $%i, %s", statement->GetBody()->GetStackUsage(), GetReg(regsp));
-			mStack -= statement->GetBody()->GetStackUsage();
-		}
+		EmitBlockStatement(statement->GetBody());
 
 		Emit("\tjmp     ..%i", loop);
 		Emit("..%i:", mBreak.back());
@@ -598,7 +582,8 @@ namespace Symple
 		unsigned int depth = Debug::GetDepth();
 		unsigned int sz = statement->GetType()->GetSize();
 
-		Emit("_%s$%i = -%i", name, depth, mStack += sz);
+		Emit("_%s$%i = -%i", name, depth, mStack);
+		mStack += sz;
 
 		if (statement->GetInitializer())
 		{
