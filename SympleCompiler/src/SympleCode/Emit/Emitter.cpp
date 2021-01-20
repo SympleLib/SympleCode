@@ -678,10 +678,11 @@ namespace Symple
 	Register Emitter::EmitAssignmentExpression(const AssignmentExpressionNode* expression, bool retptr)
 	{
 		unsigned int sz = expression->GetType()->GetSize();
-		Register left = EmitModifiableExpression(expression->GetLeft(), true);
 
 		if (expression->GetRight()->GetType()->GetType()->Is<StructDeclarationNode>() && !expression->GetRight()->GetType()->GetContinue())
 		{
+			Register left = EmitModifiableExpression(expression->GetLeft(), true);
+
 			if (expression->GetRight()->Is<StructInitializerExpressionNode>())
 			{
 				MovStruct(expression->GetRight()->Cast<StructInitializerExpressionNode>(), left);
@@ -694,6 +695,8 @@ namespace Symple
 		}
 		else if (expression->GetRight()->CanEvaluate())
 		{
+			Register left = EmitModifiableExpression(expression->GetLeft(), true);
+
 			switch (expression->GetOperator()->GetKind())
 			{
 			case Token::Kind::Equal:
@@ -733,6 +736,7 @@ namespace Symple
 		else
 		{
 			Register right = EmitExpression(expression->GetRight());
+			Register left = EmitModifiableExpression(expression->GetLeft(), true);
 
 			switch (expression->GetOperator()->GetKind())
 			{

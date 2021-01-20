@@ -23,10 +23,12 @@ int main()
 
 	PrintPerson(me);
 	
-	int test = 1;
+	int mut test = 1;
 	
 	test + (test + (test + (test + test)));
 	(((test + test) + test) + test) + test;
+	
+	test = test = test = test = 1;
 };
 
 void PrintPerson(Person p)
