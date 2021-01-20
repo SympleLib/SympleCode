@@ -474,14 +474,14 @@ namespace Symple
 
 	void Emitter::EmitAsmStatement(const AsmStatementNode* statement)
 	{
-		Emit("%s", std::string(statement->GetInstructions()->GetLex()).c_str());
+		fprintf(mFile, std::string(statement->GetInstructions()->GetLex()).c_str());
 	}
 
 	void Emitter::EmitBlockStatement(const BlockStatementNode* statement)
 	{
 		if (statement->GetStackUsage())
 		{
-			Emit("\tsub%c    $%i, %s", Suf(), statement->GetStackUsage(), GetReg(regsp));
+			Emit("\tsub     $%i, %s", statement->GetStackUsage(), GetReg(regsp));
 			mStack += statement->GetStackUsage();
 		}
 
@@ -494,7 +494,7 @@ namespace Symple
 
 		if (statement->GetStackUsage())
 		{
-			Emit("\tadd%c    $%i, %s", Suf(), statement->GetStackUsage(), GetReg(regsp));
+			Emit("\tadd     $%i, %s", statement->GetStackUsage(), GetReg(regsp));
 			mStack -= statement->GetStackUsage();
 		}
 	}
@@ -519,7 +519,7 @@ namespace Symple
 
 		if (statement->GetBody()->GetStackUsage())
 		{
-			Emit("\tsub%c    $%i, %s", Suf(), statement->GetBody()->GetStackUsage(), GetReg(regsp));
+			Emit("\tsub     $%i, %s", statement->GetBody()->GetStackUsage(), GetReg(regsp));
 			mStack += statement->GetBody()->GetStackUsage();
 		}
 
@@ -532,7 +532,7 @@ namespace Symple
 
 		if (statement->GetBody()->GetStackUsage())
 		{
-			Emit("\tadd%c    $%i, %s", Suf(), statement->GetBody()->GetStackUsage(), GetReg(regsp));
+			Emit("\tadd     $%i, %s", statement->GetBody()->GetStackUsage(), GetReg(regsp));
 			mStack -= statement->GetBody()->GetStackUsage();
 		}
 
@@ -793,7 +793,8 @@ namespace Symple
 		}
 
 		Emit("\tcall    %s", Debug::GetFunction(expression->GetName()->GetLex(), expression->GetArguments())->GetAsmName().c_str());
-		Emit("\tadd     $%i, %s", expression->GetArguments()->GetArguments().size() * platsize, GetReg(regsp));
+		if (expression->GetArguments()->GetArguments().size())
+			Emit("\tadd     $%i, %s", expression->GetArguments()->GetArguments().size() * platsize, GetReg(regsp));
 		mStack -= expression->GetArguments()->GetArguments().size() * platsize;
 		Register reg = AllocReg(regax);
 		if (reg != regax)

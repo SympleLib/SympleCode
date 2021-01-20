@@ -64,16 +64,18 @@ int main()
 		PrintBoard(board);
 		int turn = 0;
 		
-		while (turn < 1 || turn > 9)
-		{
-			printf("Player '%c', pick a number from 1-10...\n", playerTurn ? 'X' : 'O');
-			scanf("%i", @turn);
-		};
+		\\ while (turn < 1 || turn > 9)
+		\\ {
+			\\ printf("Player '%c', pick a number from 1-10...\n", playerTurn ? 'X' : 'O');
+			\\ scanf("%i", @turn);
+		\\ };
 		
 		puts("1");
-		board[turn - 1] = 'X';
-		\\ board[turn - 1] = playerTurn ? 'X' : 'O';
+		asm "\n";
+		printf("%i\n", turn);
+		asm "\n";
 		puts("2");
+		board[turn - 1] = playerTurn ? 'X' : 'O';
 		playerTurn = !playerTurn;
 		puts("3");
 	};
