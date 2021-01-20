@@ -30,7 +30,8 @@ namespace Symple
 		while (OpenFile());
 		while (OpenResourceFile());
 
-		EmitResource(".data");
+		if (mResourceFile)
+			EmitResource(".data");
 	}
 
 	Emitter::~Emitter()
