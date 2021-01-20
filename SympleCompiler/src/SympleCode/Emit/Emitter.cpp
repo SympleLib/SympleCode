@@ -766,8 +766,8 @@ namespace Symple
 				else
 				{
 					Register reg = EmitExpression(expression->GetArguments()->GetArguments()[i - 1]);
-					Push(reg);
 					FreeReg(reg);
+					Push(reg);
 				}
 				break;
 			}

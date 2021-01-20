@@ -835,6 +835,12 @@ namespace Symple
 		std::vector<const ExpressionNode*> expressions;
 		while (!Peek()->Is(Token::Kind::CloseBracket))
 		{
+			if (Peek()->Is(Token::Kind::EndOfFile))
+			{
+				Diagnostics::ReportError(Next(), "Unexpected End Of File");
+				break;
+			}
+
 			expressions.push_back(ParseExpression());
 			if (Peek()->Is(Token::Kind::Comma))
 				Next();
@@ -892,6 +898,12 @@ namespace Symple
 		std::vector<const ExpressionNode*> expressions;
 		while (!Peek()->Is(Token::Kind::CloseBrace))
 		{
+			if (Peek()->Is(Token::Kind::EndOfFile))
+			{
+				Diagnostics::ReportError(Next(), "Unexpected End Of File");
+				break;
+			}
+
 			ExpressionNode* expression = ParseExpression();
 			expressions.push_back(expression);
 			if (Peek()->Is(Token::Kind::Comma))

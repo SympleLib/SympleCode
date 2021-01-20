@@ -17,9 +17,9 @@ void PrintBoard(char* this)
 	printf("%c | %c | %c\n", this[3], this[4], this[5]);
 	printf("%c | %c | %c\n", this[6], this[7], this[8]);
 	
-	printf("%i | %i | %i\n", this[0], this[1], this[2]);
-	printf("%i | %i | %i\n", this[3], this[4], this[5]);
-	printf("%i | %i | %i\n", this[6], this[7], this[8]);
+	\\ printf("%i | %i | %i\n", this[0], this[1], this[2]);
+	\\ printf("%i | %i | %i\n", this[3], this[4], this[5]);
+	\\ printf("%i | %i | %i\n", this[6], this[7], this[8]);
 };
 
 \\ 1 | . | .
@@ -58,19 +58,24 @@ int GetWinner(char* this)
 			return c == 'X' ? 1 : 2;
 	};
 	
-	return 0;
+	for (int i = 0; i < 9; i += 1)
+		if this[i] == '#'
+			return 0;
+	
+	return 3;
 };
 
 int main()
 {
 	bool playerTurn = true;
 	char* board = CreateBoard();
+	int winner;
 	
-	while !GetWinner(board)
+	while !(winner = GetWinner(board))
 	{
 		int turn = 0;
 		
-		while turn < 1 || turn > 9
+		while turn < 1 || turn > 9 || board[turn - 1] != '#'
 		{
 			printf("Player '%c', pick a number from 1-10...\n", playerTurn ? 'X' : 'O');
 			char* test = (char*)stalloc(16);
@@ -82,6 +87,8 @@ int main()
 		playerTurn = !playerTurn;
 	};
 	
-	PrintBoard(board);
-	printf("Player '%c', wins!!!", GetWinner(board) == 1 ? 'X' : 'O');
+	if (winner == 3)
+		puts("\nIts a Draw!");
+	else
+		printf("\nPlayer '%c', Wins!", winner == 1 ? 'X' : 'O');
 };
