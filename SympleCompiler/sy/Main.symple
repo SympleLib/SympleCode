@@ -83,5 +83,5 @@ int main()
 	};
 	
 	PrintBoard(board);
-	GetWinner(board);
+	printf("Player '%c', wins!!!", GetWinner(board) == 1 ? 'X' : 'O');
 };
