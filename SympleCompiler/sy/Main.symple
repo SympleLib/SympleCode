@@ -77,7 +77,7 @@ int main()
 		
 		while turn < 1 || turn > 9 || board[turn - 1] != '#'
 		{
-			printf("Player '%c', pick a number from 1-10...\n", playerTurn ? 'X' : 'O');
+			printf("Player '%c', pick a number from 1-9...\n", playerTurn ? 'X' : 'O');
 			char* test = (char*)stalloc(16);
 			scanf("%15s", test);
 			turn = atoi(test);
@@ -91,4 +91,6 @@ int main()
 		puts("\nIts a Draw!");
 	else
 		printf("\nPlayer '%c', Wins!", winner == 1 ? 'X' : 'O');
+		
+	0;
 };
