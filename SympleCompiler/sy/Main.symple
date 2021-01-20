@@ -1,5 +1,6 @@
 #include "libc/io.sy"
 #include "libc/memory.sy"
+#include "libc/string.sy"
 
 char* CreateBoard()
 {
@@ -15,6 +16,10 @@ void PrintBoard(char* this)
 	printf("%c | %c | %c\n", this[0], this[1], this[2]);
 	printf("%c | %c | %c\n", this[3], this[4], this[5]);
 	printf("%c | %c | %c\n", this[6], this[7], this[8]);
+	
+	printf("%i | %i | %i\n", this[0], this[1], this[2]);
+	printf("%i | %i | %i\n", this[3], this[4], this[5]);
+	printf("%i | %i | %i\n", this[6], this[7], this[8]);
 };
 
 \\ 1 | . | .
@@ -23,6 +28,8 @@ void PrintBoard(char* this)
 
 int GetWinner(char* this)
 {
+	PrintBoard(this);
+
 	char c;
 	
 	if (c = this[0]) != '#'
@@ -61,20 +68,18 @@ int main()
 	
 	while !GetWinner(board)
 	{
-		PrintBoard(board);
 		int turn = 0;
 		
 		while turn < 1 || turn > 9
 		{
 			printf("Player '%c', pick a number from 1-10...\n", playerTurn ? 'X' : 'O');
-			scanf("%i", @turn);
+			char* test = (char*)stalloc(16);
+			scanf("%15s", test);
+			turn = atoi(test);
 		};
 		
 		board[turn - 1] = playerTurn ? 'X' : 'O';
-		printf("%i\n", board[turn - 1]);
 		playerTurn = !playerTurn;
-		printf("%i\n", board[turn - 1]);
-		printf("%i\n", playerTurn);
 	};
 	
 	PrintBoard(board);

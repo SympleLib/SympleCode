@@ -581,15 +581,12 @@ namespace Symple
 		unsigned int depth = Debug::GetDepth();
 		unsigned int sz = statement->GetType()->GetSize();
 
-		printf("stack = %i\n", mStack);
 		Emit("_%s$%i = -%i", name, depth, mStack += sz);
 
 		if (statement->GetInitializer())
 		{
 			if (statement->GetInitializer()->CanEvaluate())
-			{
 				Emit("\tmov%c    $%i, _%s$%i(%s)", Suf(sz), statement->GetInitializer()->Evaluate(), name, depth, GetReg(regbp));
-			}
 			else
 			{
 				if (statement->GetInitializer()->GetType()->GetType()->Is<StructDeclarationNode>() && !statement->GetInitializer()->GetType()->GetContinue())
@@ -993,10 +990,26 @@ namespace Symple
 				if (retptr)
 					Emit("\tadd     $%i, %s", expression->GetIndex()->Evaluate() * sz, GetReg(addr));
 				else
-					Emit("\tmov     %i(%s), %s", expression->GetIndex()->Evaluate() * sz, GetReg(addr), GetReg(addr));
+				{
+					if (sz == platsize)
+						Emit("\tmov     %i(%s), %s", expression->GetIndex()->Evaluate() * sz, GetReg(addr), GetReg(addr));
+					else
+					{
+						Emit("\tmov%c    %i(%s), %s", Suf(sz), expression->GetIndex()->Evaluate() * sz, GetReg(addr), GetReg(addr, sz));
+						Emit("\tmovs%c%c    %s, %s", Suf(sz), Suf(), GetReg(addr, sz), GetReg(addr));
+					}
+				}
 			else
 				if (!retptr)
-					Emit("\tmov     (%s), %s", GetReg(addr), GetReg(addr));
+				{
+					if (sz == platsize)
+						Emit("\tmov     (%s), %s", GetReg(addr), GetReg(addr));
+					else
+					{
+						Emit("\tmov%c    (%s), %s", Suf(sz), GetReg(addr), GetReg(addr, sz));
+						Emit("\tmovs%c%c    %s, %s", Suf(sz), Suf(), GetReg(addr, sz), GetReg(addr));
+					}
+				}
 		}
 		else
 		{
@@ -1007,7 +1020,15 @@ namespace Symple
 			FreeReg(idx);
 
 			if (!retptr)
-				Emit("\tmov     (%s), %s", GetReg(addr), GetReg(addr));
+			{
+				if (sz == platsize)
+					Emit("\tmov     (%s), %s", GetReg(addr), GetReg(addr));
+				else
+				{
+					Emit("\tmov%c    (%s), %s", Suf(sz), GetReg(addr), GetReg(addr, sz));
+					Emit("\tmovs%c%c    %s, %s", Suf(sz), Suf(), GetReg(addr, sz), GetReg(addr));
+				}
+			}
 		}
 
 		return addr;
