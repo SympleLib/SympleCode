@@ -24,7 +24,7 @@ int main()
 
 	PrintPerson(me);
 	
-	int mut test = 1;
+	int test = 1;
 	
 	test + (test + (test + (test + test)));
 	(((test + test) + test) + test) + test;

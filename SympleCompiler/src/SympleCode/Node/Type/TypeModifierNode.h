@@ -59,7 +59,7 @@ namespace Symple
 
 		bool IsMutable() const
 		{
-			return mMutable;
+			return true; // Too buggy
 		}
 
 		bool IsUnsigned() const
