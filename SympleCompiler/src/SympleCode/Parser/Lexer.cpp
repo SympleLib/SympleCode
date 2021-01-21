@@ -142,7 +142,7 @@ namespace Symple
 		std::string_view identifier(beg, std::distance(beg, mCurrent));
 		if (identifier == "__asm")
 			return new Token(Token::Kind::Asm, beg, mCurrent, mFile, mLine, bColumn);
-		if (identifier == "null")
+		if (identifier == "null" || identifier == "nullptr")
 			return new Token(Token::Kind::Null, beg, mCurrent, mFile, mLine, bColumn);
 
 		if (identifier == "auto" || identifier == "var")
@@ -152,7 +152,7 @@ namespace Symple
 		if (identifier == "false")
 			return new Token(Token::Kind::False, beg, mCurrent, mFile, mLine, bColumn);
 
-		if (identifier == "return")
+		if (identifier == "return" || identifier == "ret")
 			return new Token(Token::Kind::Return, beg, mCurrent, mFile, mLine, bColumn);
 		if (identifier == "break")
 			return new Token(Token::Kind::Break, beg, mCurrent, mFile, mLine, bColumn);
