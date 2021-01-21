@@ -85,7 +85,7 @@ namespace Symple
 
 	bool Lexer::ShouldIgnore(char c)
 	{
-		return c == ' ' || c == '\t' || c == '\r' || c == 'Õ';
+		return c == ' ' || c == '\t' || c == '\r' || c == '√ç';
 	}
 
 	bool Lexer::CheckNewLine(char c)
@@ -140,7 +140,7 @@ namespace Symple
 		while (IsIdentifier(Peek()))
 			Get();
 		std::string_view identifier(beg, std::distance(beg, mCurrent));
-		if (identifier == "asm")
+		if (identifier == "__asm")
 			return new Token(Token::Kind::Asm, beg, mCurrent, mFile, mLine, bColumn);
 		if (identifier == "null")
 			return new Token(Token::Kind::Null, beg, mCurrent, mFile, mLine, bColumn);
@@ -163,7 +163,7 @@ namespace Symple
 
 		if (identifier == "hint")
 			return new Token(Token::Kind::Hint, beg, mCurrent, mFile, mLine, bColumn);
-		if (identifier == "extern")
+		if (identifier == "extern" || identifier == "external")
 			return new Token(Token::Kind::Extern, beg, mCurrent, mFile, mLine, bColumn);
 		if (identifier == "shared")
 			return new Token(Token::Kind::Shared, beg, mCurrent, mFile, mLine, bColumn);
@@ -174,7 +174,7 @@ namespace Symple
 			return new Token(Token::Kind::If, beg, mCurrent, mFile, mLine, bColumn);
 		if (identifier == "else")
 			return new Token(Token::Kind::Else, beg, mCurrent, mFile, mLine, bColumn);
-		if (identifier == "stalloc")
+		if (identifier == "stalloc" || identifier == "alloca")
 			return new Token(Token::Kind::Stalloc, beg, mCurrent, mFile, mLine, bColumn);
 
 		if (identifier == "symplecall")
@@ -193,9 +193,9 @@ namespace Symple
 		if (identifier == "signed")
 			return new Token(Token::Kind::Signed, beg, mCurrent, mFile, mLine, bColumn);
 
-		if (identifier == "struct")
+		if (identifier == "struct" || identifier == "structure")
 			return new Token(Token::Kind::Struct, beg, mCurrent, mFile, mLine, bColumn);
-		if (identifier == "enum")
+		if (identifier == "enum" || identifier == "enumeration")
 			return new Token(Token::Kind::Enum, beg, mCurrent, mFile, mLine, bColumn);
 		return new Token(Token::Kind::Identifier, beg, mCurrent, mFile, mLine, bColumn);
 	}
