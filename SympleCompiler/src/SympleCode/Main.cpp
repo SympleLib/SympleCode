@@ -115,8 +115,13 @@ int main(unsigned int argc, const char* argv[])
 		return 1;
 	}
 
-	if (flags.InputFiles[0] == 0)
-		flags.InputFiles = FindFiles("");
+	if (flags.InputFiles.size() == 1)
+	{
+		if (flags.InputFiles[0] == 0)
+			flags.InputFiles = FindFiles("");
+		else if (flags.InputFiles[0][strlen(flags.InputFiles[0]) - 1] == '\\' || flags.InputFiles[0][strlen(flags.InputFiles[0]) - 1] == '/')
+			FindFiles(flags.InputFiles[0]);
+	}
 
 	bool compiledGood = !flags.InputFiles.empty();
 	for (const char* path : flags.InputFiles)
