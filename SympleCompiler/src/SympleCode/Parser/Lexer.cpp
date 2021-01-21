@@ -116,6 +116,11 @@ namespace Symple
 		return (c >= '0' && c <= '9') || c == 'x' || (c >= 'A' && c <= 'F') || (c >= 'a' && c <= 'f');
 	}
 
+	const char* Lexer::GetSource() const
+	{
+		return mSource;
+	}
+
 	char Lexer::Peek(int offset) const
 	{
 		return mCurrent[offset];

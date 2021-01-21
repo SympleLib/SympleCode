@@ -4,8 +4,8 @@
 
 namespace Symple
 {
-	Preprocessor::Preprocessor(const char* source, const char* file, const std::vector<std::string>& includedFiles, const std::map<std::string, std::vector<const Token*>>& defines)
-		: mLexer(source, file), mIncludedFiles(includedFiles), mDefines(defines)
+	Preprocessor::Preprocessor(const char* source, const char* file, const char* include, const std::vector<std::string>& includedFiles, const std::map<std::string, std::vector<const Token*>>& defines)
+		: mLexer(source, file), mInclude(include), mIncludedFiles(includedFiles), mDefines(defines)
 	{
 		const Token* current = Token::Default;
 		while (!current->Is(Token::Kind::EndOfFile))
@@ -33,7 +33,7 @@ namespace Symple
 		std::string* scmd = new std::string(cmd->GetLex());
 		Lexer prepoLexer = scmd->c_str();
 		Token* rcmd = prepoLexer.Next();
-
+		
 		if (rcmd->GetLex() == "include")
 		{
 			std::string includeDir(prepoLexer.Next()->GetLex());
@@ -44,7 +44,7 @@ namespace Symple
 
 			FILE* file;
 			errno_t err;
-			if (!(err = fopen_s(&file, ("sy\\" + includeDir).c_str(), "rb")) && file)
+			if (!(err = fopen_s(&file, (mInclude + includeDir).c_str(), "rb")) && file)
 			{
 				fseek(file, 0L, SEEK_END);
 				unsigned int size = std::min(ftell(file), 4096L);
@@ -54,7 +54,7 @@ namespace Symple
 				source[size] = 0;
 				fclose(file);
 
-				Preprocessor includePreprocessor(source, ("sy\\" + includeDir).c_str(), mIncludedFiles, mDefines);
+				Preprocessor includePreprocessor(source, (mInclude + includeDir).c_str(), mInclude.c_str(), mIncludedFiles, mDefines);
 				mDefines = includePreprocessor.mDefines;
 				for (const Token* token : includePreprocessor.GetTokens())
 					if (token != includePreprocessor.GetTokens().back())

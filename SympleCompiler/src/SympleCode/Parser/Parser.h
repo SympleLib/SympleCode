@@ -51,7 +51,7 @@ namespace Symple
 		std::vector<const Token*> mTokens;
 		size_t mPosition;
 	public:
-		Parser(const char* source = "", const char* file = "");
+		Parser(const char* source = "", const char* file = "", const char* include = "");
 
 		CompilationUnitNode* ParseCompilationUnit();
 	private:

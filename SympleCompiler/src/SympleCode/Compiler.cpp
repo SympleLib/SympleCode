@@ -15,6 +15,9 @@
 
 namespace Symple
 {
+	Compiler::Compiler(const std::string& include)
+		: mInclude(include) {}
+
 	bool Compiler::CompileFile(const std::string& pathStr)
 	{
 		Debug::Clear();
@@ -47,7 +50,7 @@ namespace Symple
 			fclose(file);
 
 			printf("Parsing...\n");
-			Parser parser(source, path);
+			Parser parser(source, path, mInclude.c_str());
 			unsigned int parseErrors = Diagnostics::GetErrors().size();
 			if (parseErrors)
 			{

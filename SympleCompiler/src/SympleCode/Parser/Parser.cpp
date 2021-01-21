@@ -24,8 +24,8 @@
 
 namespace Symple
 {
-	Parser::Parser(const char* source, const char* file)
-		: mPreprocessor(source, file), mPosition(0), mTokens(mPreprocessor.GetTokens())
+	Parser::Parser(const char* source, const char* file, const char* include)
+		: mPreprocessor(source, file, include), mPosition(0), mTokens(mPreprocessor.GetTokens())
 	{
 		for (auto tok : mTokens)
 			if (tok->Is(Token::Kind::Unknown))

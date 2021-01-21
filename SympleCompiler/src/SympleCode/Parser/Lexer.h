@@ -16,6 +16,8 @@ namespace Symple
 		Lexer(const char* source = "", const char* file = "");
 
 		Token* Next();
+
+		const char* GetSource() const;
 	private:
 		static bool ShouldIgnore(char c);
 		static bool IsIdentifier(char c);
