@@ -357,7 +357,10 @@ namespace Symple
 
 		Emit("\tmov     %s, %s", GetReg(regbp), GetReg(regsp));
 		Pop(regbp);
-		Emit("\tret");
+		if (member->GetModifiers()->GetFormatType() && member->GetModifiers()->GetFormatType()->GetModifier()->Is(Token::Kind::StdCall))
+			Emit("\tret     $%i", member->GetArguments()->GetArguments().size() * 4);
+		else
+			Emit("\tret");
 	}
 
 	void Emitter::EmitGlobalVariableDeclaration(const GlobalVariableDeclarationNode* member)
@@ -773,8 +776,10 @@ namespace Symple
 			}
 		}
 
-		Emit("\tcall    %s", Debug::GetFunction(expression->GetName()->GetLex(), expression->GetArguments())->GetAsmName().c_str());
-		if (expression->GetArguments()->GetArguments().size())
+		const FunctionDeclarationNode* func = Debug::GetFunction(expression->GetName()->GetLex(), expression->GetArguments());
+
+		Emit("\tcall    %s", func->GetAsmName().c_str());
+		if (expression->GetArguments()->GetArguments().size() && !(func->GetModifiers()->GetFormatType() && func->GetModifiers()->GetFormatType()->GetModifier()->Is(Token::Kind::StdCall)))
 			Emit("\tadd     $%i, %s", expression->GetArguments()->GetArguments().size() * platsize, GetReg(regsp));
 		mStack -= expression->GetArguments()->GetArguments().size() * platsize;
 		Register reg = AllocReg(regax);

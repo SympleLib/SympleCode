@@ -1,9 +1,24 @@
 #include "libc/time.sy"
 #include "libc/rand.sy"
+#include "libc/io.sy"
+
+int square(int num) stdcall
+	ret num * num;
+
+int modi(int x, int y)
+{
+    int result = x;   
+    while (result >= y)
+        result -= y;
+
+    ret result;
+};
 
 int main()
 {
 	srand(time(null));
 	
-	rand();
+	printf("Random Number (from 1-10) = %i", modi(rand(), 10) + 1);
+	
+	ret square(5);
 };
