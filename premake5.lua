@@ -3,8 +3,7 @@ workspace "SympleCode"
 
 	configurations {
 		"Debug",
-		"Release",
-		"Production"
+		"Release"
 	}
 
 outputdir = "%{cfg.buildcfg}-%{cfg.system}-%{cfg.architecture}"

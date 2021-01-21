@@ -84,7 +84,7 @@ namespace Symple
 
 		bool IsMain() const
 		{
-			return mName->GetLex() == "main" && mArguments->GetArguments().empty() &&
+			return mName->GetLex() == "main" && (mArguments->GetArguments().empty() || mArguments->GetArguments().size() == 2) &&
 				!(mModifiers->GetFormatType() && mModifiers->GetFormatType()->GetModifier()->IsEither({ Token::Kind::SympleCall, Token::Kind::StdCall })) &&
 				!mModifiers->IsPrivate();
 		}

@@ -31,7 +31,3 @@ project "SympleCompiler"
 	filter "configurations:Release"
 		defines "SY_RELEASE"
 		optimize "On"
-
-	filter "configurations:Production"
-		defines "SY_PRODUCTION"
-		optimize "On"

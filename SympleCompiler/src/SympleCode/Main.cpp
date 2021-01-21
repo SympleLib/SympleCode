@@ -5,7 +5,7 @@
 
 static void FindFiles(const std::string& dir);
 
-static std::vector<std::string> sPaths = { "sy\\Time.syc" };
+static std::vector<std::string> sPaths = { "sy\\TicTacToe.syc" };
 
 std::vector<const char*> sLibraries;
 
