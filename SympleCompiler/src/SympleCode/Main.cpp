@@ -15,6 +15,8 @@ static void PrintHelp()
 
 struct CompileFlags
 {
+	bool BadFlag = false;
+
 	bool CompileOnly = false;
 	bool RunAfterCompile = false;
 	const char* OutputFile = "Main.exe";
@@ -73,6 +75,7 @@ static CompileFlags ParseFlags(unsigned int argc, const char* argv[])
 			}
 
 			printf("Bad Flag: '%s'\n", arg);
+			flags.BadFlag = true;
 			PrintHelp();
 			continue;
 		}
@@ -86,23 +89,24 @@ static CompileFlags ParseFlags(unsigned int argc, const char* argv[])
 	return flags;
 }
 
-static std::vector<std::string> FindFiles(const std::string& dir);
+static std::vector<const char*> FindFiles(const std::string& dir);
 
 std::vector<const char*> sLibraries;
 
 int main(unsigned int argc, const char* argv[])
 {
 	CompileFlags flags = ParseFlags(argc, argv);
-	//CompileFlags flags = {
-	//	false, true,
-	//	"TicTacToe.exe", "sy\\", { "sy\\TicTacToe.syc" }
-	//};
-
-	//const char* args[5] = { argv[0], "-r", "-oTicTacToe.exe", "sy\\TicTacToe.syc", "-isy\\" };
-	//CompileFlags flags = ParseFlags(5, args);
-
-	printf("CompileOnly: %i, RunAfterCompile: %i, OutputFile: %s, Include Dir: %s\n\n", flags.CompileOnly, flags.RunAfterCompile, flags.OutputFile, flags.IncludeDir);
+	if (flags.BadFlag)
+		return 1;
 	Symple::Compiler compiler(flags.IncludeDir);
+	if (flags.InputFiles.empty())
+	{
+		puts("No Input Files!");
+		return 1;
+	}
+
+	if (flags.InputFiles[0] == 0)
+		flags.InputFiles = FindFiles("");
 
 	bool compiledGood = !flags.InputFiles.empty();
 	for (const char* path : flags.InputFiles)
@@ -117,13 +121,11 @@ int main(unsigned int argc, const char* argv[])
 		if (flags.RunAfterCompile)
 			compiler.Run();
 	}
-
-	system("pause");
 }
 
-static std::vector<std::string> FindFiles(const std::string& dir)
+static std::vector<const char*> FindFiles(const std::string& dir)
 {
-	std::vector<std::string> paths;
+	std::vector<const char*> paths;
 
 	WIN32_FIND_DATAA fdata;
 	HANDLE hfind = FindFirstFileA((dir + "*").c_str(), &fdata);
@@ -145,7 +147,13 @@ static std::vector<std::string> FindFiles(const std::string& dir)
 		{
 			std::string name = dir + fdata.cFileName;
 			if (name.substr(name.find_last_of('.')) == ".symple" || name.substr(name.find_last_of('.')) == ".symplecode" || name.substr(name.find_last_of('.')) == ".syc")
-				paths.push_back(name);
+			{
+				char* cname = new char[1024];
+				strcpy_s(cname, 1024, name.c_str());
+				paths.push_back(cname);
+			}
 		}
 	} while (FindNextFileA(hfind, &fdata));
+
+	return paths;
 }
