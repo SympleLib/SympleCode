@@ -569,8 +569,8 @@ namespace Symple
 	void Emitter::EmitExpressionStatement(const ExpressionStatementNode* statement)
 	{
 		Register reg = EmitExpression(statement->GetExpression());
-		if (reg != regax)
-			Emit("\tmov     %s, %s", GetReg(reg), GetReg(regax));
+		//if (reg != regax)
+		//	Emit("\tmov     %s, %s", GetReg(reg), GetReg(regax));
 
 		FreeAllRegs(); // In Case I forgot to Free a Register
 	}
