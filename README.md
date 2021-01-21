@@ -9,4 +9,4 @@ Start by cloning the repository using `git clone --recursive https://github.com/
 
 Next, run the `GenerateProjects.bat` which will prompt wihch ide you use, Visual Studio 2019 or 2017 is recommended; if you don't know what to type, see [Premake Usages](https://github.com/premake/premake-core/wiki/Using-Premake).
 
-For information on how to use the language, check out the [wiki](Wiki)
+For information on how to use the language, check out the [wiki](../../Wiki)
