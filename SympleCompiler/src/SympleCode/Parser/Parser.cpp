@@ -61,7 +61,7 @@ namespace Symple
 			return Next();
 		Diagnostics::ReportError(Peek(), "Unexpected Token '%s' of type <%s>, Expected <%s>", std::string(Peek()->GetLex()).c_str(), Token::KindString(Peek()->GetKind()), Token::KindString(kind));
 		Next();
-		return new Token(kind);
+		return Token::Default;
 	}
 
 	bool Parser::IsType(const Token* token)

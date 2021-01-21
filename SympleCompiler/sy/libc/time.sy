@@ -1,0 +1,14 @@
+struct ctime
+{
+    int Seconds;   // seconds after the minute - [0, 60] including leap second
+    int Minutes;   // minutes after the hour - [0, 59]
+    int Hours;  // hours since midnight - [0, 23]
+    int DayOfMonth;  // day of the month - [1, 31]
+    int Month;   // months since January - [0, 11]
+    int Year;  // years since 1900
+    int WeekDay;  // days since Sunday - [0, 6]
+    int DayOfYear;  // days since January 1 - [0, 365]
+    int IsDaylightSavings; // daylight savings time flag
+};
+
+char* ctime(int* timer) ccall;

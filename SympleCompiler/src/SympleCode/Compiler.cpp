@@ -193,6 +193,7 @@ namespace Symple
 	int Compiler::Run()
 	{
 		puts("Running Program...");
+		
 		int exitCode = system(mOutput.c_str());
 		printf("\nProgram Exited with Code %i (0x%x)\n", exitCode, exitCode);
 

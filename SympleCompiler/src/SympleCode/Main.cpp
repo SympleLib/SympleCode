@@ -56,7 +56,7 @@ static void FindFiles(const std::string& dir)
 			//printf("file: %s\n", fdata.cFileName);
 
 			std::string name = dir + fdata.cFileName;
-			if (name.substr(name.find_last_of('.')) == ".symple")
+			if (name.substr(name.find_last_of('.')) == ".symple" || name.substr(name.find_last_of('.')) == ".symplecode" || name.substr(name.find_last_of('.')) == ".syc")
 				sPaths.push_back(name);
 		}
 	} while (FindNextFileA(hfind, &fdata));
