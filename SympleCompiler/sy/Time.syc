@@ -1,0 +1,9 @@
+#include "libc/time.sy"
+#include "libc/rand.sy"
+
+int main()
+{
+	srand(time(null));
+	
+	rand();
+};
