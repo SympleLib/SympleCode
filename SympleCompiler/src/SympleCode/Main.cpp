@@ -19,7 +19,7 @@ struct CompileFlags
 
 	bool CompileOnly = false;
 	bool RunAfterCompile = false;
-	const char* OutputFile = "Main.exe";
+	const char* OutputFile = "a.exe";
 
 	const char* IncludeDir = "";
 
