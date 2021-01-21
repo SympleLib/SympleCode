@@ -7,7 +7,7 @@ int square(int num) stdcall
 
 int modi(int x, int y)
 {
-    int result = x;   
+    int result = x;
     while (result >= y)
         result -= y;
 
