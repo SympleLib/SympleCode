@@ -174,7 +174,7 @@ namespace Symple
 			return new Token(Token::Kind::If, beg, mCurrent, mFile, mLine, bColumn);
 		if (identifier == "else")
 			return new Token(Token::Kind::Else, beg, mCurrent, mFile, mLine, bColumn);
-		if (identifier == "stalloc")
+		if (identifier == "stalloc" || identifier == "alloca")
 			return new Token(Token::Kind::Stalloc, beg, mCurrent, mFile, mLine, bColumn);
 
 		if (identifier == "symplecall")
@@ -193,9 +193,9 @@ namespace Symple
 		if (identifier == "signed")
 			return new Token(Token::Kind::Signed, beg, mCurrent, mFile, mLine, bColumn);
 
-		if (identifier == "struct" || identifier == "struct")
+		if (identifier == "struct" || identifier == "structure")
 			return new Token(Token::Kind::Struct, beg, mCurrent, mFile, mLine, bColumn);
-		if (identifier == "enum")
+		if (identifier == "enum" || identifier == "enumeration")
 			return new Token(Token::Kind::Enum, beg, mCurrent, mFile, mLine, bColumn);
 		return new Token(Token::Kind::Identifier, beg, mCurrent, mFile, mLine, bColumn);
 	}
