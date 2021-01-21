@@ -10,6 +10,7 @@ static void PrintHelp()
 	puts("\t-c            | Compiles File/s Only");
 	puts("\t-r            | Run After Compile");
 	puts("\t-i <dir>      | Include Directory");
+	puts("\t-l <lib>      | Include Library");
 	puts("\t-o <filename> | Output File");
 }
 
@@ -65,6 +66,15 @@ static CompileFlags ParseFlags(unsigned int argc, const char* argv[])
 					flags.IncludeDir = &flag[1];
 				else
 					flags.IncludeDir = argv[++i];
+				continue;
+			}
+
+			if (!strncmp(flag, "l", 1))
+			{
+				if (flag[1])
+					sLibraries.push_back(&flag[1]);
+				else
+					sLibraries.push_back(argv[++i]);
 				continue;
 			}
 
