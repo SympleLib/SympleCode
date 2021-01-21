@@ -24,11 +24,11 @@
             <Keywords name="Folders in comment, open"></Keywords>
             <Keywords name="Folders in comment, middle"></Keywords>
             <Keywords name="Folders in comment, close"></Keywords>
-            <Keywords name="Keywords1">void byte short int long char bool unsigned signed auto true false while for if else</Keywords>
+            <Keywords name="Keywords1">void byte short int long char bool unsigned signed auto var true false while for if else</Keywords>
             <Keywords name="Keywords2">0x</Keywords>
-            <Keywords name="Keywords3">struct return const mutable mut static hint extern symplecall stdcall ccall private priv</Keywords>
+            <Keywords name="Keywords3">struct structure enum enumeration return const mutable mut static hint extern external symplecall stdcall ccall private priv</Keywords>
             <Keywords name="Keywords4">#</Keywords>
-            <Keywords name="Keywords5">null __asm stalloc</Keywords>
+            <Keywords name="Keywords5">null __asm stalloc alloca</Keywords>
             <Keywords name="Keywords6"></Keywords>
             <Keywords name="Keywords7"></Keywords>
             <Keywords name="Keywords8"></Keywords>
