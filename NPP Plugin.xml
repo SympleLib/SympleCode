@@ -28,7 +28,7 @@
             <Keywords name="Keywords2">0x</Keywords>
             <Keywords name="Keywords3">struct return const mutable mut static hint extern symplecall stdcall ccall private priv</Keywords>
             <Keywords name="Keywords4">#</Keywords>
-            <Keywords name="Keywords5">null asm stalloc</Keywords>
+            <Keywords name="Keywords5">null __asm stalloc</Keywords>
             <Keywords name="Keywords6"></Keywords>
             <Keywords name="Keywords7"></Keywords>
             <Keywords name="Keywords8"></Keywords>
