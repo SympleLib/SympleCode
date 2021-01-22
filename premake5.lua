@@ -8,4 +8,5 @@ workspace "SympleCode"
 
 outputdir = "%{cfg.buildcfg}-%{cfg.system}-%{cfg.architecture}"
 
+include "SympleLang"
 include "SympleCompiler"
