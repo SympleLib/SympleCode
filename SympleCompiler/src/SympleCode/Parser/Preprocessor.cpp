@@ -1,5 +1,7 @@
 #include "SympleCode/Parser/Preprocessor.h"
 
+#include "SympleCode/Analysis/Diagnostics.h"
+
 #include <iostream>
 
 namespace Symple
@@ -36,7 +38,9 @@ namespace Symple
 		
 		if (rcmd->GetLex() == "include")
 		{
-			std::string includeDir(prepoLexer.Next()->GetLex());
+			Token* dir = prepoLexer.Next();
+			std::string includeDir(dir->GetLex());
+			includeDir = mInclude + includeDir;
 			for (const std::string& dir : mIncludedFiles)
 				if (includeDir == dir)
 					return;
@@ -44,7 +48,7 @@ namespace Symple
 
 			FILE* file;
 			errno_t err;
-			if (!(err = fopen_s(&file, (mInclude + includeDir).c_str(), "rb")) && file)
+			if (!(err = fopen_s(&file, includeDir.c_str(), "rb")) && file)
 			{
 				fseek(file, 0L, SEEK_END);
 				unsigned int size = std::min(ftell(file), 4096L);
@@ -54,7 +58,7 @@ namespace Symple
 				source[size] = 0;
 				fclose(file);
 
-				Preprocessor includePreprocessor(source, (mInclude + includeDir).c_str(), mInclude.c_str(), mIncludedFiles, mDefines);
+				Preprocessor includePreprocessor(source, includeDir.c_str(), mInclude.c_str(), mIncludedFiles, mDefines);
 				mDefines = includePreprocessor.mDefines;
 				for (const Token* token : includePreprocessor.GetTokens())
 					if (token != includePreprocessor.GetTokens().back())
@@ -68,6 +72,15 @@ namespace Symple
 								mTokens.push_back(deftok);
 						}
 					}
+			}
+			else
+			{
+				char errMsg[32];
+				if (!strerror_s(errMsg, err))
+					Diagnostics::ReportError(dir, "Error including file '%s': %s", includeDir.c_str(), errMsg);
+				else
+					Diagnostics::ReportError(dir, "Unkown Error including file '%s'", includeDir.c_str());
+
 			}
 		}
 		else if (rcmd->GetLex() == "define")

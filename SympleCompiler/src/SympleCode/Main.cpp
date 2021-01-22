@@ -3,6 +3,10 @@
 
 #include "SympleCode/Compiler.h"
 
+static std::vector<const char*> FindFiles(const std::string& dir);
+
+std::vector<const char*> sLibraries;
+
 static void PrintHelp()
 {
 	puts("SympleCode Flags:");
@@ -99,13 +103,15 @@ static CompileFlags ParseFlags(unsigned int argc, const char* argv[])
 	return flags;
 }
 
-static std::vector<const char*> FindFiles(const std::string& dir);
-
-std::vector<const char*> sLibraries;
-
 int main(unsigned int argc, const char* argv[])
 {
-	CompileFlags flags = ParseFlags(argc, argv);
+	CompileFlags flags = {
+		false,
+		false, true,
+		"a.exe", "sy\\",
+		{ "sy\\Connect4.syc" }
+	};
+	//flags = ParseFlags(argc, argv);
 	if (flags.BadFlag)
 		return 1;
 	Symple::Compiler compiler(flags.IncludeDir);
@@ -136,6 +142,8 @@ int main(unsigned int argc, const char* argv[])
 		if (flags.RunAfterCompile)
 			compiler.Run();
 	}
+
+	system("pause");
 }
 
 static std::vector<const char*> FindFiles(const std::string& dir)

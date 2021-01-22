@@ -476,7 +476,7 @@ namespace Symple
 
 	void Emitter::EmitAsmStatement(const AsmStatementNode* statement)
 	{
-		fprintf(mFile, std::string(statement->GetInstructions()->GetLex()).c_str());
+		Emit("%s", std::string(statement->GetInstructions()->GetLex()).c_str());
 	}
 
 	void Emitter::EmitBlockStatement(const BlockStatementNode* statement)
@@ -530,10 +530,20 @@ namespace Symple
 
 	void Emitter::EmitReturnStatement(const ReturnStatementNode* statement)
 	{
-		Register ret = EmitExpression(statement->GetExpression());
-		FreeReg(ret);
-		if (ret != regax)
-			Emit("\tmov     %s, %s", GetReg(ret), GetReg(regax));
+		if (statement->GetExpression()->CanEvaluate())
+		{
+			if (statement->GetExpression()->Evaluate())
+				Emit("\tmov     $%i, %s", statement->GetExpression()->Evaluate(), GetReg(regax));
+			else
+				Emit("\txor     %s, %s", GetReg(regax), GetReg(regax));
+		}
+		else
+		{
+			Register ret = EmitExpression(statement->GetExpression());
+			FreeReg(ret);
+			if (ret != regax)
+				Emit("\tmov     %s, %s", GetReg(ret), GetReg(regax));
+		}
 
 		if (mReturning)
 			Emit("\tjmp     ..%i", mReturn);
@@ -1021,16 +1031,19 @@ namespace Symple
 			Register idx = EmitExpression(expression->GetIndex());
 			if (sz != 1)
 				Emit("\timul    $%i, %s", sz, GetReg(idx));
-			Emit("\tadd     %s, %s", GetReg(idx), GetReg(addr));
 			FreeReg(idx);
 
-			if (!retptr)
+			if (retptr)
+			{
+				Emit("\tadd     %s, %s", GetReg(idx), GetReg(addr));
+			}
+			else
 			{
 				if (sz == platsize)
-					Emit("\tmov     (%s), %s", GetReg(addr), GetReg(addr));
+					Emit("\tmov     (%s, %s), %s", GetReg(addr), GetReg(idx), GetReg(addr));
 				else
 				{
-					Emit("\tmov%c    (%s), %s", Suf(sz), GetReg(addr), GetReg(addr, sz));
+					Emit("\tmov%c    (%s, %s), %s", Suf(sz), GetReg(addr), GetReg(idx), GetReg(addr, sz));
 					Emit("\tmovs%c%c    %s, %s", Suf(sz), Suf(), GetReg(addr, sz), GetReg(addr));
 				}
 			}

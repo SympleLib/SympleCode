@@ -1,0 +1,21 @@
+#include "libc/memory.sy"
+#include "libc/io.sy"
+
+void PrintBoard(char* this)
+{
+	int i;
+	for (i = 0; i < 7*6; i += 7)
+		printf("%2i %c %c %c %c %c %c %c\n", i, this[i+0], this[i+1], this[i+2], this[i+3], this[i+4], this[i+5], this[i+6]);
+};
+
+int main()
+{
+	char* this = (char*)malloc(7*6);
+	for (int i = 0; i < 7*6; i += 1)
+		this[i] = '.';
+	PrintBoard(this);
+	
+	free(this);
+
+	ret 0;
+};
