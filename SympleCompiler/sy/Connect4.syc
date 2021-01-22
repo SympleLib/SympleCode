@@ -10,12 +10,10 @@ void PrintBoard(char* this)
 
 int main()
 {
-	char* this = (char*)malloc(7*6);
+	char* this = (char*)stalloc(7*6);
 	for (int i = 0; i < 7*6; i += 1)
 		this[i] = '.';
 	PrintBoard(this);
-	
-	free(this);
 
 	ret 0;
 };
