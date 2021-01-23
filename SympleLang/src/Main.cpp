@@ -1,7 +1,15 @@
-#include <iostream>
+#include <pch.h>
+
+#include <cstdlib>
+#include <cstdio>
+
+#include "SympleCode/Util/Log.h"
 
 int main()
 {
-	puts("Hello, world!");
+	using namespace Symple;
+
+	SympleLog->GetLogger()->critical("Just Kidden");
+
 	system("pause");
 }
