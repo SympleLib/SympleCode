@@ -8,6 +8,6 @@ namespace Symple
 	Lexer::Lexer(std::string_view path)
 		: mPath(path), mLine(), mColumn()
 	{
-
+		OpenFile(mFile, path);
 	}
 }
