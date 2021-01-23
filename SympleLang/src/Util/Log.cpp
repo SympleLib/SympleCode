@@ -17,7 +17,6 @@ namespace Symple
 		spdlog::set_pattern("[%n]%^<%l>%$: %v");
 		mLogger = spdlog::stdout_color_mt(std::string(name));
 		mLogger->set_level(spdlog::level::trace);
-		mLogger->flush_on(spdlog::level::trace);
 	}
 
 	std::shared_ptr<spdlog::logger> Log::GetLogger()

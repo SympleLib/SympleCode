@@ -9,7 +9,7 @@ int main()
 {
 	using namespace Symple;
 
-	SympleLog->GetLogger()->critical("Just Kidden");
+	SympleLog->Trace("{}", "Just Kidden");
 
 	system("pause");
 }
