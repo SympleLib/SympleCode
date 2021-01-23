@@ -36,6 +36,12 @@ namespace Symple
 		}
 
 		template<typename... Args>
+		void Error(std::string_view fmt, Args&&... args)
+		{
+			mLogger->error(fmt, std::forward<Args>(args)...);
+		}
+
+		template<typename... Args>
 		void Critical(std::string_view fmt, Args&&... args)
 		{
 			mLogger->critical(fmt, std::forward<Args>(args)...);
