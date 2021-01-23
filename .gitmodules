@@ -1,3 +1,6 @@
 [submodule "vender/LLVM"]
 	path = vender/LLVM
 	url = https://github.com/llvm/llvm-project/
+[submodule "SympleLang/vendor/spdlog"]
+	path = SympleLang/vendor/spdlog
+	url = https://github.com/gabime/spdlog.git
