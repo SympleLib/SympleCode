@@ -16,7 +16,7 @@ namespace Symple
 		unsigned mLine, mColumn;
 	public:
 		Lexer(char* mFile);
-		Lexer(char* mFile, std::string mSource);
+		Lexer(char* mFile, std::string& mSource);
 
 		std::shared_ptr<Token> Lex();
 
@@ -25,10 +25,12 @@ namespace Symple
 	private:
 		static bool IsWhiteSpace(char);
 		static bool IsIdentifier(char);
+		bool CheckNewLine();
 
-		char Peek(unsigned off = 0);
-		char Get();
+		char& Peek(unsigned off = 0);
+		char& Next();
 
-		
+		std::shared_ptr<Token> LexAtom(Token::Kind);
+		std::shared_ptr<Token> LexIdentifier();
 	};
 }

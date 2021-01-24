@@ -22,10 +22,6 @@ namespace Symple
 	bool Token::Is(Kind kind)
 	{ return mKind == kind; }
 
-	template <typename... Args>
-	bool Token::IsEither(Kind kind, Args... kinds)
-	{ return Is(kind) || IsEither(kinds...); }
-
 
 	Token::Kind Token::GetKind()
 	{ return mKind; }

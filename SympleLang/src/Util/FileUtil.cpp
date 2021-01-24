@@ -25,16 +25,17 @@ namespace Symple
 	int (*CloseFile)(FILE*) = fclose;
 
 
-	std::string ReadFile(FILE* fs)
+	std::string ReadFile(FILE* fs, unsigned max)
 	{
 		if (!fs)
 			return nullptr;
 
 		fseek(fs, 0, SEEK_END);
 		unsigned sz = ftell(fs);
-		char* src = new char[sz + 1];
+		unsigned allocSz = std::min(sz + 1, max);
+		char* src = new char[allocSz];
 		src[sz] = 0;
-		fread_s(src, sz, 1, sz, fs);
+		fread_s(src, allocSz - 1, 1, sz, fs);
 
 		std::string str(src);
 		delete[] src;
