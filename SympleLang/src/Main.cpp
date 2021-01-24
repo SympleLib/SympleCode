@@ -1,15 +1,9 @@
-#include <pch.h>
-
 #include <cstdlib>
 #include <cstdio>
 
-#include "SympleCode/Lex/Lexer.h"
-
 int main()
 {
-	using namespace Symple;
+	puts("Hello, world!");
 
-	Lexer lexer("sy/Main.sy");
-
-	system("pause");
+	getc(stdin);
 }

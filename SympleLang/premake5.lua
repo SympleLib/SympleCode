@@ -6,9 +6,6 @@ project "SympleLang"
 	targetdir ("%{wks.location}/bin/" .. outputdir .. "/%{prj.name}")
 	objdir ("%{wks.location}/bin-int/" .. outputdir .. "/%{prj.name}")
 	
-	pchheader "pch.h"
-	pchsource "src/pch.cpp"
-	
 	defines {
 		"SY_32"
 		-- "SY_64"
