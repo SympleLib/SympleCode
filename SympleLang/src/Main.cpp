@@ -9,7 +9,7 @@ int main()
 {
 	using namespace Symple;
 
-	Lexer lexer("this_file_doesn't_exist");
+	Lexer lexer("sy/Main.sy");
 
 	system("pause");
 }

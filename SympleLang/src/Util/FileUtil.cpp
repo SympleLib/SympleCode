@@ -18,8 +18,25 @@ namespace Symple
 			SympleLog->Debug("Successfully Opened File '{}'", path);
 	}
 
+	char* ReadFile(FILE* file)
+	{
+		if (!file)
+			return {};
+
+		fseek(file, 0, SEEK_END);
+		unsigned sz = ftell(file) + 1;
+		char* buff = new char[sz];
+		buff[sz - 1] = 0;
+		rewind(file);
+
+		fread_s(buff, sz, 1, sz, file);
+
+		return buff;
+	}
+
 	void CloseFile(FILE* file)
 	{
-		fclose(file);
+		if (file)
+			fclose(file);
 	}
 }

@@ -12,15 +12,22 @@ namespace Symple
 	private:
 		FILE* mFile;
 		std::string_view mPath;
+		char* mSource;
+		unsigned mSourceSize;
 		
 		unsigned mLine, mColumn;
 	public:
 		Lexer(std::string_view path);
 
-		Token* Lex();
+		Ref<Token> Lex();
 	private:
+		static bool IsIdentifier(char);
+
+		char Next();
 		char Peek(unsigned off = 0);
 
-		Token* Identifier();
+		void CheckWhiteSpace();
+		Ref<Token> Atom(TokenKind kind);
+		Ref<Token> Identifier();
 	};
 }
