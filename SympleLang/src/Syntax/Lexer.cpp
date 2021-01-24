@@ -50,6 +50,13 @@ namespace Symple
 	}
 
 
+	std::string_view Lexer::GetSource()
+	{ return mSource; }
+
+	char* Lexer::GetFile()
+	{ return mFile; }
+
+
 	bool Lexer::IsWhiteSpace(char c)
 	{
 		return c == ' ' || c == '\t' || c == '\r' || c == 0xCC;
@@ -89,11 +96,14 @@ namespace Symple
 
 	char& Lexer::Next()
 	{
-		mColumn++;
 		char& prev = mSource[mPosition];
+		mColumn++;
 		mPosition++;
 		if (mPosition > mSource.length())
+		{
+			mColumn--;
 			mPosition--;
+		}
 		return prev;
 	}
 
