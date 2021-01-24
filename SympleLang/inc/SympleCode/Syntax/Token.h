@@ -25,6 +25,8 @@ namespace Symple
 		bool IsEither(Kind kind, Args... kinds)
 		{ return Is(kind) || IsEither(kinds...); }
 
+		void Print();
+
 		Kind GetKind();
 		std::string_view GetText();
 

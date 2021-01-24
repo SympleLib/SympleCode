@@ -10,6 +10,18 @@ namespace Symple
 		: mToken(tok), mKind(Unknown)
 	{}
 
+
+	void Node::Print(FILE* fs)
+	{
+
+	}
+
+	void Node::Print(std::ostream os)
+	{
+		
+	}
+
+
 	Node::Kind Node::GetKind()
 	{ return mKind; }
 

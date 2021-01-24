@@ -1,5 +1,7 @@
 #pragma once
 
+#include <ostream>
+
 #include "SympleCode/Syntax/Token.h"
 
 namespace Symple
@@ -13,6 +15,9 @@ namespace Symple
 	public:
 		Node(Kind, std::shared_ptr<Token>);
 		Node(std::shared_ptr<Token>);
+
+		void Print(FILE*);
+		void Print(std::ostream);
 
 		Kind GetKind();
 		std::shared_ptr<Token> GetToken();

@@ -2,17 +2,16 @@
 
 #include <spdlog/spdlog.h>
 
-#include "SympleCode/Syntax/Lexer.h"
-
 namespace Symple
 {
 	Parser::Parser(char* file)
-		: mPosition()
+		: mPosition(), mLexer(std::make_unique<Lexer>(file))
 	{
-		Lexer lexer(file);
 		std::shared_ptr<Token> tok = std::make_shared<Token>();
 		while (!tok->Is(Token::EndOfFile))
-			mTokens.push_back(tok = lexer.Lex());
+			mTokens.push_back(tok = mLexer->Lex());
+
+		putchar('\n');
 	}
 
 	Parser::Parser(std::vector<std::shared_ptr<Token>>& tokens)
@@ -31,6 +30,8 @@ namespace Symple
 	std::shared_ptr<Token> Parser::Next()
 	{
 		std::shared_ptr<Token> current = Peek();
+		current->Print();
+
 		mPosition++;
 		return current;
 	}
@@ -55,14 +56,12 @@ namespace Symple
 		case Token::Number:
 			return ParseLiteralExpression();
 		}
-
-		spdlog::debug("Token: {}", Next()->GetText());
-		return std::make_shared<ExpressionNode>(std::make_shared<Token>());
+		
+		return std::make_shared<ExpressionNode>(Next());
 	}
 
 	std::shared_ptr<LiteralExpressionNode> Parser::ParseLiteralExpression()
 	{
-		spdlog::debug("Token: {}", Peek()->GetText());
 		return std::make_shared<LiteralExpressionNode>(Next());
 	}
 }

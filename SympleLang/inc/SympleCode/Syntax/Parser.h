@@ -2,6 +2,8 @@
 
 #include <vector>
 
+#include "SympleCode/Syntax/Lexer.h"
+
 #include "SympleCode/Syntax/Token.h"
 #include "SympleCode/Syntax/Expression/ExpressionNode.h"
 #include "SympleCode/Syntax/Expression/LiteralExpressionNode.h"
@@ -11,6 +13,8 @@ namespace Symple
 	class Parser
 	{
 	private:
+		std::unique_ptr<Lexer> mLexer;
+
 		std::vector<std::shared_ptr<Token>> mTokens;
 		unsigned mPosition;
 	public:

@@ -1,5 +1,7 @@
 #include "SympleCode/Syntax/Token.h"
 
+#include <spdlog/spdlog.h>
+
 namespace Symple
 {
 	Token::Token(Kind kind, unsigned ln, unsigned col, char* file)
@@ -21,6 +23,12 @@ namespace Symple
 
 	bool Token::Is(Kind kind)
 	{ return mKind == kind; }
+
+
+	void Token::Print()
+	{
+		spdlog::info("Token {{ Kind: {}, Text: {}, Line: {}, Column: {}, File {} }}", KindMap[mKind], mText, mLine, mColumn, mFile);
+	}
 
 
 	Token::Kind Token::GetKind()
