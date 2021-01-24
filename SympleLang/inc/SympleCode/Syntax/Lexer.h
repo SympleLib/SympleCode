@@ -1,5 +1,7 @@
 #pragma once
 
+#include <string>
+
 #include "SympleCode/Syntax/Token.h"
 
 namespace Symple
@@ -7,13 +9,14 @@ namespace Symple
 	class Lexer
 	{
 	private:
-		std::string_view mSource;
+		std::string mSource;
 		unsigned mPosition;
 
 		char* mFile;
 		unsigned mLine, mColumn;
 	public:
 		Lexer(char* mFile);
+		Lexer(char* mFile, std::string mSource);
 
 		std::shared_ptr<Token> Lex();
 
