@@ -35,11 +35,12 @@ namespace Symple
 		enum Kind
 		{
 			EndOfFile,
-				Unknown,
+			Unknown,
 
-				Identifier,
+			Identifier,
+			Number,
 
-				Last = Identifier,
+			Last = Number,
 		};
 
 		static constexpr char* KindMap[(int)Last + 1] = {
@@ -47,6 +48,7 @@ namespace Symple
 			"Unknown",
 
 			"Identifier",
+			"Number",
 		};
 	};
 }

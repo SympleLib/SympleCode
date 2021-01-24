@@ -31,11 +31,11 @@ namespace Symple
 			return nullptr;
 
 		fseek(fs, 0, SEEK_END);
-		unsigned sz = ftell(fs);
-		unsigned allocSz = std::min(sz + 1, max);
+		unsigned allocSz = std::min((unsigned)(ftell(fs) + 1), max);
 		char* src = new char[allocSz];
-		src[sz] = 0;
-		fread_s(src, allocSz - 1, 1, sz, fs);
+		src[allocSz - 1] = 0;
+		rewind(fs);
+		fread_s(src, allocSz - 1, 1, allocSz - 1, fs);
 
 		std::string str(src);
 		delete[] src;

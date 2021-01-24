@@ -25,6 +25,7 @@ namespace Symple
 	private:
 		static bool IsWhiteSpace(char);
 		static bool IsIdentifier(char);
+		static bool IsNumber(char);
 		bool CheckNewLine();
 
 		char& Peek(unsigned off = 0);
@@ -32,5 +33,6 @@ namespace Symple
 
 		std::shared_ptr<Token> LexAtom(Token::Kind);
 		std::shared_ptr<Token> LexIdentifier();
+		std::shared_ptr<Token> LexNumber();
 	};
 }

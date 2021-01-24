@@ -9,11 +9,13 @@ namespace Symple
 	Lexer::Lexer(char* file)
 		: mFile(file), mSource(), mPosition(), mLine(), mColumn()
 	{
-		FILE* fs = OpenFile(file, "r");
+		FILE* fs = OpenFile(file, "rb");
 		if (fs)
 		{
 			mSource = ReadFile(fs);
 			CloseFile(fs);
+
+			puts(mSource.c_str());
 		}
 	}
 
@@ -31,6 +33,8 @@ namespace Symple
 		if (!c)
 			return LexAtom(Token::EndOfFile);
 
+		if (IsNumber(c))
+			return LexNumber();
 		if (IsIdentifier(c))
 			return LexIdentifier();
 
@@ -52,6 +56,11 @@ namespace Symple
 		return (c >= 'a' && c <= 'z') || (c >= 'A' && c <= 'Z') || c == '_' || c == '$' || (c >= '0' && c <= '9');
 	}
 
+	bool Lexer::IsNumber(char c)
+	{
+		return c >= '0' && c <= '9';
+	}
+
 	bool Lexer::CheckNewLine()
 	{
 		if (Peek() == '\n')
@@ -70,14 +79,17 @@ namespace Symple
 	{
 		unsigned pos = mPosition + off;
 		if (pos >= mSource.length())
-			return *mSource.end();
+			return mSource[mSource.length()];
 		return mSource[pos];
 	}
 
 	char& Lexer::Next()
 	{
 		mColumn++;
-		return mSource[mPosition++];
+		mPosition++;
+		if (mPosition >= mSource.length())
+			return mSource[mSource.length()];
+		return mSource[mPosition];
 	}
 
 
@@ -93,5 +105,16 @@ namespace Symple
 			Next();
 
 		return std::make_shared<Token>(Token::Identifier, beg, Current, mLine, column, mFile);
+	}
+
+	std::shared_ptr<Token> Lexer::LexNumber()
+	{
+		char* beg = Current;
+		int column = mColumn;
+		Next();
+		while (IsNumber(Peek()))
+			Next();
+
+		return std::make_shared<Token>(Token::Number, beg, Current, mLine, column, mFile);
 	}
 }
