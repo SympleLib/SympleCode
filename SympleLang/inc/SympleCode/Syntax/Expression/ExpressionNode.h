@@ -6,8 +6,9 @@ namespace Symple
 {
 	class ExpressionNode : public Node
 	{
-	private:
+	protected:
+		ExpressionNode(Kind, std::shared_ptr<Token>);
 	public:
-
+		ExpressionNode(std::shared_ptr<Token>);
 	};
 }

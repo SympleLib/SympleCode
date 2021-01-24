@@ -2,6 +2,10 @@
 
 namespace Symple
 {
+	Node::Node(Kind kind, std::shared_ptr<Token> tok)
+		: mKind(kind), mToken(tok)
+	{}
+
 	Node::Node(std::shared_ptr<Token> tok)
 		: mToken(tok), mKind(Unknown)
 	{}

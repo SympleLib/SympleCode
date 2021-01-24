@@ -7,7 +7,7 @@ namespace Symple
 {
 	class Token
 	{
-	public: enum Kind;
+	public: enum Kind : unsigned;
 	private:
 		Kind mKind;
 		std::string_view mText;
@@ -32,7 +32,7 @@ namespace Symple
 		unsigned GetLine();
 		unsigned GetColumn();
 	public:
-		enum Kind
+		enum Kind : unsigned
 		{
 			EndOfFile,
 			Unknown,

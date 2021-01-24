@@ -6,11 +6,12 @@ namespace Symple
 {
 	class Node
 	{
-	public: enum Kind;
+	public: enum Kind : unsigned;
 	protected:
 		Kind mKind;
 		std::shared_ptr<Token> mToken;
 	public:
+		Node(Kind, std::shared_ptr<Token>);
 		Node(std::shared_ptr<Token>);
 
 		Kind GetKind();
@@ -20,15 +21,21 @@ namespace Symple
 		T* As()
 		{ return dynamic_cast<T*>(this); }
 	public:
-		enum Kind
+		enum Kind : unsigned
 		{
 			Unknown,
 
-			Last = Unknown,
+			Expression,
+			LiteralExpression,
+
+			Last = LiteralExpression,
 		};
 
 		static constexpr char* KindMap[(int)Last + 1] = {
-			"Unknown"
+			"Unknown",
+
+			"Expression",
+			"LiteralExpression",
 		};
 	};
 }
