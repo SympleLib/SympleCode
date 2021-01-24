@@ -14,8 +14,6 @@ SympleCode is a programming language that is meant to be close to the [C Program
 Disclamer: Symple Code only supports windows at the moment!
 ```
 
-Start by cloning the repository using `git clone --recursive https://github.com/TeddyTelanoff/SympleCode/`
-
-Next, run the `GenerateProjects.bat` which will prompt wihch ide you use, Visual Studio 2019 or 2017 is recommended; if you don't know what to type, see [Premake Usages](https://github.com/premake/premake-core/wiki/Using-Premake). Then just run the program!
+Start by downloading the SympleCode compiler from [releases](https://youtu.be/dQw4w9WgXcQ). Now make sure you have both clang and the compiler in the same directory. Next open command prompt in your project directory and type `SympleCode.exe <filename>`.
 
 For information on how to use the language, check out the [wiki](../../wiki).
