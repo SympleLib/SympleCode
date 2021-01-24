@@ -40,6 +40,10 @@ namespace Symple
 
 		switch (c)
 		{
+		case ';':
+			return LexAtom(Token::Semicolon);
+		case '=':
+			return LexAtom(Token::Equal);
 		default:
 			return LexAtom(Token::Unknown);
 		}
@@ -86,10 +90,11 @@ namespace Symple
 	char& Lexer::Next()
 	{
 		mColumn++;
+		char& prev = mSource[mPosition];
 		mPosition++;
-		if (mPosition >= mSource.length())
-			return mSource[mSource.length()];
-		return mSource[mPosition];
+		if (mPosition > mSource.length())
+			mPosition--;
+		return prev;
 	}
 
 

@@ -16,13 +16,19 @@ project "SympleLang"
 		"inc/**.hpp",
 		
 		"src/**.c",
-		"src/**.cpp"
+		"src/**.cpp",
+		
+		"sy/**.sy"
 	}
 	
 	includedirs {
 		"inc",
 		
 		"vendor/spdlog/include"
+	}
+	
+	disablewarnings {
+		"26812"
 	}
 	
 	filter "configurations:Debug"

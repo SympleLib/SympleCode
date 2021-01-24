@@ -40,7 +40,11 @@ namespace Symple
 			Identifier,
 			Number,
 
-			Last = Number,
+			Semicolon,
+
+			Equal,
+
+			Last = Equal,
 		};
 
 		static constexpr char* KindMap[(int)Last + 1] = {
@@ -49,6 +53,10 @@ namespace Symple
 
 			"Identifier",
 			"Number",
+
+			"Semicolon",
+
+			"Equal",
 		};
 	};
 }
