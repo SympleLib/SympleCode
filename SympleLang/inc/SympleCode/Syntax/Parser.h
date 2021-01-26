@@ -7,6 +7,7 @@
 
 #include "SympleCode/Syntax/Node.h"
 #include "SympleCode/Syntax/ExpressionNode.h"
+#include "SympleCode/Syntax/LiteralExpressionNode.h"
 
 namespace Symple
 {
@@ -14,7 +15,7 @@ namespace Symple
 	{
 	private:
 		std::vector<std::shared_ptr<Token>> mTokens;
-		unsigned mPosision;
+		unsigned mPosition;
 
 		std::shared_ptr<Lexer> mLexer;
 	public:
@@ -25,5 +26,9 @@ namespace Symple
 
 		std::shared_ptr<Node> Parse();
 		std::shared_ptr<ExpressionNode> ParseExpression();
+		std::shared_ptr<LiteralExpressionNode> ParseLiteralExpression();
+	private:
+		std::shared_ptr<Token> Peek(unsigned off = 0);
+		std::shared_ptr<Token> Next();
 	};
 }

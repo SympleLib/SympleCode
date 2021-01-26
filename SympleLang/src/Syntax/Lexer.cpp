@@ -14,8 +14,6 @@ namespace Symple
 		{
 			mSource = ReadFile(fs);
 			CloseFile(fs);
-
-			puts(mSource.c_str());
 		}
 	}
 

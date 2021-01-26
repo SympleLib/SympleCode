@@ -27,6 +27,7 @@ namespace Symple
 		{ return Is(kind) || IsEither(kinds...); }
 
 		void Print(std::ostream& = std::cout);
+		void PrintShort(std::ostream& = std::cout);
 
 		Kind GetKind();
 		std::string_view GetText();

@@ -20,19 +20,20 @@ namespace Symple
 
 		std::shared_ptr<Token> Lex();
 
-		std::string_view GetSource();
-		char* GetFile();
-	private:
+		std::shared_ptr<Token> LexAtom(Token::Kind);
+		std::shared_ptr<Token> LexIdentifier();
+		std::shared_ptr<Token> LexNumber();
+
 		static bool IsWhiteSpace(char);
 		static bool IsIdentifier(char);
 		static bool IsNumber(char);
+
+		std::string_view GetSource();
+		char* GetFile();
+	private:
 		bool CheckNewLine();
 
 		char& Peek(unsigned off = 0);
 		char& Next();
-
-		std::shared_ptr<Token> LexAtom(Token::Kind);
-		std::shared_ptr<Token> LexIdentifier();
-		std::shared_ptr<Token> LexNumber();
 	};
 }

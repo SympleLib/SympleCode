@@ -26,7 +26,10 @@ namespace Symple
 
 
 	void Token::Print(std::ostream& os)
-	{ os << "Token { Kind: " << KindMap[mKind] << ", Text: " << mText << ", Line: " << mLine << ", Column: " << mColumn << ", File " << mFile << " }"; }
+	{ os << "Token [" << GetLine() << ':' << GetColumn() <<"](" << KindMap[GetKind()] << ") " << GetText(); }
+
+	void Token::PrintShort(std::ostream& os)
+	{ os << '(' << KindMap[mKind] << ") " << mText; }
 
 
 	Token::Kind Token::GetKind()

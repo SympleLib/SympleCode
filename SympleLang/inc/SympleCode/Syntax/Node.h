@@ -43,20 +43,26 @@ namespace Symple
 			PrintIndent(os, indent, last);
 			os << "Node of Kind: " << KindMap[GetKind()];
 		}
+
+		template <typename T>
+		std::shared_ptr<T> As()
+		{ return std::shared_ptr<T>(this); }
 	public:
 		enum Kind : unsigned
 		{
 			Unknown,
 
 			Expression,
+			LiteralExpression,
 
-			Last = Expression,
+			Last = LiteralExpression,
 		};
 
 		static constexpr char* KindMap[Last + 1] = {
 			"Unknown",
 
 			"Expression",
+			"LiteralExpression",
 		};
 	};
 }
