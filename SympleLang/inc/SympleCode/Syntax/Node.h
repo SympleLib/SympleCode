@@ -43,10 +43,6 @@ namespace Symple
 			PrintIndent(os, indent, last);
 			os << "Node of Kind: " << KindMap[GetKind()];
 		}
-
-		template <typename T>
-		T* As()
-		{ return dynamic_cast<T*>(this); }
 	public:
 		enum Kind : unsigned
 		{
