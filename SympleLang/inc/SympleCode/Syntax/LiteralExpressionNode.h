@@ -2,7 +2,7 @@
 
 #include "SympleCode/Syntax/ExpressionNode.h"
 
-namespace Symple
+namespace Symple::Syntax
 {
 	class LiteralExpressionNode : public ExpressionNode
 	{
@@ -22,6 +22,12 @@ namespace Symple
 			GetLiteral()->PrintShort(os);
 			os << ']';
 		}
+
+		virtual bool CanEvaluate()
+		{ return true; }
+
+		virtual int Evaluate()
+		{ return std::stoi(std::string(GetLiteral()->GetText())); }
 
 		shared_ptr<Token> GetLiteral()
 		{ return GetToken(); }

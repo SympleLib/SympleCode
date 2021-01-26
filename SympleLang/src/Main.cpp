@@ -1,4 +1,4 @@
-#include <iostream>
+﻿#include <iostream>
 #include <cstdlib>
 
 #include <spdlog/spdlog.h>
@@ -6,11 +6,11 @@
 #include "SympleCode/Syntax/Lexer.h"
 #include "SympleCode/Syntax/Parser.h"
 
-using Symple::Lexer;
-using Symple::Token;
-using Symple::Parser;
+using Symple::Syntax::Lexer;
+using Symple::Syntax::Token;
+using Symple::Syntax::Parser;
 
-using Symple::Node;
+using Symple::Syntax::ExpressionNode;
 
 using std::shared_ptr;
 using std::make_shared;
@@ -28,8 +28,12 @@ int main()
 	//	(tok = lexer.Lex())->Print();
 
 	shared_ptr<Parser> parser = make_shared<Parser>(lexer);
-	shared_ptr<Node> node = parser->Parse();
+	shared_ptr<ExpressionNode> node = parser->ParseExpression();
 	node->Print();
+	putchar('\n');
+
+	if (node->CanEvaluate())
+		printf("Value = %i\n", node->Evaluate());
 
 	return !getc(stdin);
 }

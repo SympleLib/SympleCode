@@ -4,16 +4,16 @@
 
 #define Current &Peek()
 
-namespace Symple
+namespace Symple::Syntax
 {
 	Lexer::Lexer(char* file)
 		: mFile(file), mSource(), mPosition(), mLine(), mColumn()
 	{
-		FILE* fs = OpenFile(file, "rb");
+		FILE* fs = Util::OpenFile(file, "rb");
 		if (fs)
 		{
-			mSource = ReadFile(fs);
-			CloseFile(fs);
+			mSource = Util::ReadFile(fs);
+			Util::CloseFile(fs);
 		}
 	}
 
@@ -43,6 +43,13 @@ namespace Symple
 
 		case '+':
 			return LexAtom(Token::Plus);
+		case '-':
+			return LexAtom(Token::Dash);
+		case '*':
+			return LexAtom(Token::Asterisk);
+		case '/':
+			return LexAtom(Token::Slash);
+
 		case '=':
 			return LexAtom(Token::Equal);
 		default:

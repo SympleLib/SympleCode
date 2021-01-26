@@ -10,7 +10,7 @@
 #include "SympleCode/Syntax/BinaryExpressionNode.h"
 #include "SympleCode/Syntax/LiteralExpressionNode.h"
 
-namespace Symple
+namespace Symple::Syntax
 {
 	class Parser
 	{
@@ -27,7 +27,7 @@ namespace Symple
 
 		shared_ptr<Node> Parse();
 		shared_ptr<ExpressionNode> ParseExpression();
-		shared_ptr<ExpressionNode> ParseBinaryExpression();
+		shared_ptr<ExpressionNode> ParseBinaryExpression(unsigned parentPrecedence = 0);
 		shared_ptr<LiteralExpressionNode> ParseLiteralExpression();
 	private:
 		shared_ptr<Token> Peek(unsigned off = 0);

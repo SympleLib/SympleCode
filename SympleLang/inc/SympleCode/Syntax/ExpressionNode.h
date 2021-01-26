@@ -2,7 +2,7 @@
 
 #include "SympleCode/Syntax/Node.h"
 
-namespace Symple
+namespace Symple::Syntax
 {
 	class ExpressionNode : public Node
 	{
@@ -18,5 +18,11 @@ namespace Symple
 			PrintIndent(os, indent, last, label);
 			os << "Expression Node" << KindMap[GetKind()];
 		}
+
+		virtual bool CanEvaluate()
+		{ return false; }
+
+		virtual int Evaluate()
+		{ return 0; }
 	};
 }

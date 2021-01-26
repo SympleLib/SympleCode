@@ -2,7 +2,7 @@
 
 #include <spdlog/spdlog.h>
 
-namespace Symple
+namespace Symple::Syntax
 {
 	Token::Token(Kind kind, unsigned ln, unsigned col, char* file)
 		: mKind(kind), mText(), mLine(ln), mColumn(col), mFile(file)

@@ -2,7 +2,7 @@
 
 #include "SympleCode/Syntax/ExpressionNode.h"
 
-namespace Symple
+namespace Symple::Syntax
 {
 	class BinaryExpressionNode : public ExpressionNode
 	{
@@ -28,7 +28,28 @@ namespace Symple
 			newIndent += GetAddIndent(last);
 
 			os.put('\n'); GetLeft()->Print(os, newIndent, false, "Left = ");
-			os.put('\n'); GetLeft()->Print(os, newIndent, true, "Right = ");
+			os.put('\n'); GetRight()->Print(os, newIndent, true, "Right = ");
+		}
+
+		virtual bool CanEvaluate()
+		{ return mLeft->CanEvaluate() && mRight->CanEvaluate(); }
+
+		virtual int Evaluate()
+		{
+			switch (GetOperator()->GetKind())
+			{
+			case Token::Plus:
+				return mLeft->Evaluate() + mRight->Evaluate();
+			case Token::Dash:
+				return mLeft->Evaluate() - mRight->Evaluate();
+
+			case Token::Asterisk:
+				return mLeft->Evaluate() * mRight->Evaluate();
+			case Token::Slash:
+				return mLeft->Evaluate() / mRight->Evaluate();
+			}
+
+			return 0;
 		}
 
 		shared_ptr<Token> GetOperator()

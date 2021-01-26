@@ -1,10 +1,10 @@
-#pragma once
+﻿#pragma once
 
 #include <iostream>
 
 #include "SympleCode/Syntax/Token.h"
 
-namespace Symple
+namespace Symple::Syntax
 {
 	class Node
 	{

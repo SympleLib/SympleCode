@@ -2,7 +2,7 @@
 
 #include <spdlog/spdlog.h>
 
-namespace Symple
+namespace Symple::Util
 {
 	FILE* OpenFile(char* path, char* perms)
 	{

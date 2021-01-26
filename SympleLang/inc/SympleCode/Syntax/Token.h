@@ -8,7 +8,10 @@ namespace Symple
 {
 	using std::shared_ptr;
 	using std::make_shared;
+}
 
+namespace Symple::Syntax
+{
 	class Token
 	{
 	public: enum Kind : unsigned;
@@ -50,6 +53,10 @@ namespace Symple
 			Semicolon,
 
 			Plus,
+			Dash,
+			Asterisk,
+			Slash,
+
 			Equal,
 
 			Last = Equal,
@@ -65,6 +72,10 @@ namespace Symple
 			"Semicolon",
 
 			"Plus",
+			"Dash",
+			"Asterisk",
+			"Slash",
+
 			"Equal",
 		};
 	};

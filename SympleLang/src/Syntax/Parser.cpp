@@ -1,6 +1,8 @@
 #include "SympleCode/Syntax/Parser.h"
 
-namespace Symple
+#include "SympleCode/Syntax/Facts.h"
+
+namespace Symple::Syntax
 {
 	Parser::Parser(shared_ptr<Lexer> lexer)
 		: mLexer(lexer), mTokens(), mPosition()
@@ -31,14 +33,18 @@ namespace Symple
 		return ParseBinaryExpression();
 	}
 
-	shared_ptr<ExpressionNode> Parser::ParseBinaryExpression()
+	shared_ptr<ExpressionNode> Parser::ParseBinaryExpression(unsigned parentPrecedence)
 	{
 		shared_ptr<ExpressionNode> left = ParseLiteralExpression();
 
-		while (Peek()->Is(Token::Plus))
+		while (true)
 		{
+			unsigned precedence = Facts::GetBinaryOperatorPrecedence(Peek()->GetKind());
+			if (precedence == 0 || precedence <= parentPrecedence)
+				break;
+
 			shared_ptr<Token> oqerator = Next();
-			shared_ptr<ExpressionNode> right = ParseLiteralExpression();
+			shared_ptr<ExpressionNode> right = ParseBinaryExpression(precedence);
 			left = make_shared<BinaryExpressionNode>(left, oqerator, right);
 		}
 
