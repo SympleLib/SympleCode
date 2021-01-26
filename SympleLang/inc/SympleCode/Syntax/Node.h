@@ -54,6 +54,7 @@ namespace Symple::Syntax
 			Unknown,
 
 			Expression,
+			UnaryExpression,
 			BinaryExpression,
 			LiteralExpression,
 
@@ -64,6 +65,7 @@ namespace Symple::Syntax
 			"Unknown",
 
 			"Expression",
+			"UnaryExpression",
 			"BinaryExpression",
 			"LiteralExpression",
 		};

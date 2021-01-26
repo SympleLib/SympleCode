@@ -17,11 +17,24 @@ using std::make_shared;
 
 using spdlog::level::level_enum;
 
-int main()
+unsigned deleteCount;
+
+void* operator new(size_t sz)
+{
+	return malloc(sz);
+}
+
+void operator delete(void* ptr)
+{
+	deleteCount++;
+	free(ptr);
+}
+
+void Parse()
 {
 	spdlog::set_pattern("[Symple]%^<%l>%$: %v");
 	spdlog::set_level(level_enum::trace);
-	
+
 	shared_ptr<Lexer> lexer = make_shared<Lexer>((char*)"sy/Main.sy");
 	//shared_ptr<Token> tok = make_shared<Token>();
 	//while (!tok->Is(Token::EndOfFile))
@@ -31,9 +44,13 @@ int main()
 	shared_ptr<ExpressionNode> node = parser->ParseExpression();
 	node->Print();
 	putchar('\n');
+}
 
-	if (node->CanEvaluate())
-		printf("Value = %i\n", node->Evaluate());
+int main()
+{
+	Parse();
+
+	printf("%i", deleteCount);
 
 	return !getc(stdin);
 }

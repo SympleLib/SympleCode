@@ -33,19 +33,32 @@ namespace Symple::Syntax
 		return ParseBinaryExpression();
 	}
 
+	shared_ptr<ExpressionNode> Parser::ParseUnaryExpression(unsigned parentPrecedence)
+	{
+		unsigned precedence = Facts::GetUnaryOperatorPrecedence(Peek()->GetKind());
+		if (precedence && precedence >= parentPrecedence)
+		{
+			shared_ptr<Token> oqerator = Next();
+			shared_ptr<ExpressionNode> operand = ParseBinaryExpression(precedence);
+			return make_shared<UnaryExpressionNode>(oqerator, operand);
+		}
+		else
+			return ParseLiteralExpression();
+	}
+
 	shared_ptr<ExpressionNode> Parser::ParseBinaryExpression(unsigned parentPrecedence)
 	{
-		shared_ptr<ExpressionNode> left = ParseLiteralExpression();
+		shared_ptr<ExpressionNode> left = ParseUnaryExpression(parentPrecedence);
 
 		while (true)
 		{
 			unsigned precedence = Facts::GetBinaryOperatorPrecedence(Peek()->GetKind());
-			if (precedence == 0 || precedence <= parentPrecedence)
+			if (!precedence || precedence <= parentPrecedence)
 				break;
 
 			shared_ptr<Token> oqerator = Next();
 			shared_ptr<ExpressionNode> right = ParseBinaryExpression(precedence);
-			left = make_shared<BinaryExpressionNode>(left, oqerator, right);
+			left = make_shared<BinaryExpressionNode>(oqerator, left, right);
 		}
 
 		return left;

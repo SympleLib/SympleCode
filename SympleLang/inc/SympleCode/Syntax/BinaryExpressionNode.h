@@ -9,7 +9,7 @@ namespace Symple::Syntax
 	private:
 		shared_ptr<ExpressionNode> mLeft, mRight;
 	public:
-		BinaryExpressionNode(shared_ptr<ExpressionNode> left, shared_ptr<Token> op, shared_ptr<ExpressionNode> right)
+		BinaryExpressionNode(shared_ptr<Token> op, shared_ptr<ExpressionNode> left, shared_ptr<ExpressionNode> right)
 			: ExpressionNode(op), mLeft(left), mRight(right) {}
 
 		virtual Kind GetKind()

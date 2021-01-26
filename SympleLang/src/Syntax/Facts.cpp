@@ -2,6 +2,19 @@
 
 namespace Symple::Syntax
 {
+	unsigned Facts::GetUnaryOperatorPrecedence(Token::Kind kind)
+	{
+		switch (kind)
+		{
+		case Token::Plus:
+		case Token::Dash:
+			return 3;
+
+		default:
+			return 0;
+		}
+	}
+
 	unsigned Facts::GetBinaryOperatorPrecedence(Token::Kind kind)
 	{
 		switch (kind)

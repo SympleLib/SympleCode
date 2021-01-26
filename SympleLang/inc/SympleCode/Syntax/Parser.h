@@ -7,6 +7,7 @@
 
 #include "SympleCode/Syntax/Node.h"
 #include "SympleCode/Syntax/ExpressionNode.h"
+#include "SympleCode/Syntax/UnaryExpressionNode.h"
 #include "SympleCode/Syntax/BinaryExpressionNode.h"
 #include "SympleCode/Syntax/LiteralExpressionNode.h"
 
@@ -27,6 +28,7 @@ namespace Symple::Syntax
 
 		shared_ptr<Node> Parse();
 		shared_ptr<ExpressionNode> ParseExpression();
+		shared_ptr<ExpressionNode> ParseUnaryExpression(unsigned parentPrecedence = 0);
 		shared_ptr<ExpressionNode> ParseBinaryExpression(unsigned parentPrecedence = 0);
 		shared_ptr<LiteralExpressionNode> ParseLiteralExpression();
 	private:
