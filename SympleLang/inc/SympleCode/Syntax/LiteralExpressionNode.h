@@ -23,12 +23,6 @@ namespace Symple::Syntax
 			os << ']';
 		}
 
-		virtual bool CanEvaluate()
-		{ return true; }
-
-		virtual int Evaluate()
-		{ return std::stoi(std::string(GetLiteral()->GetText())); }
-
 		shared_ptr<Token> GetLiteral()
 		{ return GetToken(); }
 	};

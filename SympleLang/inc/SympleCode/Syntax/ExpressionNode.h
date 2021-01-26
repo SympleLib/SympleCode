@@ -18,11 +18,5 @@ namespace Symple::Syntax
 			PrintIndent(os, indent, last, label);
 			os << "Expression Node" << KindMap[GetKind()];
 		}
-
-		virtual bool CanEvaluate()
-		{ return false; }
-
-		virtual int Evaluate()
-		{ return 0; }
 	};
 }
