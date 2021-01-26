@@ -17,19 +17,6 @@ using std::make_shared;
 
 using spdlog::level::level_enum;
 
-unsigned deleteCount;
-
-void* operator new(size_t sz)
-{
-	return malloc(sz);
-}
-
-void operator delete(void* ptr)
-{
-	deleteCount++;
-	free(ptr);
-}
-
 void Parse()
 {
 	spdlog::set_pattern("[Symple]%^<%l>%$: %v");
@@ -49,8 +36,6 @@ void Parse()
 int main()
 {
 	Parse();
-
-	printf("%i", deleteCount);
 
 	return !getc(stdin);
 }
