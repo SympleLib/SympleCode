@@ -1,6 +1,7 @@
 #pragma once
 
 #include <memory>
+#include <iostream>
 #include <string_view>
 
 namespace Symple
@@ -25,7 +26,7 @@ namespace Symple
 		bool IsEither(Kind kind, Args... kinds)
 		{ return Is(kind) || IsEither(kinds...); }
 
-		void Print();
+		void Print(std::ostream& = std::cout);
 
 		Kind GetKind();
 		std::string_view GetText();
@@ -49,7 +50,7 @@ namespace Symple
 			Last = Equal,
 		};
 
-		static constexpr char* KindMap[(int)Last + 1] = {
+		static constexpr char* KindMap[Last + 1] = {
 			"EndOfFile",
 			"Unknown",
 

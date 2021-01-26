@@ -25,10 +25,8 @@ namespace Symple
 	{ return mKind == kind; }
 
 
-	void Token::Print()
-	{
-		spdlog::info("Token {{ Kind: {}, Text: {}, Line: {}, Column: {}, File {} }}", KindMap[mKind], mText, mLine, mColumn, mFile);
-	}
+	void Token::Print(std::ostream& os)
+	{ os << "Token { Kind: " << KindMap[mKind] << ", Text: " << mText << ", Line: " << mLine << ", Column: " << mColumn << ", File " << mFile << " }"; }
 
 
 	Token::Kind Token::GetKind()
