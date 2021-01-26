@@ -10,15 +10,16 @@ namespace Symple
 	{
 	public: enum Kind : unsigned;
 	protected:
-		std::shared_ptr<Token> mToken;
+		shared_ptr<Token> mToken;
 
-		void PrintIndent(std::ostream& os = std::cout, std::string_view indent = "", bool last = true)
+		void PrintIndent(std::ostream& os = std::cout, std::string_view indent = "", bool last = true, std::string_view label = "")
 		{
 			os << indent;
 			if (last)
 				os << "L--\t";
 			else
 				os << "|--\t";
+			os << label;
 		}
 
 		char* GetAddIndent(bool last = true)
@@ -29,30 +30,31 @@ namespace Symple
 				return "|\t";
 		}
 	public:
-		Node(std::shared_ptr<Token> tok)
+		Node(shared_ptr<Token> tok)
 			: mToken(tok) {}
 
 		virtual Kind GetKind()
 		{ return Unknown; }
 
-		virtual std::shared_ptr<Token> GetToken()
+		virtual shared_ptr<Token> GetToken()
 		{ return mToken; }
 
-		virtual void Print(std::ostream& os = std::cout, std::string_view indent = "", bool last = true)
+		virtual void Print(std::ostream& os = std::cout, std::string_view indent = "", bool last = true, std::string_view label = "")
 		{
-			PrintIndent(os, indent, last);
+			PrintIndent(os, indent, last, label);
 			os << "Node of Kind: " << KindMap[GetKind()];
 		}
 
 		template <typename T>
-		std::shared_ptr<T> As()
-		{ return std::shared_ptr<T>(this); }
+		shared_ptr<T> As()
+		{ return shared_ptr<T>(this); }
 	public:
 		enum Kind : unsigned
 		{
 			Unknown,
 
 			Expression,
+			BinaryExpression,
 			LiteralExpression,
 
 			Last = LiteralExpression,
@@ -62,6 +64,7 @@ namespace Symple
 			"Unknown",
 
 			"Expression",
+			"BinaryExpression",
 			"LiteralExpression",
 		};
 	};

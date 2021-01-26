@@ -22,7 +22,7 @@ namespace Symple
 	{}
 
 	
-	std::shared_ptr<Token> Lexer::Lex()
+	shared_ptr<Token> Lexer::Lex()
 	{
 		while (CheckNewLine() || IsWhiteSpace(Peek()))
 			Next();
@@ -40,6 +40,9 @@ namespace Symple
 		{
 		case ';':
 			return LexAtom(Token::Semicolon);
+
+		case '+':
+			return LexAtom(Token::Plus);
 		case '=':
 			return LexAtom(Token::Equal);
 		default:
@@ -106,10 +109,10 @@ namespace Symple
 	}
 
 
-	std::shared_ptr<Token> Lexer::LexAtom(Token::Kind kind)
-	{ return std::make_shared<Token>(kind, &Next(), 1, mLine, mColumn, mFile); }
+	shared_ptr<Token> Lexer::LexAtom(Token::Kind kind)
+	{ return make_shared<Token>(kind, &Next(), 1, mLine, mColumn, mFile); }
 
-	std::shared_ptr<Token> Lexer::LexIdentifier()
+	shared_ptr<Token> Lexer::LexIdentifier()
 	{
 		char* beg = Current;
 		int column = mColumn;
@@ -117,10 +120,10 @@ namespace Symple
 		while (IsIdentifier(Peek()))
 			Next();
 
-		return std::make_shared<Token>(Token::Identifier, beg, Current, mLine, column, mFile);
+		return make_shared<Token>(Token::Identifier, beg, Current, mLine, column, mFile);
 	}
 
-	std::shared_ptr<Token> Lexer::LexNumber()
+	shared_ptr<Token> Lexer::LexNumber()
 	{
 		char* beg = Current;
 		int column = mColumn;
@@ -128,6 +131,6 @@ namespace Symple
 		while (IsNumber(Peek()))
 			Next();
 
-		return std::make_shared<Token>(Token::Number, beg, Current, mLine, column, mFile);
+		return make_shared<Token>(Token::Number, beg, Current, mLine, column, mFile);
 	}
 }

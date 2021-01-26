@@ -7,7 +7,7 @@ namespace Symple
 	class LiteralExpressionNode : public ExpressionNode
 	{
 	public:
-		LiteralExpressionNode(std::shared_ptr<Token> tok)
+		LiteralExpressionNode(shared_ptr<Token> tok)
 			: ExpressionNode(tok) {}
 
 		virtual Kind GetKind()
@@ -15,15 +15,15 @@ namespace Symple
 			return LiteralExpression;
 		}
 
-		virtual void Print(std::ostream& os = std::cout, std::string_view indent = "", bool last = true)
+		virtual void Print(std::ostream& os = std::cout, std::string_view indent = "", bool last = true, std::string_view label = "")
 		{
-			PrintIndent(os, indent, last);
+			PrintIndent(os, indent, last, label);
 			os << "Literal Expression Node [";
 			GetLiteral()->PrintShort(os);
 			os << ']';
 		}
 
-		std::shared_ptr<Token> GetLiteral()
-		{ return mToken; }
+		shared_ptr<Token> GetLiteral()
+		{ return GetToken(); }
 	};
 }

@@ -18,11 +18,11 @@ namespace Symple
 		Lexer(char* mFile);
 		Lexer(char* mFile, std::string& mSource);
 
-		std::shared_ptr<Token> Lex();
+		shared_ptr<Token> Lex();
 
-		std::shared_ptr<Token> LexAtom(Token::Kind);
-		std::shared_ptr<Token> LexIdentifier();
-		std::shared_ptr<Token> LexNumber();
+		shared_ptr<Token> LexAtom(Token::Kind);
+		shared_ptr<Token> LexIdentifier();
+		shared_ptr<Token> LexNumber();
 
 		static bool IsWhiteSpace(char);
 		static bool IsIdentifier(char);
