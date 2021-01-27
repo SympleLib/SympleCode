@@ -36,7 +36,7 @@ namespace Symple::Syntax
 		virtual Kind GetKind()
 		{ return Unknown; }
 
-		virtual shared_ptr<Token> GetToken()
+		shared_ptr<Token> GetToken()
 		{ return mToken; }
 
 		virtual void Print(std::ostream& os = std::cout, std::string_view indent = "", bool last = true, std::string_view label = "")
