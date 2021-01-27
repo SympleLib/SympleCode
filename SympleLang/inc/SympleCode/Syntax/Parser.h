@@ -10,6 +10,7 @@
 #include "SympleCode/Syntax/UnaryExpressionNode.h"
 #include "SympleCode/Syntax/BinaryExpressionNode.h"
 #include "SympleCode/Syntax/LiteralExpressionNode.h"
+#include "SympleCode/Syntax/ParenthesizedExpressionNode.h"
 
 namespace Symple::Syntax
 {
@@ -30,9 +31,13 @@ namespace Symple::Syntax
 		shared_ptr<ExpressionNode> ParseExpression();
 		shared_ptr<ExpressionNode> ParseUnaryExpression(unsigned parentPrecedence = 0);
 		shared_ptr<ExpressionNode> ParseBinaryExpression(unsigned parentPrecedence = 0);
+
+		shared_ptr<ExpressionNode> ParsePrimaryExpression();
 		shared_ptr<LiteralExpressionNode> ParseLiteralExpression();
+		shared_ptr<ParenthesizedExpressionNode> ParseParenthesizedExpression();
 	private:
 		shared_ptr<Token> Peek(unsigned off = 0);
 		shared_ptr<Token> Next();
+		shared_ptr<Token> Match(Token::Kind);
 	};
 }

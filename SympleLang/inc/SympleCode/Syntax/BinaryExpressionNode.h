@@ -13,9 +13,7 @@ namespace Symple::Syntax
 			: ExpressionNode(op), mLeft(left), mRight(right) {}
 
 		virtual Kind GetKind()
-		{
-			return BinaryExpression;
-		}
+		{ return BinaryExpression; }
 
 		virtual void Print(std::ostream& os = std::cout, std::string_view indent = "", bool last = true, std::string_view label = "")
 		{

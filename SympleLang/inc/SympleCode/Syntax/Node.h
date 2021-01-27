@@ -42,7 +42,7 @@ namespace Symple::Syntax
 		virtual void Print(std::ostream& os = std::cout, std::string_view indent = "", bool last = true, std::string_view label = "")
 		{
 			PrintIndent(os, indent, last, label);
-			os << "Node of Kind: " << KindMap[GetKind()];
+			os << KindMap[GetKind()] << " Node";
 		}
 
 		template <typename T>
@@ -57,8 +57,9 @@ namespace Symple::Syntax
 			UnaryExpression,
 			BinaryExpression,
 			LiteralExpression,
+			ParenthesizedExpression,
 
-			Last = LiteralExpression,
+			Last = ParenthesizedExpression,
 		};
 
 		static constexpr char* KindMap[Last + 1] = {
@@ -68,6 +69,7 @@ namespace Symple::Syntax
 			"UnaryExpression",
 			"BinaryExpression",
 			"LiteralExpression",
+			"ParenthesizedExpression",
 		};
 	};
 }

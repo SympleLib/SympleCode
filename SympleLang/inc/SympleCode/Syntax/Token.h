@@ -59,7 +59,10 @@ namespace Symple::Syntax
 
 			Equal,
 
-			Last = Equal,
+			OpenParenthesis,
+			CloseParenthesis,
+
+			Last = CloseParenthesis,
 		};
 
 		static constexpr char* KindMap[Last + 1] = {
@@ -77,6 +80,9 @@ namespace Symple::Syntax
 			"Slash",
 
 			"Equal",
+
+			"OpenParenthesis",
+			"CloseParenthesis",
 		};
 	};
 }

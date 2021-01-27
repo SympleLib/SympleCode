@@ -52,6 +52,11 @@ namespace Symple::Syntax
 
 		case '=':
 			return LexAtom(Token::Equal);
+
+		case '(':
+			return LexAtom(Token::OpenParenthesis);
+		case ')':
+			return LexAtom(Token::CloseParenthesis);
 		default:
 			return LexAtom(Token::Unknown);
 		}

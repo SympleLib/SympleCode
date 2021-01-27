@@ -1,5 +1,9 @@
 #include "SympleCode/Syntax/Parser.h"
 
+#include <sstream>
+
+#include <spdlog/spdlog.h>
+
 #include "SympleCode/Syntax/Facts.h"
 
 namespace Symple::Syntax
@@ -43,7 +47,7 @@ namespace Symple::Syntax
 			return make_shared<UnaryExpressionNode>(oqerator, operand);
 		}
 		else
-			return ParseLiteralExpression();
+			return ParsePrimaryExpression();
 	}
 
 	shared_ptr<ExpressionNode> Parser::ParseBinaryExpression(unsigned parentPrecedence)
@@ -64,9 +68,33 @@ namespace Symple::Syntax
 		return left;
 	}
 
+
+	shared_ptr<ExpressionNode> Parser::ParsePrimaryExpression()
+	{
+		switch (Peek()->GetKind())
+		{
+		case Token::Number:
+			return ParseLiteralExpression();
+		case Token::OpenParenthesis:
+			return ParseParenthesizedExpression();
+
+		default:
+			return make_shared<ExpressionNode>(Next());
+		}
+	}
+
 	shared_ptr<LiteralExpressionNode> Parser::ParseLiteralExpression()
 	{
 		return make_shared<LiteralExpressionNode>(Next());
+	}
+
+	shared_ptr<ParenthesizedExpressionNode> Parser::ParseParenthesizedExpression()
+	{
+		shared_ptr<Token> open = Match(Token::OpenParenthesis);
+		shared_ptr<ExpressionNode> expression = ParseExpression();
+		shared_ptr<Token> close = Match(Token::CloseParenthesis);
+
+		return make_shared<ParenthesizedExpressionNode>(open, expression, close);
 	}
 
 
@@ -83,5 +111,16 @@ namespace Symple::Syntax
 		auto current = Peek();
 		mPosition++;
 		return current;
+	}
+
+	shared_ptr<Token> Parser::Match(Token::Kind kind)
+	{
+		if (Peek()->Is(kind))
+			return Next();
+
+		std::stringstream ss;
+		Peek()->Print(ss);
+		spdlog::error("Unexpected Token: {}", ss.str());
+		return Peek();
 	}
 }
