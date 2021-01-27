@@ -1,17 +1,9 @@
 #pragma once
 
-#include <memory>
 #include <iostream>
 #include <string_view>
 
-namespace Symple
-{
-	using std::shared_ptr;
-	using std::make_shared;
-
-	using std::unique_ptr;
-	using std::make_unique;
-}
+#include "SympleCode/Memory.h"
 
 namespace Symple::Syntax
 {
@@ -32,8 +24,8 @@ namespace Symple::Syntax
 
 		bool Is(Kind kind);
 		template <typename... Args>
-		bool IsEither(Kind kind, Args... kinds)
-		{ return Is(kind) || IsEither(kinds...); }
+		bool Is(Kind kind, Args... kinds)
+		{ return Is(kind) || Is(kinds...); }
 
 		void Print(std::ostream& = std::cout);
 		void PrintShort(std::ostream& = std::cout);

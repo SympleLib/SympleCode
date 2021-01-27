@@ -33,6 +33,12 @@ namespace Symple::Syntax
 		Node(shared_ptr<Token> tok)
 			: mToken(tok) {}
 
+		bool Is(Kind kind)
+		{ return GetKind() == kind; }
+		template <typename... Args>
+		bool Is(Kind kind, Args... kinds)
+		{ return Is(kind) || Is(kinds...); }
+
 		virtual Kind GetKind()
 		{ return Unknown; }
 

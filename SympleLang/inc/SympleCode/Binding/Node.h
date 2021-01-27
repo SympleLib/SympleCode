@@ -31,6 +31,12 @@ namespace Symple::Binding
 		Node(shared_ptr<Syntax::Node> syntax)
 			: mSyntax(syntax) {}
 
+		bool Is(Kind kind)
+		{ return GetKind() == kind; }
+		template <typename... Args>
+		bool Is(Kind kind, Args... kinds)
+		{ return Is(kind) || Is(kinds...); }
+
 		virtual Kind GetKind()
 		{ return Unknown; }
 
@@ -40,7 +46,7 @@ namespace Symple::Binding
 		virtual void Print(std::ostream & os = std::cout, std::string_view indent = "", bool last = true, std::string_view label = "")
 		{
 			PrintIndent(os, indent, last, label);
-			os << "Bound" << KindMap[GetKind()];
+			os << "Bound " << KindMap[GetKind()];
 		}
 	public:
 		enum Kind : unsigned
