@@ -16,18 +16,18 @@ namespace Symple::Syntax
 		{
 			os << indent;
 			if (last)
-				os << "L--\t";
+				os << "L--";
 			else
-				os << "|--\t";
+				os << "|--";
 			os << label;
 		}
 
 		char* GetAddIndent(bool last = true)
 		{
 			if (last)
-				return " \t";
+				return "   ";
 			else
-				return "|\t";
+				return "|  ";
 		}
 	public:
 		Node(shared_ptr<Token> tok)
