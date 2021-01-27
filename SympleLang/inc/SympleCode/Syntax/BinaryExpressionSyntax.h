@@ -1,16 +1,16 @@
 #pragma once
 
-#include "SympleCode/Syntax/ExpressionNode.h"
+#include "SympleCode/Syntax/ExpressionSyntax.h"
 
 namespace Symple::Syntax
 {
-	class BinaryExpressionNode : public ExpressionNode
+	class BinaryExpressionSyntax : public ExpressionSyntax
 	{
 	private:
-		shared_ptr<ExpressionNode> mLeft, mRight;
+		shared_ptr<ExpressionSyntax> mLeft, mRight;
 	public:
-		BinaryExpressionNode(shared_ptr<Token> op, shared_ptr<ExpressionNode> left, shared_ptr<ExpressionNode> right)
-			: ExpressionNode(op), mLeft(left), mRight(right) {}
+		BinaryExpressionSyntax(shared_ptr<Token> op, shared_ptr<ExpressionSyntax> left, shared_ptr<ExpressionSyntax> right)
+			: ExpressionSyntax(op), mLeft(left), mRight(right) {}
 
 		virtual Kind GetKind()
 		{ return BinaryExpression; }
@@ -18,7 +18,7 @@ namespace Symple::Syntax
 		virtual void Print(std::ostream& os = std::cout, std::string_view indent = "", bool last = true, std::string_view label = "")
 		{
 			PrintIndent(os, indent, last, label);
-			os << "Binary Expression Node [";
+			os << "Binary Expression Syntax [";
 			GetOperator()->PrintShort(os);
 			os.put(']');
 
@@ -32,10 +32,10 @@ namespace Symple::Syntax
 		shared_ptr<Token> GetOperator()
 		{ return GetToken(); }
 
-		shared_ptr<ExpressionNode> GetLeft()
+		shared_ptr<ExpressionSyntax> GetLeft()
 		{ return mLeft; }
 
-		shared_ptr<ExpressionNode> GetRight()
+		shared_ptr<ExpressionSyntax> GetRight()
 		{ return mRight; }
 	};
 }

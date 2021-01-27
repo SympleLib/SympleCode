@@ -40,7 +40,7 @@ namespace Symple::Binding
 		virtual void Print(std::ostream & os = std::cout, std::string_view indent = "", bool last = true, std::string_view label = "")
 		{
 			PrintIndent(os, indent, last, label);
-			os << KindMap[GetKind()] << " Node";
+			os << "Bound" << KindMap[GetKind()];
 		}
 	public:
 		enum Kind : unsigned

@@ -32,32 +32,28 @@ namespace Symple::Syntax
 	{}
 
 
-	shared_ptr<Node> Parser::Parse()
-	{
-		return ParseExpression();
-	}
+	shared_ptr<Syntax::Node> Parser::Parse()
+	{ return ParseExpression(); }
 
-	shared_ptr<ExpressionNode> Parser::ParseExpression()
-	{
-		return ParseBinaryExpression();
-	}
+	shared_ptr<ExpressionSyntax> Parser::ParseExpression()
+	{ return ParseBinaryExpression(); }
 
-	shared_ptr<ExpressionNode> Parser::ParseUnaryExpression(unsigned parentPrecedence)
+	shared_ptr<ExpressionSyntax> Parser::ParseUnaryExpression(unsigned parentPrecedence)
 	{
 		unsigned precedence = Facts::GetUnaryOperatorPrecedence(Peek()->GetKind());
 		if (precedence && precedence >= parentPrecedence)
 		{
 			shared_ptr<Token> oqerator = Next();
-			shared_ptr<ExpressionNode> operand = ParseBinaryExpression(precedence);
-			return make_shared<UnaryExpressionNode>(oqerator, operand);
+			shared_ptr<ExpressionSyntax> operand = ParseBinaryExpression(precedence);
+			return make_shared<UnaryExpressionSyntax>(oqerator, operand);
 		}
 		else
 			return ParsePrimaryExpression();
 	}
 
-	shared_ptr<ExpressionNode> Parser::ParseBinaryExpression(unsigned parentPrecedence)
+	shared_ptr<ExpressionSyntax> Parser::ParseBinaryExpression(unsigned parentPrecedence)
 	{
-		shared_ptr<ExpressionNode> left = ParseUnaryExpression(parentPrecedence);
+		shared_ptr<ExpressionSyntax> left = ParseUnaryExpression(parentPrecedence);
 
 		while (true)
 		{
@@ -71,13 +67,13 @@ namespace Symple::Syntax
 				return left;
 
 			shared_ptr<Token> oqerator = Next();
-			shared_ptr<ExpressionNode> right = ParseBinaryExpression(precedence);
-			left = make_shared<BinaryExpressionNode>(oqerator, left, right);
+			shared_ptr<ExpressionSyntax> right = ParseBinaryExpression(precedence);
+			left = make_shared<BinaryExpressionSyntax>(oqerator, left, right);
 		}
 	}
 
 
-	shared_ptr<ExpressionNode> Parser::ParsePrimaryExpression()
+	shared_ptr<ExpressionSyntax> Parser::ParsePrimaryExpression()
 	{
 		switch (Peek()->GetKind())
 		{
@@ -87,22 +83,20 @@ namespace Symple::Syntax
 			return ParseParenthesizedExpression();
 
 		default:
-			return make_shared<ExpressionNode>(Next());
+			return make_shared<ExpressionSyntax>(Next());
 		}
 	}
 
-	shared_ptr<LiteralExpressionNode> Parser::ParseLiteralExpression()
-	{
-		return make_shared<LiteralExpressionNode>(Next());
-	}
+	shared_ptr<LiteralExpressionSyntax> Parser::ParseLiteralExpression()
+	{ return make_shared<LiteralExpressionSyntax>(Next()); }
 
-	shared_ptr<ParenthesizedExpressionNode> Parser::ParseParenthesizedExpression()
+	shared_ptr<ParenthesizedExpressionSyntax> Parser::ParseParenthesizedExpression()
 	{
 		shared_ptr<Token> open = Match(Token::OpenParenthesis);
-		shared_ptr<ExpressionNode> expression = ParseExpression();
+		shared_ptr<ExpressionSyntax> expression = ParseExpression();
 		shared_ptr<Token> close = Match(Token::CloseParenthesis);
 
-		return make_shared<ParenthesizedExpressionNode>(open, expression, close);
+		return make_shared<ParenthesizedExpressionSyntax>(open, expression, close);
 	}
 
 	

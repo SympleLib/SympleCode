@@ -6,11 +6,11 @@
 #include "SympleCode/Syntax/Token.h"
 
 #include "SympleCode/Syntax/Node.h"
-#include "SympleCode/Syntax/ExpressionNode.h"
-#include "SympleCode/Syntax/UnaryExpressionNode.h"
-#include "SympleCode/Syntax/BinaryExpressionNode.h"
-#include "SympleCode/Syntax/LiteralExpressionNode.h"
-#include "SympleCode/Syntax/ParenthesizedExpressionNode.h"
+#include "SympleCode/Syntax/ExpressionSyntax.h"
+#include "SympleCode/Syntax/UnaryExpressionSyntax.h"
+#include "SympleCode/Syntax/BinaryExpressionSyntax.h"
+#include "SympleCode/Syntax/LiteralExpressionSyntax.h"
+#include "SympleCode/Syntax/ParenthesizedExpressionSyntax.h"
 
 #include "SympleCode/DiagnosticBag.h"
 
@@ -30,14 +30,14 @@ namespace Symple::Syntax
 
 		Parser(std::vector<shared_ptr<Token>>);
 
-		shared_ptr<Node> Parse();
-		shared_ptr<ExpressionNode> ParseExpression();
-		shared_ptr<ExpressionNode> ParseUnaryExpression(unsigned parentPrecedence = 0);
-		shared_ptr<ExpressionNode> ParseBinaryExpression(unsigned parentPrecedence = 0);
+		shared_ptr<Syntax::Node> Parse();
+		shared_ptr<ExpressionSyntax> ParseExpression();
+		shared_ptr<ExpressionSyntax> ParseUnaryExpression(unsigned parentPrecedence = 0);
+		shared_ptr<ExpressionSyntax> ParseBinaryExpression(unsigned parentPrecedence = 0);
 
-		shared_ptr<ExpressionNode> ParsePrimaryExpression();
-		shared_ptr<LiteralExpressionNode> ParseLiteralExpression();
-		shared_ptr<ParenthesizedExpressionNode> ParseParenthesizedExpression();
+		shared_ptr<ExpressionSyntax> ParsePrimaryExpression();
+		shared_ptr<LiteralExpressionSyntax> ParseLiteralExpression();
+		shared_ptr<ParenthesizedExpressionSyntax> ParseParenthesizedExpression();
 
 		shared_ptr<DiagnosticBag> GetDiagnosticBag();
 	private:

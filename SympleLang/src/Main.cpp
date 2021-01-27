@@ -13,7 +13,7 @@ using Symple::Syntax::Lexer;
 using Symple::Syntax::Token;
 using Symple::Syntax::Parser;
 
-using Symple::Syntax::ExpressionNode;
+using Symple::Syntax::ExpressionSyntax;
 
 using std::shared_ptr;
 using std::make_shared;
@@ -72,7 +72,7 @@ void Parse()
 		return;
 
 	shared_ptr<Parser> parser = make_shared<Parser>(lexer, tokens);
-	shared_ptr<ExpressionNode> node = parser->ParseExpression();
+	shared_ptr<ExpressionSyntax> node = parser->ParseExpression();
 	sStep = "Parsing";
 	if (PrintDiagnosticBag(parser->GetDiagnosticBag()))
 		return;

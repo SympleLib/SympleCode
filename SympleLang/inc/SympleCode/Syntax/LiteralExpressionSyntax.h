@@ -1,24 +1,22 @@
 #pragma once
 
-#include "SympleCode/Syntax/ExpressionNode.h"
+#include "SympleCode/Syntax/ExpressionSyntax.h"
 
 namespace Symple::Syntax
 {
-	class LiteralExpressionNode : public ExpressionNode
+	class LiteralExpressionSyntax : public ExpressionSyntax
 	{
 	public:
-		LiteralExpressionNode(shared_ptr<Token> tok)
-			: ExpressionNode(tok) {}
+		LiteralExpressionSyntax(shared_ptr<Token> tok)
+			: ExpressionSyntax(tok) {}
 
 		virtual Kind GetKind()
-		{
-			return LiteralExpression;
-		}
+		{ return LiteralExpression; }
 
 		virtual void Print(std::ostream& os = std::cout, std::string_view indent = "", bool last = true, std::string_view label = "")
 		{
 			PrintIndent(os, indent, last, label);
-			os << "Literal Expression Node [";
+			os << "Literal Expression Syntax [";
 			GetLiteral()->PrintShort(os);
 			os << ']';
 		}

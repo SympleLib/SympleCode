@@ -4,7 +4,7 @@
 
 #include "SympleCode/Diagnostic.h"
 
-#include "SympleCode/Syntax/LiteralExpressionNode.h"
+#include "SympleCode/Syntax/LiteralExpressionSyntax.h"
 
 namespace Symple
 {
@@ -23,6 +23,6 @@ namespace Symple
 		void ReportUnexpectedToken(shared_ptr<Syntax::Token>, Syntax::Token::Kind expectedKind);
 		void ReportUnknownToken(shared_ptr<Syntax::Token>);
 
-		void ReportInvalidLiteral(shared_ptr<Syntax::LiteralExpressionNode>);
+		void ReportInvalidLiteral(shared_ptr<Syntax::LiteralExpressionSyntax>);
 	};
 }

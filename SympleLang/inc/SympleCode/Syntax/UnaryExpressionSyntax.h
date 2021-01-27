@@ -1,26 +1,24 @@
 #pragma once
 
-#include "SympleCode/Syntax/ExpressionNode.h"
+#include "SympleCode/Syntax/ExpressionSyntax.h"
 
 namespace Symple::Syntax
 {
-	class UnaryExpressionNode : public ExpressionNode
+	class UnaryExpressionSyntax : public ExpressionSyntax
 	{
 	private:
-		shared_ptr<ExpressionNode> mOperand;
+		shared_ptr<ExpressionSyntax> mOperand;
 	public:
-		UnaryExpressionNode(shared_ptr<Token> op, shared_ptr<ExpressionNode> operand)
-			: ExpressionNode(op), mOperand(operand) {}
+		UnaryExpressionSyntax(shared_ptr<Token> op, shared_ptr<ExpressionSyntax> operand)
+			: ExpressionSyntax(op), mOperand(operand) {}
 
 		virtual Kind GetKind()
-		{
-			return UnaryExpression;
-		}
+		{ return UnaryExpression; }
 
 		virtual void Print(std::ostream& os = std::cout, std::string_view indent = "", bool last = true, std::string_view label = "")
 		{
 			PrintIndent(os, indent, last, label);
-			os << "Unary Expression Node [";
+			os << "Unary Expression Syntax [";
 			GetOperator()->PrintShort(os);
 			os.put(']');
 
@@ -33,7 +31,7 @@ namespace Symple::Syntax
 		shared_ptr<Token> GetOperator()
 		{ return GetToken(); }
 
-		shared_ptr<ExpressionNode> GetOperand()
+		shared_ptr<ExpressionSyntax> GetOperand()
 		{ return mOperand; }
 	};
 }

@@ -36,7 +36,7 @@ namespace Symple
 	{ ReportError(tok, fmt::format("Unknown token '{}'", tok->GetText())); }
 
 
-	void DiagnosticBag::ReportInvalidLiteral(shared_ptr<LiteralExpressionNode> literal)
+	void DiagnosticBag::ReportInvalidLiteral(shared_ptr<LiteralExpressionSyntax> literal)
 	{
 		std::stringstream tokStr;
 		literal->GetLiteral()->PrintShort(tokStr);
