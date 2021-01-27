@@ -7,7 +7,7 @@
 namespace Symple::Syntax
 {
 	Lexer::Lexer(char* file)
-		: mFile(file), mSource(), mPosition(), mLine(), mColumn()
+		: mFile(file)
 	{
 		FILE* fs = Util::OpenFile(file, "rb");
 		if (fs)
@@ -18,7 +18,7 @@ namespace Symple::Syntax
 	}
 
 	Lexer::Lexer(char* file, std::string& source)
-		: mFile(file), mSource(source), mPosition(), mLine(), mColumn()
+		: mFile(file), mSource(source)
 	{}
 
 	
@@ -58,7 +58,9 @@ namespace Symple::Syntax
 		case ')':
 			return LexAtom(Token::CloseParenthesis);
 		default:
-			return LexAtom(Token::Unknown);
+			auto tok = LexAtom(Token::Unknown);
+			mDiagnosticBag->ReportUnknownToken(tok);
+			return tok;
 		}
 	}
 
@@ -68,6 +70,10 @@ namespace Symple::Syntax
 
 	char* Lexer::GetFile()
 	{ return mFile; }
+
+
+	shared_ptr<DiagnosticBag> Lexer::GetDiagnosticBag()
+	{ return mDiagnosticBag; }
 
 
 	bool Lexer::IsWhiteSpace(char c)

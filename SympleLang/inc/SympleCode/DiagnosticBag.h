@@ -11,13 +11,18 @@ namespace Symple
 	class DiagnosticBag
 	{
 	private:
-		std::vector<std::shared_ptr<Diagnostic>> mDiagnostics;
+		std::vector<shared_ptr<Diagnostic>> mDiagnostics;
 	public:
-		void ReportMessage(std::shared_ptr<Syntax::Token>, std::string_view msg);
-		void ReportWarning(std::shared_ptr<Syntax::Token>, std::string_view msg);
-		void ReportError(std::shared_ptr<Syntax::Token>, std::string_view msg);
+		void ReportMessage(shared_ptr<Syntax::Token>, std::string_view msg);
+		void ReportWarning(shared_ptr<Syntax::Token>, std::string_view msg);
+		void ReportError(shared_ptr<Syntax::Token>, std::string_view msg);
 
-		void ReportUnexpectedToken(std::shared_ptr<Syntax::Token>);
-		void ReportInvalidLiteral(std::shared_ptr<Syntax::LiteralExpressionNode>);
+		std::vector<shared_ptr<Diagnostic>>& GetDiagnostics();
+
+		void ReportUnexpectedEndOfFile(shared_ptr<Syntax::Token>);
+		void ReportUnexpectedToken(shared_ptr<Syntax::Token>, Syntax::Token::Kind expectedKind);
+		void ReportUnknownToken(shared_ptr<Syntax::Token>);
+
+		void ReportInvalidLiteral(shared_ptr<Syntax::LiteralExpressionNode>);
 	};
 }

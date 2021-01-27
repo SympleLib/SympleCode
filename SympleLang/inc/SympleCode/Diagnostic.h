@@ -20,6 +20,9 @@ namespace Symple
 
 		auto GetToken()
 		{ return mToken; }
+
+		std::string_view GetMessage()
+		{ return mMessage; }
 	public:
 		enum Level : unsigned
 		{

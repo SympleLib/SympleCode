@@ -9,21 +9,26 @@
 namespace Symple::Syntax
 {
 	Parser::Parser(shared_ptr<Lexer> lexer)
-		: mLexer(lexer), mTokens(), mPosition()
+		: mLexer(lexer)
 	{
-		while (mTokens.empty() || !mTokens.back()->Is(Token::EndOfFile))
+		do
 			mTokens.push_back(mLexer->Lex());
+		while (!mTokens.back()->Is(Token::EndOfFile));
 	}
 
 	Parser::Parser(shared_ptr<Lexer> lexer, std::vector<shared_ptr<Token>> tokens)
-		: mLexer(lexer), mTokens(tokens), mPosition()
+		: mLexer(lexer), mTokens(tokens)
 	{
-		while (mTokens.empty() || !mTokens.back()->Is(Token::EndOfFile))
+		if (tokens.back()->Is(Token::EndOfFile))
+			return;
+
+		do
 			mTokens.push_back(mLexer->Lex());
+		while (!mTokens.back()->Is(Token::EndOfFile));
 	}
 
 	Parser::Parser(std::vector<shared_ptr<Token>> tokens)
-		: mLexer(), mTokens(tokens), mPosition()
+		: mLexer(), mTokens(tokens)
 	{}
 
 
@@ -56,16 +61,19 @@ namespace Symple::Syntax
 
 		while (true)
 		{
+			if (Peek()->Is(Token::EndOfFile))
+			{
+				return left;
+			}
+
 			unsigned precedence = Facts::GetBinaryOperatorPrecedence(Peek()->GetKind());
 			if (!precedence || precedence <= parentPrecedence)
-				break;
+				return left;
 
 			shared_ptr<Token> oqerator = Next();
 			shared_ptr<ExpressionNode> right = ParseBinaryExpression(precedence);
 			left = make_shared<BinaryExpressionNode>(oqerator, left, right);
 		}
-
-		return left;
 	}
 
 
@@ -97,6 +105,10 @@ namespace Symple::Syntax
 		return make_shared<ParenthesizedExpressionNode>(open, expression, close);
 	}
 
+	
+	shared_ptr<DiagnosticBag> Parser::GetDiagnosticBag()
+	{ return mDiagnosticBag; }
+
 
 	shared_ptr<Token> Parser::Peek(unsigned off)
 	{
@@ -118,9 +130,7 @@ namespace Symple::Syntax
 		if (Peek()->Is(kind))
 			return Next();
 
-		std::stringstream ss;
-		Peek()->Print(ss);
-		spdlog::error("Unexpected Token: {}", ss.str());
+		mDiagnosticBag->ReportUnexpectedToken(Peek(), kind);
 		return Peek();
 	}
 }

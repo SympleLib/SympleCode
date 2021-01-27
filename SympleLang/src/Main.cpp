@@ -6,6 +6,9 @@
 #include "SympleCode/Syntax/Lexer.h"
 #include "SympleCode/Syntax/Parser.h"
 
+using Symple::DiagnosticBag;
+using Symple::Diagnostic;
+
 using Symple::Syntax::Lexer;
 using Symple::Syntax::Token;
 using Symple::Syntax::Parser;
@@ -15,7 +18,43 @@ using Symple::Syntax::ExpressionNode;
 using std::shared_ptr;
 using std::make_shared;
 
+using std::unique_ptr;
+using std::make_unique;
+
 using spdlog::level::level_enum;
+
+std::string_view sStep = "Null Step";
+
+bool PrintDiagnosticBag(shared_ptr<DiagnosticBag> diagnostics)
+{
+	unsigned errCount = 0, warningCount = 0, messageCount = 0;
+
+	for (shared_ptr<Diagnostic> diagnostic : diagnostics->GetDiagnostics())
+		switch (diagnostic->GetLevel())
+		{
+		case Diagnostic::Message:
+			spdlog::info("{}", diagnostic->GetMessage());
+			messageCount++;
+			break;
+		case Diagnostic::Warning:
+			spdlog::warn("{}", diagnostic->GetMessage());
+			warningCount++;
+			break;
+		case Diagnostic::Error:
+			spdlog::error("{}", diagnostic->GetMessage());
+			errCount++;
+			break;
+		}
+
+	if (errCount)
+	{
+		spdlog::info("{} failed with {} errors, {} warnings, {} messages", sStep, errCount, warningCount, messageCount);
+
+		return true;
+	}
+	else
+		return false;
+}
 
 void Parse()
 {
@@ -23,12 +62,21 @@ void Parse()
 	spdlog::set_level(level_enum::trace);
 
 	shared_ptr<Lexer> lexer = make_shared<Lexer>((char*)"sy/Main.sy");
-	//shared_ptr<Token> tok = make_shared<Token>();
-	//while (!tok->Is(Token::EndOfFile))
-	//	(tok = lexer.Lex())->Print();
+	std::vector<shared_ptr<Token>> tokens;
+	do
+		tokens.push_back(lexer->Lex());
+	while (!tokens.back()->Is(Token::EndOfFile));
 
-	shared_ptr<Parser> parser = make_shared<Parser>(lexer);
+	sStep = "Lexing";
+	if (PrintDiagnosticBag(lexer->GetDiagnosticBag()))
+		return;
+
+	shared_ptr<Parser> parser = make_shared<Parser>(lexer, tokens);
 	shared_ptr<ExpressionNode> node = parser->ParseExpression();
+	sStep = "Parsing";
+	if (PrintDiagnosticBag(parser->GetDiagnosticBag()))
+		return;
+
 	node->Print();
 	putchar('\n');
 }

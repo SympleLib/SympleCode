@@ -12,15 +12,18 @@
 #include "SympleCode/Syntax/LiteralExpressionNode.h"
 #include "SympleCode/Syntax/ParenthesizedExpressionNode.h"
 
+#include "SympleCode/DiagnosticBag.h"
+
 namespace Symple::Syntax
 {
 	class Parser
 	{
 	private:
 		std::vector<shared_ptr<Token>> mTokens;
-		unsigned mPosition;
+		unsigned mPosition = 0;
 
 		shared_ptr<Lexer> mLexer;
+		shared_ptr<DiagnosticBag> mDiagnosticBag = make_shared<DiagnosticBag>();
 	public:
 		Parser(shared_ptr<Lexer>);
 		Parser(shared_ptr<Lexer>, std::vector<shared_ptr<Token>>);
@@ -35,6 +38,8 @@ namespace Symple::Syntax
 		shared_ptr<ExpressionNode> ParsePrimaryExpression();
 		shared_ptr<LiteralExpressionNode> ParseLiteralExpression();
 		shared_ptr<ParenthesizedExpressionNode> ParseParenthesizedExpression();
+
+		shared_ptr<DiagnosticBag> GetDiagnosticBag();
 	private:
 		shared_ptr<Token> Peek(unsigned off = 0);
 		shared_ptr<Token> Next();

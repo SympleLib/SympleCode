@@ -4,16 +4,19 @@
 
 #include "SympleCode/Syntax/Token.h"
 
+#include "SympleCode/DiagnosticBag.h"
+
 namespace Symple::Syntax
 {
 	class Lexer
 	{
 	private:
 		std::string mSource;
-		unsigned mPosition;
+		unsigned mPosition = 0;
 
 		char* mFile;
-		unsigned mLine, mColumn;
+		unsigned mLine = 0, mColumn = 0;
+		shared_ptr<DiagnosticBag> mDiagnosticBag = make_shared<DiagnosticBag>();
 	public:
 		Lexer(char* mFile);
 		Lexer(char* mFile, std::string& mSource);
@@ -30,6 +33,8 @@ namespace Symple::Syntax
 
 		std::string_view GetSource();
 		char* GetFile();
+
+		shared_ptr<DiagnosticBag> GetDiagnosticBag();
 	private:
 		bool CheckNewLine();
 
