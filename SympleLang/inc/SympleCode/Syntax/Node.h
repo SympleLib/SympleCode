@@ -25,9 +25,9 @@ namespace Symple::Syntax
 		char* GetAddIndent(bool last = true)
 		{
 			if (last)
-				return "   ";
+				return "    ";
 			else
-				return "|  ";
+				return "|   ";
 		}
 	public:
 		Node(shared_ptr<Token> tok)
