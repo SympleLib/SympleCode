@@ -31,7 +31,7 @@ namespace Symple::Syntax
 		if (!c)
 			return LexAtom(Token::EndOfFile);
 
-		if (IsNumber(c))
+		if (IsNumber())
 			return LexNumber();
 		if (IsIdentifier(c))
 			return LexIdentifier();
@@ -86,9 +86,24 @@ namespace Symple::Syntax
 		return (c >= 'a' && c <= 'z') || (c >= 'A' && c <= 'Z') || c == '_' || c == '$' || (c >= '0' && c <= '9');
 	}
 
-	bool Lexer::IsNumber(char c)
+	bool Lexer::IsInteger(char c)
 	{
 		return c >= '0' && c <= '9';
+	}
+
+	bool Lexer::IsNumber(char c)
+	{
+		return IsInteger(c) || c == '.';
+	}
+
+	bool Lexer::IsNumber()
+	{
+		if (IsInteger(Peek()))
+			return true;
+		else if (Peek() == '.' && IsInteger(Peek(1)))
+			return true;
+		else
+			return false;
 	}
 
 	bool Lexer::CheckNewLine()
@@ -133,7 +148,7 @@ namespace Symple::Syntax
 	shared_ptr<Token> Lexer::LexIdentifier()
 	{
 		char* beg = Current;
-		int column = mColumn;
+		unsigned column = mColumn;
 		Next();
 		while (IsIdentifier(Peek()))
 			Next();
@@ -143,12 +158,18 @@ namespace Symple::Syntax
 
 	shared_ptr<Token> Lexer::LexNumber()
 	{
+		unsigned dotCount = 0;
+
 		char* beg = Current;
-		int column = mColumn;
-		Next();
-		while (IsNumber(Peek()))
+		unsigned column = mColumn;
+		if (!IsInteger(Next()))
+			dotCount++;
+		while (IsInteger(Peek()) || (IsNumber(Peek()) && ++dotCount))
 			Next();
 
-		return make_shared<Token>(Token::Number, beg, Current, mLine, column, mFile);
+		if (dotCount)
+			return make_shared<Token>(Token::Number, beg, Current, mLine, column, mFile);
+		else
+			return make_shared<Token>(Token::Integer, beg, Current, mLine, column, mFile);
 	}
 }

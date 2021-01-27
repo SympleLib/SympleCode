@@ -51,6 +51,7 @@ namespace Symple::Syntax
 			Unknown,
 
 			Identifier,
+			Integer,
 			Number,
 
 			Semicolon,
@@ -73,6 +74,7 @@ namespace Symple::Syntax
 			"Unknown",
 
 			"Identifier",
+			"Integer",
 			"Number",
 
 			"Semicolon",

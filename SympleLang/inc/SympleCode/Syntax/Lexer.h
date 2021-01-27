@@ -29,7 +29,9 @@ namespace Symple::Syntax
 
 		static bool IsWhiteSpace(char);
 		static bool IsIdentifier(char);
+		static bool IsInteger(char);
 		static bool IsNumber(char);
+		bool IsNumber();
 
 		std::string_view GetSource();
 		char* GetFile();

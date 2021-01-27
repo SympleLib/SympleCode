@@ -78,6 +78,7 @@ namespace Symple::Syntax
 		switch (Peek()->GetKind())
 		{
 		case Token::Number:
+		case Token::Integer:
 			return ParseLiteralExpression();
 		case Token::OpenParenthesis:
 			return ParseParenthesizedExpression();
