@@ -11,6 +11,9 @@ namespace Symple::Binding
 		BoundExpression(shared_ptr<Syntax::Node> syntax)
 			: Node(syntax) {}
 
+		virtual Kind GetKind()
+		{ return Expression; }
+
 		virtual shared_ptr<Type> GetType()
 		{ return Type::ErrorType; }
 

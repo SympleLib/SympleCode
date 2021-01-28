@@ -57,11 +57,17 @@ namespace Symple::Binding
 		{
 			Unknown,
 
-			Last = Unknown,
+			Expression,
+			BinaryExpression,
+
+			Last = BinaryExpression,
 		};
 
 		static constexpr char* KindMap[Last + 1] = {
 			"Unknown",
+
+			"Expression",
+			"BinaryExpression",
 		};
 	};
 }

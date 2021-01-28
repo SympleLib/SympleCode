@@ -13,10 +13,10 @@ namespace Symple::Syntax
 		ParenthesizedExpressionSyntax(shared_ptr<Token> open, shared_ptr<ExpressionSyntax> expression, shared_ptr<Token> close)
 			: ExpressionSyntax(open), mExpression(expression), mClose(close) {}
 
-		virtual Kind GetKind()
+		virtual Kind GetKind() override
 		{ return ParenthesizedExpression; }
 
-		virtual void Print(std::ostream& os = std::cout, std::string_view indent = "", bool last = true, std::string_view label = "")
+		virtual void Print(std::ostream& os = std::cout, std::string_view indent = "", bool last = true, std::string_view label = "") override
 		{
 			PrintIndent(os, indent, last, label);
 			os << "Parenthesized Expression Syntax";

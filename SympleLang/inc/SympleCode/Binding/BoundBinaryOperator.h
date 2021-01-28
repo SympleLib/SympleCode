@@ -17,6 +17,16 @@ namespace Symple::Binding
 			: mKind(kind), mLeftType(leftType), mRightType(rightType), mType(type)
 		{}
 
+		void Print(std::ostream & = std::cout)
+		{
+
+		}
+
+		void PrintShort(std::ostream & = std::cout)
+		{
+
+		}
+
 		Kind GetKind()
 		{ return mKind; }
 

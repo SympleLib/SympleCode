@@ -27,7 +27,7 @@ namespace Symple::Syntax
 		bool Is(Kind kind, Args... kinds)
 		{ return Is(kind) || Is(kinds...); }
 
-		void Print(std::ostream& = std::cout);
+		void Print(std::ostream& = std::cout, std::string_view indent = "", bool last = true, std::string_view label = "");
 		void PrintShort(std::ostream& = std::cout);
 
 		Kind GetKind();

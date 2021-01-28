@@ -12,10 +12,10 @@ namespace Symple::Syntax
 		BinaryExpressionSyntax(shared_ptr<Token> op, shared_ptr<ExpressionSyntax> left, shared_ptr<ExpressionSyntax> right)
 			: ExpressionSyntax(op), mLeft(left), mRight(right) {}
 
-		virtual Kind GetKind()
+		virtual Kind GetKind() override
 		{ return BinaryExpression; }
 
-		virtual void Print(std::ostream& os = std::cout, std::string_view indent = "", bool last = true, std::string_view label = "")
+		virtual void Print(std::ostream& os = std::cout, std::string_view indent = "", bool last = true, std::string_view label = "") override
 		{
 			PrintIndent(os, indent, last, label);
 			os << "Binary Expression Syntax [";

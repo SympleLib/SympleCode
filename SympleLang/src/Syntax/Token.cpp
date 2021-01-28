@@ -2,6 +2,8 @@
 
 #include <spdlog/spdlog.h>
 
+#include "SympleCode/Syntax/Node.h"
+
 namespace Symple::Syntax
 {
 	Token::Token(Kind kind, unsigned ln, unsigned col, char* file)
@@ -25,8 +27,11 @@ namespace Symple::Syntax
 	{ return mKind == kind; }
 
 
-	void Token::Print(std::ostream& os)
-	{ os << "Token [" << GetLine() << ':' << GetColumn() <<"](" << KindMap[GetKind()] << ") " << GetText(); }
+	void Token::Print(std::ostream& os, std::string_view indent, bool last, std::string_view label)
+	{
+		Node::PrintIndent(os, indent, last, label);
+		os << KindMap[GetKind()] << " Token '" << GetText() << "' <" << GetLine() << ':' << GetColumn() << ">";
+	}
 
 	void Token::PrintShort(std::ostream& os)
 	{ os << '(' << KindMap[mKind] << ") " << mText; }

@@ -10,7 +10,7 @@ namespace Symple::Syntax
 		ExpressionSyntax(shared_ptr<Token> tok)
 			: Node(tok) {}
 
-		virtual Kind GetKind()
+		virtual Kind GetKind() override
 		{ return Expression; }
 	};
 }

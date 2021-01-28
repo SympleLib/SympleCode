@@ -2,7 +2,7 @@
 
 namespace Symple::Binding
 {
-	shared_ptr<Type> Type::ErrorType = make_shared<Type>(Error, -1);
+	shared_ptr<Type> Type::ErrorType = make_shared<Type>(Error, "error-type", -1);
 
 	Type::Type(Kind kind, std::string_view name, unsigned sz, shared_ptr<Type> base)
 		: mKind(kind), mName(name), mSize(sz), mBase(base)
