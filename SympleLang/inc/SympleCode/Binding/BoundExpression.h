@@ -13,5 +13,8 @@ namespace Symple::Binding
 
 		virtual shared_ptr<Type> GetType()
 		{ return Type::ErrorType; }
+
+		virtual bool IsMutable()
+		{ return false; }
 	};
 }
