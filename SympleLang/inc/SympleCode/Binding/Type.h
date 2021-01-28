@@ -1,6 +1,7 @@
 #pragma once
 
 #include <string>
+#include <iostream>
 
 #include "SympleCode/Memory.h"
 
@@ -21,6 +22,9 @@ namespace Symple::Binding
 		template <typename... Args>
 		bool Is(Kind kind, Args... kinds)
 		{ return Is(kind) || Is(kinds...); }
+
+		void Print(std::ostream & = std::cout, std::string_view indent = "", bool last = true, std::string_view label = "");
+		void PrintShort(std::ostream & = std::cout);
 
 		Kind GetKind();
 		std::string_view GetName();

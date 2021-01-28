@@ -1,5 +1,6 @@
 #pragma once
 
+#include "SympleCode/Syntax/Node.h"
 #include "SympleCode/Syntax/Token.h"
 
 #include "SympleCode/Binding/Type.h"
@@ -17,12 +18,13 @@ namespace Symple::Binding
 			: mKind(kind), mLeftType(leftType), mRightType(rightType), mType(type)
 		{}
 
-		void Print(std::ostream & = std::cout)
+		void Print(std::ostream& os = std::cout, std::string_view indent = "", bool last = true, std::string_view label = "")
 		{
-
+			Syntax::Node::PrintIndent(os, indent, last, label);
+			os << "Binary " << KindMap[GetKind()];
 		}
 
-		void PrintShort(std::ostream & = std::cout)
+		void PrintShort(std::ostream& os = std::cout)
 		{
 
 		}
@@ -45,6 +47,15 @@ namespace Symple::Binding
 			Subtraction,
 			Multiplication,
 			Division,
+
+			Last = Division,
+		};
+
+		static constexpr char* KindMap[Last + 1] = {
+			"Addition",
+			"Subtraction",
+			"Multiplication",
+			"Division",
 		};
 	};
 }
