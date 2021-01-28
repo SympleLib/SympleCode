@@ -1,5 +1,7 @@
 #pragma once
 
+#include <string>
+
 #include "SympleCode/Memory.h"
 
 namespace Symple::Binding
@@ -9,10 +11,11 @@ namespace Symple::Binding
 	public: enum Kind : unsigned;
 	private:
 		Kind mKind;
+		std::string mName;
 		unsigned mSize;
 		shared_ptr<Type> mBase;
 	public:
-		Type(Kind, unsigned size, shared_ptr<Type> base = nullptr);
+		Type(Kind, std::string_view name, unsigned size, shared_ptr<Type> base = nullptr);
 
 		bool Is(Kind);
 		template <typename... Args>
@@ -20,6 +23,7 @@ namespace Symple::Binding
 		{ return Is(kind) || Is(kinds...); }
 
 		Kind GetKind();
+		std::string_view GetName();
 		unsigned GetSize();
 		shared_ptr<Type> GetBase();
 

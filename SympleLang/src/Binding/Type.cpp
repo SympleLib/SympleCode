@@ -4,8 +4,8 @@ namespace Symple::Binding
 {
 	shared_ptr<Type> Type::ErrorType = make_shared<Type>(Error, -1);
 
-	Type::Type(Kind kind, unsigned sz, shared_ptr<Type> base)
-		: mKind(kind), mSize(sz), mBase(base)
+	Type::Type(Kind kind, std::string_view name, unsigned sz, shared_ptr<Type> base)
+		: mKind(kind), mName(name), mSize(sz), mBase(base)
 	{}
 
 	bool Type::Is(Kind kind)
@@ -13,6 +13,9 @@ namespace Symple::Binding
 
 	Type::Kind Type::GetKind()
 	{ return mKind; }
+
+	std::string_view Type::GetName()
+	{ return mName; }
 
 	unsigned Type::GetSize()
 	{ return mSize; }
