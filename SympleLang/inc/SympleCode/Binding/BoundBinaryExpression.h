@@ -17,10 +17,13 @@ namespace Symple::Binding
 			: BoundExpression(syntax), mOperator(oqerator), mLeft(left), mRight(right)
 		{}
 
-		virtual Kind GetKind()
+		virtual Kind GetKind() override
 		{ return BinaryExpression; }
 
-		virtual void Print(std::ostream & os = std::cout, std::string_view indent = "", bool last = true, std::string_view label = "")
+		virtual shared_ptr<Type> GetType() override
+		{ return mOperator->GetType(); }
+
+		virtual void Print(std::ostream & os = std::cout, std::string_view indent = "", bool last = true, std::string_view label = "") override
 		{
 			PrintIndent(os, indent, last, label);
 			os << "Binary Expression Syntax [";

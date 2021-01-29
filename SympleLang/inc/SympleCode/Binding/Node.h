@@ -58,6 +58,7 @@ namespace Symple::Binding
 			Unknown,
 
 			Expression,
+			ErrorExpression,
 			BinaryExpression,
 
 			Last = BinaryExpression,
@@ -67,6 +68,7 @@ namespace Symple::Binding
 			"Unknown",
 
 			"Expression",
+			"ErrorExpression",
 			"BinaryExpression",
 		};
 	};
