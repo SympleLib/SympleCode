@@ -14,32 +14,19 @@ namespace Symple::Binding
 		Kind mKind;
 		shared_ptr<Type> mLeftType, mRightType, mType;
 	public:
-		BoundBinaryOperator(Kind kind, shared_ptr<Type> leftType, shared_ptr<Type> rightType, shared_ptr<Type> type)
-			: mKind(kind), mLeftType(leftType), mRightType(rightType), mType(type)
-		{}
+		BoundBinaryOperator(Kind kind, shared_ptr<Type> leftType, shared_ptr<Type> rightType, shared_ptr<Type> type);
 
-		void Print(std::ostream& os = std::cout, std::string_view indent = "", bool last = true, std::string_view label = "")
-		{
-			Syntax::Node::PrintIndent(os, indent, last, label);
-			os << "Binary " << KindMap[GetKind()];
-		}
+		void Print(std::ostream& = std::cout, std::string_view indent = "", bool last = true, std::string_view label = "");
 
-		void PrintShort(std::ostream& os = std::cout)
-		{
-			os << '(' << KindMap[GetKind()] << ')';
-		}
+		void PrintShort(std::ostream& os = std::cout);
 
-		Kind GetKind()
-		{ return mKind; }
+		Kind GetKind();
 
-		shared_ptr<Type> GetLeftType()
-		{ return mLeftType; }
+		shared_ptr<Type> GetLeftType();
 
-		shared_ptr<Type> GetRightType()
-		{ return mRightType; }
+		shared_ptr<Type> GetRightType();
 
-		shared_ptr<Type> GetType()
-		{ return mType; }
+		shared_ptr<Type> GetType();
 	public:
 		enum Kind : unsigned
 		{
