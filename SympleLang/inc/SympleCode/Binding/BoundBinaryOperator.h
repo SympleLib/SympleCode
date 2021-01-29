@@ -26,7 +26,7 @@ namespace Symple::Binding
 
 		void PrintShort(std::ostream& os = std::cout)
 		{
-
+			os << '(' << KindMap[GetKind()] << ')';
 		}
 
 		Kind GetKind()
