@@ -18,6 +18,8 @@ namespace Symple::Binding
 	public:
 		Type(Kind, std::string_view name, unsigned size, shared_ptr<Type> base = nullptr);
 
+		bool Equals(shared_ptr<Type>);
+
 		bool Is(Kind);
 		template <typename... Args>
 		bool Is(Kind kind, Args... kinds)
@@ -32,6 +34,19 @@ namespace Symple::Binding
 		shared_ptr<Type> GetBase();
 
 		static shared_ptr<Type> ErrorType;
+
+		static shared_ptr<Type> VoidType;
+		static shared_ptr<Type> ByteType;
+		static shared_ptr<Type> ShortType;
+		static shared_ptr<Type> IntType;
+		static shared_ptr<Type> LongType;
+
+		static shared_ptr<Type> FloatType;
+		static shared_ptr<Type> DoubleType;
+		static shared_ptr<Type> TripleType;
+
+		static shared_ptr<Type> VoidPointerType;
+		static shared_ptr<Type> BytePointerType;
 	public:
 		enum Kind : unsigned
 		{
@@ -41,8 +56,11 @@ namespace Symple::Binding
 			Byte,
 			Short,
 			Int,
+			Long,
 			
 			Float,
+			Double,
+			Triple,
 
 			Pointer,
 
@@ -56,8 +74,11 @@ namespace Symple::Binding
 			"Byte",
 			"Short",
 			"Int",
+			"Long",
 
 			"Float",
+			"Double",
+			"Triple",
 
 			"Pointer",
 		};

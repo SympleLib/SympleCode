@@ -2,9 +2,14 @@
 
 namespace Symple::Binding
 {
-	BoundBinaryOperator::BoundBinaryOperator(Kind kind, shared_ptr<Type> leftType, shared_ptr<Type> rightType, shared_ptr<Type> type)
-		: mKind(kind), mLeftType(leftType), mRightType(rightType), mType(type)
+	std::vector<shared_ptr<BoundBinaryOperator>> BoundBinaryOperator::sOperators = {
+		make_shared<BoundBinaryOperator>(Syntax::Token::Plus, Addition, Type::IntType)
+	};
+
+	BoundBinaryOperator::BoundBinaryOperator(Syntax::Token::Kind tokenKind, Kind kind, shared_ptr<Type> leftType, shared_ptr<Type> rightType, shared_ptr<Type> type)
+		: mTokenKind(tokenKind), mKind(kind), mLeftType(leftType), mRightType(rightType), mType(type)
 	{}
+
 
 	void BoundBinaryOperator::Print(std::ostream& os, std::string_view indent, bool last, std::string_view label)
 	{
@@ -16,6 +21,20 @@ namespace Symple::Binding
 	{
 		os << '(' << KindMap[GetKind()] << ')';
 	}
+
+
+	shared_ptr<BoundBinaryOperator> BoundBinaryOperator::Bind(Syntax::Token::Kind tokenKind, shared_ptr<Type> leftType, shared_ptr<Type> rightType)
+	{
+		for (auto op : sOperators)
+			if (op->GetTokenKind() == tokenKind && op->GetLeftType()->Equals(leftType) && op->GetRightType()->Equals(rightType))
+				return op;
+
+		return nullptr;
+	}
+
+
+	Syntax::Token::Kind BoundBinaryOperator::GetTokenKind()
+	{ return mTokenKind; }
 
 	BoundBinaryOperator::Kind BoundBinaryOperator::GetKind()
 	{ return mKind; }
