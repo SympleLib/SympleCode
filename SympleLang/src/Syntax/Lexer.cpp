@@ -49,6 +49,8 @@ namespace Symple::Syntax
 			return LexAtom(Token::Asterisk);
 		case '/':
 			return LexAtom(Token::Slash);
+		case '%':
+			return LexAtom(Token::Percentage);
 
 		case '=':
 			return LexAtom(Token::Equal);

@@ -53,7 +53,7 @@ namespace Symple::Syntax
 
 		template <typename T>
 		shared_ptr<T> As()
-		{ return shared_ptr<T>(this); }
+		{ return shared_ptr<T>(dynamic_cast<T*>(this)); }
 	public:
 		enum Kind : unsigned
 		{

@@ -5,6 +5,7 @@
 
 #include "SympleCode/Syntax/Lexer.h"
 #include "SympleCode/Syntax/Parser.h"
+#include "SympleCode/Binding/Binder.h"
 
 using Symple::DiagnosticBag;
 using Symple::Diagnostic;
@@ -12,6 +13,7 @@ using Symple::Diagnostic;
 using Symple::Syntax::Lexer;
 using Symple::Syntax::Token;
 using Symple::Syntax::Parser;
+using Symple::Binding::Binder;
 
 using Symple::Syntax::ExpressionSyntax;
 
@@ -79,6 +81,11 @@ void Parse()
 
 	node->Print();
 	putchar('\n');
+}
+
+void Bind(shared_ptr<ExpressionSyntax> node)
+{
+	Binder b;
 }
 
 int main()

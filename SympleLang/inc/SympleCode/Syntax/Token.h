@@ -52,6 +52,7 @@ namespace Symple::Syntax
 			Dash,
 			Asterisk,
 			Slash,
+			Percentage,
 
 			Equal,
 
@@ -75,6 +76,7 @@ namespace Symple::Syntax
 			"Dash",
 			"Asterisk",
 			"Slash",
+			"Percentage",
 
 			"Equal",
 

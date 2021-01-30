@@ -23,7 +23,7 @@ namespace Symple::Binding
 		void Print(std::ostream& = std::cout, std::string_view indent = "", bool last = true, std::string_view label = "");
 		void PrintShort(std::ostream& os = std::cout);
 
-		shared_ptr<BoundBinaryOperator> Bind(Syntax::Token::Kind, shared_ptr<Type> leftType, shared_ptr<Type> rightType);
+		static shared_ptr<BoundBinaryOperator> Bind(Syntax::Token::Kind, shared_ptr<Type> leftType, shared_ptr<Type> rightType);
 
 		Syntax::Token::Kind GetTokenKind();
 		Kind GetKind();
@@ -37,8 +37,9 @@ namespace Symple::Binding
 			Subtraction,
 			Multiplication,
 			Division,
+			Modulo,
 
-			Last = Division,
+			Last = Modulo,
 		};
 
 		static constexpr char* KindMap[Last + 1] = {
@@ -46,6 +47,7 @@ namespace Symple::Binding
 			"Subtraction",
 			"Multiplication",
 			"Division",
+			"Modulo",
 		};
 	};
 }

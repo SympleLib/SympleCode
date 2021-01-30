@@ -2,8 +2,22 @@
 
 namespace Symple::Binding
 {
+	// Explicit Declaration instead of using 'make_shared' because this is a private constructor
 	std::vector<shared_ptr<BoundBinaryOperator>> BoundBinaryOperator::sOperators = {
-		make_shared<BoundBinaryOperator>(Syntax::Token::Plus, Addition, Type::IntType)
+		shared_ptr<BoundBinaryOperator>(new BoundBinaryOperator(Syntax::Token::Plus, Addition, Type::IntType, Type::IntType, Type::IntType)),
+		shared_ptr<BoundBinaryOperator>(new BoundBinaryOperator(Syntax::Token::Plus, Addition, Type::LongType, Type::LongType, Type::LongType)),
+
+		shared_ptr<BoundBinaryOperator>(new BoundBinaryOperator(Syntax::Token::Dash, Subtraction, Type::IntType, Type::IntType, Type::IntType)),
+		shared_ptr<BoundBinaryOperator>(new BoundBinaryOperator(Syntax::Token::Dash, Subtraction, Type::LongType, Type::LongType, Type::LongType)),
+
+		shared_ptr<BoundBinaryOperator>(new BoundBinaryOperator(Syntax::Token::Asterisk, Multiplication, Type::IntType, Type::IntType, Type::IntType)),
+		shared_ptr<BoundBinaryOperator>(new BoundBinaryOperator(Syntax::Token::Asterisk, Multiplication, Type::LongType, Type::LongType, Type::LongType)),
+
+		shared_ptr<BoundBinaryOperator>(new BoundBinaryOperator(Syntax::Token::Slash, Division, Type::IntType, Type::IntType, Type::IntType)),
+		shared_ptr<BoundBinaryOperator>(new BoundBinaryOperator(Syntax::Token::Slash, Division, Type::LongType, Type::LongType, Type::LongType)),
+
+		shared_ptr<BoundBinaryOperator>(new BoundBinaryOperator(Syntax::Token::Percentage, Modulo, Type::IntType, Type::IntType, Type::IntType)),
+		shared_ptr<BoundBinaryOperator>(new BoundBinaryOperator(Syntax::Token::Percentage, Modulo, Type::LongType, Type::LongType, Type::LongType)),
 	};
 
 	BoundBinaryOperator::BoundBinaryOperator(Syntax::Token::Kind tokenKind, Kind kind, shared_ptr<Type> leftType, shared_ptr<Type> rightType, shared_ptr<Type> type)
@@ -14,13 +28,11 @@ namespace Symple::Binding
 	void BoundBinaryOperator::Print(std::ostream& os, std::string_view indent, bool last, std::string_view label)
 	{
 		Syntax::Node::PrintIndent(os, indent, last, label);
-		os << "Binary " << KindMap[GetKind()];
+		os << "Bound Binary " << KindMap[GetKind()];
 	}
 
-	void BoundBinaryOperator::PrintShort(std::ostream& os = std::cout)
-	{
-		os << '(' << KindMap[GetKind()] << ')';
-	}
+	void BoundBinaryOperator::PrintShort(std::ostream& os)
+	{ os << '(' << KindMap[GetKind()] << ')'; }
 
 
 	shared_ptr<BoundBinaryOperator> BoundBinaryOperator::Bind(Syntax::Token::Kind tokenKind, shared_ptr<Type> leftType, shared_ptr<Type> rightType)
