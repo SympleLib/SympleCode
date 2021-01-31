@@ -7,16 +7,9 @@
 #include "SympleCode/Syntax/Parser.h"
 #include "SympleCode/Binding/Binder.h"
 
-using Symple::DiagnosticBag;
-using Symple::Diagnostic;
-
-using Symple::Syntax::Lexer;
-using Symple::Syntax::Token;
-using Symple::Syntax::Parser;
-using Symple::Binding::Binder;
-using Symple::Binding::BoundExpression;
-
-using Symple::Syntax::ExpressionSyntax;
+using namespace Symple;
+using namespace Symple::Binding;
+using namespace Symple::Syntax;
 
 using std::shared_ptr;
 using std::make_shared;

@@ -48,10 +48,6 @@ namespace Symple::Binding
 			PrintIndent(os, indent, last, label);
 			os << "Bound " << KindMap[GetKind()];
 		}
-
-		template <typename T>
-		shared_ptr<T> As()
-		{ return shared_ptr<T>(dynamic_cast<T*>(this)); }
 	public:
 		enum Kind : unsigned
 		{

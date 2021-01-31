@@ -50,10 +50,6 @@ namespace Symple::Syntax
 			else
 				return "|   ";
 		}
-
-		template <typename T>
-		shared_ptr<T> As()
-		{ return shared_ptr<T>(dynamic_cast<T*>(this)); }
 	public:
 		enum Kind : unsigned
 		{

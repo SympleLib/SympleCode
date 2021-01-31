@@ -9,4 +9,6 @@ namespace Symple
 
 	using std::unique_ptr;
 	using std::make_unique;
+
+	using std::dynamic_pointer_cast;
 }

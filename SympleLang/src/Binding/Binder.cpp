@@ -11,13 +11,13 @@ namespace Symple::Binding
 		switch (syntax->GetKind())
 		{
 		case Syntax::Node::UnaryExpression:
-			return BindUnaryExpression(syntax->As<Syntax::UnaryExpressionSyntax>());
+			return BindUnaryExpression(dynamic_pointer_cast<Syntax::UnaryExpressionSyntax, Syntax::ExpressionSyntax>(syntax));
 		case Syntax::Node::BinaryExpression:
-			return BindBinaryExpression(syntax->As<Syntax::BinaryExpressionSyntax>());
+			return BindBinaryExpression(dynamic_pointer_cast<Syntax::BinaryExpressionSyntax, Syntax::ExpressionSyntax>(syntax));
 		case Syntax::Node::LiteralExpression:
-			return BindLiteralExpression(syntax->As<Syntax::LiteralExpressionSyntax>());
+			return BindLiteralExpression(dynamic_pointer_cast<Syntax::LiteralExpressionSyntax, Syntax::ExpressionSyntax>(syntax));
 		case Syntax::Node::ParenthesizedExpression:
-			return BindExpressionInternal(syntax->As<Syntax::ParenthesizedExpressionSyntax>()->GetExpression());
+			return BindExpressionInternal(dynamic_pointer_cast<Syntax::ParenthesizedExpressionSyntax, Syntax::ExpressionSyntax>(syntax)->GetExpression());
 		default:
 			return make_shared<BoundErrorExpression>(syntax);
 		}
