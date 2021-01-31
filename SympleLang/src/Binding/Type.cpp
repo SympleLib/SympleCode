@@ -12,9 +12,9 @@ namespace Symple::Binding
 	shared_ptr<Type> Type::IntType   = make_shared<Type>(Int, "int", 4);
 	shared_ptr<Type> Type::LongType  = make_shared<Type>(Long, "long", 8);
 
-	shared_ptr<Type> Type::FloatType   = make_shared<Type>(Long, "float", 8);
-	shared_ptr<Type> Type::DoubleType  = make_shared<Type>(Long, "double", 8);
-	shared_ptr<Type> Type::TripleType  = make_shared<Type>(Long, "triple", 16);
+	shared_ptr<Type> Type::FloatType   = make_shared<Type>(Float, "float", 8);
+	shared_ptr<Type> Type::DoubleType  = make_shared<Type>(Double, "double", 8);
+	shared_ptr<Type> Type::TripleType  = make_shared<Type>(Triple, "triple", 16);
 
 	shared_ptr<Type> Type::VoidPointerType  = make_shared<Type>(Pointer, "*", 4, VoidType);
 	shared_ptr<Type> Type::BytePointerType  = make_shared<Type>(Pointer, "*", 4, ByteType);

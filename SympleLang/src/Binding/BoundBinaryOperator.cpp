@@ -4,6 +4,7 @@ namespace Symple::Binding
 {
 	// Explicit Declaration instead of using 'make_shared' because this is a private constructor
 	std::vector<shared_ptr<BoundBinaryOperator>> BoundBinaryOperator::sOperators;
+	shared_ptr<BoundBinaryOperator> BoundBinaryOperator::ErrorOperator;
 
 	BoundBinaryOperator::BoundBinaryOperator(Syntax::Token::Kind tokenKind, Kind kind, shared_ptr<Type> leftType, shared_ptr<Type> rightType, shared_ptr<Type> type)
 		: mTokenKind(tokenKind), mKind(kind), mLeftType(leftType), mRightType(rightType), mType(type)
@@ -23,6 +24,7 @@ namespace Symple::Binding
 	shared_ptr<BoundBinaryOperator> BoundBinaryOperator::Bind(Syntax::Token::Kind tokenKind, shared_ptr<Type> leftType, shared_ptr<Type> rightType)
 	{
 		if (sOperators.empty())
+		{
 			sOperators = {
 				shared_ptr<BoundBinaryOperator>(new BoundBinaryOperator(Syntax::Token::Plus, Addition, Type::IntType, Type::IntType, Type::IntType)),
 				shared_ptr<BoundBinaryOperator>(new BoundBinaryOperator(Syntax::Token::Plus, Addition, Type::LongType, Type::LongType, Type::LongType)),
@@ -40,11 +42,14 @@ namespace Symple::Binding
 				shared_ptr<BoundBinaryOperator>(new BoundBinaryOperator(Syntax::Token::Percentage, Modulo, Type::LongType, Type::LongType, Type::LongType)),
 			};
 
+			ErrorOperator = shared_ptr<BoundBinaryOperator>(new BoundBinaryOperator(Syntax::Token::Unknown, Unknown, Type::ErrorType, Type::ErrorType, Type::ErrorType));
+		}
+
 		for (auto op : sOperators)
 			if (op->GetTokenKind() == tokenKind && op->GetLeftType()->Equals(leftType) && op->GetRightType()->Equals(rightType))
 				return op;
 
-		return nullptr;
+		return ErrorOperator;
 	}
 
 

@@ -26,7 +26,7 @@ namespace Symple::Binding
 	shared_ptr<BoundExpression> Binder::BindExpression(shared_ptr<Syntax::ExpressionSyntax> syntax)
 	{
 		shared_ptr<BoundExpression> result = BindExpressionInternal(syntax);
-		if (result->GetType()->Is(Type::Error))
+		if (!result /* Should not be null, but just in case */ || result->GetType()->Is(Type::Error))
 			return make_shared<BoundErrorExpression>(syntax);
 		return result;
 	}
@@ -36,6 +36,8 @@ namespace Symple::Binding
 		shared_ptr<BoundExpression> operand = BindExpression(syntax->GetOperand());
 
 		shared_ptr<BoundUnaryOperator> op = BoundUnaryOperator::Bind(syntax->GetOperator()->GetKind(), operand->GetType());
+		if (op == BoundUnaryOperator::ErrorOperator)
+			mDiagnosticBag->ReportInvalidOperation(syntax->GetOperator(), operand->GetType());
 
 		return make_shared<BoundUnaryExpression>(syntax, op, operand);
 	}
@@ -46,12 +48,31 @@ namespace Symple::Binding
 		shared_ptr<BoundExpression> right = BindExpression(syntax->GetRight());
 
 		shared_ptr<BoundBinaryOperator> op = BoundBinaryOperator::Bind(syntax->GetOperator()->GetKind(), left->GetType(), right->GetType());
+		if (op == BoundBinaryOperator::ErrorOperator)
+			mDiagnosticBag->ReportInvalidOperation(syntax->GetOperator(), left->GetType(), right->GetType());
 
 		return make_shared<BoundBinaryExpression>(syntax, op, left, right);
 	}
 
 	shared_ptr<BoundLiteralExpression> Binder::BindLiteralExpression(shared_ptr<Syntax::LiteralExpressionSyntax> syntax)
 	{
-		return make_shared<BoundLiteralExpression>(syntax, Type::IntType);
+		shared_ptr<Type> ty;
+		switch (syntax->GetLiteral()->GetKind())
+		{
+		case Syntax::Token::Integer:
+			ty = Type::LongType;
+			break;
+		case Syntax::Token::Number:
+			ty = Type::TripleType;
+			break;
+		default:
+			ty = Type::ErrorType;
+			break;
+		}
+
+		return make_shared<BoundLiteralExpression>(syntax, ty);
 	}
+
+	shared_ptr<DiagnosticBag> Binder::GetDiagnosticBag()
+	{ return mDiagnosticBag; }
 }

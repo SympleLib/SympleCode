@@ -2,6 +2,8 @@
 
 #include <ctype.h>
 
+#include "SympleCode/DiagnosticBag.h"
+
 #include "SympleCode/Syntax/ExpressionSyntax.h"
 
 #include "SympleCode/Binding/BoundExpression.h"
@@ -15,11 +17,15 @@ namespace Symple::Binding
 	class Binder
 	{
 	private:
+		shared_ptr<DiagnosticBag> mDiagnosticBag = make_shared<DiagnosticBag>();
+
 		shared_ptr<BoundExpression> BindExpressionInternal(shared_ptr<Syntax::ExpressionSyntax>);
 	public:
 		shared_ptr<BoundExpression> BindExpression(shared_ptr<Syntax::ExpressionSyntax>);
 		shared_ptr<BoundUnaryExpression> BindUnaryExpression(shared_ptr<Syntax::UnaryExpressionSyntax>);
 		shared_ptr<BoundBinaryExpression> BindBinaryExpression(shared_ptr<Syntax::BinaryExpressionSyntax>);
 		shared_ptr<BoundLiteralExpression> BindLiteralExpression(shared_ptr<Syntax::LiteralExpressionSyntax>);
+
+		shared_ptr<DiagnosticBag> GetDiagnosticBag();
 	};
 }

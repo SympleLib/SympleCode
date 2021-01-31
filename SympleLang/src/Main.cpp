@@ -49,16 +49,17 @@ bool PrintDiagnosticBag(shared_ptr<DiagnosticBag> diagnostics)
 		return true;
 	}
 	else
+	{
+		spdlog::info("{} completed with {} errors, {} warnings, {} messages", sStep, errCount, warningCount, messageCount);
+
 		return false;
+	}
 }
 
 shared_ptr<ExpressionSyntax> node;
 
 void Parse()
 {
-	spdlog::set_pattern("[Symple]%^<%l>%$: %v");
-	spdlog::set_level(level_enum::trace);
-
 	shared_ptr<Lexer> lexer = make_shared<Lexer>((char*)"sy/Main.sy");
 	lexer->SetRef(lexer);
 	std::vector<shared_ptr<Token>> tokens;
@@ -86,7 +87,12 @@ void Bind()
 	if (!node)
 		return;
 
-	shared_ptr<BoundExpression> bound = make_shared<Binder>()->BindExpression(node);
+	shared_ptr<Binder> binder = make_shared<Binder>();
+
+	shared_ptr<BoundExpression> bound = binder->BindExpression(node);
+	sStep = "Binding";
+	if (PrintDiagnosticBag(binder->GetDiagnosticBag()))
+		return;
 
 	putchar('\n');
 	spdlog::info("Bound Tree:");
@@ -96,6 +102,9 @@ void Bind()
 
 int main()
 {
+	spdlog::set_pattern("[Symple]%^<%l>%$: %v");
+	spdlog::set_level(level_enum::trace);
+
 	Parse();
 	Bind();
 

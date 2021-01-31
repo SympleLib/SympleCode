@@ -24,6 +24,7 @@ namespace Symple::Binding
 		void PrintShort(std::ostream& os = std::cout);
 
 		static shared_ptr<BoundUnaryOperator> Bind(Syntax::Token::Kind, shared_ptr<Type> operandType);
+		static shared_ptr<BoundUnaryOperator> ErrorOperator;
 
 		Syntax::Token::Kind GetTokenKind();
 		Kind GetKind();
@@ -32,6 +33,8 @@ namespace Symple::Binding
 	public:
 		enum Kind : unsigned
 		{
+			Unknown,
+
 			Positive,
 			Negative,
 
@@ -39,6 +42,8 @@ namespace Symple::Binding
 		};
 
 		static constexpr char* KindMap[Last + 1] = {
+			"Unknown",
+
 			"Positive",
 			"Negative",
 		};

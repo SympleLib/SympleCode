@@ -24,6 +24,7 @@ namespace Symple::Binding
 		void PrintShort(std::ostream& os = std::cout);
 
 		static shared_ptr<BoundBinaryOperator> Bind(Syntax::Token::Kind, shared_ptr<Type> leftType, shared_ptr<Type> rightType);
+		static shared_ptr<BoundBinaryOperator> ErrorOperator;
 
 		Syntax::Token::Kind GetTokenKind();
 		Kind GetKind();
@@ -33,6 +34,8 @@ namespace Symple::Binding
 	public:
 		enum Kind : unsigned
 		{
+			Unknown,
+
 			Addition,
 			Subtraction,
 			Multiplication,
@@ -43,6 +46,8 @@ namespace Symple::Binding
 		};
 
 		static constexpr char* KindMap[Last + 1] = {
+			"Unknown",
+
 			"Addition",
 			"Subtraction",
 			"Multiplication",
