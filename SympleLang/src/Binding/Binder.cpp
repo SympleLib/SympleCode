@@ -1,5 +1,7 @@
 #include "SympleCode/Binding/Binder.h"
 
+#include "SympleCode/Syntax/ParenthesizedExpressionSyntax.h"
+
 #include "SympleCode/Binding/Type.h"
 
 namespace Symple::Binding
@@ -14,6 +16,8 @@ namespace Symple::Binding
 			return BindBinaryExpression(syntax->As<Syntax::BinaryExpressionSyntax>());
 		case Syntax::Node::LiteralExpression:
 			return BindLiteralExpression(syntax->As<Syntax::LiteralExpressionSyntax>());
+		case Syntax::Node::ParenthesizedExpression:
+			return BindExpressionInternal(syntax->As<Syntax::ParenthesizedExpressionSyntax>()->GetExpression());
 		default:
 			return make_shared<BoundErrorExpression>(syntax);
 		}
