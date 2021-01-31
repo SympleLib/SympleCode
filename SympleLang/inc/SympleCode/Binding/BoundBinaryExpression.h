@@ -23,16 +23,16 @@ namespace Symple::Binding
 		virtual shared_ptr<Type> GetType() override
 		{ return mOperator->GetType(); }
 
-		virtual void Print(std::ostream & os = std::cout, std::string_view indent = "", bool last = true, std::string_view label = "") override
+		virtual void Print(std::ostream& os = std::cout, std::string_view indent = "", bool last = true, std::string_view label = "") override
 		{
 			PrintIndent(os, indent, last, label);
-			os << "Binary Expression Syntax [";
-			GetOperator()->PrintShort(os);
-			os.put(']');
+			os << "Bound Binary Expression";
 
 			std::string newIndent(indent);
 			newIndent += GetAddIndent(last);
 
+			os.put('\n'); GetType()->Print(os, newIndent, false, "Type = ");
+			os.put('\n'); GetOperator()->Print(os, newIndent, false, "Operator = ");
 			os.put('\n'); GetLeft()->Print(os, newIndent, false, "Left = ");
 			os.put('\n'); GetRight()->Print(os, newIndent, true, "Right = ");
 		}

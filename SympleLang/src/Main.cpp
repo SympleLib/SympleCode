@@ -76,6 +76,7 @@ void Parse()
 	if (PrintDiagnosticBag(parser->GetDiagnosticBag()))
 		return;
 
+	spdlog::info("Parse Tree:");
 	node->Print();
 	putchar('\n');
 }
@@ -87,6 +88,8 @@ void Bind()
 
 	shared_ptr<BoundExpression> bound = make_shared<Binder>()->BindExpression(node);
 
+	putchar('\n');
+	spdlog::info("Bound Tree:");
 	bound->Print();
 	putchar('\n');
 }

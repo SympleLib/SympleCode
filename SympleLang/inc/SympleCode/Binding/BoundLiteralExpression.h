@@ -23,7 +23,12 @@ namespace Symple::Binding
 
 		virtual void Print(std::ostream& os = std::cout, std::string_view indent = "", bool last = true, std::string_view label = "") override
 		{
-			os.put('\n'); GetToken()->Print(os, indent, false, "Bound ");
+			GetToken()->Print(os, indent, last, std::string(label) + "Bound ");
+
+			std::string newIndent(indent);
+			newIndent += GetAddIndent(last);
+
+			os.put('\n'); GetType()->Print(os, newIndent, true, "Type = ");
 		}
 
 		shared_ptr<Syntax::Token> GetToken()

@@ -1,6 +1,6 @@
 #include "SympleCode/Binding/Type.h"
 
-#include "SympleCode/Syntax/Node.h"
+#include "SympleCode/Binding/Node.h"
 
 namespace Symple::Binding
 {
@@ -26,10 +26,6 @@ namespace Symple::Binding
 
 	bool Type::Equals(shared_ptr<Type> other)
 	{
-		Print(); putchar('\n'); other->Print(); putchar('\n'); putchar('\n');
-
-		return true;
-
 		if (GetBase() && other->GetBase())
 			return Is(other->GetKind()) && GetBase()->Equals(other->GetBase());
 		else if (GetBase() || other->GetBase())
@@ -48,7 +44,7 @@ namespace Symple::Binding
 		if (GetBase())
 			GetBase()->Print(os);
 
-		Syntax::Node::PrintIndent(os, indent, last, label);
+		Node::PrintIndent(os, indent, last, label);
 		os << KindMap[GetKind()];
 		os << " Type";
 	}

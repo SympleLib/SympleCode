@@ -26,20 +26,18 @@ namespace Symple::Binding
 		virtual void Print(std::ostream& os = std::cout, std::string_view indent = "", bool last = true, std::string_view label = "") override
 		{
 			PrintIndent(os, indent, last, label);
-			os << "Unary Expression Syntax [";
-			GetOperator()->PrintShort(os);
-			os.put(']');
+			os << "Bound Unary Expression";
 
 			std::string newIndent(indent);
 			newIndent += GetAddIndent(last);
 
-			os.put('\n'); GetOperand()->Print(os, newIndent, false, "Operand = ");
+			os.put('\n'); GetType()->Print(os, newIndent, false, "Type = ");
+			os.put('\n'); GetOperator()->Print(os, newIndent, false, "Operator = ");
+			os.put('\n'); GetOperand()->Print(os, newIndent, true, "Operand = ");
 		}
 
 		shared_ptr<BoundUnaryOperator> GetOperator()
-		{
-			return mOperator;
-		}
+		{ return mOperator; }
 
 		shared_ptr<BoundExpression> GetOperand()
 		{ return mOperand; }

@@ -9,24 +9,11 @@ namespace Symple::Binding
 	public: enum Kind : unsigned;
 	protected:
 		shared_ptr<Syntax::Node> mSyntax;
-		
-		void PrintIndent(std::ostream& os = std::cout, std::string_view indent = "", bool last = true, std::string_view label = "")
-		{
-			os << indent;
-			if (last)
-				os << "L--";
-			else
-				os << "|--";
-			os << label;
-		}
-
-		char* GetAddIndent(bool last = true)
-		{
-			if (last)
-				return "    ";
-			else
-				return "|   ";
-		}
+	public:
+		static void PrintIndent(std::ostream& os = std::cout, std::string_view indent = "", bool last = true, std::string_view label = "")
+		{ return Syntax::Node::PrintIndent(os, indent, last, label); }
+		static char* GetAddIndent(bool last = true)
+		{ return Syntax::Node::GetAddIndent(last); }
 	public:
 		Node(shared_ptr<Syntax::Node> syntax)
 			: mSyntax(syntax) {}
