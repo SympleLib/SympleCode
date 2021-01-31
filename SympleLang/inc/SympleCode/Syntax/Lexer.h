@@ -13,6 +13,7 @@ namespace Symple::Syntax
 	private:
 		std::string mSource;
 		unsigned mPosition = 0;
+		shared_ptr<Lexer> mRef;
 
 		char* mFile;
 		unsigned mLine = 0, mColumn = 0;
@@ -20,6 +21,7 @@ namespace Symple::Syntax
 	public:
 		Lexer(char* mFile);
 		Lexer(char* mFile, std::string& mSource);
+		void SetRef(shared_ptr<Lexer>); // Required before lexing
 
 		shared_ptr<Token> Lex();
 

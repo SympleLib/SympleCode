@@ -67,6 +67,7 @@ void Parse()
 	spdlog::set_level(level_enum::trace);
 
 	shared_ptr<Lexer> lexer = make_shared<Lexer>((char*)"sy/Main.sy");
+	lexer->SetRef(lexer);
 	std::vector<shared_ptr<Token>> tokens;
 	do
 		tokens.push_back(lexer->Lex());

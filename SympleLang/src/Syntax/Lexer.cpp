@@ -21,6 +21,11 @@ namespace Symple::Syntax
 		: mFile(file), mSource(source)
 	{}
 
+	void Lexer::SetRef(shared_ptr<Lexer> ref)
+	{
+		mRef = ref;
+	}
+
 	
 	shared_ptr<Token> Lexer::Lex()
 	{
@@ -145,7 +150,7 @@ namespace Symple::Syntax
 
 
 	shared_ptr<Token> Lexer::LexAtom(Token::Kind kind)
-	{ return make_shared<Token>(kind, &Next(), 1, mLine, mColumn, mFile); }
+	{ return make_shared<Token>(kind, &Next(), 1, mLine, mColumn, mFile, mRef); }
 
 	shared_ptr<Token> Lexer::LexIdentifier()
 	{
@@ -155,7 +160,7 @@ namespace Symple::Syntax
 		while (IsIdentifier(Peek()))
 			Next();
 
-		return make_shared<Token>(Token::Identifier, beg, Current, mLine, column, mFile);
+		return make_shared<Token>(Token::Identifier, beg, Current, mLine, column, mFile, mRef);
 	}
 
 	shared_ptr<Token> Lexer::LexNumber()
@@ -170,8 +175,8 @@ namespace Symple::Syntax
 			Next();
 
 		if (dotCount)
-			return make_shared<Token>(Token::Number, beg, Current, mLine, column, mFile);
+			return make_shared<Token>(Token::Number, beg, Current, mLine, column, mFile, mRef);
 		else
-			return make_shared<Token>(Token::Integer, beg, Current, mLine, column, mFile);
+			return make_shared<Token>(Token::Integer, beg, Current, mLine, column, mFile, mRef);
 	}
 }
