@@ -174,7 +174,9 @@ namespace Symple::Syntax
 		while (IsInteger(Peek()) || (IsNumber(Peek()) && ++dotCount))
 			Next();
 
-		if (dotCount)
+		if (Peek() == 'f' || Peek() == 'F')
+			return make_shared<Token>(Token::Float, beg, &Next(), mLine, column, mFile, mRef);
+		else if (dotCount)
 			return make_shared<Token>(Token::Number, beg, Current, mLine, column, mFile, mRef);
 		else
 			return make_shared<Token>(Token::Integer, beg, Current, mLine, column, mFile, mRef);

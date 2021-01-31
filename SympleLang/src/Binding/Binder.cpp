@@ -1,5 +1,7 @@
 #include "SympleCode/Binding/Binder.h"
 
+#include <string>
+
 #include "SympleCode/Syntax/ParenthesizedExpressionSyntax.h"
 
 #include "SympleCode/Binding/Type.h"
@@ -60,10 +62,16 @@ namespace Symple::Binding
 		switch (syntax->GetLiteral()->GetKind())
 		{
 		case Syntax::Token::Integer:
-			ty = Type::LongType;
+			if (std::stoll(std::string(syntax->GetLiteral()->GetText())) & 0xFFFFFFFF00000000)
+				ty = Type::LongType;
+			else
+				ty = Type::IntType;
 			break;
 		case Syntax::Token::Number:
-			ty = Type::TripleType;
+			ty = Type::DoubleType;
+			break;
+		case Syntax::Token::Float:
+			ty = Type::FloatType;
 			break;
 		default:
 			ty = Type::ErrorType;

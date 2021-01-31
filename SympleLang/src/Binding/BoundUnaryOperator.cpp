@@ -31,8 +31,17 @@ namespace Symple::Binding
 				shared_ptr<BoundUnaryOperator>(new BoundUnaryOperator(Syntax::Token::Plus, Positive, Type::IntType, Type::IntType)),
 				shared_ptr<BoundUnaryOperator>(new BoundUnaryOperator(Syntax::Token::Plus, Positive, Type::LongType, Type::LongType)),
 
+				shared_ptr<BoundUnaryOperator>(new BoundUnaryOperator(Syntax::Token::Plus, Positive, Type::FloatType, Type::FloatType)),
+				shared_ptr<BoundUnaryOperator>(new BoundUnaryOperator(Syntax::Token::Plus, Positive, Type::DoubleType, Type::DoubleType)),
+				shared_ptr<BoundUnaryOperator>(new BoundUnaryOperator(Syntax::Token::Plus, Positive, Type::TripleType, Type::TripleType)),
+
+
 				shared_ptr<BoundUnaryOperator>(new BoundUnaryOperator(Syntax::Token::Dash, Negative, Type::IntType, Type::IntType)),
 				shared_ptr<BoundUnaryOperator>(new BoundUnaryOperator(Syntax::Token::Dash, Negative, Type::LongType, Type::LongType)),
+
+				shared_ptr<BoundUnaryOperator>(new BoundUnaryOperator(Syntax::Token::Dash, Negative, Type::FloatType, Type::FloatType)),
+				shared_ptr<BoundUnaryOperator>(new BoundUnaryOperator(Syntax::Token::Dash, Negative, Type::DoubleType, Type::DoubleType)),
+				shared_ptr<BoundUnaryOperator>(new BoundUnaryOperator(Syntax::Token::Dash, Negative, Type::TripleType, Type::TripleType)),
 			};
 
 			ErrorOperator = shared_ptr<BoundUnaryOperator>(new BoundUnaryOperator(Syntax::Token::Unknown, Negative, Type::ErrorType, Type::ErrorType));

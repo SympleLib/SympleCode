@@ -49,6 +49,7 @@ namespace Symple::Syntax
 			Identifier,
 			Integer,
 			Number,
+			Float,
 
 			Semicolon,
 
@@ -73,6 +74,7 @@ namespace Symple::Syntax
 			"Identifier",
 			"Integer",
 			"Number",
+			"Float",
 
 			"Semicolon",
 
