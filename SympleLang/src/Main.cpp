@@ -92,16 +92,10 @@ void Bind()
 	if (!node)
 		return;
 
-	shared_ptr<Binder> binder = make_shared<Binder>();
+	shared_ptr<BoundExpression> bound = make_shared<Binder>()->BindExpression(node);
 
-	{
-		shared_ptr<BoundExpression> bound = binder->BindExpression(node);
-
-		bound->Print();
-		putchar('\n');
-	}
-
-
+	bound->Print();
+	putchar('\n');
 }
 
 int main()
