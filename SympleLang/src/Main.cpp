@@ -59,7 +59,9 @@ bool PrintDiagnosticBag(shared_ptr<DiagnosticBag> diagnostics)
 		return false;
 }
 
-shared_ptr<ExpressionSyntax> Parse()
+shared_ptr<ExpressionSyntax> node;
+
+void Parse()
 {
 	spdlog::set_pattern("[Symple]%^<%l>%$: %v");
 	spdlog::set_level(level_enum::trace);
@@ -72,22 +74,23 @@ shared_ptr<ExpressionSyntax> Parse()
 
 	sStep = "Lexing";
 	if (PrintDiagnosticBag(lexer->GetDiagnosticBag()))
-		return nullptr;
+		return;
 
 	shared_ptr<Parser> parser = make_shared<Parser>(lexer, tokens);
-	shared_ptr<ExpressionSyntax> node = parser->ParseExpression();
+	node = parser->ParseExpression();
 	sStep = "Parsing";
 	if (PrintDiagnosticBag(parser->GetDiagnosticBag()))
-		return nullptr;
+		return;
 
 	node->Print();
 	putchar('\n');
-
-	return node;
 }
 
-void Bind(shared_ptr<ExpressionSyntax> node)
+void Bind()
 {
+	if (!node)
+		return;
+
 	shared_ptr<Binder> binder = make_shared<Binder>();
 	shared_ptr<BoundExpression> bound = binder->BindExpression(node);
 
@@ -97,7 +100,8 @@ void Bind(shared_ptr<ExpressionSyntax> node)
 
 int main()
 {
-	Bind(Parse());
+	Parse();
+	Bind();
 
 	return !getc(stdin);
 }

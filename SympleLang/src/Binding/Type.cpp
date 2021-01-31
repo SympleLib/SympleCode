@@ -26,6 +26,10 @@ namespace Symple::Binding
 
 	bool Type::Equals(shared_ptr<Type> other)
 	{
+		Print(); putchar('\n'); other->Print(); putchar('\n'); putchar('\n');
+
+		return true;
+
 		if (GetBase() && other->GetBase())
 			return Is(other->GetKind()) && GetBase()->Equals(other->GetBase());
 		else if (GetBase() || other->GetBase())

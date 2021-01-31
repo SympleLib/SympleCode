@@ -7,6 +7,20 @@ namespace Symple::Binding
 
 	BoundBinaryOperator::BoundBinaryOperator(Syntax::Token::Kind tokenKind, Kind kind, shared_ptr<Type> leftType, shared_ptr<Type> rightType, shared_ptr<Type> type)
 		: mTokenKind(tokenKind), mKind(kind), mLeftType(leftType), mRightType(rightType), mType(type)
+	{}
+
+
+	void BoundBinaryOperator::Print(std::ostream& os, std::string_view indent, bool last, std::string_view label)
+	{
+		Syntax::Node::PrintIndent(os, indent, last, label);
+		os << "Bound Binary " << KindMap[GetKind()];
+	}
+
+	void BoundBinaryOperator::PrintShort(std::ostream& os)
+	{ os << '(' << KindMap[GetKind()] << ')'; }
+
+
+	shared_ptr<BoundBinaryOperator> BoundBinaryOperator::Bind(Syntax::Token::Kind tokenKind, shared_ptr<Type> leftType, shared_ptr<Type> rightType)
 	{
 		if (sOperators.empty())
 			sOperators = {
@@ -25,21 +39,7 @@ namespace Symple::Binding
 				shared_ptr<BoundBinaryOperator>(new BoundBinaryOperator(Syntax::Token::Percentage, Modulo, Type::IntType, Type::IntType, Type::IntType)),
 				shared_ptr<BoundBinaryOperator>(new BoundBinaryOperator(Syntax::Token::Percentage, Modulo, Type::LongType, Type::LongType, Type::LongType)),
 			};
-	}
 
-
-	void BoundBinaryOperator::Print(std::ostream& os, std::string_view indent, bool last, std::string_view label)
-	{
-		Syntax::Node::PrintIndent(os, indent, last, label);
-		os << "Bound Binary " << KindMap[GetKind()];
-	}
-
-	void BoundBinaryOperator::PrintShort(std::ostream& os)
-	{ os << '(' << KindMap[GetKind()] << ')'; }
-
-
-	shared_ptr<BoundBinaryOperator> BoundBinaryOperator::Bind(Syntax::Token::Kind tokenKind, shared_ptr<Type> leftType, shared_ptr<Type> rightType)
-	{
 		for (auto op : sOperators)
 			if (op->GetTokenKind() == tokenKind && op->GetLeftType()->Equals(leftType) && op->GetRightType()->Equals(rightType))
 				return op;
