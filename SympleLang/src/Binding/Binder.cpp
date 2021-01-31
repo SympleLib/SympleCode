@@ -8,8 +8,12 @@ namespace Symple::Binding
 	{
 		switch (syntax->GetKind())
 		{
+		case Syntax::Node::UnaryExpression:
+			return BindUnaryExpression(syntax->As<Syntax::UnaryExpressionSyntax>());
 		case Syntax::Node::BinaryExpression:
 			return BindBinaryExpression(syntax->As<Syntax::BinaryExpressionSyntax>());
+		case Syntax::Node::LiteralExpression:
+			return BindLiteralExpression(syntax->As<Syntax::LiteralExpressionSyntax>());
 		default:
 			return make_shared<BoundExpression>(syntax);
 		}
