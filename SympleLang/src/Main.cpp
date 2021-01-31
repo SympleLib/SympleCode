@@ -102,7 +102,7 @@ void Bind()
 int main()
 {
 	Parse();
-	Bind();
+	//Bind();
 
 	return !getc(stdin);
 }

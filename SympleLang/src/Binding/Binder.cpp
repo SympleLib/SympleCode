@@ -15,7 +15,7 @@ namespace Symple::Binding
 		case Syntax::Node::LiteralExpression:
 			return BindLiteralExpression(syntax->As<Syntax::LiteralExpressionSyntax>());
 		default:
-			return make_shared<BoundExpression>(syntax);
+			return make_shared<BoundErrorExpression>(syntax);
 		}
 	}
 
