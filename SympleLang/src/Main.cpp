@@ -24,7 +24,7 @@ std::string_view sStep = "Null Step";
 bool PrintDiagnosticBag(shared_ptr<DiagnosticBag> diagnostics)
 {
 #ifdef _WIN32
-	SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), FOREGROUND_RED | FOREGROUND_GREEN | FOREGROUND_BLUE);
+	SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), 15);
 #endif
 
 	unsigned errCount = 0, warningCount = 0, messageCount = 0;
