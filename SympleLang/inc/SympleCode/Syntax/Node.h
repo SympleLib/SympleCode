@@ -1,6 +1,9 @@
 #pragma once
 
 #include <iostream>
+#ifdef _WIN32
+#include <windows.h>
+#endif
 
 #include "SympleCode/Syntax/Token.h"
 
@@ -38,12 +41,45 @@ namespace Symple::Syntax
 		
 		static void PrintIndent(std::ostream& os = std::cout, std::string_view indent = "", bool last = true, std::string_view label = "")
 		{
+#ifdef _WIN32
+			enum ConsoleColor
+			{
+				Black,
+				DarkBlue,
+				DarkGreen,
+				DarkCyan,
+				DarkRed,
+				DarkMagenta,
+				DarkYellow,
+				Grey,
+				DarkGrey,
+				Blue,
+				Green,
+				Cyan,
+				Red,
+				Magenta,
+				Yellow,
+				White,
+
+				Reset = White,
+			};
+
+			HANDLE console = GetStdHandle(STD_OUTPUT_HANDLE);
+			SetConsoleTextAttribute(console, DarkGrey);
+#endif
+			
 			os << indent;
 			if (last)
 				os << "L--";
 			else
 				os << "|--";
+
+			SetConsoleTextAttribute(console, Cyan);
 			os << label;
+
+#ifdef _WIN32
+			SetConsoleTextAttribute(console, Green);
+#endif
 		}
 
 		static char* GetAddIndent(bool last = true)
