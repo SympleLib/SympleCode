@@ -45,8 +45,7 @@ namespace Symple::Binding
 			GetBase()->Print(os);
 
 		Node::PrintIndent(os, indent, last, label);
-		os << KindMap[GetKind()];
-		os << " Type";
+		os << GetName();
 	}
 
 	void Type::PrintShort(std::ostream & os)

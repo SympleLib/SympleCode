@@ -56,9 +56,9 @@ namespace Symple::Binding
 		else
 		{
 			if (left->GetType()->Equals(op->GetLeftType()))
-				left = make_shared<BoundImplicitCastExpression>(left->GetSyntax(), op->GetLeftType(), left);
+				left = make_shared<BoundImplicitCastExpression>(syntax->GetLeft(), op->GetLeftType(), left);
 			if (right->GetType()->Equals(op->GetRightType()))
-				right = make_shared<BoundImplicitCastExpression>(right->GetSyntax(), op->GetRightType(), right);
+				right = make_shared<BoundImplicitCastExpression>(syntax->GetRight(), op->GetRightType(), right);
 		}
 
 		return make_shared<BoundBinaryExpression>(syntax, op, left, right);

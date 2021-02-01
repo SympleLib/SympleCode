@@ -20,7 +20,7 @@ namespace Symple::Binding
 		BoundUnaryOperator(Syntax::Token::Kind, Kind, shared_ptr<Type> operandType, shared_ptr<Type> type);
 		static std::vector<shared_ptr<BoundUnaryOperator>> sOperators;
 	public:
-		void Print(std::ostream & = std::cout, std::string_view indent = "", bool last = true, std::string_view label = "");
+		void Print(std::ostream& = std::cout, std::string_view indent = "", bool last = true, std::string_view label = "");
 		void PrintShort(std::ostream& os = std::cout);
 
 		static shared_ptr<BoundUnaryOperator> Bind(Syntax::Token::Kind, shared_ptr<Type> operandType);

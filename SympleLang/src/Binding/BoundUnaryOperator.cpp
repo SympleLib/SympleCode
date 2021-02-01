@@ -14,7 +14,7 @@ namespace Symple::Binding
 	void BoundUnaryOperator::Print(std::ostream& os, std::string_view indent, bool last, std::string_view label)
 	{
 		Syntax::Node::PrintIndent(os, indent, last, label);
-		os << "Bound Unary " << KindMap[GetKind()] << " (" << Syntax::Token::KindMap[GetTokenKind()] << ')';
+		os << "BoundUnary" << KindMap[GetKind()] << " (" << Syntax::Token::KindMap[GetTokenKind()] << ')';
 	}
 
 	void BoundUnaryOperator::PrintShort(std::ostream& os)

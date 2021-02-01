@@ -28,7 +28,7 @@ namespace Symple::Binding
 			newIndent += GetAddIndent(last);
 
 			os.put('\n'); GetType()->Print(os, newIndent, false, "Type = ");
-			os.put('\n'); GetCastee()->Print(os, newIndent, false, "Castee = ");
+			os.put('\n'); GetCastee()->Print(os, newIndent, true, "Castee = ");
 		}
 
 		shared_ptr<BoundExpression> GetCastee()

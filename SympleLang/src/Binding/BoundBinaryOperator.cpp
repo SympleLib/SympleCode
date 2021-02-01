@@ -16,7 +16,7 @@ namespace Symple::Binding
 	void BoundBinaryOperator::Print(std::ostream& os, std::string_view indent, bool last, std::string_view label)
 	{
 		Syntax::Node::PrintIndent(os, indent, last, label);
-		os << "Bound Binary " << KindMap[GetKind()] << " (" << Syntax::Token::KindMap[GetTokenKind()] << ')';
+		os << "BoundBinary" << KindMap[GetKind()] << " (" << Syntax::Token::KindMap[GetTokenKind()] << ')';
 	}
 
 	void BoundBinaryOperator::PrintShort(std::ostream& os)

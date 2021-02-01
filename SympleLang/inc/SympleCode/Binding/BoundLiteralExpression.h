@@ -23,7 +23,7 @@ namespace Symple::Binding
 
 		virtual void Print(std::ostream& os = std::cout, std::string_view indent = "", bool last = true, std::string_view label = "") override
 		{
-			GetToken()->Print(os, indent, last, std::string(label) + "Bound ");
+			GetToken()->Print(os, indent, last, std::string(label) + "Bound");
 
 			std::string newIndent(indent);
 			newIndent += GetAddIndent(last);

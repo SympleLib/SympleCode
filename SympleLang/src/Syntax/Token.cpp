@@ -30,7 +30,7 @@ namespace Symple::Syntax
 	void Token::Print(std::ostream& os, std::string_view indent, bool last, std::string_view label)
 	{
 		Node::PrintIndent(os, indent, last, label);
-		os << KindMap[GetKind()] << " Token '" << GetText() << "' <" << GetLine() << ':' << GetColumn() << ">";
+		os << KindMap[GetKind()] << "Token '" << GetText() << "' <" << GetLine() << ':' << GetColumn() << ">";
 	}
 
 	void Token::PrintShort(std::ostream& os)
