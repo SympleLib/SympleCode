@@ -24,7 +24,29 @@ std::string_view sStep = "Null Step";
 bool PrintDiagnosticBag(shared_ptr<DiagnosticBag> diagnostics)
 {
 #ifdef _WIN32
-	SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), 15);
+	enum ConsoleColor
+	{
+		Black,
+		DarkBlue,
+		DarkGreen,
+		DarkCyan,
+		DarkRed,
+		DarkMagenta,
+		DarkYellow,
+		Grey,
+		DarkGrey,
+		Blue,
+		Green,
+		Cyan,
+		Red,
+		Magenta,
+		Yellow,
+		White,
+
+		Reset = White,
+	};
+
+	SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), Yellow);
 #endif
 
 	unsigned errCount = 0, warningCount = 0, messageCount = 0;
