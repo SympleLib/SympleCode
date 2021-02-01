@@ -36,7 +36,9 @@ namespace Symple::Syntax
 		virtual void Print(std::ostream& os = std::cout, std::string_view indent = "", bool last = true, std::string_view label = "")
 		{
 			PrintIndent(os, indent, last, label);
-			os << KindMap[GetKind()] << " Syntax";
+			PrintName(os);
+
+			os.put('\n'); GetToken()->Print(os, std::string(indent) + GetAddIndent(last), "Token = ");
 		}
 		
 		static void PrintIndent(std::ostream& os = std::cout, std::string_view indent = "", bool last = true, std::string_view label = "")
@@ -94,6 +96,13 @@ namespace Symple::Syntax
 		{
 			Unknown,
 
+			Member,
+			FunctionDeclaration,
+
+			Statement,
+			Type,
+			TypeReference,
+
 			Expression,
 			UnaryExpression,
 			BinaryExpression,
@@ -105,6 +114,13 @@ namespace Symple::Syntax
 
 		static constexpr char* KindMap[Last + 1] = {
 			"Unknown",
+
+			"Member",
+			"FunctionDeclaration",
+
+			"Statement",
+			"Type",
+			"TypeReference",
 
 			"Expression",
 			"UnaryExpression",
