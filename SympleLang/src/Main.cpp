@@ -19,33 +19,33 @@ using std::make_unique;
 
 using spdlog::level::level_enum;
 
-std::string_view sStep = "Null Step";
+#ifdef _WIN32
+enum ConsoleColor
+{
+	Black,
+	DarkBlue,
+	DarkGreen,
+	DarkCyan,
+	DarkRed,
+	DarkMagenta,
+	DarkYellow,
+	Grey,
+	DarkGrey,
+	Blue,
+	Green,
+	Cyan,
+	Red,
+	Magenta,
+	Yellow,
+	White,
 
-bool PrintDiagnosticBag(shared_ptr<DiagnosticBag> diagnostics)
+	Reset = White,
+};
+#endif
+
+bool PrintDiagnosticBag(shared_ptr<DiagnosticBag> diagnostics, char step[] = "Null Step")
 {
 #ifdef _WIN32
-	enum ConsoleColor
-	{
-		Black,
-		DarkBlue,
-		DarkGreen,
-		DarkCyan,
-		DarkRed,
-		DarkMagenta,
-		DarkYellow,
-		Grey,
-		DarkGrey,
-		Blue,
-		Green,
-		Cyan,
-		Red,
-		Magenta,
-		Yellow,
-		White,
-
-		Reset = White,
-	};
-
 	SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), Yellow);
 #endif
 
@@ -70,13 +70,13 @@ bool PrintDiagnosticBag(shared_ptr<DiagnosticBag> diagnostics)
 
 	if (errCount)
 	{
-		spdlog::info("{} failed with {} errors, {} warnings, {} messages", sStep, errCount, warningCount, messageCount);
+		spdlog::info("{} failed with {} errors, {} warnings, {} messages", step, errCount, warningCount, messageCount);
 
 		return true;
 	}
 	else
 	{
-		spdlog::info("{} completed with {} errors, {} warnings, {} messages", sStep, errCount, warningCount, messageCount);
+		spdlog::info("{} completed with {} errors, {} warnings, {} messages", step, errCount, warningCount, messageCount);
 
 		return false;
 	}
@@ -93,14 +93,12 @@ void Parse()
 		tokens.push_back(lexer->Lex());
 	while (!tokens.back()->Is(Token::EndOfFile));
 
-	sStep = "Lexing";
-	if (PrintDiagnosticBag(lexer->GetDiagnosticBag()))
+	if (PrintDiagnosticBag(lexer->GetDiagnosticBag(), "Lexing"))
 		return;
 
 	shared_ptr<Parser> parser = make_shared<Parser>(lexer, tokens);
 	node = parser->ParseExpression();
-	sStep = "Parsing";
-	if (PrintDiagnosticBag(parser->GetDiagnosticBag()))
+	if (PrintDiagnosticBag(parser->GetDiagnosticBag(), "Parsing"))
 		return;
 
 	spdlog::info("Parse Tree:");
@@ -116,14 +114,17 @@ void Bind()
 	shared_ptr<Binder> binder = make_shared<Binder>();
 
 	shared_ptr<BoundExpression> bound = binder->BindExpression(node);
-	sStep = "Binding";
-	if (PrintDiagnosticBag(binder->GetDiagnosticBag()))
+	putchar('\n');
+	if (PrintDiagnosticBag(binder->GetDiagnosticBag(), "Binding"))
 		return;
 
-	putchar('\n');
 	spdlog::info("Bound Tree:");
 	bound->Print();
 	putchar('\n');
+
+#ifdef _WIN32
+	SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), Reset);
+#endif
 }
 
 int main()
