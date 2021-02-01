@@ -1,5 +1,7 @@
 #include "SympleCode/Binding/BoundBinaryOperator.h"
 
+#include "SympleCode/Binding/Casting.h"
+
 namespace Symple::Binding
 {
 	// Explicit Declaration instead of using 'make_shared' because this is a private constructor
@@ -70,8 +72,12 @@ namespace Symple::Binding
 		}
 
 		for (auto op : sOperators)
-			if (op->GetTokenKind() == tokenKind && op->GetLeftType()->Equals(leftType) && op->GetRightType()->Equals(rightType))
+		{
+			bool exactSame = op->GetLeftType()->Equals(leftType) && op->GetRightType()->Equals(rightType);
+			bool canCast = CastTable::CanImplicitelyCast(op->GetLeftType(), leftType) && CastTable::CanImplicitelyCast(op->GetRightType(), rightType);
+			if (op->GetTokenKind() == tokenKind && exactSame)
 				return op;
+		}
 
 		return ErrorOperator;
 	}

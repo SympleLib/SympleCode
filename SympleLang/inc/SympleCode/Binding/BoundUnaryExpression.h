@@ -26,7 +26,7 @@ namespace Symple::Binding
 		virtual void Print(std::ostream& os = std::cout, std::string_view indent = "", bool last = true, std::string_view label = "") override
 		{
 			PrintIndent(os, indent, last, label);
-			os << "Bound Unary Expression";
+			PrintName(os);
 
 			std::string newIndent(indent);
 			newIndent += GetAddIndent(last);

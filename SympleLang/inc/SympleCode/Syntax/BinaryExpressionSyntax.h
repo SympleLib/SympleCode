@@ -18,7 +18,8 @@ namespace Symple::Syntax
 		virtual void Print(std::ostream& os = std::cout, std::string_view indent = "", bool last = true, std::string_view label = "") override
 		{
 			PrintIndent(os, indent, last, label);
-			os << "Binary Expression Syntax [";
+			PrintName(os); 
+			os << " [";
 			GetOperator()->PrintShort(os);
 			os.put(']');
 

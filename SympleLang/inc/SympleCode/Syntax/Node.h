@@ -11,6 +11,9 @@ namespace Symple::Syntax
 	public: enum Kind : unsigned;
 	protected:
 		shared_ptr<Token> mToken;
+
+		void PrintName(std::ostream& os = std::cout)
+		{ os << KindMap[GetKind()] << "Syntax"; }
 	public:
 		Node(shared_ptr<Token> tok)
 			: mToken(tok) {}

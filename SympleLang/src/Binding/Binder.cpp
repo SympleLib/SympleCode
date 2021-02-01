@@ -5,6 +5,7 @@
 #include "SympleCode/Syntax/ParenthesizedExpressionSyntax.h"
 
 #include "SympleCode/Binding/Type.h"
+#include "SympleCode/Binding/BoundImplicitCastExpression.h"
 
 namespace Symple::Binding
 {
@@ -52,6 +53,13 @@ namespace Symple::Binding
 		shared_ptr<BoundBinaryOperator> op = BoundBinaryOperator::Bind(syntax->GetOperator()->GetKind(), left->GetType(), right->GetType());
 		if (op == BoundBinaryOperator::ErrorOperator)
 			mDiagnosticBag->ReportInvalidOperation(syntax->GetOperator(), left->GetType(), right->GetType());
+		else
+		{
+			if (left->GetType()->Equals(op->GetLeftType()))
+				left = make_shared<BoundImplicitCastExpression>(left->GetSyntax(), op->GetLeftType(), left);
+			if (right->GetType()->Equals(op->GetRightType()))
+				right = make_shared<BoundImplicitCastExpression>(right->GetSyntax(), op->GetRightType(), right);
+		}
 
 		return make_shared<BoundBinaryExpression>(syntax, op, left, right);
 	}

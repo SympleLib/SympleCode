@@ -9,6 +9,9 @@ namespace Symple::Binding
 	public: enum Kind : unsigned;
 	protected:
 		shared_ptr<Syntax::Node> mSyntax;
+
+		void PrintName(std::ostream& os = std::cout)
+		{ os << "Bound" << KindMap[GetKind()]; }
 	public:
 		static void PrintIndent(std::ostream& os = std::cout, std::string_view indent = "", bool last = true, std::string_view label = "")
 		{ return Syntax::Node::PrintIndent(os, indent, last, label); }
@@ -46,7 +49,9 @@ namespace Symple::Binding
 			BinaryExpression,
 			LiteralExpression,
 
-			Last = LiteralExpression,
+			ImplicitCastExpression,
+
+			Last = ImplicitCastExpression,
 		};
 
 		static constexpr char* KindMap[Last + 1] = {
@@ -57,6 +62,8 @@ namespace Symple::Binding
 			"UnaryExpression",
 			"BinaryExpression",
 			"LiteralExpression",
+
+			"ImplicitCastExpression",
 		};
 	};
 }
