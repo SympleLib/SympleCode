@@ -108,6 +108,7 @@ namespace Symple::Syntax
 			TypeReference,
 
 			BlockStatement,
+			ReturnStatement,
 			VariableDeclaration,
 
 
@@ -131,6 +132,7 @@ namespace Symple::Syntax
 			"Type",
 			"TypeReference",
 			"BlockStatement",
+			"ReturnStatement",
 			"VariableDeclaration",
 
 

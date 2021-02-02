@@ -84,7 +84,13 @@ namespace Symple::Syntax
 				mDiagnosticBag->ReportUnexpectedEndOfFile(Peek());
 				break;
 			}
-			statements.push_back(ParseStatement());
+
+			unsigned start = mPosition;
+			shared_ptr<StatementSyntax> statement = ParseStatement();
+			statements.push_back(statement);
+
+			if (mPosition == start)
+				Next();
 		}
 
 		shared_ptr<Token> close = Match(Token::CloseBrace);
@@ -158,17 +164,12 @@ namespace Symple::Syntax
 
 		while (true)
 		{
-			if (Peek()->Is(Token::EndOfFile))
-			{
-				return left;
-			}
-
 			unsigned precedence = Facts::GetBinaryOperatorPrecedence(Peek()->GetKind());
 			if (!precedence || precedence <= parentPrecedence)
 				return left;
 
 			shared_ptr<Token> oqerator = Next();
-			shared_ptr<ExpressionSyntax> right = ParseBinaryExpression(precedence);
+			shared_ptr<ExpressionSyntax> right = ParseUnaryExpression(precedence);
 			left = make_shared<BinaryExpressionSyntax>(oqerator, left, right);
 		}
 	}
