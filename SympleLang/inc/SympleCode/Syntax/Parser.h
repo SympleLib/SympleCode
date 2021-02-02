@@ -14,6 +14,7 @@
 #include "SympleCode/Syntax/StatementSyntax.h"
 #include "SympleCode/Syntax/TypeSyntax.h"
 #include "SympleCode/Syntax/TypeReferenceSyntax.h"
+#include "SympleCode/Syntax/VariableDeclarationSyntax.h"
 
 #include "SympleCode/Syntax/ExpressionSyntax.h"
 #include "SympleCode/Syntax/UnaryExpressionSyntax.h"
@@ -45,6 +46,7 @@ namespace Symple::Syntax
 		shared_ptr<FunctionDeclarationSyntax> ParseFunctionDeclaration();
 
 		shared_ptr<StatementSyntax> ParseStatement();
+		shared_ptr<VariableDeclarationSyntax> ParseVariableDeclaration();
 		shared_ptr<TypeSyntax> ParseType(shared_ptr<TypeSyntax> base = nullptr);
 
 		shared_ptr<ExpressionSyntax> ParseExpression();

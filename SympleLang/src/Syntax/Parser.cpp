@@ -47,7 +47,7 @@ namespace Symple::Syntax
 	shared_ptr<FunctionDeclarationSyntax> Parser::ParseFunctionDeclaration()
 	{
 		auto type = ParseType();
-		shared_ptr<Token> name = Next();
+		shared_ptr<Token> name = Match(Token::Identifier);
 		Match(Token::OpenParenthesis);
 		Match(Token::CloseParenthesis);
 		shared_ptr<StatementSyntax> statement = ParseStatement();
@@ -57,7 +57,34 @@ namespace Symple::Syntax
 
 
 	shared_ptr<StatementSyntax> Parser::ParseStatement()
-	{ return make_shared<StatementSyntax>(Match(Token::Semicolon)); }
+	{
+		if (IsType())
+			return ParseVariableDeclaration();
+
+		switch (Peek()->GetKind())
+		{
+		default:
+			return make_shared<StatementSyntax>(Match(Token::Semicolon));
+		}
+	}
+
+	shared_ptr<VariableDeclarationSyntax> Parser::ParseVariableDeclaration()
+	{
+		shared_ptr<TypeSyntax> type = ParseType();
+		shared_ptr<Token> name = Token::Default;
+		if (Peek()->Is(Token::Identifier))
+			name = Next();
+
+		shared_ptr<Token> equals = Token::Default;
+		shared_ptr<ExpressionSyntax> initializer;
+		if (Peek()->Is(Token::Equal))
+		{
+			equals = Next();
+			initializer = ParseExpression();
+		}
+
+		return make_shared<VariableDeclarationSyntax>(type, name, equals, initializer);
+	}
 
 	shared_ptr<TypeSyntax> Parser::ParseType(shared_ptr<TypeSyntax> base)
 	{

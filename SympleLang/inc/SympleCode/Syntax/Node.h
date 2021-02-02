@@ -122,7 +122,7 @@ namespace Symple::Syntax
 			"Statement",
 			"Type",
 			"TypeReference",
-			"ParameterDeclaration",
+			"VariableDeclaration",
 
 			"Expression",
 			"UnaryExpression",

@@ -144,6 +144,9 @@ int main()
 {
 	spdlog::set_pattern("[Symple]%^<%l>%$: %v");
 	spdlog::set_level(level_enum::trace);
+#ifdef _WIN32
+	SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), Yellow);
+#endif
 
 	Lex();
 	Parse();

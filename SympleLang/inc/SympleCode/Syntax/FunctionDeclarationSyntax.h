@@ -2,7 +2,7 @@
 
 #include "SympleCode/Syntax/MemberSyntax.h"
 #include "SympleCode/Syntax/StatementSyntax.h"
-#include "SympleCode/Syntax/TypeReferenceSyntax.h"
+#include "SympleCode/Syntax/TypeSyntax.h"
 
 namespace Symple::Syntax
 {
