@@ -24,6 +24,8 @@
 #include "SympleCode/Syntax/LiteralExpressionSyntax.h"
 #include "SympleCode/Syntax/ParenthesizedExpressionSyntax.h"
 
+#include "SympleCode/Syntax/NameExpressionSyntax.h"
+
 #include "SympleCode/DiagnosticBag.h"
 
 namespace Symple::Syntax
@@ -59,6 +61,7 @@ namespace Symple::Syntax
 		shared_ptr<ExpressionSyntax> ParseBinaryExpression(unsigned parentPrecedence = 0);
 
 		shared_ptr<ExpressionSyntax> ParsePrimaryExpression();
+		shared_ptr<NameExpressionSyntax> ParseNameExpression();
 		shared_ptr<LiteralExpressionSyntax> ParseLiteralExpression();
 		shared_ptr<ParenthesizedExpressionSyntax> ParseParenthesizedExpression();
 

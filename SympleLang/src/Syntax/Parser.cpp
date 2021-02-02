@@ -95,7 +95,7 @@ namespace Symple::Syntax
 			if (Peek()->Is(Token::EndOfFile))
 			{
 				mDiagnosticBag->ReportUnexpectedEndOfFile(Peek());
-				break;
+				return make_shared<BlockStatementSyntax>(open, statements, Peek());
 			}
 
 			unsigned start = mPosition;
@@ -200,6 +200,8 @@ namespace Symple::Syntax
 	{
 		switch (Peek()->GetKind())
 		{
+		case Token::Identifier:
+			return ParseNameExpression();
 		case Token::Number:
 		case Token::Float:
 		case Token::Integer:
@@ -211,6 +213,9 @@ namespace Symple::Syntax
 			return make_shared<ExpressionSyntax>(Next());
 		}
 	}
+
+	shared_ptr<NameExpressionSyntax> Parser::ParseNameExpression()
+	{ return make_shared<NameExpressionSyntax>(Match(Token::Identifier)); }
 
 	shared_ptr<LiteralExpressionSyntax> Parser::ParseLiteralExpression()
 	{ return make_shared<LiteralExpressionSyntax>(Next()); }

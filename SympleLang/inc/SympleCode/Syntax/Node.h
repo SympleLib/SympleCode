@@ -118,7 +118,9 @@ namespace Symple::Syntax
 			LiteralExpression,
 			ParenthesizedExpression,
 
-			Last = ParenthesizedExpression,
+			NameExpression,
+
+			Last = NameExpression,
 		};
 
 		static constexpr char* KindMap[Last + 1] = {
@@ -141,6 +143,8 @@ namespace Symple::Syntax
 			"BinaryExpression",
 			"LiteralExpression",
 			"ParenthesizedExpression",
+
+			"NameExpression",
 		};
 	};
 }
