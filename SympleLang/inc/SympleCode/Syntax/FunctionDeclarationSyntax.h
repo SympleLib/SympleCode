@@ -23,7 +23,7 @@ namespace Symple::Syntax
 			PrintIndent(os, indent, last, label);
 			PrintName(os);
 
-			os << " '"; GetType()->PrintShort(os); os.put(' '); GetName()->PrintShort(os); os << "()'";
+			os << " '["; GetType()->PrintShort(os); os << "] " << GetName()->GetText(); os << "()'";
 
 			std::string newIndent(indent);
 			newIndent += GetAddIndent(last);

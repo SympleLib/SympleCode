@@ -14,7 +14,7 @@ namespace Symple::Syntax
 		{ return Type; }
 
 		virtual void PrintShort(std::ostream& os = std::cout)
-		{ os << GetName(); }
+		{ GetName()->PrintShort(os); }
 
 		shared_ptr<Token> GetName()
 		{ return GetToken(); }

@@ -30,7 +30,15 @@ namespace Symple::Syntax
 		}
 
 		virtual void PrintShort(std::ostream& os = std::cout) override
-		{ GetBase()->PrintShort(); os.put(' '); TypeSyntax::PrintShort(os); }
+		{
+			if (GetBase())
+			{
+				GetBase()->PrintShort();
+				os.put(' ');
+			}
+
+			TypeSyntax::PrintShort(os);
+		}
 
 		shared_ptr<TypeSyntax> GetBase()
 		{ return mBase; }

@@ -110,7 +110,7 @@ void Lex()
 void Parse()
 {
 	shared_ptr<Parser> parser = make_shared<Parser>(lexer, tokens);
-	node = parser->ParseExpression();
+	node = parser->Parse();
 	putchar('\n');
 	if (PrintDiagnosticBag(parser->GetDiagnosticBag(), "Parsing"))
 		return;
@@ -146,7 +146,7 @@ int main()
 	spdlog::set_level(level_enum::trace);
 
 	Lex();
-	//Parse();
+	Parse();
 	//Bind();
 
 	return !getc(stdin);

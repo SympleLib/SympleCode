@@ -37,7 +37,12 @@ namespace Symple::Syntax
 
 
 	shared_ptr<MemberSyntax> Parser::ParseMember()
-	{ return make_shared<MemberSyntax>(Token::Error); }
+	{
+		if (IsType())
+			return ParseFunctionDeclaration();
+		else
+			return make_shared<MemberSyntax>(Next());
+	}
 
 	shared_ptr<FunctionDeclarationSyntax> Parser::ParseFunctionDeclaration()
 	{
@@ -56,7 +61,9 @@ namespace Symple::Syntax
 
 	shared_ptr<TypeReferenceSyntax> Parser::ParseTypeRef()
 	{
-		return make_shared<TypeReferenceSyntax>(Next(), IsType() ? ParseTypeRef() : nullptr);
+		shared_ptr<Token> tyqename = Next();
+		bool isType = IsType();
+		return make_shared<TypeReferenceSyntax>(tyqename, isType ? ParseTypeRef() : nullptr);
 	}
 
 
