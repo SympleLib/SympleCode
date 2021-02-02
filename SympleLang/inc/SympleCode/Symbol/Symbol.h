@@ -8,8 +8,6 @@ namespace Symple::Binding
 	{
 	public: enum Kind : unsigned;
 	protected:
-		shared_ptr<Syntax::Node> mSyntax;
-
 		void PrintName(std::ostream& os = std::cout)
 		{ os << KindMap[GetKind()] << "Symbol"; }
 	public:
@@ -18,9 +16,6 @@ namespace Symple::Binding
 		static char* GetAddIndent(bool last = true)
 		{ return Syntax::Node::GetAddIndent(last); }
 	public:
-		Symbol(shared_ptr<Syntax::Node> syntax)
-			: mSyntax(syntax) {}
-
 		bool Is(Kind kind)
 		{ return GetKind() == kind; }
 		template <typename... Args>
