@@ -46,7 +46,7 @@ namespace Symple::Syntax
 
 	shared_ptr<FunctionDeclarationSyntax> Parser::ParseFunctionDeclaration()
 	{
-		auto type = ParseTypeRef();
+		auto type = ParseType();
 		shared_ptr<Token> name = Next();
 		Match(Token::OpenParenthesis);
 		Match(Token::CloseParenthesis);
@@ -59,11 +59,14 @@ namespace Symple::Syntax
 	shared_ptr<StatementSyntax> Parser::ParseStatement()
 	{ return make_shared<StatementSyntax>(Match(Token::Semicolon)); }
 
-	shared_ptr<TypeReferenceSyntax> Parser::ParseTypeRef()
+	shared_ptr<TypeSyntax> Parser::ParseType(shared_ptr<TypeSyntax> base)
 	{
 		shared_ptr<Token> tyqename = Next();
-		bool isType = IsType();
-		return make_shared<TypeReferenceSyntax>(tyqename, isType ? ParseTypeRef() : nullptr);
+		base = make_shared<TypeReferenceSyntax>(tyqename, base);
+		if (IsType())
+			return ParseType(base);
+		else
+			return base;
 	}
 
 
@@ -180,6 +183,8 @@ namespace Symple::Syntax
 		case Token::FloatKeyword:
 		case Token::DoubleKeyword:
 		case Token::TripleKeyword:
+
+		case Token::Asterisk:
 			return true;
 
 		default:

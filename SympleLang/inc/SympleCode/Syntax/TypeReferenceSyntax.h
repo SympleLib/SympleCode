@@ -32,10 +32,7 @@ namespace Symple::Syntax
 		virtual void PrintShort(std::ostream& os = std::cout) override
 		{
 			if (GetBase())
-			{
 				GetBase()->PrintShort();
-				os.put(' ');
-			}
 
 			TypeSyntax::PrintShort(os);
 		}

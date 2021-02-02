@@ -9,10 +9,10 @@ namespace Symple::Syntax
 	class FunctionDeclarationSyntax : public MemberSyntax
 	{
 	private:
-		shared_ptr<TypeReferenceSyntax> mType;
+		shared_ptr<TypeSyntax> mType;
 		shared_ptr<StatementSyntax> mBody;
 	public:
-		FunctionDeclarationSyntax(shared_ptr<TypeReferenceSyntax> type, shared_ptr<Token> name, shared_ptr<StatementSyntax> body)
+		FunctionDeclarationSyntax(shared_ptr<TypeSyntax> type, shared_ptr<Token> name, shared_ptr<StatementSyntax> body)
 			: MemberSyntax(name), mType(type), mBody(body) {}
 
 		virtual Kind GetKind() override
@@ -23,13 +23,15 @@ namespace Symple::Syntax
 			PrintIndent(os, indent, last, label);
 			PrintName(os);
 
-			os << " '["; GetType()->PrintShort(os); os << "] " << GetName()->GetText(); os << "()'";
+			os << " '"; GetType()->PrintShort(os); os << ' ' << GetName()->GetText(); os << "()'";
 
 			std::string newIndent(indent);
 			newIndent += GetAddIndent(last);
+
+			os.put('\n'); GetBody()->Print(os, newIndent, true, "Body = ");
 		}
 
-		shared_ptr<TypeReferenceSyntax> GetType()
+		shared_ptr<TypeSyntax> GetType()
 		{ return mType; }
 
 		shared_ptr<Token> GetName()

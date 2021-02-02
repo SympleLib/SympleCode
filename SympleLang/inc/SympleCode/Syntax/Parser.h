@@ -45,7 +45,7 @@ namespace Symple::Syntax
 		shared_ptr<FunctionDeclarationSyntax> ParseFunctionDeclaration();
 
 		shared_ptr<StatementSyntax> ParseStatement();
-		shared_ptr<TypeReferenceSyntax> ParseTypeRef();
+		shared_ptr<TypeSyntax> ParseType(shared_ptr<TypeSyntax> base = nullptr);
 
 		shared_ptr<ExpressionSyntax> ParseExpression();
 		shared_ptr<ExpressionSyntax> ParseUnaryExpression(unsigned parentPrecedence = 0);

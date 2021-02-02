@@ -108,19 +108,19 @@ namespace Symple::Syntax
 			"CloseParenthesis",
 
 
-			"Void",
-			"Byte",
-			"Short",
-			"Int",
-			"Long",
+			"VoidKeyword",
+			"ByteKeyword",
+			"ShortKeyword",
+			"IntKeyword",
+			"LongKeyword",
 
-			"Bool",
-			"Char",
-			"WChar",
+			"BoolKeyword",
+			"CharKeyword",
+			"WCharKeyword",
 
-			"Float (Keyword)",
-			"Double",
-			"Triple",
+			"FloatKeyword",
+			"DoubleKeyword",
+			"TripleKeyword",
 		};
 	};
 }
