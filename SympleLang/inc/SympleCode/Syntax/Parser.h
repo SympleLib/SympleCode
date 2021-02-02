@@ -6,6 +6,15 @@
 #include "SympleCode/Syntax/Token.h"
 
 #include "SympleCode/Syntax/Node.h"
+
+#include "SympleCode/Syntax/MemberSyntax.h"
+#include "SympleCode/Syntax/FunctionDeclarationSyntax.h"
+#include "SympleCode/Syntax/FunctionDeclarationSyntax.h"
+
+#include "SympleCode/Syntax/StatementSyntax.h"
+#include "SympleCode/Syntax/TypeSyntax.h"
+#include "SympleCode/Syntax/TypeReferenceSyntax.h"
+
 #include "SympleCode/Syntax/ExpressionSyntax.h"
 #include "SympleCode/Syntax/UnaryExpressionSyntax.h"
 #include "SympleCode/Syntax/BinaryExpressionSyntax.h"
@@ -31,6 +40,13 @@ namespace Symple::Syntax
 		Parser(std::vector<shared_ptr<Token>>);
 
 		shared_ptr<Syntax::Node> Parse();
+
+		shared_ptr<MemberSyntax> ParseMember();
+		shared_ptr<FunctionDeclarationSyntax> ParseFunctionDeclaration();
+
+		shared_ptr<StatementSyntax> ParseStatement();
+		shared_ptr<TypeReferenceSyntax> ParseTypeRef();
+
 		shared_ptr<ExpressionSyntax> ParseExpression();
 		shared_ptr<ExpressionSyntax> ParseUnaryExpression(unsigned parentPrecedence = 0);
 		shared_ptr<ExpressionSyntax> ParseBinaryExpression(unsigned parentPrecedence = 0);
@@ -44,5 +60,7 @@ namespace Symple::Syntax
 		shared_ptr<Token> Peek(unsigned off = 0);
 		shared_ptr<Token> Next();
 		shared_ptr<Token> Match(Token::Kind);
+
+		bool IsType();
 	};
 }

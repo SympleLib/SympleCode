@@ -40,6 +40,9 @@ namespace Symple::Syntax
 		char* GetFile();
 		unsigned GetLine();
 		unsigned GetColumn();
+
+		static shared_ptr<Token> Error;
+		static shared_ptr<Token> Default;
 	public:
 		enum Kind : unsigned
 		{
@@ -64,7 +67,22 @@ namespace Symple::Syntax
 			OpenParenthesis,
 			CloseParenthesis,
 
-			Last = CloseParenthesis,
+
+			VoidKeyword,
+			ByteKeyword,
+			ShortKeyword,
+			IntKeyword,
+			LongKeyword,
+
+			BoolKeyword,
+			CharKeyword,
+			WCharKeyword,
+
+			FloatKeyword,
+			DoubleKeyword,
+			TripleKeyword,
+
+			Last = TripleKeyword,
 		};
 
 		static constexpr char* KindMap[Last + 1] = {
@@ -88,6 +106,21 @@ namespace Symple::Syntax
 
 			"OpenParenthesis",
 			"CloseParenthesis",
+
+
+			"Void",
+			"Byte",
+			"Short",
+			"Int",
+			"Long",
+
+			"Bool",
+			"Char",
+			"WChar",
+
+			"Float (Keyword)",
+			"Double",
+			"Triple",
 		};
 	};
 }

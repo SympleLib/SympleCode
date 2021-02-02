@@ -41,6 +41,10 @@ namespace Symple::Binding
 		static shared_ptr<Type> IntType;
 		static shared_ptr<Type> LongType;
 
+		static shared_ptr<Type> BoolType;
+		static shared_ptr<Type> CharType;
+		static shared_ptr<Type> WCharType;
+
 		static shared_ptr<Type> FloatType;
 		static shared_ptr<Type> DoubleType;
 		static shared_ptr<Type> TripleType;
@@ -57,6 +61,10 @@ namespace Symple::Binding
 			Short,
 			Int,
 			Long,
+
+			Bool,
+			Char,
+			WChar,
 			
 			Float,
 			Double,

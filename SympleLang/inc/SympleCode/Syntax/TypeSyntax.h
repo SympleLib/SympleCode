@@ -13,6 +13,9 @@ namespace Symple::Syntax
 		virtual Kind GetKind() override
 		{ return Type; }
 
+		virtual void PrintShort(std::ostream& os = std::cout)
+		{ os << GetName(); }
+
 		shared_ptr<Token> GetName()
 		{ return GetToken(); }
 	};

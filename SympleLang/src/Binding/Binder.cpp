@@ -26,6 +26,14 @@ namespace Symple::Binding
 		}
 	}
 
+	shared_ptr<Node> Binder::Bind(shared_ptr<Syntax::Node> syntax)
+	{
+		if (dynamic_pointer_cast<Syntax::ExpressionSyntax, Syntax::Node>(syntax))
+			return BindExpression(dynamic_pointer_cast<Syntax::ExpressionSyntax, Syntax::Node>(syntax));
+		else
+			return make_shared<Node>(syntax);
+	}
+
 	shared_ptr<BoundExpression> Binder::BindExpression(shared_ptr<Syntax::ExpressionSyntax> syntax)
 	{
 		shared_ptr<BoundExpression> result = BindExpressionInternal(syntax);

@@ -20,11 +20,17 @@ namespace Symple::Syntax
 			PrintIndent(os, indent, last, label);
 			PrintName(os);
 
-			std::string newIndent(indent);
-			newIndent += GetAddIndent(last);
+			if (GetBase())
+			{
+				std::string newIndent(indent);
+				newIndent += GetAddIndent(last);
 
-			mBase->
+				GetBase()->Print(os, newIndent, true, "Base = ");
+			}
 		}
+
+		virtual void PrintShort(std::ostream& os = std::cout) override
+		{ GetBase()->PrintShort(); os.put(' '); TypeSyntax::PrintShort(os); }
 
 		shared_ptr<TypeSyntax> GetBase()
 		{ return mBase; }

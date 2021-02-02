@@ -81,23 +81,37 @@ bool PrintDiagnosticBag(shared_ptr<DiagnosticBag> diagnostics, char step[] = "Nu
 		return false;
 	}
 }
+shared_ptr<Lexer> lexer;
+std::vector<shared_ptr<Token>> tokens;
 
-shared_ptr<ExpressionSyntax> node;
+shared_ptr<Syntax::Node> node;
 
-void Parse()
+shared_ptr<Binding::Node> bound;
+
+void Lex()
 {
-	shared_ptr<Lexer> lexer = make_shared<Lexer>((char*)"sy/Main.sy");
+	lexer = make_shared<Lexer>((char*)"sy/Main.sy");
 	lexer->SetRef(lexer);
-	std::vector<shared_ptr<Token>> tokens;
+	tokens.clear();
+
+	spdlog::info("Lex Tokens:");
 	do
+	{
 		tokens.push_back(lexer->Lex());
+		tokens.back()->Print(std::cout, "", tokens.back()->Is(Token::EndOfFile));
+		putchar('\n');
+	}
 	while (!tokens.back()->Is(Token::EndOfFile));
 
 	if (PrintDiagnosticBag(lexer->GetDiagnosticBag(), "Lexing"))
-		return;
+		tokens.clear();
+}
 
+void Parse()
+{
 	shared_ptr<Parser> parser = make_shared<Parser>(lexer, tokens);
 	node = parser->ParseExpression();
+	putchar('\n');
 	if (PrintDiagnosticBag(parser->GetDiagnosticBag(), "Parsing"))
 		return;
 
@@ -112,8 +126,7 @@ void Bind()
 		return;
 
 	shared_ptr<Binder> binder = make_shared<Binder>();
-
-	shared_ptr<BoundExpression> bound = binder->BindExpression(node);
+	bound = binder->Bind(node);
 	putchar('\n');
 	if (PrintDiagnosticBag(binder->GetDiagnosticBag(), "Binding"))
 		return;
@@ -132,8 +145,9 @@ int main()
 	spdlog::set_pattern("[Symple]%^<%l>%$: %v");
 	spdlog::set_level(level_enum::trace);
 
-	Parse();
-	Bind();
+	Lex();
+	//Parse();
+	//Bind();
 
 	return !getc(stdin);
 }

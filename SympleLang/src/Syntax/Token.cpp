@@ -6,6 +6,10 @@
 
 namespace Symple::Syntax
 {
+	shared_ptr<Token> Token::Error = make_shared<Token>();
+	shared_ptr<Token> Token::Default = make_shared<Token>();
+
+
 	Token::Token(Kind kind, unsigned ln, unsigned col, char* file, shared_ptr<Lexer> lexer)
 		: mKind(kind), mText(), mLine(ln), mColumn(col), mFile(file), mLexer(lexer)
 	{}

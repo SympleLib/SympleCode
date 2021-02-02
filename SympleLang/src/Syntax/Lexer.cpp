@@ -150,7 +150,13 @@ namespace Symple::Syntax
 
 
 	shared_ptr<Token> Lexer::LexAtom(Token::Kind kind)
-	{ return make_shared<Token>(kind, &Next(), 1, mLine, mColumn, mFile, mRef); }
+	{
+		return make_shared<Token>(kind, &Next(), 1, mLine, mColumn, mFile, mRef);
+	}
+
+#define KEYWORD(word, key) \
+	else if (text == #word) \
+		return make_shared<Token>(Token::##key##Keyword, text, mLine, column, mFile, mRef)
 
 	shared_ptr<Token> Lexer::LexIdentifier()
 	{
@@ -160,7 +166,28 @@ namespace Symple::Syntax
 		while (IsIdentifier(Peek()))
 			Next();
 
-		return make_shared<Token>(Token::Identifier, beg, Current, mLine, column, mFile, mRef);
+		std::string_view text(beg, std::distance(beg, Current));
+		if (false);
+
+		KEYWORD(void, Void);
+		KEYWORD(byte, Byte);
+		KEYWORD(short, Short);
+		KEYWORD(int, Int);
+		KEYWORD(integer, Int);
+		KEYWORD(long, Long);
+
+		KEYWORD(bool, Bool);
+		KEYWORD(boolean, Bool);
+		KEYWORD(char, Char);
+		KEYWORD(wchar, WChar);
+		KEYWORD(wchar_t, WChar);
+
+		KEYWORD(float, Float);
+		KEYWORD(double, Double);
+		KEYWORD(triple, Triple);
+
+		else
+			return make_shared<Token>(Token::Identifier, text, mLine, column, mFile, mRef);
 	}
 
 	shared_ptr<Token> Lexer::LexNumber()

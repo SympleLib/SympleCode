@@ -33,7 +33,32 @@ namespace Symple::Syntax
 
 
 	shared_ptr<Syntax::Node> Parser::Parse()
-	{ return ParseExpression(); }
+	{ return ParseMember(); }
+
+
+	shared_ptr<MemberSyntax> Parser::ParseMember()
+	{ return make_shared<MemberSyntax>(Token::Error); }
+
+	shared_ptr<FunctionDeclarationSyntax> Parser::ParseFunctionDeclaration()
+	{
+		auto type = ParseTypeRef();
+		shared_ptr<Token> name = Next();
+		Match(Token::OpenParenthesis);
+		Match(Token::CloseParenthesis);
+		shared_ptr<StatementSyntax> statement = ParseStatement();
+
+		return make_shared<FunctionDeclarationSyntax>(type, name, statement);
+	}
+
+
+	shared_ptr<StatementSyntax> Parser::ParseStatement()
+	{ return make_shared<StatementSyntax>(Match(Token::Semicolon)); }
+
+	shared_ptr<TypeReferenceSyntax> Parser::ParseTypeRef()
+	{
+		return make_shared<TypeReferenceSyntax>(Next(), IsType() ? ParseTypeRef() : nullptr);
+	}
+
 
 	shared_ptr<ExpressionSyntax> Parser::ParseExpression()
 	{ return ParseBinaryExpression(); }
@@ -128,5 +153,30 @@ namespace Symple::Syntax
 
 		mDiagnosticBag->ReportUnexpectedToken(Peek(), kind);
 		return Peek();
+	}
+
+
+	bool Parser::IsType()
+	{
+		switch (Peek()->GetKind())
+		{
+		case Token::VoidKeyword:
+		case Token::ByteKeyword:
+		case Token::ShortKeyword:
+		case Token::IntKeyword:
+		case Token::LongKeyword:
+
+		case Token::BoolKeyword:
+		case Token::CharKeyword:
+		case Token::WCharKeyword:
+
+		case Token::FloatKeyword:
+		case Token::DoubleKeyword:
+		case Token::TripleKeyword:
+			return true;
+
+		default:
+			return false;
+		}
 	}
 }
