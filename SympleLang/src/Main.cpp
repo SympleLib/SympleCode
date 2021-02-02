@@ -150,7 +150,7 @@ int main()
 
 	Lex();
 	Parse();
-	//Bind();
+	Bind();
 
 	return !getc(stdin);
 }

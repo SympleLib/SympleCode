@@ -65,6 +65,9 @@ namespace Symple
 	}
 
 
+	void DiagnosticBag::ReportExpectedUnqualifiedID(shared_ptr<Syntax::Token> tok)
+	{ ReportError(tok, "Expected unqualidied-id"); }
+
 	void DiagnosticBag::ReportInvalidLiteral(shared_ptr<LiteralExpressionSyntax> literal)
 	{
 		std::stringstream tokStr;

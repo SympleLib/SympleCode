@@ -38,7 +38,7 @@ namespace Symple::Syntax
 			PrintIndent(os, indent, last, label);
 			PrintName(os);
 
-			os.put('\n'); GetToken()->Print(os, std::string(indent) + GetAddIndent(last), "Token = ");
+			os.put('\n'); GetToken()->Print(os, std::string(indent) + GetAddIndent(last), true, "Token = ");
 		}
 
 		virtual void PrintShort(std::ostream& os)

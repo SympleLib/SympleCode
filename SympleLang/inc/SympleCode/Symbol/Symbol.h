@@ -4,21 +4,21 @@
 
 namespace Symple::Binding
 {
-	class Node
+	class Symbol
 	{
 	public: enum Kind : unsigned;
 	protected:
 		shared_ptr<Syntax::Node> mSyntax;
 
 		void PrintName(std::ostream& os = std::cout)
-		{ os << "Bound" << KindMap[GetKind()]; }
+		{ os << KindMap[GetKind()] << "Symbol"; }
 	public:
 		static void PrintIndent(std::ostream& os = std::cout, std::string_view indent = "", bool last = true, std::string_view label = "")
 		{ return Syntax::Node::PrintIndent(os, indent, last, label); }
 		static char* GetAddIndent(bool last = true)
 		{ return Syntax::Node::GetAddIndent(last); }
 	public:
-		Node(shared_ptr<Syntax::Node> syntax)
+		Symbol(shared_ptr<Syntax::Node> syntax)
 			: mSyntax(syntax) {}
 
 		bool Is(Kind kind)
@@ -30,52 +30,21 @@ namespace Symple::Binding
 		virtual Kind GetKind()
 		{ return Unknown; }
 
-		shared_ptr<Syntax::Node> GetSyntax()
-		{ return mSyntax; }
-
 		virtual void Print(std::ostream& os = std::cout, std::string_view indent = "", bool last = true, std::string_view label = "")
 		{
 			PrintIndent(os, indent, last, label);
 			PrintName(os);
-
-			os.put('\n'); GetSyntax()->Print(os, std::string(indent) + GetAddIndent(last), true, "Syntax = ");
 		}
 	public:
 		enum Kind : unsigned
 		{
 			Unknown,
 
-			Member,
-			Function,
-
-			Statement,
-
-			Expression,
-			ErrorExpression,
-			UnaryExpression,
-			BinaryExpression,
-			LiteralExpression,
-
-			ImplicitCastExpression,
-
-			Last = ImplicitCastExpression,
+			Last = Unknown,
 		};
 
 		static constexpr char* KindMap[Last + 1] = {
 			"Unknown",
-
-			"Member",
-			"Function",
-
-			"Statement",
-
-			"Expression",
-			"ErrorExpression",
-			"UnaryExpression",
-			"BinaryExpression",
-			"LiteralExpression",
-
-			"ImplicitCastExpression",
 		};
 	};
 }

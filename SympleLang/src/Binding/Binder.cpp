@@ -2,6 +2,7 @@
 
 #include <string>
 
+#include "SympleCode/Syntax/TypeReferenceSyntax.h"
 #include "SympleCode/Syntax/ParenthesizedExpressionSyntax.h"
 
 #include "SympleCode/Binding/Type.h"
@@ -14,13 +15,13 @@ namespace Symple::Binding
 		switch (syntax->GetKind())
 		{
 		case Syntax::Node::UnaryExpression:
-			return BindUnaryExpression(dynamic_pointer_cast<Syntax::UnaryExpressionSyntax, Syntax::ExpressionSyntax>(syntax));
+			return BindUnaryExpression(dynamic_pointer_cast<Syntax::UnaryExpressionSyntax>(syntax));
 		case Syntax::Node::BinaryExpression:
-			return BindBinaryExpression(dynamic_pointer_cast<Syntax::BinaryExpressionSyntax, Syntax::ExpressionSyntax>(syntax));
+			return BindBinaryExpression(dynamic_pointer_cast<Syntax::BinaryExpressionSyntax>(syntax));
 		case Syntax::Node::LiteralExpression:
-			return BindLiteralExpression(dynamic_pointer_cast<Syntax::LiteralExpressionSyntax, Syntax::ExpressionSyntax>(syntax));
+			return BindLiteralExpression(dynamic_pointer_cast<Syntax::LiteralExpressionSyntax>(syntax));
 		case Syntax::Node::ParenthesizedExpression:
-			return BindExpressionInternal(dynamic_pointer_cast<Syntax::ParenthesizedExpressionSyntax, Syntax::ExpressionSyntax>(syntax)->GetExpression());
+			return BindExpressionInternal(dynamic_pointer_cast<Syntax::ParenthesizedExpressionSyntax>(syntax)->GetExpression());
 		default:
 			return make_shared<BoundErrorExpression>(syntax);
 		}
@@ -28,11 +29,95 @@ namespace Symple::Binding
 
 	shared_ptr<Node> Binder::Bind(shared_ptr<Syntax::Node> syntax)
 	{
-		if (dynamic_pointer_cast<Syntax::ExpressionSyntax, Syntax::Node>(syntax))
-			return BindExpression(dynamic_pointer_cast<Syntax::ExpressionSyntax, Syntax::Node>(syntax));
+		if (dynamic_pointer_cast<Syntax::MemberSyntax>(syntax))
+			return BindMember(dynamic_pointer_cast<Syntax::MemberSyntax>(syntax));
+		else if (dynamic_pointer_cast<Syntax::ExpressionSyntax, Syntax::Node>(syntax))
+			return BindExpression(dynamic_pointer_cast<Syntax::ExpressionSyntax>(syntax));
 		else
 			return make_shared<Node>(syntax);
 	}
+
+
+	shared_ptr<BoundMember> Binder::BindMember(shared_ptr<Syntax::MemberSyntax> syntax)
+	{
+		switch (syntax->GetKind())
+		{
+		case Syntax::Node::FunctionDeclaration:
+			return BindFunction(dynamic_pointer_cast<Syntax::FunctionDeclarationSyntax>(syntax));
+		default:
+			return make_shared<BoundMember>(syntax);
+		}
+	}
+
+	shared_ptr<BoundFunction> Binder::BindFunction(shared_ptr<Syntax::FunctionDeclarationSyntax> syntax)
+	{
+		shared_ptr<Type> ty = BindType(syntax->GetType());
+		return make_shared<BoundFunction>(syntax, ty);
+	}
+
+
+#define TYPE_CONT(name) \
+		case Syntax::Token::##name##Keyword: \
+			return make_shared<Type>(Type::##name##Type->GetKind(), Type::##name##Type->GetName(), Type::##name##Type->GetSize(), base)
+
+#define TYPE_CASE(name) \
+		case Syntax::Token::##name##Keyword: \
+			return Type::##name##Type
+
+	shared_ptr<Type> Binder::BindType(shared_ptr<Syntax::TypeSyntax> syntax)
+	{
+		if (dynamic_pointer_cast<Syntax::TypeReferenceSyntax>(syntax) && dynamic_pointer_cast<Syntax::TypeReferenceSyntax>(syntax)->GetBase())
+		{
+			shared_ptr<Type> base = BindType(dynamic_pointer_cast<Syntax::TypeReferenceSyntax>(syntax)->GetBase());
+
+			switch (syntax->GetName()->GetKind())
+			{
+				TYPE_CONT(Void);
+
+				TYPE_CONT(Byte);
+				TYPE_CONT(Short);
+				TYPE_CONT(Int);
+				TYPE_CONT(Long);
+
+				TYPE_CONT(Bool);
+				TYPE_CONT(Char);
+				TYPE_CONT(WChar);
+
+				TYPE_CONT(Float);
+				TYPE_CONT(Double);
+				TYPE_CONT(Triple);
+
+				// Special
+			case Syntax::Token::Asterisk:
+				return make_shared<Type>(Type::VoidPointerType->GetKind(), Type::VoidPointerType->GetName(), Type::VoidPointerType->GetSize(), base);
+			}
+		}
+		else
+		{
+			switch (syntax->GetName()->GetKind())
+			{
+				TYPE_CASE(Void);
+
+				TYPE_CASE(Byte);
+				TYPE_CASE(Short);
+				TYPE_CASE(Int);
+				TYPE_CASE(Long);
+
+				TYPE_CASE(Bool);
+				TYPE_CASE(Char);
+				TYPE_CASE(WChar);
+
+				TYPE_CASE(Float);
+				TYPE_CASE(Double);
+				TYPE_CASE(Triple);
+
+				// Special
+			case Syntax::Token::Asterisk:
+				return Type::VoidPointerType;
+			}
+		}
+	}
+
 
 	shared_ptr<BoundExpression> Binder::BindExpression(shared_ptr<Syntax::ExpressionSyntax> syntax)
 	{

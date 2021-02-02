@@ -29,6 +29,7 @@ namespace Symple
 		void ReportInvalidOperation(shared_ptr<Syntax::Token>, shared_ptr<Binding::Type> left, shared_ptr<Binding::Type> right);
 		void ReportInvalidOperation(shared_ptr<Syntax::Token>, shared_ptr<Binding::Type>);
 
+		void ReportExpectedUnqualifiedID(shared_ptr<Syntax::Token>);
 		void ReportInvalidLiteral(shared_ptr<Syntax::LiteralExpressionSyntax>);
 	};
 }
