@@ -183,6 +183,9 @@ namespace Symple::Syntax
 		KEYWORD(double, Double);
 		KEYWORD(triple, Triple);
 
+		KEYWORD(ret, Return);
+		KEYWORD(return, Return);
+
 		else
 			return make_shared<Token>(Token::Identifier, text, mLine, column, mFile, mRef);
 	}

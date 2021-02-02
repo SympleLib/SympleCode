@@ -57,19 +57,32 @@ namespace Symple::Syntax
 	}
 
 
-	shared_ptr<StatementSyntax> Parser::ParseStatement()
+	shared_ptr<StatementSyntax> Parser::ParseStatement(bool matchSemi)
 	{
+		shared_ptr<StatementSyntax> statement;
+
 		if (IsType())
-			return ParseVariableDeclaration();
+			statement = ParseVariableDeclaration();
 
 		switch (Peek()->GetKind())
 		{
 		case Token::OpenBrace:
-			return ParseBlockStatement();
+			statement = ParseBlockStatement();
+			matchSemi = false;
+			break;
+		case Token::ReturnKeyword:
+			statement = ParseReturnStatement();
+			break;
 
 		default:
-			return make_shared<StatementSyntax>(Match(Token::Semicolon));
+			if (!statement)
+				statement = make_shared<StatementSyntax>(Peek());
+			break;
 		}
+
+		if (matchSemi)
+			Match(Token::Semicolon);
+		return statement;
 	}
 
 	shared_ptr<BlockStatementSyntax> Parser::ParseBlockStatement()
@@ -96,6 +109,14 @@ namespace Symple::Syntax
 		shared_ptr<Token> close = Match(Token::CloseBrace);
 
 		return make_shared<BlockStatementSyntax>(open, statements, close);
+	}
+
+	shared_ptr<ReturnStatementSyntax> Parser::ParseReturnStatement()
+	{
+		shared_ptr<Token> tok = Match(Token::ReturnKeyword);
+		shared_ptr<ExpressionSyntax> val = ParseExpression();
+
+		return make_shared<ReturnStatementSyntax>(tok, val);
 	}
 
 	shared_ptr<VariableDeclarationSyntax> Parser::ParseVariableDeclaration()
