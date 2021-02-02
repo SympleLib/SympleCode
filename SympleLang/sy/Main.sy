@@ -2,5 +2,5 @@ int main(int argc, char* *argv)
 {
 	int var = 6 * 9;
 
-	return 0;
+	return var;
 }

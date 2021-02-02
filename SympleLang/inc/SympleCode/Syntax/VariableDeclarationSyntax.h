@@ -1,12 +1,17 @@
 #pragma once
 
+#include <vector>
+
 #include "SympleCode/Syntax/StatementSyntax.h"
 #include "SympleCode/Syntax/ExpressionSyntax.h"
 #include "SympleCode/Syntax/TypeSyntax.h"
 
 namespace Symple::Syntax
 {
-	class VariableDeclarationSyntax: public StatementSyntax
+	class VariableDeclarationSyntax;
+	typedef std::vector<shared_ptr<VariableDeclarationSyntax>> VariableDeclarationList;
+
+	class VariableDeclarationSyntax : public StatementSyntax
 	{
 	private:
 		shared_ptr<TypeSyntax> mType;

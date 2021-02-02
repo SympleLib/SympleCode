@@ -14,12 +14,12 @@ namespace Symple::Syntax
 	private:
 		shared_ptr<TypeSyntax> mType;
 		shared_ptr<Token> mOpenParenthesis;
-		std::vector<shared_ptr<VariableDeclarationSyntax>> mParameters;
+		VariableDeclarationList mParameters;
 		shared_ptr<Token> mCloseParenthesis;
 		shared_ptr<StatementSyntax> mBody;
 	public:
 		FunctionDeclarationSyntax(shared_ptr<TypeSyntax> type, shared_ptr<Token> name,
-			shared_ptr<Token> openParen, std::vector<shared_ptr<VariableDeclarationSyntax>> params, shared_ptr<Token> closeParen,
+			shared_ptr<Token> openParen, VariableDeclarationList params, shared_ptr<Token> closeParen,
 			shared_ptr<StatementSyntax> body)
 			: MemberSyntax(name), mType(type), mOpenParenthesis(openParen), mParameters(std::move(params)), mCloseParenthesis(closeParen), mBody(body) {}
 
@@ -55,7 +55,7 @@ namespace Symple::Syntax
 		shared_ptr<Token> GetOpenParenthesis()
 		{ return mOpenParenthesis; }
 
-		std::vector<shared_ptr<VariableDeclarationSyntax>> GetParameters()
+		VariableDeclarationList GetParameters()
 		{ return mParameters; }
 
 		shared_ptr<Token> GetCloseParenthesis()
