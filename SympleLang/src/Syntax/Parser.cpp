@@ -19,7 +19,7 @@ namespace Symple::Syntax
 	Parser::Parser(shared_ptr<Lexer> lexer, std::vector<shared_ptr<Token>> tokens)
 		: mLexer(lexer), mTokens(tokens)
 	{
-		if (tokens.back()->Is(Token::EndOfFile))
+		if (!tokens.empty() && tokens.back()->Is(Token::EndOfFile))
 			return;
 
 		do
@@ -48,11 +48,12 @@ namespace Symple::Syntax
 	{
 		auto type = ParseType();
 		shared_ptr<Token> name = Match(Token::Identifier);
-		Match(Token::OpenParenthesis);
-		Match(Token::CloseParenthesis);
+		shared_ptr<Token> openParen = Match(Token::OpenParenthesis);
+		auto params = ParseVariableDeclarationList();
+		shared_ptr<Token> closeParen = Match(Token::CloseParenthesis);
 		shared_ptr<StatementSyntax> statement = ParseStatement();
 
-		return make_shared<FunctionDeclarationSyntax>(type, name, statement);
+		return make_shared<FunctionDeclarationSyntax>(type, name, openParen, params, closeParen, statement);
 	}
 
 
@@ -84,6 +85,21 @@ namespace Symple::Syntax
 		}
 
 		return make_shared<VariableDeclarationSyntax>(type, name, equals, initializer);
+	}
+
+	std::vector<shared_ptr<VariableDeclarationSyntax>> Parser::ParseVariableDeclarationList()
+	{
+		std::vector<shared_ptr<VariableDeclarationSyntax>> list;
+		
+		if (IsType())
+			list.push_back(ParseVariableDeclaration());
+		while (Peek()->Is(Token::Comma))
+		{
+			Next();
+			list.push_back(ParseVariableDeclaration());
+		}
+
+		return list;
 	}
 
 	shared_ptr<TypeSyntax> Parser::ParseType(shared_ptr<TypeSyntax> base)

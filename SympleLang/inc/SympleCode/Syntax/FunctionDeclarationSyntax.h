@@ -1,7 +1,10 @@
 #pragma once
 
+#include <vector>
+
 #include "SympleCode/Syntax/MemberSyntax.h"
 #include "SympleCode/Syntax/StatementSyntax.h"
+#include "SympleCode/Syntax/VariableDeclarationSyntax.h"
 #include "SympleCode/Syntax/TypeSyntax.h"
 
 namespace Symple::Syntax
@@ -10,10 +13,15 @@ namespace Symple::Syntax
 	{
 	private:
 		shared_ptr<TypeSyntax> mType;
+		shared_ptr<Token> mOpenParenthesis;
+		std::vector<shared_ptr<VariableDeclarationSyntax>> mParameters;
+		shared_ptr<Token> mCloseParenthesis;
 		shared_ptr<StatementSyntax> mBody;
 	public:
-		FunctionDeclarationSyntax(shared_ptr<TypeSyntax> type, shared_ptr<Token> name, shared_ptr<StatementSyntax> body)
-			: MemberSyntax(name), mType(type), mBody(body) {}
+		FunctionDeclarationSyntax(shared_ptr<TypeSyntax> type, shared_ptr<Token> name,
+			shared_ptr<Token> openParen, std::vector<shared_ptr<VariableDeclarationSyntax>> params, shared_ptr<Token> closeParen,
+			shared_ptr<StatementSyntax> body)
+			: MemberSyntax(name), mType(type), mOpenParenthesis(openParen), mParameters(std::move(params)), mCloseParenthesis(closeParen), mBody(body) {}
 
 		virtual Kind GetKind() override
 		{ return FunctionDeclaration; }
@@ -23,7 +31,14 @@ namespace Symple::Syntax
 			PrintIndent(os, indent, last, label);
 			PrintName(os);
 
-			os << " '"; GetType()->PrintShort(os); os << ' ' << GetName()->GetText(); os << "()'";
+			os << " '"; GetType()->PrintShort(os); os << ' ' << GetName()->GetText(); os.put('(');
+			for (auto param : GetParameters())
+			{
+				param->PrintShort(os);
+				if (!(GetParameters().empty() || param == GetParameters().back()))
+					os << ", ";
+			}
+			os << ")'";
 
 			std::string newIndent(indent);
 			newIndent += GetAddIndent(last);
@@ -36,6 +51,15 @@ namespace Symple::Syntax
 
 		shared_ptr<Token> GetName()
 		{ return GetToken(); }
+
+		shared_ptr<Token> GetOpenParenthesis()
+		{ return mOpenParenthesis; }
+
+		std::vector<shared_ptr<VariableDeclarationSyntax>> GetParameters()
+		{ return mParameters; }
+
+		shared_ptr<Token> GetCloseParenthesis()
+		{ return mCloseParenthesis; }
 
 		shared_ptr<StatementSyntax> GetBody()
 		{ return mBody; }

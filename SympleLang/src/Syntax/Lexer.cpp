@@ -22,9 +22,7 @@ namespace Symple::Syntax
 	{}
 
 	void Lexer::SetRef(shared_ptr<Lexer> ref)
-	{
-		mRef = ref;
-	}
+	{ mRef = ref; }
 
 	
 	shared_ptr<Token> Lexer::Lex()
@@ -43,6 +41,8 @@ namespace Symple::Syntax
 
 		switch (c)
 		{
+		case ',':
+			return LexAtom(Token::Comma);
 		case ';':
 			return LexAtom(Token::Semicolon);
 
@@ -84,24 +84,16 @@ namespace Symple::Syntax
 
 
 	bool Lexer::IsWhiteSpace(char c)
-	{
-		return c == ' ' || c == '\t' || c == '\r' || c == 0xCC;
-	}
+	{ return c == ' ' || c == '\t' || c == '\r' || c == 0xCC; }
 
 	bool Lexer::IsIdentifier(char c)
-	{
-		return (c >= 'a' && c <= 'z') || (c >= 'A' && c <= 'Z') || c == '_' || c == '$' || (c >= '0' && c <= '9');
-	}
+	{ return (c >= 'a' && c <= 'z') || (c >= 'A' && c <= 'Z') || c == '_' || c == '$' || (c >= '0' && c <= '9'); }
 
 	bool Lexer::IsInteger(char c)
-	{
-		return c >= '0' && c <= '9';
-	}
+	{ return c >= '0' && c <= '9'; }
 
 	bool Lexer::IsNumber(char c)
-	{
-		return IsInteger(c) || c == '.';
-	}
+	{ return IsInteger(c) || c == '.'; }
 
 	bool Lexer::IsNumber()
 	{

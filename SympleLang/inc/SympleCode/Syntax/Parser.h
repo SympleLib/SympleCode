@@ -47,6 +47,7 @@ namespace Symple::Syntax
 
 		shared_ptr<StatementSyntax> ParseStatement();
 		shared_ptr<VariableDeclarationSyntax> ParseVariableDeclaration();
+		std::vector<shared_ptr<VariableDeclarationSyntax>> ParseVariableDeclarationList();
 		shared_ptr<TypeSyntax> ParseType(shared_ptr<TypeSyntax> base = nullptr);
 
 		shared_ptr<ExpressionSyntax> ParseExpression();

@@ -38,6 +38,13 @@ namespace Symple::Syntax
 			}
 		}
 
+		virtual void PrintShort(std::ostream& os = std::cout) override
+		{
+			GetType()->PrintShort();
+			if (GetName() != Token::Default)
+				os << ' ' << GetName()->GetText();
+		}
+
 		shared_ptr<Token> GetName()
 		{ return GetToken(); }
 

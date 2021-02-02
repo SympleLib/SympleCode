@@ -1,2 +1,2 @@
-float** main()
+float** main(int* ptr1, void)
 	int = 4;

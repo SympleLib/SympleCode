@@ -40,6 +40,9 @@ namespace Symple::Syntax
 
 			os.put('\n'); GetToken()->Print(os, std::string(indent) + GetAddIndent(last), "Token = ");
 		}
+
+		virtual void PrintShort(std::ostream& os)
+		{ PrintName(os); os << ": "; GetToken()->PrintShort(os); }
 		
 		static void PrintIndent(std::ostream& os = std::cout, std::string_view indent = "", bool last = true, std::string_view label = "")
 		{
