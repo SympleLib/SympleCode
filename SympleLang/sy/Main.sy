@@ -1,2 +1,2 @@
-float** main(int* ptr1, void)
-	int = 4;
+int main(int argc, char* *argv)
+{ int var = 6 * 9; }

@@ -64,6 +64,11 @@ namespace Symple::Syntax
 			return LexAtom(Token::OpenParenthesis);
 		case ')':
 			return LexAtom(Token::CloseParenthesis);
+		case '{':
+			return LexAtom(Token::OpenBrace);
+		case '}':
+			return LexAtom(Token::CloseBrace);
+
 		default:
 			auto tok = LexAtom(Token::Unknown);
 			mDiagnosticBag->ReportUnknownToken(tok);

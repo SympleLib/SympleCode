@@ -67,6 +67,8 @@ namespace Symple::Syntax
 
 			OpenParenthesis,
 			CloseParenthesis,
+			OpenBrace,
+			CloseBrace,
 
 
 			VoidKeyword,
@@ -108,6 +110,8 @@ namespace Symple::Syntax
 
 			"OpenParenthesis",
 			"CloseParenthesis",
+			"OpenBrace",
+			"CloseBrace",
 
 
 			"VoidKeyword",

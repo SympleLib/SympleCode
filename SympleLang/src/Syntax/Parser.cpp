@@ -64,9 +64,32 @@ namespace Symple::Syntax
 
 		switch (Peek()->GetKind())
 		{
+		case Token::OpenBrace:
+			return ParseBlockStatement();
+
 		default:
 			return make_shared<StatementSyntax>(Match(Token::Semicolon));
 		}
+	}
+
+	shared_ptr<BlockStatementSyntax> Parser::ParseBlockStatement()
+	{
+		shared_ptr<Token> open = Match(Token::OpenBrace);
+		std::vector<shared_ptr<StatementSyntax>> statements;
+
+		while (!Peek()->Is(Token::CloseBrace))
+		{
+			if (Peek()->Is(Token::EndOfFile))
+			{
+				mDiagnosticBag->ReportUnexpectedEndOfFile(Peek());
+				break;
+			}
+			statements.push_back(ParseStatement());
+		}
+
+		shared_ptr<Token> close = Match(Token::CloseBrace);
+
+		return make_shared<BlockStatementSyntax>(open, statements, close);
 	}
 
 	shared_ptr<VariableDeclarationSyntax> Parser::ParseVariableDeclaration()

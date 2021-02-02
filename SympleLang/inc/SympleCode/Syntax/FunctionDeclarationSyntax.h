@@ -35,7 +35,7 @@ namespace Symple::Syntax
 			for (auto param : GetParameters())
 			{
 				param->PrintShort(os);
-				if (!(GetParameters().empty() || param == GetParameters().back()))
+				if (param != GetParameters().back())
 					os << ", ";
 			}
 			os << ")'";

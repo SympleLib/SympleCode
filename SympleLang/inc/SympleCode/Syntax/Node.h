@@ -102,10 +102,14 @@ namespace Symple::Syntax
 			Member,
 			FunctionDeclaration,
 
+
 			Statement,
 			Type,
 			TypeReference,
+
+			BlockStatement,
 			VariableDeclaration,
+
 
 			Expression,
 			UnaryExpression,
@@ -122,10 +126,13 @@ namespace Symple::Syntax
 			"Member",
 			"FunctionDeclaration",
 
+
 			"Statement",
 			"Type",
 			"TypeReference",
+			"BlockStatement",
 			"VariableDeclaration",
+
 
 			"Expression",
 			"UnaryExpression",

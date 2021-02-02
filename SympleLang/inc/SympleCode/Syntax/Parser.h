@@ -14,6 +14,7 @@
 #include "SympleCode/Syntax/StatementSyntax.h"
 #include "SympleCode/Syntax/TypeSyntax.h"
 #include "SympleCode/Syntax/TypeReferenceSyntax.h"
+#include "SympleCode/Syntax/BlockStatementSyntax.h"
 #include "SympleCode/Syntax/VariableDeclarationSyntax.h"
 
 #include "SympleCode/Syntax/ExpressionSyntax.h"
@@ -46,6 +47,7 @@ namespace Symple::Syntax
 		shared_ptr<FunctionDeclarationSyntax> ParseFunctionDeclaration();
 
 		shared_ptr<StatementSyntax> ParseStatement();
+		shared_ptr<BlockStatementSyntax> ParseBlockStatement();
 		shared_ptr<VariableDeclarationSyntax> ParseVariableDeclaration();
 		std::vector<shared_ptr<VariableDeclarationSyntax>> ParseVariableDeclarationList();
 		shared_ptr<TypeSyntax> ParseType(shared_ptr<TypeSyntax> base = nullptr);
