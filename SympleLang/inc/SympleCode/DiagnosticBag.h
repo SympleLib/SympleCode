@@ -22,6 +22,10 @@ namespace Symple
 
 		std::vector<shared_ptr<Diagnostic>>& GetDiagnostics();
 
+		void ReportUnimplimentedMessage(shared_ptr<Syntax::Token>);
+		void ReportUnimplimentedWarning(shared_ptr<Syntax::Token>);
+		void ReportUnimplimentedError(shared_ptr<Syntax::Token>);
+
 		void ReportUnexpectedEndOfFile(shared_ptr<Syntax::Token>);
 		void ReportUnexpectedToken(shared_ptr<Syntax::Token>, Syntax::Token::Kind expectedKind);
 		void ReportUnknownToken(shared_ptr<Syntax::Token>);

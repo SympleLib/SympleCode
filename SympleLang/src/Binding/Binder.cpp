@@ -11,31 +11,18 @@
 
 namespace Symple::Binding
 {
-	shared_ptr<BoundExpression> Binder::BindExpressionInternal(shared_ptr<Syntax::ExpressionSyntax> syntax)
-	{
-		switch (syntax->GetKind())
-		{
-		case Syntax::Node::UnaryExpression:
-			return BindUnaryExpression(dynamic_pointer_cast<Syntax::UnaryExpressionSyntax>(syntax));
-		case Syntax::Node::BinaryExpression:
-			return BindBinaryExpression(dynamic_pointer_cast<Syntax::BinaryExpressionSyntax>(syntax));
-		case Syntax::Node::LiteralExpression:
-			return BindLiteralExpression(dynamic_pointer_cast<Syntax::LiteralExpressionSyntax>(syntax));
-		case Syntax::Node::ParenthesizedExpression:
-			return BindExpressionInternal(dynamic_pointer_cast<Syntax::ParenthesizedExpressionSyntax>(syntax)->GetExpression());
-		default:
-			return make_shared<BoundErrorExpression>(syntax);
-		}
-	}
-
 	shared_ptr<Node> Binder::Bind(shared_ptr<Syntax::Node> syntax)
 	{
 		if (dynamic_pointer_cast<Syntax::ExpressionSyntax, Syntax::Node>(syntax))
 			return BindExpression(dynamic_pointer_cast<Syntax::ExpressionSyntax>(syntax));
+		else if (dynamic_pointer_cast<Syntax::StatementSyntax, Syntax::Node>(syntax))
+			return BindStatement(dynamic_pointer_cast<Syntax::StatementSyntax>(syntax));
 		else
 			return make_shared<Node>(syntax);
 	}
 
+
+	#pragma region Symbols
 
 #define TYPE_CONT(name) \
 		case Syntax::Token::##name##Keyword: \
@@ -127,13 +114,75 @@ namespace Symple::Binding
 		return make_shared<Symbol::ParameterSymbol>(ty, name, init);
 	}
 
+	#pragma endregion
+
+
+	#pragma region Statement
+
+	shared_ptr<BoundStatement> Binder::BindStatement(shared_ptr<Syntax::StatementSyntax> syntax)
+	{
+		shared_ptr<BoundStatement> result = BindStatementInternal(syntax);
+		if (!result /* Should not be null, but just in case */)
+		{
+			mDiagnosticBag->ReportUnimplimentedError(syntax->GetToken());
+			return make_shared<BoundStatement>(syntax);
+		}
+		else
+			return result;
+	}
+
+	shared_ptr<BoundStatement> Binder::BindStatementInternal(shared_ptr<Syntax::StatementSyntax> syntax)
+	{
+		switch (syntax->GetKind())
+		{
+		case Syntax::Node::BlockStatement:
+			return BindBlockStatement(dynamic_pointer_cast<Syntax::BlockStatementSyntax>(syntax));
+		default:
+			return make_shared<BoundStatement>(syntax);
+		}
+	}
+
+	shared_ptr<BoundBlockStatement> Binder::BindBlockStatement(shared_ptr<Syntax::BlockStatementSyntax> syntax)
+	{
+		std::vector<shared_ptr<BoundStatement>> statements;
+		for (auto statement : syntax->GetStatements())
+			statements.push_back(BindStatement(statement));
+
+		return make_shared<BoundBlockStatement>(syntax, statements);
+	}
+
+	#pragma endregion
+
+
+	#pragma region Expression
 
 	shared_ptr<BoundExpression> Binder::BindExpression(shared_ptr<Syntax::ExpressionSyntax> syntax)
 	{
 		shared_ptr<BoundExpression> result = BindExpressionInternal(syntax);
 		if (!result /* Should not be null, but just in case */ || result->GetType()->Is(Symbol::TypeSymbol::Error))
+		{
+			mDiagnosticBag->ReportUnimplimentedError(syntax->GetToken());
 			return make_shared<BoundErrorExpression>(syntax);
-		return result;
+		}
+		else
+			return result;
+	}
+
+	shared_ptr<BoundExpression> Binder::BindExpressionInternal(shared_ptr<Syntax::ExpressionSyntax> syntax)
+	{
+		switch (syntax->GetKind())
+		{
+		case Syntax::Node::UnaryExpression:
+			return BindUnaryExpression(dynamic_pointer_cast<Syntax::UnaryExpressionSyntax>(syntax));
+		case Syntax::Node::BinaryExpression:
+			return BindBinaryExpression(dynamic_pointer_cast<Syntax::BinaryExpressionSyntax>(syntax));
+		case Syntax::Node::LiteralExpression:
+			return BindLiteralExpression(dynamic_pointer_cast<Syntax::LiteralExpressionSyntax>(syntax));
+		case Syntax::Node::ParenthesizedExpression:
+			return BindExpressionInternal(dynamic_pointer_cast<Syntax::ParenthesizedExpressionSyntax>(syntax)->GetExpression());
+		default:
+			return make_shared<BoundErrorExpression>(syntax);
+		}
 	}
 
 	shared_ptr<BoundUnaryExpression> Binder::BindUnaryExpression(shared_ptr<Syntax::UnaryExpressionSyntax> syntax)
@@ -190,6 +239,9 @@ namespace Symple::Binding
 
 		return make_shared<BoundLiteralExpression>(syntax, ty);
 	}
+
+	#pragma endregion
+
 
 	shared_ptr<DiagnosticBag> Binder::GetDiagnosticBag()
 	{ return mDiagnosticBag; }

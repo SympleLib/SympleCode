@@ -22,6 +22,16 @@ namespace Symple
 	{ return mDiagnostics; }
 
 
+	void DiagnosticBag::ReportUnimplimentedMessage(shared_ptr<Syntax::Token> tok)
+	{ ReportMessage(tok, "Message not implemented"); }
+
+	void DiagnosticBag::ReportUnimplimentedWarning(shared_ptr<Syntax::Token> tok)
+	{ ReportWarning(tok, "Warning not implemented"); }
+
+	void DiagnosticBag::ReportUnimplimentedError(shared_ptr<Syntax::Token> tok)
+	{ ReportError(tok, "Error not implemented"); }
+
+
 	void DiagnosticBag::ReportUnexpectedEndOfFile(shared_ptr<Syntax::Token> tok)
 	{ ReportError(tok, fmt::format("Unexpected end of file")); }
 
