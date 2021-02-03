@@ -21,9 +21,6 @@ namespace Symple::Syntax
 		: mFile(file), mSource(source)
 	{}
 
-	void Lexer::SetRef(shared_ptr<Lexer> ref)
-	{ mRef = ref; }
-
 	
 	shared_ptr<Token> Lexer::Lex()
 	{
@@ -148,12 +145,12 @@ namespace Symple::Syntax
 
 	shared_ptr<Token> Lexer::LexAtom(Token::Kind kind)
 	{
-		return make_shared<Token>(kind, &Next(), 1, mLine, mColumn, mFile, mRef);
+		return make_shared<Token>(kind, &Next(), 1, mLine, mColumn, mFile);
 	}
 
 #define KEYWORD(word, key) \
 	else if (text == #word) \
-		return make_shared<Token>(Token::##key##Keyword, text, mLine, column, mFile, mRef)
+		return make_shared<Token>(Token::##key##Keyword, text, mLine, column, mFile)
 
 	shared_ptr<Token> Lexer::LexIdentifier()
 	{
@@ -187,7 +184,7 @@ namespace Symple::Syntax
 		KEYWORD(return, Return);
 
 		else
-			return make_shared<Token>(Token::Identifier, text, mLine, column, mFile, mRef);
+			return make_shared<Token>(Token::Identifier, text, mLine, column, mFile);
 	}
 
 	shared_ptr<Token> Lexer::LexNumber()
@@ -202,10 +199,10 @@ namespace Symple::Syntax
 			Next();
 
 		if (Peek() == 'f' || Peek() == 'F')
-			return make_shared<Token>(Token::Float, beg, &Next(), mLine, column, mFile, mRef);
+			return make_shared<Token>(Token::Float, beg, &Next(), mLine, column, mFile);
 		else if (dotCount)
-			return make_shared<Token>(Token::Number, beg, Current, mLine, column, mFile, mRef);
+			return make_shared<Token>(Token::Number, beg, Current, mLine, column, mFile);
 		else
-			return make_shared<Token>(Token::Integer, beg, Current, mLine, column, mFile, mRef);
+			return make_shared<Token>(Token::Integer, beg, Current, mLine, column, mFile);
 	}
 }

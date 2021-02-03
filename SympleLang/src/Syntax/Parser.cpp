@@ -9,26 +9,25 @@
 namespace Symple::Syntax
 {
 	Parser::Parser(shared_ptr<Lexer> lexer)
-		: mLexer(lexer)
 	{
 		do
-			mTokens.push_back(mLexer->Lex());
+			mTokens.push_back(lexer->Lex());
 		while (!mTokens.back()->Is(Token::EndOfFile));
 	}
 
 	Parser::Parser(shared_ptr<Lexer> lexer, std::vector<shared_ptr<Token>> tokens)
-		: mLexer(lexer), mTokens(tokens)
+		: mTokens(tokens)
 	{
 		if (!tokens.empty() && tokens.back()->Is(Token::EndOfFile))
 			return;
 
 		do
-			mTokens.push_back(mLexer->Lex());
+			mTokens.push_back(lexer->Lex());
 		while (!mTokens.back()->Is(Token::EndOfFile));
 	}
 
 	Parser::Parser(std::vector<shared_ptr<Token>> tokens)
-		: mLexer(), mTokens(tokens)
+		: mTokens(tokens)
 	{}
 
 

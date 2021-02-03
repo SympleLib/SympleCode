@@ -14,16 +14,15 @@ namespace Symple::Syntax
 	public: enum Kind : unsigned;
 	private:
 		Kind mKind;
-		std::string_view mText;
-		shared_ptr<Lexer> mLexer; // Reference to Lexer (has source text)
+		std::string mText;
 
 		char* mFile;
 		unsigned mLine, mColumn;
 	public:
-		Token(Kind = Unknown, unsigned ln = 0, unsigned col = 0, char* file = "<NA>", shared_ptr<Lexer> = nullptr);
-		Token(Kind, std::string_view text, unsigned ln = 0, unsigned col = 0, char* file = "<NA>", shared_ptr<Lexer> = nullptr);
-		Token(Kind, char* beg, unsigned len = 1, unsigned ln = 0, unsigned col = 0, char* file = "<NA>", shared_ptr<Lexer> = nullptr);
-		Token(Kind, char* beg, char* end, unsigned ln = 0, unsigned col = 0, char* file = "<NA>", shared_ptr<Lexer> = nullptr);
+		Token(Kind = Unknown, unsigned ln = 0, unsigned col = 0, char* file = "<NA>");
+		Token(Kind, std::string_view text, unsigned ln = 0, unsigned col = 0, char* file = "<NA>");
+		Token(Kind, char* beg, unsigned len = 1, unsigned ln = 0, unsigned col = 0, char* file = "<NA>");
+		Token(Kind, char* beg, char* end, unsigned ln = 0, unsigned col = 0, char* file = "<NA>");
 
 		bool Is(Kind kind);
 		template <typename... Args>

@@ -82,7 +82,6 @@ bool PrintDiagnosticBag(shared_ptr<DiagnosticBag> diagnostics, char step[] = "Nu
 		return false;
 	}
 }
-shared_ptr<Lexer> lexer;
 std::vector<shared_ptr<Token>> tokens;
 
 shared_ptr<FunctionDeclarationSyntax> node;
@@ -91,8 +90,7 @@ shared_ptr<Symple::Symbol::Symbol> bound;
 
 void Lex()
 {
-	lexer = make_shared<Lexer>((char*)"sy/Main.sy");
-	lexer->SetRef(lexer);
+	shared_ptr<Lexer> lexer = make_shared<Lexer>((char*)"sy/Main.sy");
 	tokens.clear();
 
 	spdlog::info("Lex Tokens:");
@@ -110,7 +108,7 @@ void Lex()
 
 void Parse()
 {
-	shared_ptr<Parser> parser = make_shared<Parser>(lexer, tokens);
+	shared_ptr<Parser> parser = make_shared<Parser>(tokens);
 	node = parser->ParseFunctionDeclaration();
 	putchar('\n');
 	if (PrintDiagnosticBag(parser->GetDiagnosticBag(), "Parsing"))

@@ -36,12 +36,10 @@ namespace Symple::Syntax
 		std::vector<shared_ptr<Token>> mTokens;
 		unsigned mPosition = 0;
 
-		shared_ptr<Lexer> mLexer;
 		shared_ptr<DiagnosticBag> mDiagnosticBag = make_shared<DiagnosticBag>();
 	public:
 		Parser(shared_ptr<Lexer>);
 		Parser(shared_ptr<Lexer>, std::vector<shared_ptr<Token>>);
-
 		Parser(std::vector<shared_ptr<Token>>);
 
 		shared_ptr<Syntax::Node> Parse();
