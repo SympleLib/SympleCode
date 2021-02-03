@@ -13,4 +13,6 @@ namespace Symple::Syntax
 		virtual Kind GetKind() override
 		{ return Expression; }
 	};
+
+	typedef std::vector<shared_ptr<ExpressionSyntax>> ExpressionList;
 }

@@ -220,6 +220,15 @@ namespace Symple::Syntax
 	shared_ptr<LiteralExpressionSyntax> Parser::ParseLiteralExpression()
 	{ return make_shared<LiteralExpressionSyntax>(Next()); }
 
+	shared_ptr<FunctionCallExpressionSyntax> Parser::ParseFunctionCallExpressionSyntax()
+	{
+		shared_ptr<Token> name = Match(Token::Identifier);
+		shared_ptr<Token> open = Match(Token::OpenParenthesis);
+		ExpressionList expression = ParseExpression();
+		shared_ptr<Token> close = Match(Token::CloseParenthesis);
+
+	}
+
 	shared_ptr<ParenthesizedExpressionSyntax> Parser::ParseParenthesizedExpression()
 	{
 		shared_ptr<Token> open = Match(Token::OpenParenthesis);

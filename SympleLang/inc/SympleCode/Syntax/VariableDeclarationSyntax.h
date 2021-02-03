@@ -8,9 +8,6 @@
 
 namespace Symple::Syntax
 {
-	class VariableDeclarationSyntax;
-	typedef std::vector<shared_ptr<VariableDeclarationSyntax>> VariableDeclarationList;
-
 	class VariableDeclarationSyntax : public StatementSyntax
 	{
 	private:
@@ -62,4 +59,6 @@ namespace Symple::Syntax
 		shared_ptr<ExpressionSyntax> GetInitializer()
 		{ return mInitializer; }
 	};
+
+	typedef std::vector<shared_ptr<VariableDeclarationSyntax>> VariableDeclarationList;
 }
