@@ -20,6 +20,7 @@
 
 #include "SympleCode/Binding/BoundStatement.h"
 #include "SympleCode/Binding/BoundBlockStatement.h"
+#include "SympleCode/Binding/BoundReturnStatement.h"
 
 #include "SympleCode/Binding/BoundExpression.h"
 #include "SympleCode/Binding/BoundErrorExpression.h"
@@ -48,6 +49,7 @@ namespace Symple::Binding
 		shared_ptr<BoundStatement> BindStatement(shared_ptr<Syntax::StatementSyntax>);
 		shared_ptr<BoundStatement> BindGlobalStatement(shared_ptr<Syntax::GlobalStatementSyntax>);
 		shared_ptr<BoundBlockStatement> BindBlockStatement(shared_ptr<Syntax::BlockStatementSyntax>);
+		shared_ptr<BoundReturnStatement> BindReturnStatement(shared_ptr<Syntax::ReturnStatementSyntax>);
 
 		shared_ptr<BoundExpression> BindExpression(shared_ptr<Syntax::ExpressionSyntax>);
 		shared_ptr<BoundUnaryExpression> BindUnaryExpression(shared_ptr<Syntax::UnaryExpressionSyntax>);

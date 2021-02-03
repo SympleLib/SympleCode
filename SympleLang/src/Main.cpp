@@ -82,56 +82,58 @@ bool PrintDiagnosticBag(shared_ptr<DiagnosticBag> diagnostics, char step[] = "Nu
 		return false;
 	}
 }
-std::vector<shared_ptr<Token>> tokens;
+std::vector<shared_ptr<Token>> sTokens;
 
-shared_ptr<Syntax::Node> node;
+shared_ptr<Syntax::Node> sNode;
 
-shared_ptr<Binding::Node> bound;
+shared_ptr<Binding::Node> sBound;
 
 void Lex()
 {
 	shared_ptr<Lexer> lexer = make_shared<Lexer>((char*)"sy/Main.sy");
-	tokens.clear();
+	sTokens.clear();
 
 	spdlog::info("Lex Tokens:");
 	do
-	{
-		tokens.push_back(lexer->Lex());
-		tokens.back()->Print(std::cout, "", tokens.back()->Is(Token::EndOfFile));
-		putchar('\n');
-	}
-	while (!tokens.back()->Is(Token::EndOfFile));
+		sTokens.push_back(lexer->Lex());
+	while (!sTokens.back()->Is(Token::EndOfFile));
 
 	if (PrintDiagnosticBag(lexer->GetDiagnosticBag(), "Lexing"))
-		tokens.clear();
+		sTokens.clear();
+
+	for (auto tok : sTokens)
+	{
+		tok->Print(std::cout, "", tok->Is(Token::EndOfFile));
+		putchar('\n');
+	}
 }
 
 void Parse()
 {
-	shared_ptr<Parser> parser = make_shared<Parser>(tokens);
-	node = parser->Parse();
+	shared_ptr<Parser> parser = make_shared<Parser>(sTokens);
+	sNode = parser->Parse();
 	putchar('\n');
 	if (PrintDiagnosticBag(parser->GetDiagnosticBag(), "Parsing"))
 		return;
 
 	spdlog::info("Parse Tree:");
-	node->Print();
+	sNode->Print();
 	putchar('\n');
 }
 
 void Bind()
 {
-	if (!node)
+	if (!sNode)
 		return;
 
 	shared_ptr<Binder> binder = make_shared<Binder>();
-	bound = binder->Bind(node);
+	sBound = binder->Bind(sNode);
 	putchar('\n');
 	if (PrintDiagnosticBag(binder->GetDiagnosticBag(), "Binding"))
 		return;
 
 	spdlog::info("Bound Tree:");
-	bound->Print();
+	sBound->Print();
 	putchar('\n');
 
 #ifdef _WIN32
