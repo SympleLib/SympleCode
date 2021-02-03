@@ -3,7 +3,8 @@
 #include "SympleCode/Syntax/ExpressionSyntax.h"
 
 #include "SympleCode/Binding/Node.h"
-#include "SympleCode/Binding/Type.h"
+
+#include "SympleCode/Symbol/TypeSymbol.h"
 
 namespace Symple::Binding
 {
@@ -16,8 +17,8 @@ namespace Symple::Binding
 		virtual Kind GetKind()
 		{ return Expression; }
 
-		virtual shared_ptr<Type> GetType()
-		{ return Type::ErrorType; }
+		virtual shared_ptr<Symbol::TypeSymbol> GetType()
+		{ return Symbol::TypeSymbol::ErrorType; }
 
 		virtual bool IsMutable()
 		{ return false; }

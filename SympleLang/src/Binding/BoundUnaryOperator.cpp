@@ -6,7 +6,7 @@ namespace Symple::Binding
 	std::vector<shared_ptr<BoundUnaryOperator>> BoundUnaryOperator::sOperators;
 	shared_ptr<BoundUnaryOperator> BoundUnaryOperator::ErrorOperator;
 
-	BoundUnaryOperator::BoundUnaryOperator(Syntax::Token::Kind tokenKind, Kind kind, shared_ptr<Type> operandType, shared_ptr<Type> type)
+	BoundUnaryOperator::BoundUnaryOperator(Syntax::Token::Kind tokenKind, Kind kind, shared_ptr<Symbol::TypeSymbol> operandType, shared_ptr<Symbol::TypeSymbol> type)
 		: mTokenKind(tokenKind), mKind(kind), mOperandType(operandType), mType(type)
 	{}
 
@@ -23,28 +23,28 @@ namespace Symple::Binding
 	}
 
 
-	shared_ptr<BoundUnaryOperator> BoundUnaryOperator::Bind(Syntax::Token::Kind tokenKind, shared_ptr<Type> operandType)
+	shared_ptr<BoundUnaryOperator> BoundUnaryOperator::Bind(Syntax::Token::Kind tokenKind, shared_ptr<Symbol::TypeSymbol> operandType)
 	{
 		if (sOperators.empty())
 		{
 			sOperators = {
-				shared_ptr<BoundUnaryOperator>(new BoundUnaryOperator(Syntax::Token::Plus, Positive, Type::IntType, Type::IntType)),
-				shared_ptr<BoundUnaryOperator>(new BoundUnaryOperator(Syntax::Token::Plus, Positive, Type::LongType, Type::LongType)),
+				shared_ptr<BoundUnaryOperator>(new BoundUnaryOperator(Syntax::Token::Plus, Positive, Symbol::TypeSymbol::IntType, Symbol::TypeSymbol::IntType)),
+				shared_ptr<BoundUnaryOperator>(new BoundUnaryOperator(Syntax::Token::Plus, Positive, Symbol::TypeSymbol::LongType, Symbol::TypeSymbol::LongType)),
 
-				shared_ptr<BoundUnaryOperator>(new BoundUnaryOperator(Syntax::Token::Plus, Positive, Type::FloatType, Type::FloatType)),
-				shared_ptr<BoundUnaryOperator>(new BoundUnaryOperator(Syntax::Token::Plus, Positive, Type::DoubleType, Type::DoubleType)),
-				shared_ptr<BoundUnaryOperator>(new BoundUnaryOperator(Syntax::Token::Plus, Positive, Type::TripleType, Type::TripleType)),
+				shared_ptr<BoundUnaryOperator>(new BoundUnaryOperator(Syntax::Token::Plus, Positive, Symbol::TypeSymbol::FloatType, Symbol::TypeSymbol::FloatType)),
+				shared_ptr<BoundUnaryOperator>(new BoundUnaryOperator(Syntax::Token::Plus, Positive, Symbol::TypeSymbol::DoubleType, Symbol::TypeSymbol::DoubleType)),
+				shared_ptr<BoundUnaryOperator>(new BoundUnaryOperator(Syntax::Token::Plus, Positive, Symbol::TypeSymbol::TripleType, Symbol::TypeSymbol::TripleType)),
 
 
-				shared_ptr<BoundUnaryOperator>(new BoundUnaryOperator(Syntax::Token::Dash, Negative, Type::IntType, Type::IntType)),
-				shared_ptr<BoundUnaryOperator>(new BoundUnaryOperator(Syntax::Token::Dash, Negative, Type::LongType, Type::LongType)),
+				shared_ptr<BoundUnaryOperator>(new BoundUnaryOperator(Syntax::Token::Dash, Negative, Symbol::TypeSymbol::IntType, Symbol::TypeSymbol::IntType)),
+				shared_ptr<BoundUnaryOperator>(new BoundUnaryOperator(Syntax::Token::Dash, Negative, Symbol::TypeSymbol::LongType, Symbol::TypeSymbol::LongType)),
 
-				shared_ptr<BoundUnaryOperator>(new BoundUnaryOperator(Syntax::Token::Dash, Negative, Type::FloatType, Type::FloatType)),
-				shared_ptr<BoundUnaryOperator>(new BoundUnaryOperator(Syntax::Token::Dash, Negative, Type::DoubleType, Type::DoubleType)),
-				shared_ptr<BoundUnaryOperator>(new BoundUnaryOperator(Syntax::Token::Dash, Negative, Type::TripleType, Type::TripleType)),
+				shared_ptr<BoundUnaryOperator>(new BoundUnaryOperator(Syntax::Token::Dash, Negative, Symbol::TypeSymbol::FloatType, Symbol::TypeSymbol::FloatType)),
+				shared_ptr<BoundUnaryOperator>(new BoundUnaryOperator(Syntax::Token::Dash, Negative, Symbol::TypeSymbol::DoubleType, Symbol::TypeSymbol::DoubleType)),
+				shared_ptr<BoundUnaryOperator>(new BoundUnaryOperator(Syntax::Token::Dash, Negative, Symbol::TypeSymbol::TripleType, Symbol::TypeSymbol::TripleType)),
 			};
 
-			ErrorOperator = shared_ptr<BoundUnaryOperator>(new BoundUnaryOperator(Syntax::Token::Unknown, Negative, Type::ErrorType, Type::ErrorType));
+			ErrorOperator = shared_ptr<BoundUnaryOperator>(new BoundUnaryOperator(Syntax::Token::Unknown, Negative, Symbol::TypeSymbol::ErrorType, Symbol::TypeSymbol::ErrorType));
 		}
 
 		for (auto op : sOperators)
@@ -61,9 +61,9 @@ namespace Symple::Binding
 	BoundUnaryOperator::Kind BoundUnaryOperator::GetKind()
 	{ return mKind; }
 
-	shared_ptr<Type> BoundUnaryOperator::GetOperandType()
+	shared_ptr<Symbol::TypeSymbol> BoundUnaryOperator::GetOperandType()
 	{ return mOperandType; }
 
-	shared_ptr<Type> BoundUnaryOperator::GetType()
+	shared_ptr<Symbol::TypeSymbol> BoundUnaryOperator::GetType()
 	{ return mType; }
 }

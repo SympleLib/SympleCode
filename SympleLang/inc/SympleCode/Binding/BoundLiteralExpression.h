@@ -9,16 +9,16 @@ namespace Symple::Binding
 	class BoundLiteralExpression : public BoundExpression
 	{
 	private:
-		shared_ptr<Type> mType;
+		shared_ptr<Symbol::TypeSymbol> mType;
 	public:
-		BoundLiteralExpression(shared_ptr<Syntax::LiteralExpressionSyntax> syntax, shared_ptr<Type> ty)
+		BoundLiteralExpression(shared_ptr<Syntax::LiteralExpressionSyntax> syntax, shared_ptr<Symbol::TypeSymbol> ty)
 			: BoundExpression(syntax), mType(ty)
 		{}
 
 		virtual Kind GetKind() override
 		{ return LiteralExpression; }
 
-		virtual shared_ptr<Type> GetType() override
+		virtual shared_ptr<Symbol::TypeSymbol> GetType() override
 		{ return mType; }
 
 		virtual void Print(std::ostream& os = std::cout, std::string_view indent = "", bool last = true, std::string_view label = "") override

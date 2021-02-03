@@ -8,7 +8,7 @@ namespace Symple::Binding
 	std::vector<shared_ptr<BoundBinaryOperator>> BoundBinaryOperator::sOperators;
 	shared_ptr<BoundBinaryOperator> BoundBinaryOperator::ErrorOperator;
 
-	BoundBinaryOperator::BoundBinaryOperator(Syntax::Token::Kind tokenKind, Kind kind, shared_ptr<Type> leftType, shared_ptr<Type> rightType, shared_ptr<Type> type)
+	BoundBinaryOperator::BoundBinaryOperator(Syntax::Token::Kind tokenKind, Kind kind, shared_ptr<Symbol::TypeSymbol> leftType, shared_ptr<Symbol::TypeSymbol> rightType, shared_ptr<Symbol::TypeSymbol> type)
 		: mTokenKind(tokenKind), mKind(kind), mLeftType(leftType), mRightType(rightType), mType(type)
 	{}
 
@@ -23,52 +23,52 @@ namespace Symple::Binding
 	{ os << '(' << KindMap[GetKind()] << ')'; }
 
 
-	shared_ptr<BoundBinaryOperator> BoundBinaryOperator::Bind(Syntax::Token::Kind tokenKind, shared_ptr<Type> leftType, shared_ptr<Type> rightType)
+	shared_ptr<BoundBinaryOperator> BoundBinaryOperator::Bind(Syntax::Token::Kind tokenKind, shared_ptr<Symbol::TypeSymbol> leftType, shared_ptr<Symbol::TypeSymbol> rightType)
 	{
 		if (sOperators.empty())
 		{
 			sOperators = {
-				shared_ptr<BoundBinaryOperator>(new BoundBinaryOperator(Syntax::Token::Plus, Addition, Type::IntType, Type::IntType, Type::IntType)),
-				shared_ptr<BoundBinaryOperator>(new BoundBinaryOperator(Syntax::Token::Plus, Addition, Type::LongType, Type::LongType, Type::LongType)),
+				shared_ptr<BoundBinaryOperator>(new BoundBinaryOperator(Syntax::Token::Plus, Addition, Symbol::TypeSymbol::IntType, Symbol::TypeSymbol::IntType, Symbol::TypeSymbol::IntType)),
+				shared_ptr<BoundBinaryOperator>(new BoundBinaryOperator(Syntax::Token::Plus, Addition, Symbol::TypeSymbol::LongType, Symbol::TypeSymbol::LongType, Symbol::TypeSymbol::LongType)),
 
-				shared_ptr<BoundBinaryOperator>(new BoundBinaryOperator(Syntax::Token::Plus, Addition, Type::FloatType, Type::FloatType, Type::FloatType)),
-				shared_ptr<BoundBinaryOperator>(new BoundBinaryOperator(Syntax::Token::Plus, Addition, Type::DoubleType, Type::DoubleType, Type::DoubleType)),
-				shared_ptr<BoundBinaryOperator>(new BoundBinaryOperator(Syntax::Token::Plus, Addition, Type::TripleType, Type::TripleType, Type::TripleType)),
-
-
-				shared_ptr<BoundBinaryOperator>(new BoundBinaryOperator(Syntax::Token::Dash, Subtraction, Type::IntType, Type::IntType, Type::IntType)),
-				shared_ptr<BoundBinaryOperator>(new BoundBinaryOperator(Syntax::Token::Dash, Subtraction, Type::LongType, Type::LongType, Type::LongType)),
-
-				shared_ptr<BoundBinaryOperator>(new BoundBinaryOperator(Syntax::Token::Dash, Subtraction, Type::FloatType, Type::FloatType, Type::FloatType)),
-				shared_ptr<BoundBinaryOperator>(new BoundBinaryOperator(Syntax::Token::Dash, Subtraction, Type::DoubleType, Type::DoubleType, Type::DoubleType)),
-				shared_ptr<BoundBinaryOperator>(new BoundBinaryOperator(Syntax::Token::Dash, Subtraction, Type::TripleType, Type::TripleType, Type::TripleType)),
+				shared_ptr<BoundBinaryOperator>(new BoundBinaryOperator(Syntax::Token::Plus, Addition, Symbol::TypeSymbol::FloatType, Symbol::TypeSymbol::FloatType, Symbol::TypeSymbol::FloatType)),
+				shared_ptr<BoundBinaryOperator>(new BoundBinaryOperator(Syntax::Token::Plus, Addition, Symbol::TypeSymbol::DoubleType, Symbol::TypeSymbol::DoubleType, Symbol::TypeSymbol::DoubleType)),
+				shared_ptr<BoundBinaryOperator>(new BoundBinaryOperator(Syntax::Token::Plus, Addition, Symbol::TypeSymbol::TripleType, Symbol::TypeSymbol::TripleType, Symbol::TypeSymbol::TripleType)),
 
 
-				shared_ptr<BoundBinaryOperator>(new BoundBinaryOperator(Syntax::Token::Asterisk, Multiplication, Type::IntType, Type::IntType, Type::IntType)),
-				shared_ptr<BoundBinaryOperator>(new BoundBinaryOperator(Syntax::Token::Asterisk, Multiplication, Type::LongType, Type::LongType, Type::LongType)),
+				shared_ptr<BoundBinaryOperator>(new BoundBinaryOperator(Syntax::Token::Dash, Subtraction, Symbol::TypeSymbol::IntType, Symbol::TypeSymbol::IntType, Symbol::TypeSymbol::IntType)),
+				shared_ptr<BoundBinaryOperator>(new BoundBinaryOperator(Syntax::Token::Dash, Subtraction, Symbol::TypeSymbol::LongType, Symbol::TypeSymbol::LongType, Symbol::TypeSymbol::LongType)),
 
-				shared_ptr<BoundBinaryOperator>(new BoundBinaryOperator(Syntax::Token::Asterisk, Multiplication, Type::FloatType, Type::FloatType, Type::FloatType)),
-				shared_ptr<BoundBinaryOperator>(new BoundBinaryOperator(Syntax::Token::Asterisk, Multiplication, Type::DoubleType, Type::DoubleType, Type::DoubleType)),
-				shared_ptr<BoundBinaryOperator>(new BoundBinaryOperator(Syntax::Token::Asterisk, Multiplication, Type::TripleType, Type::TripleType, Type::TripleType)),
-
-
-				shared_ptr<BoundBinaryOperator>(new BoundBinaryOperator(Syntax::Token::Slash, Division, Type::IntType, Type::IntType, Type::IntType)),
-				shared_ptr<BoundBinaryOperator>(new BoundBinaryOperator(Syntax::Token::Slash, Division, Type::LongType, Type::LongType, Type::LongType)),
-
-				shared_ptr<BoundBinaryOperator>(new BoundBinaryOperator(Syntax::Token::Slash, Division, Type::FloatType, Type::FloatType, Type::FloatType)),
-				shared_ptr<BoundBinaryOperator>(new BoundBinaryOperator(Syntax::Token::Slash, Division, Type::DoubleType, Type::DoubleType, Type::DoubleType)),
-				shared_ptr<BoundBinaryOperator>(new BoundBinaryOperator(Syntax::Token::Slash, Division, Type::TripleType, Type::TripleType, Type::TripleType)),
+				shared_ptr<BoundBinaryOperator>(new BoundBinaryOperator(Syntax::Token::Dash, Subtraction, Symbol::TypeSymbol::FloatType, Symbol::TypeSymbol::FloatType, Symbol::TypeSymbol::FloatType)),
+				shared_ptr<BoundBinaryOperator>(new BoundBinaryOperator(Syntax::Token::Dash, Subtraction, Symbol::TypeSymbol::DoubleType, Symbol::TypeSymbol::DoubleType, Symbol::TypeSymbol::DoubleType)),
+				shared_ptr<BoundBinaryOperator>(new BoundBinaryOperator(Syntax::Token::Dash, Subtraction, Symbol::TypeSymbol::TripleType, Symbol::TypeSymbol::TripleType, Symbol::TypeSymbol::TripleType)),
 
 
-				shared_ptr<BoundBinaryOperator>(new BoundBinaryOperator(Syntax::Token::Percentage, Modulo, Type::IntType, Type::IntType, Type::IntType)),
-				shared_ptr<BoundBinaryOperator>(new BoundBinaryOperator(Syntax::Token::Percentage, Modulo, Type::LongType, Type::LongType, Type::LongType)),
+				shared_ptr<BoundBinaryOperator>(new BoundBinaryOperator(Syntax::Token::Asterisk, Multiplication, Symbol::TypeSymbol::IntType, Symbol::TypeSymbol::IntType, Symbol::TypeSymbol::IntType)),
+				shared_ptr<BoundBinaryOperator>(new BoundBinaryOperator(Syntax::Token::Asterisk, Multiplication, Symbol::TypeSymbol::LongType, Symbol::TypeSymbol::LongType, Symbol::TypeSymbol::LongType)),
 
-				shared_ptr<BoundBinaryOperator>(new BoundBinaryOperator(Syntax::Token::Percentage, Modulo, Type::FloatType, Type::FloatType, Type::FloatType)),
-				shared_ptr<BoundBinaryOperator>(new BoundBinaryOperator(Syntax::Token::Percentage, Modulo, Type::DoubleType, Type::DoubleType, Type::DoubleType)),
-				shared_ptr<BoundBinaryOperator>(new BoundBinaryOperator(Syntax::Token::Percentage, Modulo, Type::TripleType, Type::TripleType, Type::TripleType)),
+				shared_ptr<BoundBinaryOperator>(new BoundBinaryOperator(Syntax::Token::Asterisk, Multiplication, Symbol::TypeSymbol::FloatType, Symbol::TypeSymbol::FloatType, Symbol::TypeSymbol::FloatType)),
+				shared_ptr<BoundBinaryOperator>(new BoundBinaryOperator(Syntax::Token::Asterisk, Multiplication, Symbol::TypeSymbol::DoubleType, Symbol::TypeSymbol::DoubleType, Symbol::TypeSymbol::DoubleType)),
+				shared_ptr<BoundBinaryOperator>(new BoundBinaryOperator(Syntax::Token::Asterisk, Multiplication, Symbol::TypeSymbol::TripleType, Symbol::TypeSymbol::TripleType, Symbol::TypeSymbol::TripleType)),
+
+
+				shared_ptr<BoundBinaryOperator>(new BoundBinaryOperator(Syntax::Token::Slash, Division, Symbol::TypeSymbol::IntType, Symbol::TypeSymbol::IntType, Symbol::TypeSymbol::IntType)),
+				shared_ptr<BoundBinaryOperator>(new BoundBinaryOperator(Syntax::Token::Slash, Division, Symbol::TypeSymbol::LongType, Symbol::TypeSymbol::LongType, Symbol::TypeSymbol::LongType)),
+
+				shared_ptr<BoundBinaryOperator>(new BoundBinaryOperator(Syntax::Token::Slash, Division, Symbol::TypeSymbol::FloatType, Symbol::TypeSymbol::FloatType, Symbol::TypeSymbol::FloatType)),
+				shared_ptr<BoundBinaryOperator>(new BoundBinaryOperator(Syntax::Token::Slash, Division, Symbol::TypeSymbol::DoubleType, Symbol::TypeSymbol::DoubleType, Symbol::TypeSymbol::DoubleType)),
+				shared_ptr<BoundBinaryOperator>(new BoundBinaryOperator(Syntax::Token::Slash, Division, Symbol::TypeSymbol::TripleType, Symbol::TypeSymbol::TripleType, Symbol::TypeSymbol::TripleType)),
+
+
+				shared_ptr<BoundBinaryOperator>(new BoundBinaryOperator(Syntax::Token::Percentage, Modulo, Symbol::TypeSymbol::IntType, Symbol::TypeSymbol::IntType, Symbol::TypeSymbol::IntType)),
+				shared_ptr<BoundBinaryOperator>(new BoundBinaryOperator(Syntax::Token::Percentage, Modulo, Symbol::TypeSymbol::LongType, Symbol::TypeSymbol::LongType, Symbol::TypeSymbol::LongType)),
+
+				shared_ptr<BoundBinaryOperator>(new BoundBinaryOperator(Syntax::Token::Percentage, Modulo, Symbol::TypeSymbol::FloatType, Symbol::TypeSymbol::FloatType, Symbol::TypeSymbol::FloatType)),
+				shared_ptr<BoundBinaryOperator>(new BoundBinaryOperator(Syntax::Token::Percentage, Modulo, Symbol::TypeSymbol::DoubleType, Symbol::TypeSymbol::DoubleType, Symbol::TypeSymbol::DoubleType)),
+				shared_ptr<BoundBinaryOperator>(new BoundBinaryOperator(Syntax::Token::Percentage, Modulo, Symbol::TypeSymbol::TripleType, Symbol::TypeSymbol::TripleType, Symbol::TypeSymbol::TripleType)),
 			};
 
-			ErrorOperator = shared_ptr<BoundBinaryOperator>(new BoundBinaryOperator(Syntax::Token::Unknown, Unknown, Type::ErrorType, Type::ErrorType, Type::ErrorType));
+			ErrorOperator = shared_ptr<BoundBinaryOperator>(new BoundBinaryOperator(Syntax::Token::Unknown, Unknown, Symbol::TypeSymbol::ErrorType, Symbol::TypeSymbol::ErrorType, Symbol::TypeSymbol::ErrorType));
 		}
 
 		for (auto op : sOperators)
@@ -89,12 +89,12 @@ namespace Symple::Binding
 	BoundBinaryOperator::Kind BoundBinaryOperator::GetKind()
 	{ return mKind; }
 
-	shared_ptr<Type> BoundBinaryOperator::GetLeftType()
+	shared_ptr<Symbol::TypeSymbol> BoundBinaryOperator::GetLeftType()
 	{ return mLeftType; }
 
-	shared_ptr<Type> BoundBinaryOperator::GetRightType()
+	shared_ptr<Symbol::TypeSymbol> BoundBinaryOperator::GetRightType()
 	{ return mRightType; }
 
-	shared_ptr<Type> BoundBinaryOperator::GetType()
+	shared_ptr<Symbol::TypeSymbol> BoundBinaryOperator::GetType()
 	{ return mType; }
 }

@@ -6,7 +6,7 @@
 #include "SympleCode/Memory.h"
 #include "SympleCode/Symbol/Symbol.h"
 
-namespace Symple::Binding
+namespace Symple::Symbol
 {
 	class TypeSymbol : public Symbol
 	{

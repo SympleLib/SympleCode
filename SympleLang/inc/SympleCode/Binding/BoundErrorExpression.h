@@ -13,7 +13,7 @@ namespace Symple::Binding
 		virtual Kind GetKind() override
 		{ return ErrorExpression; }
 
-		virtual shared_ptr<Type> GetType() override
-		{ return Type::ErrorType; }
+		virtual shared_ptr<Symbol::TypeSymbol> GetType() override
+		{ return Symbol::TypeSymbol::ErrorType; }
 	};
 }

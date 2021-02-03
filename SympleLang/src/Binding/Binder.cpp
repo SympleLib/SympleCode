@@ -5,7 +5,8 @@
 #include "SympleCode/Syntax/TypeReferenceSyntax.h"
 #include "SympleCode/Syntax/ParenthesizedExpressionSyntax.h"
 
-#include "SympleCode/Binding/Type.h"
+#include "SympleCode/Symbol/TypeSymbol.h"
+
 #include "SympleCode/Binding/BoundImplicitCastExpression.h"
 
 namespace Symple::Binding
@@ -29,46 +30,26 @@ namespace Symple::Binding
 
 	shared_ptr<Node> Binder::Bind(shared_ptr<Syntax::Node> syntax)
 	{
-		if (dynamic_pointer_cast<Syntax::MemberSyntax>(syntax))
-			return BindMember(dynamic_pointer_cast<Syntax::MemberSyntax>(syntax));
-		else if (dynamic_pointer_cast<Syntax::ExpressionSyntax, Syntax::Node>(syntax))
+		if (dynamic_pointer_cast<Syntax::ExpressionSyntax, Syntax::Node>(syntax))
 			return BindExpression(dynamic_pointer_cast<Syntax::ExpressionSyntax>(syntax));
 		else
 			return make_shared<Node>(syntax);
 	}
 
 
-	shared_ptr<BoundMember> Binder::BindMember(shared_ptr<Syntax::MemberSyntax> syntax)
-	{
-		switch (syntax->GetKind())
-		{
-		case Syntax::Node::FunctionDeclaration:
-			return BindFunction(dynamic_pointer_cast<Syntax::FunctionDeclarationSyntax>(syntax));
-		default:
-			return make_shared<BoundMember>(syntax);
-		}
-	}
-
-	shared_ptr<BoundFunction> Binder::BindFunction(shared_ptr<Syntax::FunctionDeclarationSyntax> syntax)
-	{
-		shared_ptr<Type> ty = BindType(syntax->GetType());
-		return make_shared<BoundFunction>(syntax, ty);
-	}
-
-
 #define TYPE_CONT(name) \
 		case Syntax::Token::##name##Keyword: \
-			return make_shared<Type>(Type::##name##Type->GetKind(), Type::##name##Type->GetName(), Type::##name##Type->GetSize(), base)
+			return make_shared<Symbol::TypeSymbol>(Symbol::TypeSymbol::##name##Type->GetTypeKind(), Symbol::TypeSymbol::##name##Type->GetName(), Symbol::TypeSymbol::##name##Type->GetSize(), base)
 
 #define TYPE_CASE(name) \
 		case Syntax::Token::##name##Keyword: \
-			return Type::##name##Type
+			return Symbol::TypeSymbol::##name##Type
 
-	shared_ptr<Type> Binder::BindType(shared_ptr<Syntax::TypeSyntax> syntax)
+	shared_ptr<Symbol::TypeSymbol> Binder::BindType(shared_ptr<Syntax::TypeSyntax> syntax)
 	{
 		if (dynamic_pointer_cast<Syntax::TypeReferenceSyntax>(syntax) && dynamic_pointer_cast<Syntax::TypeReferenceSyntax>(syntax)->GetBase())
 		{
-			shared_ptr<Type> base = BindType(dynamic_pointer_cast<Syntax::TypeReferenceSyntax>(syntax)->GetBase());
+			shared_ptr<Symbol::TypeSymbol> base = BindType(dynamic_pointer_cast<Syntax::TypeReferenceSyntax>(syntax)->GetBase());
 
 			switch (syntax->GetName()->GetKind())
 			{
@@ -89,7 +70,7 @@ namespace Symple::Binding
 
 				// Special
 			case Syntax::Token::Asterisk:
-				return make_shared<Type>(Type::VoidPointerType->GetKind(), Type::VoidPointerType->GetName(), Type::VoidPointerType->GetSize(), base);
+				return make_shared<Symbol::TypeSymbol>(Symbol::TypeSymbol::VoidPointerType->GetTypeKind(), Symbol::TypeSymbol::VoidPointerType->GetName(), Symbol::TypeSymbol::VoidPointerType->GetSize(), base);
 			}
 		}
 		else
@@ -113,7 +94,7 @@ namespace Symple::Binding
 
 				// Special
 			case Syntax::Token::Asterisk:
-				return Type::VoidPointerType;
+				return Symbol::TypeSymbol::VoidPointerType;
 			}
 		}
 	}
@@ -122,7 +103,7 @@ namespace Symple::Binding
 	shared_ptr<BoundExpression> Binder::BindExpression(shared_ptr<Syntax::ExpressionSyntax> syntax)
 	{
 		shared_ptr<BoundExpression> result = BindExpressionInternal(syntax);
-		if (!result /* Should not be null, but just in case */ || result->GetType()->Is(Type::Error))
+		if (!result /* Should not be null, but just in case */ || result->GetType()->Is(Symbol::TypeSymbol::Error))
 			return make_shared<BoundErrorExpression>(syntax);
 		return result;
 	}
@@ -159,23 +140,23 @@ namespace Symple::Binding
 
 	shared_ptr<BoundLiteralExpression> Binder::BindLiteralExpression(shared_ptr<Syntax::LiteralExpressionSyntax> syntax)
 	{
-		shared_ptr<Type> ty;
+		shared_ptr<Symbol::TypeSymbol> ty;
 		switch (syntax->GetLiteral()->GetKind())
 		{
 		case Syntax::Token::Integer:
 			if (std::stoll(std::string(syntax->GetLiteral()->GetText())) & 0xFFFFFFFF00000000)
-				ty = Type::LongType;
+				ty = Symbol::TypeSymbol::LongType;
 			else
-				ty = Type::IntType;
+				ty = Symbol::TypeSymbol::IntType;
 			break;
 		case Syntax::Token::Number:
-			ty = Type::DoubleType;
+			ty = Symbol::TypeSymbol::DoubleType;
 			break;
 		case Syntax::Token::Float:
-			ty = Type::FloatType;
+			ty = Symbol::TypeSymbol::FloatType;
 			break;
 		default:
-			ty = Type::ErrorType;
+			ty = Symbol::TypeSymbol::ErrorType;
 			break;
 		}
 

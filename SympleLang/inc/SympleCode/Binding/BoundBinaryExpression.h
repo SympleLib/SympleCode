@@ -20,7 +20,7 @@ namespace Symple::Binding
 		virtual Kind GetKind() override
 		{ return BinaryExpression; }
 
-		virtual shared_ptr<Type> GetType() override
+		virtual shared_ptr<Symbol::TypeSymbol> GetType() override
 		{ return mOperator->GetType(); }
 
 		virtual void Print(std::ostream& os = std::cout, std::string_view indent = "", bool last = true, std::string_view label = "") override

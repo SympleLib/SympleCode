@@ -36,7 +36,7 @@ namespace Symple
 	{ ReportError(tok, fmt::format("Unknown token '{}'", tok->GetText())); }
 
 
-	void DiagnosticBag::ReportInvalidOperation(shared_ptr<Syntax::Token> tok, shared_ptr<Binding::Type> l, shared_ptr<Binding::Type> r)
+	void DiagnosticBag::ReportInvalidOperation(shared_ptr<Syntax::Token> tok, shared_ptr<Symbol::TypeSymbol> l, shared_ptr<Symbol::TypeSymbol> r)
 	{
 		std::stringstream ss;
 		tok->PrintShort(ss);
@@ -52,7 +52,7 @@ namespace Symple
 		ReportError(tok, fmt::format("Invalid operation [{}] of types {}, and {}", tokstr, lstr, rstr));
 	}
 
-	void DiagnosticBag::ReportInvalidOperation(shared_ptr<Syntax::Token> tok, shared_ptr<Binding::Type> ty)
+	void DiagnosticBag::ReportInvalidOperation(shared_ptr<Syntax::Token> tok, shared_ptr<Symbol::TypeSymbol> ty)
 	{
 		std::stringstream ss;
 		tok->PrintShort(ss);

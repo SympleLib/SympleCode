@@ -7,16 +7,16 @@ namespace Symple::Binding
 	class BoundImplicitCastExpression : public BoundExpression
 	{
 	private:
-		shared_ptr<Type> mType;
+		shared_ptr<Symbol::TypeSymbol> mType;
 		shared_ptr<BoundExpression> mCastee;
 	public:
-		BoundImplicitCastExpression(shared_ptr<Syntax::ExpressionSyntax> syntax, shared_ptr<Type> type, shared_ptr<BoundExpression> castee)
+		BoundImplicitCastExpression(shared_ptr<Syntax::ExpressionSyntax> syntax, shared_ptr<Symbol::TypeSymbol> type, shared_ptr<BoundExpression> castee)
 			: BoundExpression(syntax), mType(type), mCastee(castee) {}
 
 		virtual Kind GetKind() override
 		{ return ImplicitCastExpression; }
 
-		virtual shared_ptr<Type> GetType() override
+		virtual shared_ptr<Symbol::TypeSymbol> GetType() override
 		{ return mType; }
 
 		virtual void Print(std::ostream& os = std::cout, std::string_view indent = "", bool last = true, std::string_view label = "") override
@@ -34,7 +34,7 @@ namespace Symple::Binding
 		shared_ptr<BoundExpression> GetCastee()
 		{ return mCastee; }
 
-		shared_ptr<Type> GetCasteeType()
+		shared_ptr<Symbol::TypeSymbol> GetCasteeType()
 		{ return GetCastee()->GetType(); }
 	};
 }

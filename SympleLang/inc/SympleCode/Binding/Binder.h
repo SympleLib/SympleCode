@@ -4,12 +4,10 @@
 
 #include "SympleCode/DiagnosticBag.h"
 
+#include "SympleCode/Syntax/TypeSyntax.h"
 #include "SympleCode/Syntax/ExpressionSyntax.h"
 
 #include "SympleCode/Binding/Node.h"
-
-#include "SympleCode/Binding/BoundMember.h"
-#include "SympleCode/Binding/BoundFunction.h"
 
 #include "SympleCode/Binding/BoundExpression.h"
 #include "SympleCode/Binding/BoundErrorExpression.h"
@@ -28,10 +26,7 @@ namespace Symple::Binding
 	public:
 		shared_ptr<Node> Bind(shared_ptr<Syntax::Node>);
 
-		shared_ptr<BoundMember> BindMember(shared_ptr<Syntax::MemberSyntax>);
-		shared_ptr<BoundFunction> BindFunction(shared_ptr<Syntax::FunctionDeclarationSyntax>);
-
-		shared_ptr<Type> BindType(shared_ptr<Syntax::TypeSyntax>);
+		shared_ptr<Symbol::TypeSymbol> BindType(shared_ptr<Syntax::TypeSyntax>);
 
 		shared_ptr<BoundExpression> BindExpression(shared_ptr<Syntax::ExpressionSyntax>);
 		shared_ptr<BoundUnaryExpression> BindUnaryExpression(shared_ptr<Syntax::UnaryExpressionSyntax>);

@@ -2,7 +2,7 @@
 
 #include "SympleCode/Syntax/Node.h"
 
-namespace Symple::Binding
+namespace Symple::Symbol
 {
 	class Symbol
 	{

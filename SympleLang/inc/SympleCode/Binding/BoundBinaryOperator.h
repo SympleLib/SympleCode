@@ -5,7 +5,7 @@
 #include "SympleCode/Syntax/Node.h"
 #include "SympleCode/Syntax/Token.h"
 
-#include "SympleCode/Binding/Type.h"
+#include "SympleCode/Symbol/TypeSymbol.h"
 
 namespace Symple::Binding
 {
@@ -15,22 +15,22 @@ namespace Symple::Binding
 	private:
 		Syntax::Token::Kind mTokenKind;
 		Kind mKind;
-		shared_ptr<Type> mLeftType, mRightType, mType;
+		shared_ptr<Symbol::TypeSymbol> mLeftType, mRightType, mType;
 
-		BoundBinaryOperator(Syntax::Token::Kind, Kind, shared_ptr<Type> leftType, shared_ptr<Type> rightType, shared_ptr<Type> type);
+		BoundBinaryOperator(Syntax::Token::Kind, Kind, shared_ptr<Symbol::TypeSymbol> leftType, shared_ptr<Symbol::TypeSymbol> rightType, shared_ptr<Symbol::TypeSymbol> type);
 		static std::vector<shared_ptr<BoundBinaryOperator>> sOperators;
 	public:
 		void Print(std::ostream& = std::cout, std::string_view indent = "", bool last = true, std::string_view label = "");
 		void PrintShort(std::ostream& os = std::cout);
 
-		static shared_ptr<BoundBinaryOperator> Bind(Syntax::Token::Kind, shared_ptr<Type> leftType, shared_ptr<Type> rightType);
+		static shared_ptr<BoundBinaryOperator> Bind(Syntax::Token::Kind, shared_ptr<Symbol::TypeSymbol> leftType, shared_ptr<Symbol::TypeSymbol> rightType);
 		static shared_ptr<BoundBinaryOperator> ErrorOperator;
 
 		Syntax::Token::Kind GetTokenKind();
 		Kind GetKind();
-		shared_ptr<Type> GetLeftType();
-		shared_ptr<Type> GetRightType();
-		shared_ptr<Type> GetType();
+		shared_ptr<Symbol::TypeSymbol> GetLeftType();
+		shared_ptr<Symbol::TypeSymbol> GetRightType();
+		shared_ptr<Symbol::TypeSymbol> GetType();
 	public:
 		enum Kind : unsigned
 		{
