@@ -13,10 +13,12 @@ namespace Symple::Binding
 {
 	shared_ptr<Node> Binder::Bind(shared_ptr<Syntax::Node> syntax)
 	{
-		if (dynamic_pointer_cast<Syntax::ExpressionSyntax, Syntax::Node>(syntax))
+		if (dynamic_pointer_cast<Syntax::ExpressionSyntax>(syntax))
 			return BindExpression(dynamic_pointer_cast<Syntax::ExpressionSyntax>(syntax));
-		else if (dynamic_pointer_cast<Syntax::StatementSyntax, Syntax::Node>(syntax))
+		else if (dynamic_pointer_cast<Syntax::StatementSyntax>(syntax))
 			return BindStatement(dynamic_pointer_cast<Syntax::StatementSyntax>(syntax));
+		else if (dynamic_pointer_cast<Syntax::MemberSyntax>(syntax))
+			return BindMember(dynamic_pointer_cast<Syntax::MemberSyntax>(syntax));
 		else
 			return make_shared<Node>(syntax);
 	}
@@ -113,6 +115,37 @@ namespace Symple::Binding
 
 		return make_shared<Symbol::ParameterSymbol>(ty, name, init);
 	}
+
+	#pragma endregion
+
+
+	#pragma region Members
+
+	shared_ptr<Node> Binder::BindMember(shared_ptr<Syntax::MemberSyntax> syntax)
+	{
+		shared_ptr<Node> result = BindMemberInternal(syntax);
+		if (!result /* Should not be null, but just in case */)
+		{
+			mDiagnosticBag->ReportUnimplimentedError(syntax->GetToken());
+			return make_shared<Node>(syntax);
+		}
+		else
+			return result;
+	}
+
+	shared_ptr<Node> Binder::BindMemberInternal(shared_ptr<Syntax::MemberSyntax> syntax)
+	{
+		switch (syntax->GetKind())
+		{
+		case Syntax::Node::GlobalStatement:
+			return BindGlobalStatement(dynamic_pointer_cast<Syntax::GlobalStatementSyntax>(syntax));
+		default:
+			return make_shared<Node>(syntax);
+		}
+	}
+
+	shared_ptr<BoundStatement> Binder::BindGlobalStatement(shared_ptr<Syntax::GlobalStatementSyntax> syntax)
+	{ return BindStatement(syntax->GetStatement()); }
 
 	#pragma endregion
 

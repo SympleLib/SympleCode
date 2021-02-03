@@ -5,6 +5,7 @@
 #include <spdlog/spdlog.h>
 
 #include "SympleCode/Syntax/Facts.h"
+#include "SympleCode/Syntax/GlobalStatementSyntax.h"
 
 namespace Symple::Syntax
 {
@@ -40,7 +41,7 @@ namespace Symple::Syntax
 		if (IsType())
 			return ParseFunctionDeclaration();
 		else
-			return make_shared<MemberSyntax>(Next());
+			return make_shared<GlobalStatementSyntax>(ParseStatement());
 	}
 
 	shared_ptr<FunctionDeclarationSyntax> Parser::ParseFunctionDeclaration()

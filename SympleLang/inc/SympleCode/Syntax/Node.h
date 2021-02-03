@@ -100,6 +100,7 @@ namespace Symple::Syntax
 			Unknown,
 
 			Member,
+			GlobalStatement,
 			FunctionDeclaration,
 
 
@@ -127,6 +128,7 @@ namespace Symple::Syntax
 			"Unknown",
 
 			"Member",
+			"GlobalStatement",
 			"FunctionDeclaration",
 
 

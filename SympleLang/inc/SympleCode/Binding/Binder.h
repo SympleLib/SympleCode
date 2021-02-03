@@ -5,6 +5,7 @@
 #include "SympleCode/DiagnosticBag.h"
 
 #include "SympleCode/Syntax/TypeSyntax.h"
+#include "SympleCode/Syntax/GlobalStatementSyntax.h"
 #include "SympleCode/Syntax/FunctionDeclarationSyntax.h"
 
 #include "SympleCode/Syntax/StatementSyntax.h"
@@ -33,16 +34,19 @@ namespace Symple::Binding
 	private:
 		shared_ptr<DiagnosticBag> mDiagnosticBag = make_shared<DiagnosticBag>();
 
+		shared_ptr<Node> BindMemberInternal(shared_ptr<Syntax::MemberSyntax>);
 		shared_ptr<BoundStatement> BindStatementInternal(shared_ptr<Syntax::StatementSyntax>);
 		shared_ptr<BoundExpression> BindExpressionInternal(shared_ptr<Syntax::ExpressionSyntax>);
 	public:
 		shared_ptr<Node> Bind(shared_ptr<Syntax::Node>);
+		shared_ptr<Node> BindMember(shared_ptr<Syntax::MemberSyntax>);
 
 		shared_ptr<Symbol::TypeSymbol> BindType(shared_ptr<Syntax::TypeSyntax>);
 		shared_ptr<Symbol::FunctionSymbol> BindFunction(shared_ptr<Syntax::FunctionDeclarationSyntax>);
 		shared_ptr<Symbol::ParameterSymbol> BindParameter(shared_ptr<Syntax::VariableDeclarationSyntax>);
 
 		shared_ptr<BoundStatement> BindStatement(shared_ptr<Syntax::StatementSyntax>);
+		shared_ptr<BoundStatement> BindGlobalStatement(shared_ptr<Syntax::GlobalStatementSyntax>);
 		shared_ptr<BoundBlockStatement> BindBlockStatement(shared_ptr<Syntax::BlockStatementSyntax>);
 
 		shared_ptr<BoundExpression> BindExpression(shared_ptr<Syntax::ExpressionSyntax>);

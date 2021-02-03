@@ -84,9 +84,9 @@ bool PrintDiagnosticBag(shared_ptr<DiagnosticBag> diagnostics, char step[] = "Nu
 }
 std::vector<shared_ptr<Token>> tokens;
 
-shared_ptr<FunctionDeclarationSyntax> node;
+shared_ptr<Syntax::Node> node;
 
-shared_ptr<Symple::Symbol::Symbol> bound;
+shared_ptr<Binding::Node> bound;
 
 void Lex()
 {
@@ -109,7 +109,7 @@ void Lex()
 void Parse()
 {
 	shared_ptr<Parser> parser = make_shared<Parser>(tokens);
-	node = parser->ParseFunctionDeclaration();
+	node = parser->Parse();
 	putchar('\n');
 	if (PrintDiagnosticBag(parser->GetDiagnosticBag(), "Parsing"))
 		return;
@@ -125,7 +125,7 @@ void Bind()
 		return;
 
 	shared_ptr<Binder> binder = make_shared<Binder>();
-	bound = binder->BindFunction(node);
+	bound = binder->Bind(node);
 	putchar('\n');
 	if (PrintDiagnosticBag(binder->GetDiagnosticBag(), "Binding"))
 		return;
