@@ -14,10 +14,4 @@ namespace Symple::Binding
 		T& GetValue()
 		{ return *(T*)mValue; }
 	};
-
-	template <typename T>
-	shared_ptr<BoundConstant> MakeConstant(const T& val)
-	{
-
-	}
 }
