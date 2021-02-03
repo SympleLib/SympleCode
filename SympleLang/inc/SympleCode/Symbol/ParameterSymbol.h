@@ -14,7 +14,7 @@ namespace Symple::Symbol
 		std::string mName;
 		shared_ptr<Binding::BoundConstant> mInitializer;
 	public:
-		ParameterSymbol(shared_ptr<TypeSymbol> ty, std::string_view name, Binding::BoundConstant init)
+		ParameterSymbol(shared_ptr<TypeSymbol> ty, std::string_view name, shared_ptr<Binding::BoundConstant> init)
 			: mType(ty), mName(name), mInitializer(init)
 		{}
 
@@ -27,7 +27,11 @@ namespace Symple::Symbol
 			PrintName(os);
 			os << " '"; GetType()->PrintShort(os); os << ' ' << GetName();
 			if (GetInitializer())
-				GetInitializer()->;
+			{
+				os << " = ";
+				GetInitializer()->PrintShort(os);
+			}
+			os.put('\'');
 		}
 
 		shared_ptr<TypeSymbol> GetType()
@@ -39,4 +43,6 @@ namespace Symple::Symbol
 		shared_ptr<Binding::BoundConstant> GetInitializer()
 		{ return mInitializer; }
 	};
+
+	typedef std::vector<shared_ptr<ParameterSymbol>> ParameterList;
 }

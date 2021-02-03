@@ -29,6 +29,7 @@ namespace Symple::Symbol
 		void Print(std::ostream & = std::cout, std::string_view indent = "", bool last = true, std::string_view label = "");
 		void PrintShort(std::ostream & = std::cout);
 
+		virtual Kind GetKind() override;
 		TypeKind GetTypeKind();
 		std::string_view GetName();
 		unsigned GetSize();

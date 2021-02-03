@@ -71,6 +71,9 @@ namespace Symple::Binding
 				// Special
 			case Syntax::Token::Asterisk:
 				return make_shared<Symbol::TypeSymbol>(Symbol::TypeSymbol::VoidPointerType->GetTypeKind(), Symbol::TypeSymbol::VoidPointerType->GetName(), Symbol::TypeSymbol::VoidPointerType->GetSize(), base);
+
+			default:
+				return Symbol::TypeSymbol::ErrorType;
 			}
 		}
 		else
@@ -95,8 +98,33 @@ namespace Symple::Binding
 				// Special
 			case Syntax::Token::Asterisk:
 				return Symbol::TypeSymbol::VoidPointerType;
+
+			default:
+				return Symbol::TypeSymbol::ErrorType;
 			}
 		}
+	}
+
+	shared_ptr<Symbol::FunctionSymbol> Binder::BindFunction(shared_ptr<Syntax::FunctionDeclarationSyntax> syntax)
+	{
+		shared_ptr<Symbol::TypeSymbol> ty = BindType(syntax->GetType());
+		std::string_view name = syntax->GetName()->GetText();
+		Symbol::ParameterList params;
+		for (auto param : syntax->GetParameters())
+			params.push_back(BindParameter(param));
+
+		return make_shared<Symbol::FunctionSymbol>(ty, name, params);
+	}
+
+	shared_ptr<Symbol::ParameterSymbol> Binder::BindParameter(shared_ptr<Syntax::VariableDeclarationSyntax> syntax)
+	{
+		shared_ptr<Symbol::TypeSymbol> ty = BindType(syntax->GetType());
+		std::string_view name = syntax->GetName()->GetText();
+		shared_ptr<BoundConstant> init;
+		if (syntax->GetInitializer())
+			init = BindExpression(syntax->GetInitializer())->ConstantValue();
+
+		return make_shared<Symbol::ParameterSymbol>(ty, name, init);
 	}
 
 

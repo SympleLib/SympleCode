@@ -35,6 +35,8 @@ namespace Symple::Symbol
 		{
 			Unknown,
 
+			Type,
+			Function,
 			Parameter,
 
 			Last = Parameter,
@@ -43,6 +45,8 @@ namespace Symple::Symbol
 		static constexpr char* KindMap[Last + 1] = {
 			"Unknown",
 
+			"Type",
+			"Function",
 			"Parameter",
 		};
 	};

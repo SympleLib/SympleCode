@@ -3,6 +3,7 @@
 #include "SympleCode/Syntax/ExpressionSyntax.h"
 
 #include "SympleCode/Binding/Node.h"
+#include "SympleCode/Binding/BoundConstant.h"
 
 #include "SympleCode/Symbol/TypeSymbol.h"
 
@@ -22,6 +23,9 @@ namespace Symple::Binding
 
 		virtual bool IsMutable()
 		{ return false; }
+
+		virtual shared_ptr<BoundConstant> ConstantValue()
+		{ return nullptr; }
 
 		virtual void Print(std::ostream & os = std::cout, std::string_view indent = "", bool last = true, std::string_view label = "") override
 		{

@@ -32,9 +32,9 @@ project "SympleLang"
 	}
 	
 	filter "configurations:Debug"
-		defines "_SY_DEBUG"
+		defines "__SY_DEBUG"
 		symbols "On"
 
 	filter "configurations:Release"
-		defines "_SY_RELEASE"
+		defines "__SY_RELEASE"
 		optimize "On"

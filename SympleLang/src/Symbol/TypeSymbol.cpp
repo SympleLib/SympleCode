@@ -1,7 +1,5 @@
 #include "SympleCode/Symbol/TypeSymbol.h"
 
-#include "SympleCode/Binding/Node.h"
-
 namespace Symple::Symbol
 {
 	shared_ptr<TypeSymbol> TypeSymbol::ErrorType = make_shared<TypeSymbol>(Error, "error-type", -1);
@@ -51,21 +49,21 @@ namespace Symple::Symbol
 			GetBase()->Print(os);
 		}
 
-		Binding::Node::PrintIndent(os, indent, last, label);
+		PrintIndent(os, indent, last, label);
 		os << GetName();
 	}
 
-	void TypeSymbol::PrintShort(std::ostream & os)
+	void TypeSymbol::PrintShort(std::ostream& os)
 	{
 		if (GetBase())
 			GetBase()->PrintShort(os);
 
-		if (GetKind() == Pointer)
-			os.put('*');
-		else
-			os << KindMap[GetKind()];
+		os << GetName();
 	}
 
+
+	Symbol::Kind TypeSymbol::GetKind()
+	{ return Type; }
 
 	TypeSymbol::TypeKind TypeSymbol::GetTypeKind()
 	{ return mTypeKind; }

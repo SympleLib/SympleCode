@@ -10,6 +10,7 @@
 using namespace Symple;
 using namespace Symple::Binding;
 using namespace Symple::Syntax;
+using namespace Symple::Symbol;
 
 using std::shared_ptr;
 using std::make_shared;
@@ -84,9 +85,9 @@ bool PrintDiagnosticBag(shared_ptr<DiagnosticBag> diagnostics, char step[] = "Nu
 shared_ptr<Lexer> lexer;
 std::vector<shared_ptr<Token>> tokens;
 
-shared_ptr<Syntax::Node> node;
+shared_ptr<FunctionDeclarationSyntax> node;
 
-shared_ptr<Binding::Node> bound;
+shared_ptr<Symple::Symbol::Symbol> bound;
 
 void Lex()
 {
@@ -110,7 +111,7 @@ void Lex()
 void Parse()
 {
 	shared_ptr<Parser> parser = make_shared<Parser>(lexer, tokens);
-	node = parser->Parse();
+	node = parser->ParseFunctionDeclaration();
 	putchar('\n');
 	if (PrintDiagnosticBag(parser->GetDiagnosticBag(), "Parsing"))
 		return;
@@ -126,7 +127,7 @@ void Bind()
 		return;
 
 	shared_ptr<Binder> binder = make_shared<Binder>();
-	bound = binder->Bind(node);
+	bound = binder->BindFunction(node);
 	putchar('\n');
 	if (PrintDiagnosticBag(binder->GetDiagnosticBag(), "Binding"))
 		return;
