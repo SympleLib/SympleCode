@@ -56,15 +56,15 @@ bool PrintDiagnosticBag(shared_ptr<DiagnosticBag> diagnostics, char step[] = "Nu
 		switch (diagnostic->GetLevel())
 		{
 		case Diagnostic::Message:
-			spdlog::info("{}", diagnostic->GetMessage());
+			spdlog::info("'{}' {}:{} \"{}\"", diagnostic->GetToken()->GetFile(), diagnostic->GetToken()->GetLine(), diagnostic->GetToken()->GetColumn(), diagnostic->GetMessage());
 			messageCount++;
 			break;
 		case Diagnostic::Warning:
-			spdlog::warn("{}", diagnostic->GetMessage());
+			spdlog::warn("'{}' {}:{} \"{}\"", diagnostic->GetToken()->GetFile(), diagnostic->GetToken()->GetLine(), diagnostic->GetToken()->GetColumn(), diagnostic->GetMessage());
 			warningCount++;
 			break;
 		case Diagnostic::Error:
-			spdlog::error("{}", diagnostic->GetMessage());
+			spdlog::error("'{}' {}:{} \"{}\"", diagnostic->GetToken()->GetFile(), diagnostic->GetToken()->GetLine(), diagnostic->GetToken()->GetColumn(), diagnostic->GetMessage());
 			errCount++;
 			break;
 		}

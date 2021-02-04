@@ -137,15 +137,23 @@ namespace Symple::Syntax
 		return make_shared<VariableDeclarationSyntax>(type, name, equals, initializer);
 	}
 
-	std::vector<shared_ptr<VariableDeclarationSyntax>> Parser::ParseVariableDeclarationList()
+	VariableDeclarationList Parser::ParseVariableDeclarationList()
 	{
-		std::vector<shared_ptr<VariableDeclarationSyntax>> list;
+		VariableDeclarationList list;
 		
-		if (IsType())
-			list.push_back(ParseVariableDeclaration());
-		while (Peek()->Is(Token::Comma))
+		bool first = true;
+		while (!Peek()->Is(Token::CloseParenthesis, Token::CloseBrace))
 		{
-			Next();
+			if (Peek()->Is(Token::EndOfFile))
+			{
+				mDiagnosticBag->ReportUnexpectedEndOfFile(Peek());
+				break;
+			}
+
+			if (first)
+				first = false;
+			else
+				Match(Token::Comma);
 			list.push_back(ParseVariableDeclaration());
 		}
 
@@ -165,6 +173,29 @@ namespace Symple::Syntax
 
 	shared_ptr<ExpressionSyntax> Parser::ParseExpression()
 	{ return ParseBinaryExpression(); }
+
+	ExpressionList Parser::ParseExpressionList()
+	{
+		ExpressionList list;
+
+		bool first = true;
+		while (!Peek()->Is(Token::CloseParenthesis, Token::CloseBrace))
+		{
+			if (Peek()->Is(Token::EndOfFile))
+			{
+				mDiagnosticBag->ReportUnexpectedEndOfFile(Peek());
+				break;
+			}
+
+			if (first)
+				first = false;
+			else
+				Match(Token::Comma);
+			list.push_back(ParseExpression());
+		}
+
+		return list;
+	}
 
 	shared_ptr<ExpressionSyntax> Parser::ParseUnaryExpression(unsigned parentPrecedence)
 	{
@@ -201,7 +232,10 @@ namespace Symple::Syntax
 		switch (Peek()->GetKind())
 		{
 		case Token::Identifier:
-			return ParseNameExpression();
+			if (Peek(1)->Is(Token::OpenParenthesis))
+				return ParseFunctionCallExpression();
+			else
+				return ParseNameExpression();
 		case Token::Number:
 		case Token::Float:
 		case Token::Integer:
@@ -220,13 +254,14 @@ namespace Symple::Syntax
 	shared_ptr<LiteralExpressionSyntax> Parser::ParseLiteralExpression()
 	{ return make_shared<LiteralExpressionSyntax>(Next()); }
 
-	shared_ptr<FunctionCallExpressionSyntax> Parser::ParseFunctionCallExpressionSyntax()
+	shared_ptr<FunctionCallExpressionSyntax> Parser::ParseFunctionCallExpression()
 	{
 		shared_ptr<Token> name = Match(Token::Identifier);
 		shared_ptr<Token> open = Match(Token::OpenParenthesis);
-		ExpressionList expression = ParseExpression();
+		ExpressionList args = ParseExpressionList();
 		shared_ptr<Token> close = Match(Token::CloseParenthesis);
 
+		return make_shared<FunctionCallExpressionSyntax>(name, open, args, close);
 	}
 
 	shared_ptr<ParenthesizedExpressionSyntax> Parser::ParseParenthesizedExpression()

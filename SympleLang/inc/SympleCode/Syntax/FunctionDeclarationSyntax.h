@@ -34,7 +34,7 @@ namespace Symple::Syntax
 			os << " '"; GetType()->PrintShort(os); os << ' ' << GetName()->GetText(); os.put('(');
 			for (auto param : GetParameters())
 			{
-				param->PrintShort(os);
+				param->GetType()->PrintShort(os);
 				if (param != GetParameters().back())
 					os << ", ";
 			}
@@ -43,6 +43,8 @@ namespace Symple::Syntax
 			std::string newIndent(indent);
 			newIndent += GetAddIndent(last);
 
+			for (auto param : GetParameters()) 
+			{ os.put('\n'); param->Print(os, newIndent, false, "[Param] "); }
 			os.put('\n'); GetBody()->Print(os, newIndent, true, "Body = ");
 		}
 

@@ -52,10 +52,11 @@ namespace Symple::Syntax
 		shared_ptr<BlockStatementSyntax> ParseBlockStatement();
 		shared_ptr<ReturnStatementSyntax> ParseReturnStatement();
 		shared_ptr<VariableDeclarationSyntax> ParseVariableDeclaration();
-		std::vector<shared_ptr<VariableDeclarationSyntax>> ParseVariableDeclarationList();
+		VariableDeclarationList ParseVariableDeclarationList();
 		shared_ptr<TypeSyntax> ParseType(shared_ptr<TypeSyntax> base = nullptr);
 
 		shared_ptr<ExpressionSyntax> ParseExpression();
+		ExpressionList ParseExpressionList();
 		shared_ptr<ExpressionSyntax> ParseUnaryExpression(unsigned parentPrecedence = 0);
 		shared_ptr<ExpressionSyntax> ParseBinaryExpression(unsigned parentPrecedence = 0);
 
