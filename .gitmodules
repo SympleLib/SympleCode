@@ -4,3 +4,6 @@
 [submodule "SympleLang/vendor/spdlog"]
 	path = SympleLang/vendor/spdlog
 	url = https://github.com/gabime/spdlog.git
+[submodule "SympleLang/vendor/llvm-c"]
+	path = SympleLang/vendor/llvm-c
+	url = https://github.com/TeddyTelanoff/llvm-c
