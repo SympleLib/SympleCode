@@ -5,7 +5,10 @@ workspace "SympleCode"
 		"Debug",
 		"Release"
 	}
+	
+	flags "MultiProcessorCompile"
 
 outputdir = "%{cfg.buildcfg}-%{cfg.system}-%{cfg.architecture}"
 
-include "SympleCompiler"
+include "SympleLang"
+-- include "SympleCompiler"

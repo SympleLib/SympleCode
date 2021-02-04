@@ -1,4 +1,4 @@
-project "SympleCompiler"
+project "SympleLang"
 	kind "ConsoleApp"
 	language "C++"
 	cppdialect "C++17"
@@ -12,20 +12,29 @@ project "SympleCompiler"
 	}
 	
 	files {
-		"src/**.h",
+		"inc/**.h",
+		"inc/**.hpp",
+		
 		"src/**.c",
-		"src/**.hpp",
-		"src/**.cpp"
+		"src/**.cpp",
+		
+		"sy/**.sy"
 	}
 	
 	includedirs {
-		"src"
+		"inc",
+		
+		"vendor/spdlog/include"
+	}
+	
+	disablewarnings {
+		"26812"
 	}
 	
 	filter "configurations:Debug"
-		defines "_SY_DEBUG"
+		defines "__SY_DEBUG"
 		symbols "On"
 
 	filter "configurations:Release"
-		defines "_SY_RELEASE"
+		defines "__SY_RELEASE"
 		optimize "On"
