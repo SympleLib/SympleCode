@@ -245,7 +245,7 @@ namespace Symple::Syntax
 		{
 		case Token::Identifier:
 			if (Peek(1)->Is(Token::OpenParenthesis))
-				return ParseFunctionCallExpression();
+				return ParseCallExpression();
 			else
 				return ParseNameExpression();
 		case Token::Number:
@@ -263,18 +263,18 @@ namespace Symple::Syntax
 	shared_ptr<NameExpressionSyntax> Parser::ParseNameExpression()
 	{ return make_shared<NameExpressionSyntax>(Match(Token::Identifier)); }
 
-	shared_ptr<LiteralExpressionSyntax> Parser::ParseLiteralExpression()
-	{ return make_shared<LiteralExpressionSyntax>(Next()); }
-
-	shared_ptr<FunctionCallExpressionSyntax> Parser::ParseFunctionCallExpression()
+	shared_ptr<CallExpressionSyntax> Parser::ParseCallExpression()
 	{
 		shared_ptr<Token> name = Match(Token::Identifier);
 		shared_ptr<Token> open = Match(Token::OpenParenthesis);
 		ExpressionList args = ParseExpressionList();
 		shared_ptr<Token> close = Match(Token::CloseParenthesis);
 
-		return make_shared<FunctionCallExpressionSyntax>(name, open, args, close);
+		return make_shared<CallExpressionSyntax>(name, open, args, close);
 	}
+
+	shared_ptr<LiteralExpressionSyntax> Parser::ParseLiteralExpression()
+	{ return make_shared<LiteralExpressionSyntax>(Next()); }
 
 	shared_ptr<ParenthesizedExpressionSyntax> Parser::ParseParenthesizedExpression()
 	{

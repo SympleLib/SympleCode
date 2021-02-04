@@ -122,9 +122,9 @@ namespace Symple::Syntax
 			ParenthesizedExpression,
 
 			NameExpression,
-			FunctionCallExpression,
+			CallExpression,
 
-			Last = FunctionCallExpression,
+			Last = CallExpression,
 		};
 
 		static constexpr char* KindMap[Last + 1] = {
@@ -152,7 +152,7 @@ namespace Symple::Syntax
 			"ParenthesizedExpression",
 
 			"NameExpression",
-			"FunctionCallExpression",
+			"CallExpression",
 		};
 	};
 }

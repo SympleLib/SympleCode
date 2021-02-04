@@ -26,7 +26,7 @@
 #include "SympleCode/Syntax/ParenthesizedExpressionSyntax.h"
 
 #include "SympleCode/Syntax/NameExpressionSyntax.h"
-#include "SympleCode/Syntax/FunctionCallExpressionSyntax.h"
+#include "SympleCode/Syntax/CallExpressionSyntax.h"
 
 #include "SympleCode/DiagnosticBag.h"
 
@@ -63,8 +63,8 @@ namespace Symple::Syntax
 
 		shared_ptr<ExpressionSyntax> ParsePrimaryExpression();
 		shared_ptr<NameExpressionSyntax> ParseNameExpression();
+		shared_ptr<CallExpressionSyntax> ParseCallExpression();
 		shared_ptr<LiteralExpressionSyntax> ParseLiteralExpression();
-		shared_ptr<FunctionCallExpressionSyntax> ParseFunctionCallExpression();
 		shared_ptr<ParenthesizedExpressionSyntax> ParseParenthesizedExpression();
 
 		shared_ptr<DiagnosticBag> GetDiagnosticBag();

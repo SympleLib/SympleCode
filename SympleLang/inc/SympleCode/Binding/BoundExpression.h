@@ -38,4 +38,6 @@ namespace Symple::Binding
 			os.put('\n'); GetType()->Print(os, newIndent, true, "Type = ");
 		}
 	};
+
+	typedef std::vector<shared_ptr<BoundExpression>> ExpressionList;
 }

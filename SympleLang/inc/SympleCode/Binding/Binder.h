@@ -24,6 +24,7 @@
 #include "SympleCode/Binding/BoundReturnStatement.h"
 
 #include "SympleCode/Binding/BoundExpression.h"
+#include "SympleCode/Binding/BoundCallExpression.h"
 #include "SympleCode/Binding/BoundErrorExpression.h"
 #include "SympleCode/Binding/BoundUnaryExpression.h"
 #include "SympleCode/Binding/BoundBinaryExpression.h"
@@ -57,6 +58,7 @@ namespace Symple::Binding
 		shared_ptr<BoundReturnStatement> BindReturnStatement(shared_ptr<Syntax::ReturnStatementSyntax>);
 
 		shared_ptr<BoundExpression> BindExpression(shared_ptr<Syntax::ExpressionSyntax>);
+		shared_ptr<BoundCallExpression> BindCallExpression(shared_ptr<Syntax::CallExpressionSyntax>);
 		shared_ptr<BoundUnaryExpression> BindUnaryExpression(shared_ptr<Syntax::UnaryExpressionSyntax>);
 		shared_ptr<BoundBinaryExpression> BindBinaryExpression(shared_ptr<Syntax::BinaryExpressionSyntax>);
 		shared_ptr<BoundLiteralExpression> BindLiteralExpression(shared_ptr<Syntax::LiteralExpressionSyntax>);

@@ -214,6 +214,8 @@ namespace Symple::Binding
 	{
 		switch (syntax->GetKind())
 		{
+		case Syntax::Node::CallExpression:
+			return BindCallExpression(dynamic_pointer_cast<Syntax::CallExpressionSyntax>(syntax));
 		case Syntax::Node::UnaryExpression:
 			return BindUnaryExpression(dynamic_pointer_cast<Syntax::UnaryExpressionSyntax>(syntax));
 		case Syntax::Node::BinaryExpression:
@@ -225,6 +227,20 @@ namespace Symple::Binding
 		default:
 			return make_shared<BoundErrorExpression>(syntax);
 		}
+	}
+
+	shared_ptr<BoundCallExpression> Binder::BindCallExpression(shared_ptr<Syntax::CallExpressionSyntax> syntax)
+	{
+		shared_ptr<Symbol::FunctionSymbol> funcSymbol;
+		for (auto& func : mFunctions)
+			if (func.first->GetName() == syntax->GetName()->GetText())
+				funcSymbol = func.first;
+
+		ExpressionList args;
+		for (auto arg : syntax->GetArguments())
+			args.push_back(BindExpression(arg));
+
+		return make_shared<BoundCallExpression>(syntax, funcSymbol, args);
 	}
 
 	shared_ptr<BoundUnaryExpression> Binder::BindUnaryExpression(shared_ptr<Syntax::UnaryExpressionSyntax> syntax)
