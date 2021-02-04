@@ -84,7 +84,7 @@ bool PrintDiagnosticBag(shared_ptr<DiagnosticBag> diagnostics, char step[] = "Nu
 }
 std::vector<shared_ptr<Token>> sTokens;
 
-shared_ptr<Syntax::Node> sNode;
+shared_ptr<TranslationUnitSyntax> sNode;
 
 shared_ptr<Binding::Node> sBound;
 

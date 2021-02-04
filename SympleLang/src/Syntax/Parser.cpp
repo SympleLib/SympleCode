@@ -32,8 +32,20 @@ namespace Symple::Syntax
 	{}
 
 
-	shared_ptr<Syntax::Node> Parser::Parse()
-	{ return ParseMember(); }
+	shared_ptr<TranslationUnitSyntax> Parser::Parse()
+	{
+		std::vector<shared_ptr<MemberSyntax>> members;
+		while (!Peek()->Is(Token::EndOfFile))
+		{
+			unsigned start = mPosition;
+			members.push_back(ParseMember());
+			if (start == mPosition)
+				Next();
+		}
+		shared_ptr<Token> eof = Match(Token::EndOfFile);
+
+		return make_shared<TranslationUnitSyntax>(members, eof);
+	}
 
 
 	shared_ptr<MemberSyntax> Parser::ParseMember()

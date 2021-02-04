@@ -99,6 +99,8 @@ namespace Symple::Syntax
 		{
 			Unknown,
 
+			TranslationUnit,
+
 			Member,
 			GlobalStatement,
 			FunctionDeclaration,
@@ -127,6 +129,8 @@ namespace Symple::Syntax
 
 		static constexpr char* KindMap[Last + 1] = {
 			"Unknown",
+
+			"TranslationUnit",
 
 			"Member",
 			"GlobalStatement",

@@ -6,6 +6,7 @@
 #include "SympleCode/Syntax/Token.h"
 
 #include "SympleCode/Syntax/Node.h"
+#include "SympleCode/Syntax/TranslationUnitSyntax.h"
 
 #include "SympleCode/Syntax/MemberSyntax.h"
 #include "SympleCode/Syntax/FunctionDeclarationSyntax.h"
@@ -43,7 +44,7 @@ namespace Symple::Syntax
 		Parser(shared_ptr<Lexer>, std::vector<shared_ptr<Token>>);
 		Parser(std::vector<shared_ptr<Token>>);
 
-		shared_ptr<Syntax::Node> Parse();
+		shared_ptr<TranslationUnitSyntax> Parse();
 
 		shared_ptr<MemberSyntax> ParseMember();
 		shared_ptr<FunctionDeclarationSyntax> ParseFunctionDeclaration();
