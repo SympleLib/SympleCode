@@ -29,7 +29,7 @@ namespace Symple::Symbol
 			std::string newIndent(indent);
 			newIndent += GetAddIndent(last);
 			
-			os.put('\n'); GetType()->Print(os, newIndent, false, "Return Type = ");
+			os.put('\n'); GetType()->Print(os, newIndent, GetParameters().empty(), "Return Type = ");
 			for (auto param : GetParameters())
 			{ os.put('\n'); param->Print(os, newIndent, param == GetParameters().back()); }
 		}

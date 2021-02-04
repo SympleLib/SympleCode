@@ -11,16 +11,15 @@
 
 namespace Symple::Binding
 {
-	shared_ptr<Node> Binder::Bind(shared_ptr<Syntax::Node> syntax)
+	shared_ptr<BoundCompilationUnit> Binder::Bind(shared_ptr<Syntax::TranslationUnitSyntax> unit)
 	{
-		if (dynamic_pointer_cast<Syntax::ExpressionSyntax>(syntax))
-			return BindExpression(dynamic_pointer_cast<Syntax::ExpressionSyntax>(syntax));
-		else if (dynamic_pointer_cast<Syntax::StatementSyntax>(syntax))
-			return BindStatement(dynamic_pointer_cast<Syntax::StatementSyntax>(syntax));
-		else if (dynamic_pointer_cast<Syntax::MemberSyntax>(syntax))
-			return BindMember(dynamic_pointer_cast<Syntax::MemberSyntax>(syntax));
-		else
-			return make_shared<Node>(syntax);
+		mCompilationUnit = unit;
+		mFunctions.clear();
+
+		for (auto member : mCompilationUnit->GetMembers())
+			BindMember(member);
+
+		return make_shared<BoundCompilationUnit>(unit, mFunctions);
 	}
 
 
@@ -102,7 +101,10 @@ namespace Symple::Binding
 		for (auto param : syntax->GetParameters())
 			params.push_back(BindParameter(param));
 
-		return make_shared<Symbol::FunctionSymbol>(ty, name, params);
+		shared_ptr<Symbol::FunctionSymbol> symbol = make_shared<Symbol::FunctionSymbol>(ty, name, params);
+		shared_ptr<BoundStatement> body = BindStatement(syntax->GetBody());
+		mFunctions.insert({ symbol, body });
+		return symbol;
 	}
 
 	shared_ptr<Symbol::ParameterSymbol> Binder::BindParameter(shared_ptr<Syntax::VariableDeclarationSyntax> syntax)
@@ -139,6 +141,8 @@ namespace Symple::Binding
 		{
 		case Syntax::Node::GlobalStatement:
 			return BindGlobalStatement(dynamic_pointer_cast<Syntax::GlobalStatementSyntax>(syntax));
+		case Syntax::Node::FunctionDeclaration:
+			BindFunction(dynamic_pointer_cast<Syntax::FunctionDeclarationSyntax>(syntax));
 		default:
 			return make_shared<Node>(syntax);
 		}

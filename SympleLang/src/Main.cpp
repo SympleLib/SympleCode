@@ -86,21 +86,24 @@ std::vector<shared_ptr<Token>> sTokens;
 
 shared_ptr<TranslationUnitSyntax> sNode;
 
-shared_ptr<Binding::Node> sBound;
+shared_ptr<BoundCompilationUnit> sBound;
 
 void Lex()
 {
 	shared_ptr<Lexer> lexer = make_shared<Lexer>((char*)"sy/Main.sy");
 	sTokens.clear();
 
-	spdlog::info("Lex Tokens:");
 	do
 		sTokens.push_back(lexer->Lex());
 	while (!sTokens.back()->Is(Token::EndOfFile));
 
 	if (PrintDiagnosticBag(lexer->GetDiagnosticBag(), "Lexing"))
+	{
 		sTokens.clear();
+		return;
+	}
 
+	spdlog::info("Lex Tokens:");
 	for (auto tok : sTokens)
 	{
 		tok->Print(std::cout, "", tok->Is(Token::EndOfFile));
@@ -110,11 +113,17 @@ void Lex()
 
 void Parse()
 {
+	if (sTokens.empty())
+		return;
+
 	shared_ptr<Parser> parser = make_shared<Parser>(sTokens);
 	sNode = parser->Parse();
 	putchar('\n');
 	if (PrintDiagnosticBag(parser->GetDiagnosticBag(), "Parsing"))
+	{
+		sNode = nullptr;
 		return;
+	}
 
 	spdlog::info("Parse Tree:");
 	sNode->Print();

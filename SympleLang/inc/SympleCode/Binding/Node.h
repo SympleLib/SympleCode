@@ -45,6 +45,8 @@ namespace Symple::Binding
 		{
 			Unknown,
 
+			CompilationUnit,
+
 			Member,
 			Function,
 
@@ -65,6 +67,8 @@ namespace Symple::Binding
 
 		static constexpr char* KindMap[Last + 1] = {
 			"Unknown",
+
+			"CompilationUnit",
 
 			"Member",
 			"Function",

@@ -17,6 +17,7 @@
 #include "SympleCode/Symbol/FunctionSymbol.h"
 
 #include "SympleCode/Binding/Node.h"
+#include "SympleCode/Binding/BoundCompilationUnit.h"
 
 #include "SympleCode/Binding/BoundStatement.h"
 #include "SympleCode/Binding/BoundBlockStatement.h"
@@ -33,13 +34,17 @@ namespace Symple::Binding
 	class Binder
 	{
 	private:
+		shared_ptr<Syntax::TranslationUnitSyntax> mCompilationUnit;
+		FunctionMap mFunctions;
+
+
 		shared_ptr<DiagnosticBag> mDiagnosticBag = make_shared<DiagnosticBag>();
 
 		shared_ptr<Node> BindMemberInternal(shared_ptr<Syntax::MemberSyntax>);
 		shared_ptr<BoundStatement> BindStatementInternal(shared_ptr<Syntax::StatementSyntax>);
 		shared_ptr<BoundExpression> BindExpressionInternal(shared_ptr<Syntax::ExpressionSyntax>);
 	public:
-		shared_ptr<Node> Bind(shared_ptr<Syntax::Node>);
+		shared_ptr<BoundCompilationUnit> Bind(shared_ptr<Syntax::TranslationUnitSyntax>);
 		shared_ptr<Node> BindMember(shared_ptr<Syntax::MemberSyntax>);
 
 		shared_ptr<Symbol::TypeSymbol> BindType(shared_ptr<Syntax::TypeSyntax>);
