@@ -12,9 +12,27 @@ namespace Symple::Util
 		{
 			char errMsg[32];
 			if (strerror_s(errMsg, err))
-				spdlog::error("Error Opening File '{}'", path);
+				spdlog::error("Error opening file '{}'", path);
 			else
-				spdlog::error("Error Opening File '{}': {}", path, errMsg);
+				spdlog::error("Error opening file '{}': {}", path, errMsg);
+
+			return nullptr;
+		}
+		else
+			return fs;
+	}
+
+	FILE* OpenTempFile()
+	{
+		FILE* fs;
+		errno_t err = tmpfile_s(&fs);
+		if (err || !fs)
+		{
+			char errMsg[32];
+			if (strerror_s(errMsg, err))
+				spdlog::error("Error opening temp file");
+			else
+				spdlog::error("Error opening temp file: {}", errMsg);
 
 			return nullptr;
 		}
@@ -28,7 +46,7 @@ namespace Symple::Util
 	std::string ReadFile(FILE* fs, unsigned max)
 	{
 		if (!fs)
-			return nullptr;
+			return {};
 
 		fseek(fs, 0, SEEK_END);
 		unsigned allocSz = std::min((unsigned)(ftell(fs) + 1), max);

@@ -6,11 +6,13 @@
 #include "SympleCode/Syntax/Lexer.h"
 #include "SympleCode/Syntax/Parser.h"
 #include "SympleCode/Binding/Binder.h"
+#include "SympleCode/Emit/AsmEmitter.h"
 
 using namespace Symple;
 using namespace Symple::Binding;
 using namespace Symple::Syntax;
 using namespace Symple::Symbol;
+using namespace Symple::Emit;
 
 using std::shared_ptr;
 using std::make_shared;
@@ -150,6 +152,13 @@ void Bind()
 #endif
 }
 
+void _Emit()
+{
+	shared_ptr<Emitter> emmiter = make_shared<AsmEmitter>((char*)"sy/Main.S");
+	emmiter->Emit(sBound);
+	emmiter->Compile();
+}
+
 int main()
 {
 	spdlog::set_pattern("[Symple]%^<%l>%$: %v");
@@ -161,6 +170,7 @@ int main()
 	Lex();
 	Parse();
 	Bind();
+	_Emit();
 
 	return !getc(stdin);
 }
