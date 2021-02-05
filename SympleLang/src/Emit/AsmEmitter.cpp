@@ -85,8 +85,8 @@ namespace Symple::Emit
 	void AsmEmitter::EmitReturnStatement(shared_ptr<Binding::BoundReturnStatement> stmt)
 	{
 		EmitExpression(stmt->GetValue());
-		if (mReturning = true)
-			_Emit(Text, "\tjmp     _%s.Return", mFunction->GetName().data());
+		_Emit(Text, "\tjmp     _%s.Return", mFunction->GetName().data());
+		mReturning = true;
 	}
 
 
