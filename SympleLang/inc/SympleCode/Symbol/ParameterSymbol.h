@@ -34,6 +34,16 @@ namespace Symple::Symbol
 			os.put('\'');
 		}
 
+		void PrintShort(std::ostream& os = std::cout)
+		{
+			GetType()->PrintShort(os); os << ' ' << GetName();
+			if (GetInitializer())
+			{
+				os << " = ";
+				GetInitializer()->PrintShort(os);
+			}
+		}
+
 		shared_ptr<TypeSymbol> GetType()
 		{ return mType; }
 

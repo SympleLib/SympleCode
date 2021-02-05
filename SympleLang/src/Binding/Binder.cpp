@@ -103,7 +103,7 @@ namespace Symple::Binding
 
 		shared_ptr<Symbol::FunctionSymbol> symbol = make_shared<Symbol::FunctionSymbol>(ty, name, params);
 		shared_ptr<BoundStatement> body = BindStatement(syntax->GetBody());
-		mFunctions.insert({ symbol, body });
+		mFunctions.push_back({ symbol, body });
 		return symbol;
 	}
 
@@ -276,26 +276,42 @@ namespace Symple::Binding
 	shared_ptr<BoundLiteralExpression> Binder::BindLiteralExpression(shared_ptr<Syntax::LiteralExpressionSyntax> syntax)
 	{
 		shared_ptr<Symbol::TypeSymbol> ty;
+		shared_ptr<BoundConstant> constant;
 		switch (syntax->GetLiteral()->GetKind())
 		{
 		case Syntax::Token::Integer:
+		{
 			if (std::stoll(std::string(syntax->GetLiteral()->GetText())) & 0xFFFFFFFF00000000)
 				ty = Symbol::TypeSymbol::LongType;
 			else
 				ty = Symbol::TypeSymbol::IntType;
+
+			long long val = std::stoll(std::string(syntax->GetLiteral()->GetText()));
+			constant = make_shared<BoundConstant>(BoundConstant::Integer, &val);
 			break;
+		}
 		case Syntax::Token::Number:
-			ty = Symbol::TypeSymbol::DoubleType;
-			break;
+			{
+				ty = Symbol::TypeSymbol::DoubleType;
+
+				double val = std::stod(std::string(syntax->GetLiteral()->GetText()));
+				constant = make_shared<BoundConstant>(BoundConstant::Float, &val);
+				break;
+			}
 		case Syntax::Token::Float:
+		{
 			ty = Symbol::TypeSymbol::FloatType;
+
+			float val = std::stof(std::string(syntax->GetLiteral()->GetText()));
+			constant = make_shared<BoundConstant>(BoundConstant::Float, &val);
 			break;
+		}
 		default:
 			ty = Symbol::TypeSymbol::ErrorType;
 			break;
 		}
 
-		return make_shared<BoundLiteralExpression>(syntax, ty);
+		return make_shared<BoundLiteralExpression>(syntax, ty, constant);
 	}
 
 	#pragma endregion

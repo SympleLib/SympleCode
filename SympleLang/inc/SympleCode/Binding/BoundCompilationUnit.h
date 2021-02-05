@@ -1,6 +1,6 @@
 #pragma once
 
-#include <map>
+#include <vector>
 
 #include "SympleCode/Syntax/TranslationUnitSyntax.h"
 
@@ -11,7 +11,7 @@
 
 namespace Symple::Binding
 {
-	typedef std::map<shared_ptr<Symbol::FunctionSymbol>, shared_ptr<BoundStatement>> FunctionMap;
+	typedef std::vector<std::pair<shared_ptr<Symbol::FunctionSymbol>, shared_ptr<BoundStatement>>> FunctionMap;
 
 	class BoundCompilationUnit : public Node
 	{
@@ -35,7 +35,7 @@ namespace Symple::Binding
 			for (auto& func : GetFunctions())
 			{
 				os.put('\n'); func.first->Print(os, newIndent, false, "Function = ");
-				os.put('\n'); func.second->Print(os, newIndent, func == *GetFunctions().rbegin(), "Body = ");
+				os.put('\n'); func.second->Print(os, newIndent, func == GetFunctions().back(), "Body = ");
 			}
 		}
 

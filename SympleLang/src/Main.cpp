@@ -159,6 +159,14 @@ void _Emit()
 	emmiter->Compile();
 }
 
+void LinkANDExec()
+{
+	system("clang -m32 --optimize sy/Main.s -o sy/Main.exe");
+	puts("Executing program...");
+	int ec = system("sy\\Main");
+	printf("\nProgram Exited with code %i (0x%x)", ec, ec);
+}
+
 int main()
 {
 	spdlog::set_pattern("[Symple]%^<%l>%$: %v");
@@ -171,6 +179,7 @@ int main()
 	Parse();
 	Bind();
 	_Emit();
+	LinkANDExec();
 
 	return !getc(stdin);
 }

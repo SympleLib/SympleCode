@@ -12,17 +12,15 @@ namespace Symple::Emit
 		: mFile(file)
 	{
 		if (mFile)
-			mTextStream = Util::OpenFile(mFile, "wb");
+			mTextStream = Util::OpenFile(mFile, "wb+");
 		else
-			mTextStream = Util::OpenFile(mFile = "a.S", "wb");
+			mTextStream = Util::OpenFile(mFile = "a.S", "wb+");
 		//mTextStream = stdout;
 		mDataStream = Util::OpenTempFile();
 	}
 
 	AsmEmitter::~AsmEmitter()
-	{
-		CloseStreams();
-	}
+	{ CloseStreams(); }
 
 
 	void AsmEmitter::Compile()
@@ -45,8 +43,10 @@ namespace Symple::Emit
 		mFunction = func;
 		auto name = mFunction->GetName().data();
 
-		_Emit(Text, ".global %s", name);
-		_Emit(Text, "%s: # %s %s()", name, mFunction->GetType()->GetName().data(), name);
+		_Emit(Text, ".global _%s", name);
+		std::stringstream fnSig;
+		mFunction->PrintSignature(fnSig);
+		_Emit(Text, "_%s: # %s", name, fnSig.str().c_str());
 		_Emit(Text, "\tpush    %%ebp");
 		_Emit(Text, "\tmov     %%esp, %%ebp");
 		_Emit(Text, "\t# Push Stack");
@@ -56,7 +56,7 @@ namespace Symple::Emit
 		EmitStatement(body);
 
 		if (mReturning)
-			_Emit(Text, "%s.Return:", name);
+			_Emit(Text, "_%s.Return:", name);
 		_Emit(Text, "\t# Pop Stack");
 		_Emit(Text, "\tmov     %%ebp, %%esp");
 		_Emit(Text, "\tpop     %%ebp");
@@ -78,12 +78,15 @@ namespace Symple::Emit
 	{
 		EmitExpression(stmt->GetValue());
 		if (mReturning = mReturn)
-			_Emit(Text, "\tjmp     %s.Return", mFunction->GetName().data());
+			_Emit(Text, "\tjmp     _%s.Return", mFunction->GetName().data());
 	}
 
 
 	void AsmEmitter::EmitExpression(shared_ptr<Binding::BoundExpression> expr)
 	{
+		if (expr->ConstantValue())
+			_Emit(Text, "\tmov     $%i, %%eax", expr->ConstantValue()->GetValue());
+
 		switch (expr->GetKind())
 		{
 		case Binding::Node::CallExpression:
@@ -94,7 +97,13 @@ namespace Symple::Emit
 
 	void AsmEmitter::EmitCallExpression(shared_ptr<Binding::BoundCallExpression> expr)
 	{
-		_Emit(Text, "\tmov     $0, %%eax");
+		for (auto arg : expr->GetArguments())
+		{
+			EmitExpression(arg);
+			_Emit(Text, "\tpush    %%eax");
+		}
+		_Emit(Text, "\tcall    _%s", expr->GetFunction()->GetName().data());
+		_Emit(Text, "\tadd     $%i, %%esp", expr->GetArguments().size() * 4);
 	}
 
 
@@ -108,8 +117,11 @@ namespace Symple::Emit
 			while ((c = fgetc(mDataStream)) != EOF)
 				fputc(c, mTextStream);
 
-			Util::CloseFile(mTextStream);
 			Util::CloseFile(mDataStream);
+			rewind(mTextStream);
+			puts(Util::ReadFile(mTextStream).c_str());
+
+			Util::CloseFile(mTextStream);
 
 			mClosed = true;
 		}

@@ -25,10 +25,10 @@ namespace Symple::Binding
 			switch (GetKind())
 			{
 			case Integer:
-				os << *GetValue<int>();
+				os << GetValue<int>();
 				break;
 			case Float:
-				os << *GetValue<float>();
+				os << GetValue<float>();
 				break;
 			}
 		}
@@ -40,10 +40,10 @@ namespace Symple::Binding
 			switch (GetKind())
 			{
 			case Integer:
-				os << *GetValue<int>();
+				os << GetValue<int>();
 				break;
 			case Float:
-				os << *GetValue<float>();
+				os << GetValue<float>();
 				break;
 			}
 		}
@@ -54,11 +54,11 @@ namespace Symple::Binding
 		Kind GetKind()
 		{ return mKind; }
 
-		template <typename T>
-		T* GetValue()
+		template <typename T = int>
+		T& GetValue()
 		{
 			__SY_ASSERT(sizeof(T) <= 16, "BoundConstant buffer to large");
-			return (T*)mValue;
+			return (T&)mValue;
 		}
 	public:
 		enum Kind : unsigned

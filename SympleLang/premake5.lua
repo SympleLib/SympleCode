@@ -24,13 +24,10 @@ project "SympleLang"
 	includedirs {
 		"inc",
 		
-		"vendor/spdlog/include",
-		"vendor/llvm-c/include"
+		"vendor/spdlog/include"
 	}
 	
-	links {
-		"vendor/llvm-c/lib/llvm-c"
-	}
+	links {}
 	
 	disablewarnings {
 		"26812"

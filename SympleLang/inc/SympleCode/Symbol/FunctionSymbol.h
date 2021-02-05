@@ -34,6 +34,30 @@ namespace Symple::Symbol
 			{ os.put('\n'); param->Print(os, newIndent, param == GetParameters().back()); }
 		}
 
+		void PrintShort(std::ostream& os = std::cout)
+		{
+			GetType()->PrintShort(os); os << ' ' << GetName() << '(';
+			for (auto param : GetParameters())
+			{
+				param->PrintShort(os);
+				if (param != GetParameters().back())
+					os << ", ";
+			}
+			os.put(')');
+		}
+
+		void PrintSignature(std::ostream& os = std::cout)
+		{
+			GetType()->PrintShort(os); os << ' ' << GetName() << '(';
+			for (auto param : GetParameters())
+			{
+				param->GetType()->PrintShort(os);
+				if (param != GetParameters().back())
+					os << ", ";
+			}
+			os.put(')');
+		}
+
 		shared_ptr<TypeSymbol> GetType()
 		{ return mType; }
 
