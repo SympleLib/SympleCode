@@ -29,7 +29,7 @@ namespace Symple::Binding
 			std::string newIndent(indent);
 			newIndent += GetAddIndent(last);
 
-			ConstantValue()->Print(os, newIndent, true, "Constant = ");
+			os.put('\n'); ConstantValue()->Print(os, newIndent, true, "Constant = ");
 		}
 	};
 }
