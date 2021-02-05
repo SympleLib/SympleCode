@@ -2,11 +2,9 @@
 
 ![Symple](/res/Symple.png?raw=true "Symple")
 
-SympleCode is bare-bones programming language with syntax similar to C.
-
 ## About SympleCode
 
-SympleCode is a programming language that is meant to be close to the [C Programming Lanaguage](https://en.wikipedia.org/wiki/C_(programming_language)), but with some of my taste added in.
+SympleCode is a programming language that is similar to the [C Programming Lanaguage](https://en.wikipedia.org/wiki/C_(programming_language)), but with some additional features.
 
 ## Getting the source
 
