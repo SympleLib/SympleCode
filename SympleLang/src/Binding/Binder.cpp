@@ -7,6 +7,7 @@
 
 #include "SympleCode/Symbol/TypeSymbol.h"
 
+#include "SympleCode/Binding/BoundConstantExpression.h"
 #include "SympleCode/Binding/BoundImplicitCastExpression.h"
 
 namespace Symple::Binding
@@ -231,14 +232,16 @@ namespace Symple::Binding
 
 	shared_ptr<BoundCallExpression> Binder::BindCallExpression(shared_ptr<Syntax::CallExpressionSyntax> syntax)
 	{
-		shared_ptr<Symbol::FunctionSymbol> funcSymbol;
-		for (auto& func : mFunctions)
-			if (func.first->GetName() == syntax->GetName()->GetText())
-				funcSymbol = func.first;
+		shared_ptr<Symbol::FunctionSymbol> funcSymbol = FindFunction(mFunctions, syntax->GetName()->GetText());
 
 		ExpressionList args;
-		for (auto arg : syntax->GetArguments())
-			args.push_back(BindExpression(arg));
+		for (unsigned i = 0; i < funcSymbol->GetParameters().size(); i++)
+		{
+			shared_ptr<BoundExpression> arg = make_shared<BoundConstantExpression>(funcSymbol->GetParameters()[i]->GetInitializer());
+			if (i < syntax->GetArguments().size())
+				arg = BindExpression(syntax->GetArguments()[i]);
+			args.push_back(arg);
+		}
 
 		return make_shared<BoundCallExpression>(syntax, funcSymbol, args);
 	}

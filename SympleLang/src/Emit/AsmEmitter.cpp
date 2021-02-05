@@ -111,12 +111,9 @@ namespace Symple::Emit
 
 	void AsmEmitter::EmitCallExpression(shared_ptr<Binding::BoundCallExpression> expr)
 	{
-		for (unsigned i = 0; i < expr->GetFunction()->GetParameters().size(); i++)
+		for (auto arg : expr->GetArguments())
 		{
-			if (i < expr->GetArguments().size())
-				EmitExpression(expr->GetArguments()[i]);
-			else
-				EmitConstant(expr->GetFunction()->GetParameters()[i]->GetInitializer());
+			EmitExpression(arg);
 			_Emit(Text, "\tpush    %%eax");
 		}
 		_Emit(Text, "\tcall    _%s", expr->GetFunction()->GetName().data());

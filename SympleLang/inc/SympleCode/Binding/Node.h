@@ -60,6 +60,7 @@ namespace Symple::Binding
 			BinaryExpression,
 			LiteralExpression,
 
+			ConstantExpression,
 			ImplicitCastExpression,
 
 			CallExpression,
@@ -84,7 +85,8 @@ namespace Symple::Binding
 			"UnaryExpression",
 			"BinaryExpression",
 			"LiteralExpression",
-
+			
+			"ConstantExpression",
 			"ImplicitCastExpression",
 
 			"CallExpression",

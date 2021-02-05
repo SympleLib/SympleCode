@@ -18,6 +18,7 @@ namespace Symple::Binding
 		for (auto fn : funcs)
 			if (fn.first->GetName() == name)
 				return fn.first;
+		return nullptr;
 	}
 
 	class BoundCompilationUnit : public Node
