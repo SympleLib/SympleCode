@@ -2,8 +2,6 @@
 
 #include "SympleCode/Binding/BoundExpression.h"
 
-#include "SympleCode/Symbol/FunctionSymbol.h"
-
 namespace Symple::Binding
 {
 	class BoundConstantExpression : public BoundExpression

@@ -17,7 +17,7 @@ _main: # int main()
 	# Push Stack
 	mov     $1, %eax
 	push    %eax
-	mov     $1, %eax
+	mov     $3, %eax
 	push    %eax
 	call    _add
 	add     $8, %esp

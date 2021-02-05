@@ -7,6 +7,7 @@
 
 #include "SympleCode/Symbol/TypeSymbol.h"
 
+#include "SympleCode/Binding/BoundDefaultExpression.h"
 #include "SympleCode/Binding/BoundConstantExpression.h"
 #include "SympleCode/Binding/BoundImplicitCastExpression.h"
 
@@ -239,7 +240,11 @@ namespace Symple::Binding
 		{
 			shared_ptr<BoundExpression> arg = make_shared<BoundConstantExpression>(funcSymbol->GetParameters()[i]->GetInitializer());
 			if (i < syntax->GetArguments().size())
-				arg = BindExpression(syntax->GetArguments()[i]);
+			{
+				auto boundArg = BindExpression(syntax->GetArguments()[i]);
+				if (boundArg->GetKind() != Node::DefaultExpression)
+					arg = boundArg;
+			}
 			args.push_back(arg);
 		}
 
@@ -276,7 +281,7 @@ namespace Symple::Binding
 		return make_shared<BoundBinaryExpression>(syntax, op, left, right);
 	}
 
-	shared_ptr<BoundLiteralExpression> Binder::BindLiteralExpression(shared_ptr<Syntax::LiteralExpressionSyntax> syntax)
+	shared_ptr<BoundExpression> Binder::BindLiteralExpression(shared_ptr<Syntax::LiteralExpressionSyntax> syntax)
 	{
 		shared_ptr<Symbol::TypeSymbol> ty;
 		shared_ptr<BoundConstant> constant;
@@ -294,13 +299,13 @@ namespace Symple::Binding
 			break;
 		}
 		case Syntax::Token::Number:
-			{
-				ty = Symbol::TypeSymbol::DoubleType;
+		{
+			ty = Symbol::TypeSymbol::DoubleType;
 
-				double val = std::stod(std::string(syntax->GetLiteral()->GetText()));
-				constant = make_shared<BoundConstant>(BoundConstant::Float, &val);
-				break;
-			}
+			double val = std::stod(std::string(syntax->GetLiteral()->GetText()));
+			constant = make_shared<BoundConstant>(BoundConstant::Float, &val);
+			break;
+		}
 		case Syntax::Token::Float:
 		{
 			ty = Symbol::TypeSymbol::FloatType;
@@ -308,6 +313,10 @@ namespace Symple::Binding
 			float val = std::stof(std::string(syntax->GetLiteral()->GetText()));
 			constant = make_shared<BoundConstant>(BoundConstant::Float, &val);
 			break;
+		}
+		case Syntax::Token::DefaultKeyword:
+		{
+			return make_shared<BoundDefaultExpression>(syntax);
 		}
 		default:
 			ty = Symbol::TypeSymbol::ErrorType;

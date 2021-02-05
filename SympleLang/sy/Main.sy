@@ -3,6 +3,6 @@ int add(int a = 1, int b = 1)
 
 int main()
 {
-	return add(1);
+	return add(default, 3);
 	return 5;
 }

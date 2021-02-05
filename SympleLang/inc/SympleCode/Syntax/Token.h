@@ -85,8 +85,9 @@ namespace Symple::Syntax
 			TripleKeyword,
 
 			ReturnKeyword,
+			DefaultKeyword,
 
-			Last = ReturnKeyword,
+			Last = DefaultKeyword,
 		};
 
 		static constexpr char* KindMap[Last + 1] = {
@@ -130,6 +131,7 @@ namespace Symple::Syntax
 			"TripleKeyword",
 
 			"ReturnKeyword",
+			"DefaultKeyword",
 		};
 	};
 }

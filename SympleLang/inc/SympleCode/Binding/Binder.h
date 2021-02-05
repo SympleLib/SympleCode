@@ -61,7 +61,7 @@ namespace Symple::Binding
 		shared_ptr<BoundCallExpression> BindCallExpression(shared_ptr<Syntax::CallExpressionSyntax>);
 		shared_ptr<BoundUnaryExpression> BindUnaryExpression(shared_ptr<Syntax::UnaryExpressionSyntax>);
 		shared_ptr<BoundBinaryExpression> BindBinaryExpression(shared_ptr<Syntax::BinaryExpressionSyntax>);
-		shared_ptr<BoundLiteralExpression> BindLiteralExpression(shared_ptr<Syntax::LiteralExpressionSyntax>);
+		shared_ptr<BoundExpression> BindLiteralExpression(shared_ptr<Syntax::LiteralExpressionSyntax>);
 
 		shared_ptr<DiagnosticBag> GetDiagnosticBag();
 	};

@@ -183,6 +183,8 @@ namespace Symple::Syntax
 		KEYWORD(ret, Return);
 		KEYWORD(return, Return);
 
+		KEYWORD(default, Default);
+
 		else
 			return make_shared<Token>(Token::Identifier, text, mLine, column, mFile);
 	}

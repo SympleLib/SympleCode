@@ -60,6 +60,7 @@ namespace Symple::Binding
 			BinaryExpression,
 			LiteralExpression,
 
+			DefaultExpression,
 			ConstantExpression,
 			ImplicitCastExpression,
 
@@ -86,6 +87,7 @@ namespace Symple::Binding
 			"BinaryExpression",
 			"LiteralExpression",
 			
+			"DefaultExpression",
 			"ConstantExpression",
 			"ImplicitCastExpression",
 

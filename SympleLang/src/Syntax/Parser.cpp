@@ -251,6 +251,7 @@ namespace Symple::Syntax
 		case Token::Number:
 		case Token::Float:
 		case Token::Integer:
+		case Token::DefaultKeyword:
 			return ParseLiteralExpression();
 		case Token::OpenParenthesis:
 			return ParseParenthesizedExpression();
