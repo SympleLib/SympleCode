@@ -141,7 +141,10 @@ void Bind()
 	sBound = binder->Bind(sNode);
 	putchar('\n');
 	if (PrintDiagnosticBag(binder->GetDiagnosticBag(), "Binding"))
+	{
+		sBound = false;
 		return;
+	}
 
 	spdlog::info("Bound Tree:");
 	sBound->Print();
@@ -154,6 +157,9 @@ void Bind()
 
 void _Emit()
 {
+	if (!sBound)
+		return;
+
 	shared_ptr<Emitter> emmiter = make_shared<AsmEmitter>((char*)"sy/Main.S");
 	emmiter->Emit(sBound);
 	emmiter->Compile();
@@ -161,6 +167,9 @@ void _Emit()
 
 void LinkANDExec()
 {
+	if (!sBound)
+		return;
+
 	system("clang -m32 --optimize sy/Main.s -o sy/Main.exe");
 	puts("Executing program...");
 	int ec = system("sy\\Main");

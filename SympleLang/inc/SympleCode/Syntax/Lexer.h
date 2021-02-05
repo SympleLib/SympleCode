@@ -15,7 +15,7 @@ namespace Symple::Syntax
 		unsigned mPosition = 0;
 
 		char* mFile;
-		unsigned mLine = 0, mColumn = 0;
+		unsigned mLine = 1, mColumn = 0;
 		shared_ptr<DiagnosticBag> mDiagnosticBag = make_shared<DiagnosticBag>();
 	public:
 		Lexer(char* mFile);

@@ -245,7 +245,14 @@ namespace Symple::Binding
 				if (boundArg->GetKind() != Node::DefaultExpression)
 					arg = boundArg;
 			}
-			args.push_back(arg);
+			
+			if (arg.get())
+			{
+				mDiagnosticBag->ReportUnimplimentedError(syntax->GetCloseParenthesis());
+				break;
+			}
+			else
+				args.push_back(arg);
 		}
 
 		return make_shared<BoundCallExpression>(syntax, funcSymbol, args);
