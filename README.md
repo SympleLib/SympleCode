@@ -30,6 +30,9 @@ Disclamer: Symple Code only supports windows at the moment!
   ## Remarks
   
   Obviously, making a compiler is no symple task, here are some resources I used:
+  
     - [Minsk Compiler (C#)](https://github.com/terrajobst/minsk)
+    
     - [Simple C++ Lexer](https://gist.github.com/arrieta/1a309138689e09375b90b3b1aa768e20)
+    
     - [chibicc Compiler (C)](https://github.com/rui314/chibicc)
