@@ -5,6 +5,7 @@
 #include "SympleCode/Diagnostic.h"
 
 #include "SympleCode/Syntax/Token.h"
+#include "SympleCode/Syntax/CallExpressionSyntax.h"
 #include "SympleCode/Syntax/LiteralExpressionSyntax.h"
 
 #include "SympleCode/Symbol/TypeSymbol.h"
@@ -25,6 +26,13 @@ namespace Symple
 		void ReportUnimplimentedMessage(shared_ptr<Syntax::Token>);
 		void ReportUnimplimentedWarning(shared_ptr<Syntax::Token>);
 		void ReportUnimplimentedError(shared_ptr<Syntax::Token>);
+
+		void ReportBindError(shared_ptr<Syntax::Node>);
+		void ReportExpressionMustHaveValue(shared_ptr<Syntax::ExpressionSyntax>);
+
+		void ReportNoDefaultArgument(shared_ptr<Syntax::CallExpressionSyntax>, unsigned paramIndex);
+		void ReportTooFewArguments(shared_ptr<Syntax::CallExpressionSyntax>);
+		void ReportTooManyArguments(shared_ptr<Syntax::CallExpressionSyntax>, unsigned paramIndex);
 
 		void ReportUnexpectedEndOfFile(shared_ptr<Syntax::Token>);
 		void ReportUnexpectedToken(shared_ptr<Syntax::Token>, Syntax::Token::Kind expectedKind);

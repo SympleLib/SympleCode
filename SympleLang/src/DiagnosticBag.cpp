@@ -32,6 +32,23 @@ namespace Symple
 	{ ReportWarning(tok, "Error not implemented"); }
 
 
+	void DiagnosticBag::ReportBindError(shared_ptr<Syntax::Node> syntax)
+	{ ReportWarning(syntax->GetToken(), "Bind error"); }
+	
+	void DiagnosticBag::ReportExpressionMustHaveValue(shared_ptr<Syntax::ExpressionSyntax> syntax)
+	{ ReportWarning(syntax->GetToken(), "Expression must have a value"); }
+
+
+	void DiagnosticBag::ReportNoDefaultArgument(shared_ptr<Syntax::CallExpressionSyntax> syntax, unsigned param)
+	{ ReportWarning(syntax->GetCloseParenthesis(), fmt::format("No default argument for parameter {}", param)); }
+
+	void DiagnosticBag::ReportTooFewArguments(shared_ptr<Syntax::CallExpressionSyntax> syntax)
+	{ ReportWarning(syntax->GetCloseParenthesis(), "Too few Arguments"); }
+
+	void DiagnosticBag::ReportTooManyArguments(shared_ptr<Syntax::CallExpressionSyntax> syntax, unsigned param)
+	{ ReportWarning(syntax->GetArguments()[param]->GetToken(), "Too many arguments"); }
+
+
 	void DiagnosticBag::ReportUnexpectedEndOfFile(shared_ptr<Syntax::Token> tok)
 	{ ReportError(tok, fmt::format("Unexpected end of file")); }
 

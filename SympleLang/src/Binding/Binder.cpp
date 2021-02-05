@@ -130,7 +130,7 @@ namespace Symple::Binding
 		shared_ptr<Node> result = BindMemberInternal(syntax);
 		if (!result /* Should not be null, but just in case */)
 		{
-			mDiagnosticBag->ReportUnimplimentedError(syntax->GetToken());
+			mDiagnosticBag->ReportBindError(syntax);
 			return make_shared<Node>(syntax);
 		}
 		else
@@ -163,7 +163,7 @@ namespace Symple::Binding
 		shared_ptr<BoundStatement> result = BindStatementInternal(syntax);
 		if (!result /* Should not be null, but just in case */)
 		{
-			mDiagnosticBag->ReportUnimplimentedError(syntax->GetToken());
+			mDiagnosticBag->ReportBindError(syntax);
 			return make_shared<BoundStatement>(syntax);
 		}
 		else
@@ -205,7 +205,7 @@ namespace Symple::Binding
 		shared_ptr<BoundExpression> result = BindExpressionInternal(syntax);
 		if (!result /* Should not be null, but just in case */ || result->GetType()->Is(Symbol::TypeSymbol::Error))
 		{
-			mDiagnosticBag->ReportUnimplimentedError(syntax->GetToken());
+			mDiagnosticBag->ReportExpressionMustHaveValue(syntax);
 			return make_shared<BoundErrorExpression>(syntax);
 		}
 		else
@@ -236,24 +236,34 @@ namespace Symple::Binding
 		shared_ptr<Symbol::FunctionSymbol> funcSymbol = FindFunction(mFunctions, syntax->GetName()->GetText());
 
 		ExpressionList args;
-		for (unsigned i = 0; i < funcSymbol->GetParameters().size(); i++)
-		{
-			shared_ptr<BoundExpression> arg = make_shared<BoundConstantExpression>(funcSymbol->GetParameters()[i]->GetInitializer());
-			if (i < syntax->GetArguments().size())
+		if (syntax->GetArguments().size() > funcSymbol->GetParameters().size())
+			mDiagnosticBag->ReportTooManyArguments(syntax, funcSymbol->GetParameters().size());
+		else
+			for (unsigned i = 0; i < funcSymbol->GetParameters().size(); i++)
 			{
-				auto boundArg = BindExpression(syntax->GetArguments()[i]);
-				if (boundArg->GetKind() != Node::DefaultExpression)
-					arg = boundArg;
-			}
-			
-			if (arg.get())
-			{
-				mDiagnosticBag->ReportUnimplimentedError(syntax->GetCloseParenthesis());
-				break;
-			}
-			else
+				shared_ptr<BoundExpression> arg = make_shared<BoundConstantExpression>(funcSymbol->GetParameters()[i]->GetInitializer());
+				if (i < syntax->GetArguments().size())
+				{
+					auto boundArg = BindExpression(syntax->GetArguments()[i]);
+					if (boundArg->GetKind() == Node::DefaultExpression)
+					{
+						if (!arg.get())
+						{
+							mDiagnosticBag->ReportNoDefaultArgument(syntax, i);
+							break;
+						}
+					}
+					else
+						arg = boundArg;
+				}
+				else if (!arg.get())
+				{
+					mDiagnosticBag->ReportTooFewArguments(syntax);
+					break;
+				}
+				
 				args.push_back(arg);
-		}
+			}
 
 		return make_shared<BoundCallExpression>(syntax, funcSymbol, args);
 	}
