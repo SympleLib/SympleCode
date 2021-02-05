@@ -247,7 +247,7 @@ namespace Symple::Binding
 					auto boundArg = BindExpression(syntax->GetArguments()[i]);
 					if (boundArg->GetKind() == Node::DefaultExpression)
 					{
-						if (!arg.get())
+						if (!arg->ConstantValue())
 						{
 							mDiagnosticBag->ReportNoDefaultArgument(syntax, i);
 							break;
@@ -256,7 +256,7 @@ namespace Symple::Binding
 					else
 						arg = boundArg;
 				}
-				else if (!arg.get())
+				else if (!arg->ConstantValue())
 				{
 					mDiagnosticBag->ReportTooFewArguments(syntax);
 					break;

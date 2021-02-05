@@ -15,6 +15,10 @@ _main: # int main()
 	push    %ebp
 	mov     %esp, %ebp
 	# Push Stack
+	mov     $1, %eax
+	push    %eax
+	mov     $1, %eax
+	push    %eax
 	call    _add
 	add     $8, %esp
 	jmp     _main.Return

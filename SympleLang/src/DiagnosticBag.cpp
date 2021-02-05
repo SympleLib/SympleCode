@@ -40,13 +40,13 @@ namespace Symple
 
 
 	void DiagnosticBag::ReportNoDefaultArgument(shared_ptr<Syntax::CallExpressionSyntax> syntax, unsigned param)
-	{ ReportWarning(syntax->GetCloseParenthesis(), fmt::format("No default argument for parameter {}", param)); }
+	{ ReportError(syntax->GetCloseParenthesis(), fmt::format("No default argument for parameter {}", param + 1)); }
 
 	void DiagnosticBag::ReportTooFewArguments(shared_ptr<Syntax::CallExpressionSyntax> syntax)
-	{ ReportWarning(syntax->GetCloseParenthesis(), "Too few Arguments"); }
+	{ ReportError(syntax->GetCloseParenthesis(), "Too few Arguments"); }
 
 	void DiagnosticBag::ReportTooManyArguments(shared_ptr<Syntax::CallExpressionSyntax> syntax, unsigned param)
-	{ ReportWarning(syntax->GetArguments()[param]->GetToken(), "Too many arguments"); }
+	{ ReportError(syntax->GetArguments()[param]->GetToken(), "Too many arguments"); }
 
 
 	void DiagnosticBag::ReportUnexpectedEndOfFile(shared_ptr<Syntax::Token> tok)
