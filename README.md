@@ -26,13 +26,10 @@ Disclamer: Symple Code only supports windows at the moment!
   - Type enter.
 4) Open the Solution
   - You should see a file called **SympleCode.sln**, open it and you can view, edit, and compile the source code.
-
-## How to try it out yourself
-
-```
-Disclamer: Symple Code only supports windows at the moment!
-```
-
-Start by downloading the SympleCode compiler from [releases](https://youtu.be/dQw4w9WgXcQ). Now make sure you have both clang and the compiler in the same directory. Next open command prompt in your project directory and type `SympleCode.exe <filename>`.
-
-For information on how to use the language, check out the [wiki](../../wiki).
+  
+  ## Remarks
+  
+  Obviously, making a compiler is no symple task, here are some resources I used:
+    - [Minsk Compiler (C#)](https://github.com/terrajobst/minsk)
+    - [Simple C++ Lexer](https://gist.github.com/arrieta/1a309138689e09375b90b3b1aa768e20)
+    - [chibicc Compiler (C)](https://github.com/rui314/chibicc)
