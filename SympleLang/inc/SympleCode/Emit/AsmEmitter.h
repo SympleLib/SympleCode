@@ -28,6 +28,7 @@ namespace Symple::Emit
 		virtual void EmitStatement(shared_ptr<Binding::BoundStatement>) override;
 		virtual void EmitBlockStatement(shared_ptr<Binding::BoundBlockStatement>) override;
 		virtual void EmitReturnStatement(shared_ptr<Binding::BoundReturnStatement>) override;
+		virtual void EmitExpressionStatement(shared_ptr<Binding::BoundExpressionStatement>) override;
 
 		virtual void EmitConstant(shared_ptr<Binding::BoundConstant>) override;
 		virtual void EmitExpression(shared_ptr<Binding::BoundExpression>) override;

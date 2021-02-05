@@ -17,6 +17,7 @@
 #include "SympleCode/Syntax/TypeReferenceSyntax.h"
 #include "SympleCode/Syntax/BlockStatementSyntax.h"
 #include "SympleCode/Syntax/ReturnStatementSyntax.h"
+#include "SympleCode/Syntax/ExpressionStatementSyntax.h"
 #include "SympleCode/Syntax/VariableDeclarationSyntax.h"
 
 #include "SympleCode/Syntax/ExpressionSyntax.h"
@@ -52,6 +53,7 @@ namespace Symple::Syntax
 		shared_ptr<StatementSyntax> ParseStatement(bool matchSemicolon = true);
 		shared_ptr<BlockStatementSyntax> ParseBlockStatement();
 		shared_ptr<ReturnStatementSyntax> ParseReturnStatement();
+		shared_ptr<ExpressionStatementSyntax> ParseExpressionStatement();
 		shared_ptr<VariableDeclarationSyntax> ParseVariableDeclaration();
 		VariableDeclarationList ParseVariableDeclarationList();
 		shared_ptr<TypeSyntax> ParseType(shared_ptr<TypeSyntax> base = nullptr);

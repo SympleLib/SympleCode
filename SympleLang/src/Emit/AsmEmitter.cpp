@@ -75,6 +75,9 @@ namespace Symple::Emit
 		case Binding::Node::ReturnStatement:
 			EmitReturnStatement(dynamic_pointer_cast<Binding::BoundReturnStatement>(stmt));
 			break;
+		case Binding::Node::ExpressionStatement:
+			EmitExpressionStatement(dynamic_pointer_cast<Binding::BoundExpressionStatement>(stmt));
+			break;
 		}
 	}
 
@@ -90,6 +93,9 @@ namespace Symple::Emit
 		_Emit(Text, "\tjmp     _%s.Return", mFunction->GetName().data());
 		mReturning = true;
 	}
+
+	void AsmEmitter::EmitExpressionStatement(shared_ptr<Binding::BoundExpressionStatement> stmt)
+	{ EmitExpression(stmt->GetExpression()); }
 
 
 	void AsmEmitter::EmitConstant(shared_ptr<Binding::BoundConstant> val)

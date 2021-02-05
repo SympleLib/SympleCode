@@ -88,7 +88,7 @@ namespace Symple::Syntax
 
 		default:
 			if (!statement)
-				statement = make_shared<StatementSyntax>(Peek());
+				statement = ParseExpressionStatement();
 			break;
 		}
 
@@ -129,6 +129,13 @@ namespace Symple::Syntax
 		shared_ptr<ExpressionSyntax> val = ParseExpression();
 
 		return make_shared<ReturnStatementSyntax>(tok, val);
+	}
+
+	shared_ptr<ExpressionStatementSyntax> Parser::ParseExpressionStatement()
+	{
+		shared_ptr<ExpressionSyntax> expr = ParseExpression();
+
+		return make_shared<ExpressionStatementSyntax>(expr);
 	}
 
 	shared_ptr<VariableDeclarationSyntax> Parser::ParseVariableDeclaration()

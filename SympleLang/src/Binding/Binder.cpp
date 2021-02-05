@@ -178,6 +178,8 @@ namespace Symple::Binding
 			return BindBlockStatement(dynamic_pointer_cast<Syntax::BlockStatementSyntax>(syntax));
 		case Syntax::Node::ReturnStatement:
 			return BindReturnStatement(dynamic_pointer_cast<Syntax::ReturnStatementSyntax>(syntax));
+		case Syntax::Node::ExpressionStatement:
+			return BindExpressionStatement(dynamic_pointer_cast<Syntax::ExpressionStatementSyntax>(syntax));
 		default:
 			return make_shared<BoundStatement>(syntax);
 		}
@@ -194,6 +196,9 @@ namespace Symple::Binding
 
 	shared_ptr<BoundReturnStatement> Binder::BindReturnStatement(shared_ptr<Syntax::ReturnStatementSyntax> syntax)
 	{ return make_shared<BoundReturnStatement>(syntax, BindExpression(syntax->GetValue())); }
+
+	shared_ptr<BoundExpressionStatement> Binder::BindExpressionStatement(shared_ptr<Syntax::ExpressionStatementSyntax> syntax)
+	{ return make_shared<BoundExpressionStatement>(syntax, BindExpression(syntax->GetExpression())); }
 
 	#pragma endregion
 
