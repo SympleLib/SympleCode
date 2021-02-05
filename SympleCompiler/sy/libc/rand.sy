@@ -1,4 +1,0 @@
-#define RAND_MAX 32767
-
-extern int rand() ccall;
-extern void srand(int seed) ccall;

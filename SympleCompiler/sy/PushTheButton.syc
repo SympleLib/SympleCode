@@ -1,9 +1,0 @@
-#include "windows/windows.sy"
-
-int main()
-{
-	while true
-		MessageBoxA(GetConsoleWindow(), "Push the Button\n\nPS. You need to go into task manager to close this xD", "Windows says", MB_OK | MB_ICONQUESTION);
-	
-	ret 0;
-};
