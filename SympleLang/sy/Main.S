@@ -4,6 +4,8 @@ _add: # int add(int, int)
 	mov     %esp, %ebp
 	# Push Stack
 	mov     $1, %eax
+	jmp     _add.Return
+_add.Return:
 	# Pop Stack
 	mov     %ebp, %esp
 	pop     %ebp
@@ -19,6 +21,10 @@ _main: # int main()
 	push    %eax
 	call    _add
 	add     $8, %esp
+	jmp     _main.Return
+	mov     $5, %eax
+	jmp     _main.Return
+_main.Return:
 	# Pop Stack
 	mov     %ebp, %esp
 	pop     %ebp

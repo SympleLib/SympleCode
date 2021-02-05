@@ -52,7 +52,6 @@ namespace Symple::Emit
 		_Emit(Text, "\t# Push Stack");
 
 		mReturning = false;
-		mReturn = !!dynamic_pointer_cast<Binding::BoundBlockStatement>(body);
 		EmitStatement(body);
 
 		if (mReturning)
@@ -68,16 +67,25 @@ namespace Symple::Emit
 	{
 		switch (stmt->GetKind())
 		{
+		case Binding::Node::BlockStatement:
+			EmitBlockStatement(dynamic_pointer_cast<Binding::BoundBlockStatement>(stmt));
+			break;
 		case Binding::Node::ReturnStatement:
 			EmitReturnStatement(dynamic_pointer_cast<Binding::BoundReturnStatement>(stmt));
 			break;
 		}
 	}
 
+	void AsmEmitter::EmitBlockStatement(shared_ptr<Binding::BoundBlockStatement> stmt)
+	{
+		for (auto ln : stmt->GetStatements())
+			EmitStatement(ln);
+	}
+
 	void AsmEmitter::EmitReturnStatement(shared_ptr<Binding::BoundReturnStatement> stmt)
 	{
 		EmitExpression(stmt->GetValue());
-		if (mReturning = mReturn)
+		if (mReturning = true)
 			_Emit(Text, "\tjmp     _%s.Return", mFunction->GetName().data());
 	}
 

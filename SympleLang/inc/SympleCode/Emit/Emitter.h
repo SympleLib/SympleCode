@@ -21,6 +21,7 @@ namespace Symple::Emit
 		virtual void EmitFunction(shared_ptr<Symbol::FunctionSymbol>, shared_ptr<Binding::BoundStatement>) = 0;
 
 		virtual void EmitStatement(shared_ptr<Binding::BoundStatement>) = 0;
+		virtual void EmitBlockStatement(shared_ptr<Binding::BoundBlockStatement>) = 0;
 		virtual void EmitReturnStatement(shared_ptr<Binding::BoundReturnStatement>) = 0;
 
 		virtual void EmitExpression(shared_ptr<Binding::BoundExpression>) = 0;

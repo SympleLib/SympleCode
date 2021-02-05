@@ -16,7 +16,7 @@ namespace Symple::Emit
 		shared_ptr<Symbol::FunctionSymbol> mFunction;
 
 		bool mClosed = false;
-		bool mReturn, mReturning;
+		bool mReturning;
 	public:
 		AsmEmitter(char* file = nullptr);
 		virtual ~AsmEmitter() override;
@@ -26,6 +26,7 @@ namespace Symple::Emit
 		virtual void EmitFunction(shared_ptr<Symbol::FunctionSymbol>, shared_ptr<Binding::BoundStatement>) override;
 
 		virtual void EmitStatement(shared_ptr<Binding::BoundStatement>) override;
+		virtual void EmitBlockStatement(shared_ptr<Binding::BoundBlockStatement>) override;
 		virtual void EmitReturnStatement(shared_ptr<Binding::BoundReturnStatement>) override;
 
 		virtual void EmitExpression(shared_ptr<Binding::BoundExpression>) override;
