@@ -27,7 +27,7 @@ namespace Symple::Binding
 
 		virtual void Print(std::ostream& os = std::cout, std::string_view indent = "", bool last = true, std::string_view label = "") override
 		{
-			GetToken()->Print(os, indent, last, std::string(label)); os << " (BoundLiteralExpression)";
+			GetLiteral()->Print(os, indent, last, std::string(label)); os << " (BoundLiteralExpression)";
 
 			std::string newIndent(indent);
 			newIndent += GetAddIndent(last);
@@ -35,7 +35,7 @@ namespace Symple::Binding
 			os.put('\n'); GetType()->Print(os, newIndent, true, "Type = ");
 		}
 
-		shared_ptr<Syntax::Token> GetToken()
+		shared_ptr<Syntax::Token> GetLiteral()
 		{ return GetSyntax()->GetToken(); }
 	};
 }

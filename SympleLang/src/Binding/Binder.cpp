@@ -13,13 +13,23 @@
 
 namespace Symple::Binding
 {
+	void Binder::BeginScope()
+	{ mScope = make_shared<BoundScope>(mScope); }
+
+	void Binder::EndScope()
+	{ mScope = mScope->GetBase(); }
+
 	shared_ptr<BoundCompilationUnit> Binder::Bind(shared_ptr<Syntax::TranslationUnitSyntax> unit)
 	{
 		mCompilationUnit = unit;
 		mFunctions.clear();
+		mScope.reset();
+		BeginScope();
 
 		for (auto member : mCompilationUnit->GetMembers())
 			BindMember(member);
+
+		EndScope();
 
 		return make_shared<BoundCompilationUnit>(unit, mFunctions);
 	}
@@ -104,7 +114,13 @@ namespace Symple::Binding
 			params.push_back(BindParameter(param));
 
 		shared_ptr<Symbol::FunctionSymbol> symbol = make_shared<Symbol::FunctionSymbol>(ty, name, params);
+
+		BeginScope();
+		for (auto param : symbol->GetParameters())
+			mScope->DeclareVariable(param);
 		shared_ptr<BoundStatement> body = BindStatement(syntax->GetBody());
+		EndScope();
+
 		mFunctions.push_back({ symbol, body });
 		return symbol;
 	}
@@ -188,8 +204,11 @@ namespace Symple::Binding
 	shared_ptr<BoundBlockStatement> Binder::BindBlockStatement(shared_ptr<Syntax::BlockStatementSyntax> syntax)
 	{
 		std::vector<shared_ptr<BoundStatement>> statements;
+
+		BeginScope();
 		for (auto statement : syntax->GetStatements())
 			statements.push_back(BindStatement(statement));
+		EndScope();
 
 		return make_shared<BoundBlockStatement>(syntax, statements);
 	}
@@ -229,6 +248,8 @@ namespace Symple::Binding
 			return BindBinaryExpression(dynamic_pointer_cast<Syntax::BinaryExpressionSyntax>(syntax));
 		case Syntax::Node::LiteralExpression:
 			return BindLiteralExpression(dynamic_pointer_cast<Syntax::LiteralExpressionSyntax>(syntax));
+		case Syntax::Node::NameExpression:
+			return BindNameExpression(dynamic_pointer_cast<Syntax::NameExpressionSyntax>(syntax));
 		case Syntax::Node::ParenthesizedExpression:
 			return BindExpressionInternal(dynamic_pointer_cast<Syntax::ParenthesizedExpressionSyntax>(syntax)->GetExpression());
 		default:
@@ -294,10 +315,8 @@ namespace Symple::Binding
 			mDiagnosticBag->ReportInvalidOperation(syntax->GetOperator(), left->GetType(), right->GetType());
 		else
 		{
-			if (left->GetType()->Equals(op->GetLeftType()))
-				left = make_shared<BoundImplicitCastExpression>(syntax->GetLeft(), op->GetLeftType(), left);
-			if (right->GetType()->Equals(op->GetRightType()))
-				right = make_shared<BoundImplicitCastExpression>(syntax->GetRight(), op->GetRightType(), right);
+			left = make_shared<BoundImplicitCastExpression>(syntax->GetLeft(), op->GetLeftType(), left);
+			right = make_shared<BoundImplicitCastExpression>(syntax->GetRight(), op->GetRightType(), right);
 		}
 
 		return make_shared<BoundBinaryExpression>(syntax, op, left, right);
@@ -346,6 +365,18 @@ namespace Symple::Binding
 		}
 
 		return make_shared<BoundLiteralExpression>(syntax, ty, constant);
+	}
+
+	shared_ptr<BoundExpression> Binder::BindNameExpression(shared_ptr<Syntax::NameExpressionSyntax> syntax)
+	{
+		shared_ptr<Symbol::VariableSymbol> symbol = mScope->GetVariableSymbol(syntax->GetToken()->GetText());
+		if (!symbol)
+		{
+			mDiagnosticBag->ReportUnimplimentedError(syntax->GetToken());
+			return make_shared<BoundErrorExpression>(syntax);
+		}
+
+		return make_shared<BoundVariableExpression>(syntax, symbol);
 	}
 
 	#pragma endregion

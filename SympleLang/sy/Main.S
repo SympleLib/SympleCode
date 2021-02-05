@@ -3,7 +3,6 @@ _add: # int add(int, int)
 	push    %ebp
 	mov     %esp, %ebp
 	# Push Stack
-	mov     $1, %eax
 	jmp     _add.Return
 _add.Return:
 	# Pop Stack

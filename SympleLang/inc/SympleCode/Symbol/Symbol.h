@@ -37,6 +37,7 @@ namespace Symple::Symbol
 
 			Type,
 			Function,
+			Variable,
 			Parameter,
 
 			Last = Parameter,
@@ -47,6 +48,7 @@ namespace Symple::Symbol
 
 			"Type",
 			"Function",
+			"Variable",
 			"Parameter",
 		};
 	};

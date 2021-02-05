@@ -1,21 +1,18 @@
 #pragma once
 
-#include "SympleCode/Symbol/Symbol.h"
-#include "SympleCode/Symbol/TypeSymbol.h"
+#include "SympleCode/Symbol/VariableSymbol.h"
 
 #include "SympleCode/Binding/BoundConstant.h"
 
 namespace Symple::Symbol
 {
-	class ParameterSymbol : public Symbol
+	class ParameterSymbol : public VariableSymbol
 	{
 	private:
-		shared_ptr<TypeSymbol> mType;
-		std::string mName;
 		shared_ptr<Binding::BoundConstant> mInitializer;
 	public:
 		ParameterSymbol(shared_ptr<TypeSymbol> ty, std::string_view name, shared_ptr<Binding::BoundConstant> init)
-			: mType(ty), mName(name), mInitializer(init)
+			: VariableSymbol(ty, name), mInitializer(init)
 		{}
 
 		virtual Kind GetKind() override
@@ -43,12 +40,6 @@ namespace Symple::Symbol
 				GetInitializer()->PrintShort(os);
 			}
 		}
-
-		shared_ptr<TypeSymbol> GetType()
-		{ return mType; }
-
-		std::string_view GetName()
-		{ return mName; }
 
 		shared_ptr<Binding::BoundConstant> GetInitializer()
 		{ return mInitializer; }

@@ -11,7 +11,6 @@
 using namespace Symple;
 using namespace Symple::Binding;
 using namespace Symple::Syntax;
-using namespace Symple::Symbol;
 using namespace Symple::Emit;
 
 using std::shared_ptr;

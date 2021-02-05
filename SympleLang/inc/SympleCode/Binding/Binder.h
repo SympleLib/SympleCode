@@ -17,6 +17,7 @@
 #include "SympleCode/Symbol/FunctionSymbol.h"
 
 #include "SympleCode/Binding/Node.h"
+#include "SympleCode/Binding/BoundScope.h"
 #include "SympleCode/Binding/BoundCompilationUnit.h"
 
 #include "SympleCode/Binding/BoundStatement.h"
@@ -30,6 +31,7 @@
 #include "SympleCode/Binding/BoundUnaryExpression.h"
 #include "SympleCode/Binding/BoundBinaryExpression.h"
 #include "SympleCode/Binding/BoundLiteralExpression.h"
+#include "SympleCode/Binding/BoundVariableExpression.h"
 
 namespace Symple::Binding
 {
@@ -39,8 +41,11 @@ namespace Symple::Binding
 		shared_ptr<Syntax::TranslationUnitSyntax> mCompilationUnit;
 		FunctionMap mFunctions;
 
-
+		shared_ptr<BoundScope> mScope;
 		shared_ptr<DiagnosticBag> mDiagnosticBag = make_shared<DiagnosticBag>();
+
+		void BeginScope();
+		void EndScope();
 
 		shared_ptr<Node> BindMemberInternal(shared_ptr<Syntax::MemberSyntax>);
 		shared_ptr<BoundStatement> BindStatementInternal(shared_ptr<Syntax::StatementSyntax>);
@@ -64,6 +69,7 @@ namespace Symple::Binding
 		shared_ptr<BoundUnaryExpression> BindUnaryExpression(shared_ptr<Syntax::UnaryExpressionSyntax>);
 		shared_ptr<BoundBinaryExpression> BindBinaryExpression(shared_ptr<Syntax::BinaryExpressionSyntax>);
 		shared_ptr<BoundExpression> BindLiteralExpression(shared_ptr<Syntax::LiteralExpressionSyntax>);
+		shared_ptr<BoundExpression> BindNameExpression(shared_ptr<Syntax::NameExpressionSyntax>);
 
 		shared_ptr<DiagnosticBag> GetDiagnosticBag();
 	};
