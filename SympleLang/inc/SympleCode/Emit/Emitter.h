@@ -13,6 +13,7 @@ namespace Symple::Emit
 	{
 	protected:
 		char* mFile = nullptr;
+		shared_ptr<Binding::BoundCompilationUnit> mCompilationUnit = nullptr;
 	public:
 		virtual ~Emitter() {}
 
@@ -24,6 +25,7 @@ namespace Symple::Emit
 		virtual void EmitBlockStatement(shared_ptr<Binding::BoundBlockStatement>) = 0;
 		virtual void EmitReturnStatement(shared_ptr<Binding::BoundReturnStatement>) = 0;
 
+		virtual void EmitConstant(shared_ptr<Binding::BoundConstant>) = 0;
 		virtual void EmitExpression(shared_ptr<Binding::BoundExpression>) = 0;
 		virtual void EmitCallExpression(shared_ptr<Binding::BoundCallExpression>) = 0;
 	};

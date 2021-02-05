@@ -1,8 +1,8 @@
-int add(int a, int b)
+int add(int a = 1, int b = 1)
 	return 1;
 
 int main()
 {
-	return add(1, 1);
+	return add(1);
 	return 5;
 }

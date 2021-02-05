@@ -34,6 +34,8 @@ namespace Symple::Emit
 
 	void AsmEmitter::Emit(shared_ptr<Binding::BoundCompilationUnit> unit)
 	{
+		mCompilationUnit = unit;
+
 		for (auto func : unit->GetFunctions())
 			EmitFunction(func.first, func.second);
 	}
@@ -90,28 +92,35 @@ namespace Symple::Emit
 	}
 
 
+	void AsmEmitter::EmitConstant(shared_ptr<Binding::BoundConstant> val)
+	{
+		_Emit(Text, "\tmov     $%i, %%eax", val->GetValue());
+	}
+
 	void AsmEmitter::EmitExpression(shared_ptr<Binding::BoundExpression> expr)
 	{
 		if (expr->ConstantValue())
-			_Emit(Text, "\tmov     $%i, %%eax", expr->ConstantValue()->GetValue());
+			return EmitConstant(expr->ConstantValue());
 
 		switch (expr->GetKind())
 		{
 		case Binding::Node::CallExpression:
-			EmitCallExpression(dynamic_pointer_cast<Binding::BoundCallExpression>(expr));
-			break;
+			return EmitCallExpression(dynamic_pointer_cast<Binding::BoundCallExpression>(expr));
 		}
 	}
 
 	void AsmEmitter::EmitCallExpression(shared_ptr<Binding::BoundCallExpression> expr)
 	{
-		for (auto arg : expr->GetArguments())
+		for (unsigned i = 0; i < expr->GetFunction()->GetParameters().size(); i++)
 		{
-			EmitExpression(arg);
+			if (i < expr->GetArguments().size())
+				EmitExpression(expr->GetArguments()[i]);
+			else
+				EmitConstant(expr->GetFunction()->GetParameters()[i]->GetInitializer());
 			_Emit(Text, "\tpush    %%eax");
 		}
 		_Emit(Text, "\tcall    _%s", expr->GetFunction()->GetName().data());
-		_Emit(Text, "\tadd     $%i, %%esp", expr->GetArguments().size() * 4);
+		_Emit(Text, "\tadd     $%i, %%esp", expr->GetFunction()->GetParameters().size() * 4);
 	}
 
 

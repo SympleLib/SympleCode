@@ -13,6 +13,13 @@ namespace Symple::Binding
 {
 	typedef std::vector<std::pair<shared_ptr<Symbol::FunctionSymbol>, shared_ptr<BoundStatement>>> FunctionMap;
 
+	inline shared_ptr<Symbol::FunctionSymbol> FindFunction(FunctionMap funcs, std::string_view name)
+	{
+		for (auto fn : funcs)
+			if (fn.first->GetName() == name)
+				return fn.first;
+	}
+
 	class BoundCompilationUnit : public Node
 	{
 	private:
