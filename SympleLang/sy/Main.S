@@ -22,8 +22,6 @@ _main: # int main()
 	call    _add
 	add     $8, %esp
 	jmp     _main.Return
-	mov     $5, %eax
-	jmp     _main.Return
 _main.Return:
 	# Pop Stack
 	mov     %ebp, %esp

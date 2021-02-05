@@ -28,7 +28,7 @@ namespace Symple::Emit
 		CloseStreams();
 		std::stringstream cmd;
 		std::string file = mFile;
-		cmd << "clang -m32 --optimize -c " << mFile << " -o " << file.substr(0, file.find_last_of('.')) << ".o";
+		cmd << "clang -m32 --optimize -c " << mFile << " -o " << file.substr(0, file.find_last_of('.')) << ".obj";
 		system(cmd.str().c_str());
 	}
 

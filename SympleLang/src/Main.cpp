@@ -170,7 +170,7 @@ void LinkANDExec()
 	if (!sBound)
 		return;
 
-	system("clang -m32 --optimize sy/Main.s -o sy/Main.exe");
+	system("clang -m32 --optimize sy/Main.S -o sy/Main.exe");
 	puts("Executing program...");
 	int ec = system("sy\\Main");
 	printf("\nProgram Exited with code %i (0x%x)", ec, ec);

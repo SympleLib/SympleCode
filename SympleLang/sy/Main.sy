@@ -1,8 +1,5 @@
-int add(int a = 1, int b)
+int add(int a = 1, int b = 1)
 	return 1;
 
 int main()
-{
-	return add(default);
-	return 5;
-}
+	return add();
