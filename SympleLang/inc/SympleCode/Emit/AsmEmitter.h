@@ -3,6 +3,7 @@
 #include <cstdio>
 
 #include "SympleCode/Emit/Emitter.h"
+#include "SympleCode/Binding/BoundScope.h"
 
 namespace Symple::Emit
 {
@@ -14,6 +15,10 @@ namespace Symple::Emit
 		FILE* mDataStream;
 
 		shared_ptr<Symbol::FunctionSymbol> mFunction;
+		shared_ptr<Binding::BoundScope> mScope;
+
+		void BeginScope();
+		void EndScope();
 
 		bool mClosed = false;
 		bool mReturning;
@@ -33,6 +38,7 @@ namespace Symple::Emit
 		virtual void EmitConstant(shared_ptr<Binding::BoundConstant>) override;
 		virtual void EmitExpression(shared_ptr<Binding::BoundExpression>) override;
 		virtual void EmitCallExpression(shared_ptr<Binding::BoundCallExpression>) override;
+		virtual void EmitVariableExpression(shared_ptr<Binding::BoundVariableExpression>) override;
 	private:
 		void CloseStreams();
 	};

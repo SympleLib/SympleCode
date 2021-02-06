@@ -66,8 +66,9 @@ namespace Symple::Binding
 			ImplicitCastExpression,
 
 			CallExpression,
+			VariableExpression,
 
-			Last = CallExpression,
+			Last = VariableExpression,
 		};
 
 		static constexpr char* KindMap[Last + 1] = {
@@ -94,6 +95,7 @@ namespace Symple::Binding
 			"ImplicitCastExpression",
 
 			"CallExpression",
+			"VariableExpression",
 		};
 	};
 }

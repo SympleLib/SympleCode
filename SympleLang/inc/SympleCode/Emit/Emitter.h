@@ -4,6 +4,7 @@
 #include "SympleCode/Binding/BoundCallExpression.h"
 #include "SympleCode/Binding/BoundCompilationUnit.h"
 #include "SympleCode/Binding/BoundReturnStatement.h"
+#include "SympleCode/Binding/BoundVariableExpression.h"
 #include "SympleCode/Binding/BoundExpressionStatement.h"
 
 #include "SympleCode/Symbol/FunctionSymbol.h"
@@ -30,5 +31,6 @@ namespace Symple::Emit
 		virtual void EmitConstant(shared_ptr<Binding::BoundConstant>) = 0;
 		virtual void EmitExpression(shared_ptr<Binding::BoundExpression>) = 0;
 		virtual void EmitCallExpression(shared_ptr<Binding::BoundCallExpression>) = 0;
+		virtual void EmitVariableExpression(shared_ptr<Binding::BoundVariableExpression>) = 0;
 	};
 }

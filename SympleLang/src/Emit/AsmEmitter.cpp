@@ -8,6 +8,12 @@
 
 namespace Symple::Emit
 {
+	void AsmEmitter::BeginScope()
+	{ mScope = make_shared<Binding::BoundScope>(mScope); }
+
+	void AsmEmitter::EndScope()
+	{ mScope = mScope->GetBase(); }
+
 	AsmEmitter::AsmEmitter(char* file)
 		: mFile(file)
 	{
@@ -112,6 +118,8 @@ namespace Symple::Emit
 		{
 		case Binding::Node::CallExpression:
 			return EmitCallExpression(dynamic_pointer_cast<Binding::BoundCallExpression>(expr));
+		case Binding::Node::VariableExpression:
+			return EmitVariableExpression(dynamic_pointer_cast<Binding::BoundVariableExpression> (expr));
 		}
 	}
 
@@ -124,6 +132,11 @@ namespace Symple::Emit
 		}
 		_Emit(Text, "\tcall    _%s", expr->GetFunction()->GetName().data());
 		_Emit(Text, "\tadd     $%i, %%esp", expr->GetFunction()->GetParameters().size() * 4);
+	}
+
+	void AsmEmitter::EmitVariableExpression(shared_ptr<Binding::BoundVariableExpression> expr)
+	{
+
 	}
 
 

@@ -18,7 +18,7 @@ namespace Symple::Binding
 		{}
 
 		virtual Kind GetKind() override
-		{ return LiteralExpression; }
+		{ return VariableExpression; }
 
 		virtual shared_ptr<Symbol::TypeSymbol> GetType() override
 		{ return mSymbol->GetType(); }
