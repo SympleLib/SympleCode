@@ -1,3 +1,30 @@
+.global _pos
+_pos: # int pos(int)
+	push    %ebp
+	mov     %esp, %ebp
+	# Push Stack
+_a$0 = 8
+	mov     _a$0(%ebp), %eax
+	jmp     _pos.Return
+_pos.Return:
+	# Pop Stack
+	mov     %ebp, %esp
+	pop     %ebp
+	ret
+.global _neg
+_neg: # int neg(int)
+	push    %ebp
+	mov     %esp, %ebp
+	# Push Stack
+_a$0 = 8
+	mov     _a$0(%ebp), %eax
+	neg     %eax
+	jmp     _neg.Return
+_neg.Return:
+	# Pop Stack
+	mov     %ebp, %esp
+	pop     %ebp
+	ret
 .global _add
 _add: # int add(int, int)
 	push    %ebp
@@ -98,6 +125,14 @@ _main: # int main()
 	push    %ebp
 	mov     %esp, %ebp
 	# Push Stack
+	mov     $1, %eax
+	push    %eax
+	call    _pos
+	add     $4, %esp
+	mov     $1, %eax
+	push    %eax
+	call    _neg
+	add     $4, %esp
 	mov     $1, %eax
 	push    %eax
 	mov     $1, %eax

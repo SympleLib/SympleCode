@@ -156,6 +156,8 @@ namespace Symple::Emit
 		{
 		case Binding::Node::CallExpression:
 			return EmitCallExpression(dynamic_pointer_cast<Binding::BoundCallExpression>(expr));
+		case Binding::Node::UnaryExpression:
+			return EmitUnaryExpression(dynamic_pointer_cast<Binding::BoundUnaryExpression> (expr));
 		case Binding::Node::BinaryExpression:
 			return EmitBinaryExpression(dynamic_pointer_cast<Binding::BoundBinaryExpression> (expr));
 		case Binding::Node::VariableExpression:
@@ -174,6 +176,18 @@ namespace Symple::Emit
 		}
 		_Emit(Text, "\tcall    _%s", expr->GetFunction()->GetName().data());
 		_Emit(Text, "\tadd     $%i, %%esp", expr->GetFunction()->GetParameters().size() * 4);
+	}
+
+	void AsmEmitter::EmitUnaryExpression(shared_ptr<Binding::BoundUnaryExpression> expr)
+	{
+		EmitExpression(expr->GetOperand());
+
+		switch (expr->GetOperator()->GetKind())
+		{
+		case Binding::BoundUnaryOperator::Negative:
+			_Emit(Text, "\tneg     %%eax");
+			break;
+		}
 	}
 
 	void AsmEmitter::EmitBinaryExpression(shared_ptr<Binding::BoundBinaryExpression> expr)
