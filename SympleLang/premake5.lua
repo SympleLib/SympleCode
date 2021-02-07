@@ -30,7 +30,8 @@ project "SympleLang"
 	links {}
 	
 	disablewarnings {
-		"26812"
+		"26812",
+		"write-strings"
 	}
 	
 	filter "configurations:Debug"

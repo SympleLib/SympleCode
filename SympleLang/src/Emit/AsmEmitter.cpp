@@ -4,7 +4,7 @@
 
 #include "SympleCode/Util/FileUtil.h"
 
-#define _Emit(section, fmt, ...) ((void)fprintf(m##section##Stream, fmt "\n", __VA_ARGS__))
+#define _Emit(section, fmt, ...) ((void)fprintf(m##section##Stream, fmt "\n", ##__VA_ARGS__))
 
 namespace Symple::Emit
 {
@@ -258,7 +258,7 @@ namespace Symple::Emit
 		if (var != expr->GetSymbol())
 		{
 			abort(); // Something bad, happening in code...
-			return;
+			return {};
 		}
 
 		std::string_view name = var->GetName();

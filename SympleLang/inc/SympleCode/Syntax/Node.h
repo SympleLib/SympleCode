@@ -46,7 +46,7 @@ namespace Symple::Syntax
 		
 		static void PrintIndent(std::ostream& os = std::cout, std::string_view indent = "", bool last = true, std::string_view label = "")
 		{
-#ifdef _WIN32
+#if _WIN32
 			enum ConsoleColor
 			{
 				Black,
@@ -79,10 +79,12 @@ namespace Symple::Syntax
 			else
 				os << "|--";
 
+#if _WIN32
 			SetConsoleTextAttribute(console, Cyan);
+#endif
 			os << label;
 
-#ifdef _WIN32
+#if _WIN32
 			SetConsoleTextAttribute(console, Green);
 #endif
 		}
