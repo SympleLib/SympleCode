@@ -8,7 +8,7 @@ namespace Symple::Syntax
 		{
 		case Token::Plus:
 		case Token::Dash:
-			return 3;
+			return 4;
 
 		default:
 			return 0;
@@ -22,10 +22,13 @@ namespace Symple::Syntax
 		case Token::Percentage:
 		case Token::Asterisk:
 		case Token::Slash:
-			return 2;
+			return 3;
 
 		case Token::Plus:
 		case Token::Dash:
+			return 2;
+
+		case Token::Equal:
 			return 1;
 
 		default:
