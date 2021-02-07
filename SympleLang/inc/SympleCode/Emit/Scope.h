@@ -38,5 +38,16 @@ namespace Symple::Emit
 			else
 				return nullptr;
 		}
+
+		unsigned GetVariableDepth(std::string_view name)
+		{
+			for (auto var : GetDeclaredVariables())
+				if (var->GetName() == name)
+					return GetDepth();
+			if (GetBase())
+				return GetBase()->GetVariableDepth(name);
+			else
+				return -1;
+		}
 	};
 }

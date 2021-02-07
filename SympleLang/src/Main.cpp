@@ -159,7 +159,7 @@ void _Emit()
 	if (!sBound)
 		return;
 
-	shared_ptr<Emitter> emmiter = make_shared<AsmEmitter>((char*)"sy/Main.S");
+	shared_ptr<AsmEmitter> emmiter = make_shared<AsmEmitter>((char*)"sy/Main.S");
 	emmiter->Emit(sBound);
 	emmiter->Compile();
 }

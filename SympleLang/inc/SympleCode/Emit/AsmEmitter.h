@@ -1,13 +1,19 @@
 #pragma once
 
 #include <cstdio>
+#include "SympleCode/Binding/BoundStatement.h"
+#include "SympleCode/Binding/BoundCallExpression.h"
+#include "SympleCode/Binding/BoundCompilationUnit.h"
+#include "SympleCode/Binding/BoundReturnStatement.h"
+#include "SympleCode/Binding/BoundVariableExpression.h"
+#include "SympleCode/Binding/BoundExpressionStatement.h"
 
-#include "SympleCode/Emit/Emitter.h"
-#include "SympleCode/Binding/BoundScope.h"
+#include "SympleCode/Symbol/FunctionSymbol.h"
+#include "SympleCode/Emit/Scope.h"
 
 namespace Symple::Emit
 {
-	class AsmEmitter : public Emitter
+	class AsmEmitter
 	{
 	protected:
 		char* mFile;
@@ -15,30 +21,34 @@ namespace Symple::Emit
 		FILE* mDataStream;
 
 		shared_ptr<Symbol::FunctionSymbol> mFunction;
-		shared_ptr<Binding::BoundScope> mScope;
+		shared_ptr<Binding::BoundCompilationUnit> mCompilationUnit;
+		shared_ptr<Scope> mScope;
 
 		void BeginScope();
 		void EndScope();
+
+		char* RegAx(unsigned sz);
+		char Suf(unsigned sz);
 
 		bool mClosed = false;
 		bool mReturning;
 	public:
 		AsmEmitter(char* file = nullptr);
-		virtual ~AsmEmitter() override;
+		~AsmEmitter();
 
-		virtual void Compile() override;
-		virtual void Emit(shared_ptr<Binding::BoundCompilationUnit>) override;
-		virtual void EmitFunction(shared_ptr<Symbol::FunctionSymbol>, shared_ptr<Binding::BoundStatement>) override;
+		void Compile();
+		void Emit(shared_ptr<Binding::BoundCompilationUnit>);
+		void EmitFunction(shared_ptr<Symbol::FunctionSymbol>, shared_ptr<Binding::BoundStatement>);
 
-		virtual void EmitStatement(shared_ptr<Binding::BoundStatement>) override;
-		virtual void EmitBlockStatement(shared_ptr<Binding::BoundBlockStatement>) override;
-		virtual void EmitReturnStatement(shared_ptr<Binding::BoundReturnStatement>) override;
-		virtual void EmitExpressionStatement(shared_ptr<Binding::BoundExpressionStatement>) override;
+		void EmitStatement(shared_ptr<Binding::BoundStatement>);
+		void EmitBlockStatement(shared_ptr<Binding::BoundBlockStatement>);
+		void EmitReturnStatement(shared_ptr<Binding::BoundReturnStatement>);
+		void EmitExpressionStatement(shared_ptr<Binding::BoundExpressionStatement>);
 
-		virtual void EmitConstant(shared_ptr<Binding::BoundConstant>) override;
-		virtual void EmitExpression(shared_ptr<Binding::BoundExpression>) override;
-		virtual void EmitCallExpression(shared_ptr<Binding::BoundCallExpression>) override;
-		virtual void EmitVariableExpression(shared_ptr<Binding::BoundVariableExpression>) override;
+		void EmitConstant(shared_ptr<Binding::BoundConstant>);
+		void EmitExpression(shared_ptr<Binding::BoundExpression>);
+		void EmitCallExpression(shared_ptr<Binding::BoundCallExpression>);
+		void EmitVariableExpression(shared_ptr<Binding::BoundVariableExpression>);
 	private:
 		void CloseStreams();
 	};
