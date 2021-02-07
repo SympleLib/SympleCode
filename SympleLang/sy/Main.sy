@@ -1,5 +1,5 @@
 int add(int a = 1, int b = 1)
-	return a;
+	return a + b;
 
 int main()
 	add(69);

@@ -89,7 +89,7 @@ namespace Symple::Emit
 		for (auto param : func->GetParameters())
 		{
 			stackPos += 4;
-			_Emit(Text, "_%s$0 = %i", param->GetName().data(), stackPos);
+			_Emit(Text, "_%s$%i = %i", param->GetName().data(), mScope->GetDepth(), stackPos);
 			mScope->DeclareVariable(param);
 		}
 
@@ -156,20 +156,45 @@ namespace Symple::Emit
 		{
 		case Binding::Node::CallExpression:
 			return EmitCallExpression(dynamic_pointer_cast<Binding::BoundCallExpression>(expr));
+		case Binding::Node::BinaryExpression:
+			return EmitBinaryExpression(dynamic_pointer_cast<Binding::BoundBinaryExpression> (expr));
 		case Binding::Node::VariableExpression:
 			return EmitVariableExpression(dynamic_pointer_cast<Binding::BoundVariableExpression> (expr));
+		default:
+			return _Emit(Text, "\tmov     @@ERROR, %%eax");
 		}
 	}
 
 	void AsmEmitter::EmitCallExpression(shared_ptr<Binding::BoundCallExpression> expr)
 	{
-		for (auto arg : expr->GetArguments())
+		for (unsigned i = expr->GetArguments().size(); i; i--)
 		{
-			EmitExpression(arg);
+			EmitExpression(expr->GetArguments()[i - 1]);
 			_Emit(Text, "\tpush    %%eax");
 		}
 		_Emit(Text, "\tcall    _%s", expr->GetFunction()->GetName().data());
 		_Emit(Text, "\tadd     $%i, %%esp", expr->GetFunction()->GetParameters().size() * 4);
+	}
+
+	void AsmEmitter::EmitBinaryExpression(shared_ptr<Binding::BoundBinaryExpression> expr)
+	{
+		EmitExpression(expr->GetRight());
+		_Emit(Text, "\tpush    %%eax");
+		EmitExpression(expr->GetLeft());
+		_Emit(Text, "\tpop     %%ebx");
+
+		switch (expr->GetOperator()->GetKind())
+		{
+		case Binding::BoundBinaryOperator::Addition:
+			_Emit(Text, "\tadd     %%ebx, %%eax");
+			break;
+		case Binding::BoundBinaryOperator::Subtraction:
+			_Emit(Text, "\tsub     %%ebx, %%eax");
+			break;
+		case Binding::BoundBinaryOperator::Multiplication:
+			_Emit(Text, "\timul    %%ebx, %%eax");
+			break;
+		}
 	}
 
 	void AsmEmitter::EmitVariableExpression(shared_ptr<Binding::BoundVariableExpression> expr)

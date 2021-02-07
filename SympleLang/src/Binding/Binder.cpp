@@ -315,8 +315,8 @@ namespace Symple::Binding
 			mDiagnosticBag->ReportInvalidOperation(syntax->GetOperator(), left->GetType(), right->GetType());
 		else
 		{
-			left = make_shared<BoundImplicitCastExpression>(syntax->GetLeft(), op->GetLeftType(), left);
-			right = make_shared<BoundImplicitCastExpression>(syntax->GetRight(), op->GetRightType(), right);
+			//left = make_shared<BoundImplicitCastExpression>(syntax->GetLeft(), op->GetLeftType(), left);
+			//right = make_shared<BoundImplicitCastExpression>(syntax->GetRight(), op->GetRightType(), right);
 		}
 
 		return make_shared<BoundBinaryExpression>(syntax, op, left, right);
