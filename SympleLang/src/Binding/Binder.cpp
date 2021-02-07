@@ -39,7 +39,7 @@ namespace Symple::Binding
 
 #define TYPE_CONT(name) \
 		case Syntax::Token::##name##Keyword: \
-			return make_shared<Symbol::TypeSymbol>(Symbol::TypeSymbol::##name##Type->GetTypeKind(), Symbol::TypeSymbol::##name##Type->GetName(), Symbol::TypeSymbol::##name##Type->GetSize(), base)
+			return make_shared<Symbol::TypeSymbol>(Symbol::TypeSymbol::##name##Type->GetTypeKind(), Symbol::TypeSymbol::##name##Type->GetName(), Symbol::TypeSymbol::##name##Type->GetSize(), Symbol::TypeSymbol::##name##Type->IsFloat(), base)
 
 #define TYPE_CASE(name) \
 		case Syntax::Token::##name##Keyword: \
@@ -70,7 +70,7 @@ namespace Symple::Binding
 
 				// Special
 			case Syntax::Token::Asterisk:
-				return make_shared<Symbol::TypeSymbol>(Symbol::TypeSymbol::VoidPointerType->GetTypeKind(), Symbol::TypeSymbol::VoidPointerType->GetName(), Symbol::TypeSymbol::VoidPointerType->GetSize(), base);
+				return make_shared<Symbol::TypeSymbol>(Symbol::TypeSymbol::VoidPointerType->GetTypeKind(), Symbol::TypeSymbol::VoidPointerType->GetName(), Symbol::TypeSymbol::VoidPointerType->GetSize(), false, base);
 
 			default:
 				return Symbol::TypeSymbol::ErrorType;
@@ -313,11 +313,6 @@ namespace Symple::Binding
 		shared_ptr<BoundBinaryOperator> op = BoundBinaryOperator::Bind(syntax->GetOperator()->GetKind(), left->GetType(), right->GetType());
 		if (op == BoundBinaryOperator::ErrorOperator)
 			mDiagnosticBag->ReportInvalidOperation(syntax->GetOperator(), left->GetType(), right->GetType());
-		else
-		{
-			//left = make_shared<BoundImplicitCastExpression>(syntax->GetLeft(), op->GetLeftType(), left);
-			//right = make_shared<BoundImplicitCastExpression>(syntax->GetRight(), op->GetRightType(), right);
-		}
 
 		return make_shared<BoundBinaryExpression>(syntax, op, left, right);
 	}

@@ -181,18 +181,29 @@ namespace Symple::Emit
 		EmitExpression(expr->GetRight());
 		_Emit(Text, "\tpush    %%eax");
 		EmitExpression(expr->GetLeft());
-		_Emit(Text, "\tpop     %%ebx");
+		_Emit(Text, "\tpop     %%edx");
 
 		switch (expr->GetOperator()->GetKind())
 		{
 		case Binding::BoundBinaryOperator::Addition:
-			_Emit(Text, "\tadd     %%ebx, %%eax");
+			_Emit(Text, "\tadd     %%edx, %%eax");
 			break;
 		case Binding::BoundBinaryOperator::Subtraction:
-			_Emit(Text, "\tsub     %%ebx, %%eax");
+			_Emit(Text, "\tsub     %%edx, %%eax");
 			break;
 		case Binding::BoundBinaryOperator::Multiplication:
-			_Emit(Text, "\timul    %%ebx, %%eax");
+			_Emit(Text, "\timul    %%edx, %%eax");
+			break;
+		case Binding::BoundBinaryOperator::Division:
+			_Emit(Text, "\tmov     %%edx, %%ecx");
+			_Emit(Text, "\tcltd");
+			_Emit(Text, "\tidiv    %%ecx");
+			break;
+		case Binding::BoundBinaryOperator::Modulo:
+			_Emit(Text, "\tmov     %%edx, %%ecx");
+			_Emit(Text, "\tcltd");
+			_Emit(Text, "\tidiv    %%ecx");
+			_Emit(Text, "\tmov     %%edx, %%eax");
 			break;
 		}
 	}

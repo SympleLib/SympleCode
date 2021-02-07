@@ -19,6 +19,7 @@ namespace Symple::Syntax
 	{
 		switch (kind)
 		{
+		case Token::Percentage:
 		case Token::Asterisk:
 		case Token::Slash:
 			return 2;
