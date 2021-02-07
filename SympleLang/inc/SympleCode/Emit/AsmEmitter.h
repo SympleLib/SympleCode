@@ -53,6 +53,9 @@ namespace Symple::Emit
 		void EmitUnaryExpression(shared_ptr<Binding::BoundUnaryExpression>);
 		void EmitBinaryExpression(shared_ptr<Binding::BoundBinaryExpression>);
 		void EmitVariableExpression(shared_ptr<Binding::BoundVariableExpression>);
+
+		shared_ptr<Symbol::TypeSymbol> EmitExpressionPointer(shared_ptr<Binding::BoundExpression>);
+		shared_ptr<Symbol::TypeSymbol> EmitVariableExpressionPointer(shared_ptr<Binding::BoundVariableExpression>);
 	private:
 		void CloseStreams();
 	};

@@ -240,6 +240,35 @@ namespace Symple::Emit
 	}
 
 
+	shared_ptr<Symbol::TypeSymbol> AsmEmitter::EmitExpressionPointer(shared_ptr<Binding::BoundExpression> expr)
+	{
+		switch (expr->GetKind())
+		{
+		case Binding::Node::VariableExpression:
+			return EmitVariableExpressionPointer(dynamic_pointer_cast<Binding::BoundVariableExpression>(expr));
+		default:
+			_Emit(Text, "\tmov     @@ERROR, %%eax");
+			return {};
+		}
+	}
+
+	shared_ptr<Symbol::TypeSymbol> AsmEmitter::EmitVariableExpressionPointer(shared_ptr<Binding::BoundVariableExpression> expr)
+	{
+		shared_ptr<Symbol::VariableSymbol> var = mScope->GetVariableSymbol(expr->GetSymbol()->GetName());
+		if (var != expr->GetSymbol())
+		{
+			abort(); // Something bad, happening in code...
+			return;
+		}
+
+		std::string_view name = var->GetName();
+		unsigned depth = mScope->GetVariableDepth(var->GetName());
+		_Emit(Text, "\tlea     _%s$%i(%%ebp), %%eax", name.data(), depth);
+
+		return var->GetType();
+	}
+
+
 	void AsmEmitter::CloseStreams()
 	{
 		if (!mClosed)
