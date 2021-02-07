@@ -15,9 +15,10 @@ namespace Symple::Symbol
 		TypeKind mTypeKind;
 		std::string mName;
 		unsigned mSize;
+		bool mFloat;
 		shared_ptr<TypeSymbol> mBase;
 	public:
-		TypeSymbol(TypeKind, std::string_view name, unsigned size, shared_ptr<TypeSymbol> base = nullptr);
+		TypeSymbol(TypeKind, std::string_view name, unsigned size, bool isFloat = false, shared_ptr<TypeSymbol> base = nullptr);
 
 		bool Equals(shared_ptr<TypeSymbol>);
 
@@ -33,6 +34,7 @@ namespace Symple::Symbol
 		TypeKind GetTypeKind();
 		std::string_view GetName();
 		unsigned GetSize();
+		bool IsFloat();
 		shared_ptr<TypeSymbol> GetBase();
 
 		static shared_ptr<TypeSymbol> ErrorType;

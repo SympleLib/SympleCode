@@ -14,15 +14,15 @@ namespace Symple::Symbol
 	shared_ptr<TypeSymbol> TypeSymbol::CharType = make_shared<TypeSymbol>(Char, "char", 4);
 	shared_ptr<TypeSymbol> TypeSymbol::WCharType = make_shared<TypeSymbol>(WChar, "wchar", 8);
 
-	shared_ptr<TypeSymbol> TypeSymbol::FloatType   = make_shared<TypeSymbol>(Float, "float", 8);
-	shared_ptr<TypeSymbol> TypeSymbol::DoubleType  = make_shared<TypeSymbol>(Double, "double", 8);
-	shared_ptr<TypeSymbol> TypeSymbol::TripleType  = make_shared<TypeSymbol>(Triple, "triple", 16);
+	shared_ptr<TypeSymbol> TypeSymbol::FloatType   = make_shared<TypeSymbol>(Float, "float", 8, true);
+	shared_ptr<TypeSymbol> TypeSymbol::DoubleType  = make_shared<TypeSymbol>(Double, "double", 8, true);
+	shared_ptr<TypeSymbol> TypeSymbol::TripleType  = make_shared<TypeSymbol>(Triple, "triple", 16, true);
 
 	shared_ptr<TypeSymbol> TypeSymbol::VoidPointerType  = make_shared<TypeSymbol>(Pointer, "*", 4, VoidType);
 	shared_ptr<TypeSymbol> TypeSymbol::BytePointerType  = make_shared<TypeSymbol>(Pointer, "*", 4, ByteType);
 
-	TypeSymbol::TypeSymbol(TypeKind kind, std::string_view name, unsigned sz, shared_ptr<TypeSymbol> base)
-		: mTypeKind(kind), mName(name), mSize(sz), mBase(base)
+	TypeSymbol::TypeSymbol(TypeKind kind, std::string_view name, unsigned sz, bool isFloat, shared_ptr<TypeSymbol> base)
+		: mTypeKind(kind), mName(name), mSize(sz), mFloat(isFloat), mBase(base)
 	{}
 
 
@@ -73,6 +73,9 @@ namespace Symple::Symbol
 
 	unsigned TypeSymbol::GetSize()
 	{ return mSize; }
+
+	bool TypeSymbol::IsFloat()
+	{ return mFloat; }
 
 	shared_ptr<TypeSymbol> TypeSymbol::GetBase()
 	{ return mBase; }
