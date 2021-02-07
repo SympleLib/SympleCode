@@ -36,15 +36,15 @@ namespace Symple::Binding
 		{
 			Unknown,
 
-			Assignment,
+			Move,
 
-			Last = Assignment,
+			Last = Move,
 		};
 
 		static constexpr char* KindMap[Last + 1] = {
 			"Unknown",
 
-			"Assignment",
+			"Move",
 		};
 	};
 }
