@@ -1,3 +1,5 @@
+extern int putc(char);
+
 int main()
 {
 	putc(69);

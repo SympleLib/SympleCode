@@ -87,7 +87,9 @@ namespace Symple::Syntax
 			ReturnKeyword,
 			DefaultKeyword,
 
-			Last = DefaultKeyword,
+			ExternKeyword,
+
+			Last = ExternKeyword,
 		};
 
 		static constexpr char* KindMap[Last + 1] = {

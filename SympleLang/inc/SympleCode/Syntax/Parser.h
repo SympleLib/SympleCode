@@ -9,7 +9,7 @@
 #include "SympleCode/Syntax/TranslationUnitSyntax.h"
 
 #include "SympleCode/Syntax/MemberSyntax.h"
-#include "SympleCode/Syntax/FunctionDeclarationSyntax.h"
+#include "SympleCode/Syntax/ExternFunctionSyntax.h"
 #include "SympleCode/Syntax/FunctionDeclarationSyntax.h"
 
 #include "SympleCode/Syntax/StatementSyntax.h"
@@ -48,6 +48,7 @@ namespace Symple::Syntax
 		shared_ptr<TranslationUnitSyntax> Parse();
 
 		shared_ptr<MemberSyntax> ParseMember();
+		shared_ptr<ExternFunctionSyntax> ParseExternFunction();
 		shared_ptr<FunctionDeclarationSyntax> ParseFunctionDeclaration();
 
 		shared_ptr<StatementSyntax> ParseStatement(bool matchSemicolon = true);

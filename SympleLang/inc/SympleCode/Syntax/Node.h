@@ -104,6 +104,7 @@ namespace Symple::Syntax
 			TranslationUnit,
 
 			Member,
+			ExternFunction,
 			GlobalStatement,
 			FunctionDeclaration,
 
@@ -136,6 +137,7 @@ namespace Symple::Syntax
 			"TranslationUnit",
 
 			"Member",
+			"ExternFunction",
 			"GlobalStatement",
 			"FunctionDeclaration",
 

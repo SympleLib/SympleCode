@@ -56,6 +56,17 @@ namespace Symple::Syntax
 			return make_shared<GlobalStatementSyntax>(ParseStatement());
 	}
 
+	shared_ptr<ExternFunctionSyntax> Parser::ParseExternFunction()
+	{
+		auto type = ParseType();
+		shared_ptr<Token> name = Match(Token::Identifier);
+		shared_ptr<Token> openParen = Match(Token::OpenParenthesis);
+		auto params = ParseVariableDeclarationList();
+		shared_ptr<Token> closeParen = Match(Token::CloseParenthesis);
+
+		return make_shared<ExternFunctionSyntax>(type, name, openParen, params, closeParen);
+	}
+
 	shared_ptr<FunctionDeclarationSyntax> Parser::ParseFunctionDeclaration()
 	{
 		auto type = ParseType();
