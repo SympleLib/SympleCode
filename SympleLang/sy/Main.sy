@@ -2,7 +2,8 @@ extern int putchar(char);
 
 int main()
 {
-	putchar(69);
+	char EChar = 69;
+	putchar(EChar);
 
 	return 0;
 }

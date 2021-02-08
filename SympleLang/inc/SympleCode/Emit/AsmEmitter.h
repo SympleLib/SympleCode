@@ -9,6 +9,7 @@
 #include "SympleCode/Binding/BoundBinaryExpression.h"
 #include "SympleCode/Binding/BoundVariableExpression.h"
 #include "SympleCode/Binding/BoundExpressionStatement.h"
+#include "SympleCode/Binding/BoundVariableDeclaration.h"
 
 #include "SympleCode/Symbol/FunctionSymbol.h"
 #include "SympleCode/Emit/Scope.h"
@@ -34,6 +35,8 @@ namespace Symple::Emit
 
 		bool mClosed = false;
 		bool mReturning;
+
+		unsigned mStackPos = 0;
 	public:
 		AsmEmitter(char* file = nullptr);
 		~AsmEmitter();
@@ -46,6 +49,7 @@ namespace Symple::Emit
 		void EmitBlockStatement(shared_ptr<Binding::BoundBlockStatement>);
 		void EmitReturnStatement(shared_ptr<Binding::BoundReturnStatement>);
 		void EmitExpressionStatement(shared_ptr<Binding::BoundExpressionStatement>);
+		void EmitVariableDeclaration(shared_ptr<Binding::BoundVariableDeclaration>);
 
 		void EmitConstant(shared_ptr<Binding::BoundConstant>);
 		void EmitExpression(shared_ptr<Binding::BoundExpression>);

@@ -25,6 +25,7 @@
 #include "SympleCode/Binding/BoundBlockStatement.h"
 #include "SympleCode/Binding/BoundReturnStatement.h"
 #include "SympleCode/Binding/BoundExpressionStatement.h"
+#include "SympleCode/Binding/BoundVariableDeclaration.h"
 
 #include "SympleCode/Binding/BoundExpression.h"
 #include "SympleCode/Binding/BoundCallExpression.h"
@@ -65,6 +66,7 @@ namespace Symple::Binding
 		shared_ptr<BoundBlockStatement> BindBlockStatement(shared_ptr<Syntax::BlockStatementSyntax>);
 		shared_ptr<BoundReturnStatement> BindReturnStatement(shared_ptr<Syntax::ReturnStatementSyntax>);
 		shared_ptr<BoundExpressionStatement> BindExpressionStatement(shared_ptr<Syntax::ExpressionStatementSyntax>);
+		shared_ptr<BoundVariableDeclaration> BindVariableDeclaration(shared_ptr<Syntax::VariableDeclarationSyntax>);
 
 		shared_ptr<BoundExpression> BindExpression(shared_ptr<Syntax::ExpressionSyntax>);
 		shared_ptr<BoundExpression> BindCallExpression(shared_ptr<Syntax::CallExpressionSyntax>);

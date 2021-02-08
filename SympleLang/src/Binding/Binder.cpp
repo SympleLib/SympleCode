@@ -215,6 +215,8 @@ namespace Symple::Binding
 			return BindReturnStatement(dynamic_pointer_cast<Syntax::ReturnStatementSyntax>(syntax));
 		case Syntax::Node::ExpressionStatement:
 			return BindExpressionStatement(dynamic_pointer_cast<Syntax::ExpressionStatementSyntax>(syntax));
+		case Syntax::Node::VariableDeclaration:
+			return BindVariableDeclaration(dynamic_pointer_cast<Syntax::VariableDeclarationSyntax>(syntax));
 		default:
 			return make_shared<BoundStatement>(syntax);
 		}
@@ -237,6 +239,19 @@ namespace Symple::Binding
 
 	shared_ptr<BoundExpressionStatement> Binder::BindExpressionStatement(shared_ptr<Syntax::ExpressionStatementSyntax> syntax)
 	{ return make_shared<BoundExpressionStatement>(syntax, BindExpression(syntax->GetExpression())); }
+
+	shared_ptr<BoundVariableDeclaration> Binder::BindVariableDeclaration(shared_ptr<Syntax::VariableDeclarationSyntax> syntax)
+	{
+		shared_ptr<Symbol::TypeSymbol> ty = BindType(syntax->GetType());
+		std::string_view name = syntax->GetName()->GetText();
+		shared_ptr<BoundExpression> init;
+		if (syntax->GetInitializer())
+			init = BindExpression(syntax->GetInitializer());
+
+		shared_ptr<Symbol::VariableSymbol> symbol = make_shared<Symbol::VariableSymbol>(ty, name);
+		mScope->DeclareVariable(symbol);
+		return make_shared<BoundVariableDeclaration>(syntax, symbol, init);
+	}
 
 	#pragma endregion
 

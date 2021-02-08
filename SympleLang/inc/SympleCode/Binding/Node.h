@@ -54,6 +54,7 @@ namespace Symple::Binding
 			BlockStatement,
 			ReturnStatement,
 			ExpressionStatement,
+			VariableDeclaration,
 
 			Expression,
 			ErrorExpression,
@@ -84,6 +85,7 @@ namespace Symple::Binding
 			"BlockStatement",
 			"ReturnStatement",
 			"ExpressionStatement",
+			"VariableDeclaration",
 
 			"Expression",
 			"ErrorExpression",

@@ -123,6 +123,9 @@ namespace Symple::Emit
 		case Binding::Node::ExpressionStatement:
 			EmitExpressionStatement(dynamic_pointer_cast<Binding::BoundExpressionStatement>(stmt));
 			break;
+		case Binding::Node::VariableDeclaration:
+			EmitVariableDeclaration(dynamic_pointer_cast<Binding::BoundVariableDeclaration>(stmt));
+			break;
 		}
 	}
 
@@ -145,6 +148,24 @@ namespace Symple::Emit
 
 	void AsmEmitter::EmitExpressionStatement(shared_ptr<Binding::BoundExpressionStatement> stmt)
 	{ EmitExpression(stmt->GetExpression()); }
+
+	void AsmEmitter::EmitVariableDeclaration(shared_ptr<Binding::BoundVariableDeclaration> stmt)
+	{
+		std::string_view name = stmt->GetSymbol()->GetName();
+		_Emit(Text, "_%s$%i = %i", name.data(), mScope->GetDepth(), mStackPos);
+
+		unsigned sz = stmt->GetSymbol()->GetType()->GetSize();
+		mStackPos += sz;
+
+		_Emit(Text, "\tsub     $%i, %%esp", sz); // Bad usage if using gotos and loops
+		if (stmt->GetInitializer())
+		{
+			EmitExpression(stmt->GetInitializer());
+			_Emit(Text, "\tmov     %s, _%s$%i(%%ebp)", RegAx(sz), name.data(), mScope->GetDepth());
+		}
+
+		mScope->DeclareVariable(stmt->GetSymbol());
+	}
 
 
 	void AsmEmitter::EmitConstant(shared_ptr<Binding::BoundConstant> val)
