@@ -10,11 +10,10 @@ namespace Symple::Binding
 	class BoundAssignmentExpression : public BoundExpression
 	{
 	private:
-		shared_ptr<BoundBinaryOperator> mOperator;
 		shared_ptr<BoundExpression> mLeft, mRight;
 	public:
-		BoundAssignmentExpression(shared_ptr<Syntax::BinaryExpressionSyntax> syntax, shared_ptr<BoundBinaryOperator> oqerator, shared_ptr<BoundExpression> left, shared_ptr<BoundExpression> right)
-			: BoundExpression(syntax), mOperator(oqerator), mLeft(left), mRight(right)
+		BoundAssignmentExpression(shared_ptr<Syntax::BinaryExpressionSyntax> syntax, shared_ptr<BoundExpression> left, shared_ptr<BoundExpression> right)
+			: BoundExpression(syntax), mLeft(left), mRight(right)
 		{}
 
 		virtual Kind GetKind() override
@@ -38,7 +37,7 @@ namespace Symple::Binding
 		}
 
 		shared_ptr<BoundBinaryOperator> GetOperator()
-		{ return mOperator; }
+		{ return ; }
 
 		shared_ptr<BoundExpression> GetLeft()
 		{ return mLeft; }
