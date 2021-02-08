@@ -43,7 +43,8 @@ namespace Symple::Binding
 			for (auto& func : GetFunctions())
 			{
 				os.put('\n'); func.first->Print(os, newIndent, false, "Function = ");
-				os.put('\n'); func.second->Print(os, newIndent, func == GetFunctions().back(), "Body = ");
+				if (func.second)
+				{ os.put('\n'); func.second->Print(os, newIndent, func == GetFunctions().back(), "Body = "); }
 			}
 		}
 

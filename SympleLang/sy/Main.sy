@@ -1,8 +1,8 @@
-extern int putc(char);
+extern int putchar(char);
 
 int main()
 {
-	putc(69);
+	putchar(69);
 
 	return 0;
 }

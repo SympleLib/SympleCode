@@ -134,6 +134,8 @@ namespace Symple::Syntax
 
 			"ReturnKeyword",
 			"DefaultKeyword",
+
+			"ExternKeyword",
 		};
 	};
 }

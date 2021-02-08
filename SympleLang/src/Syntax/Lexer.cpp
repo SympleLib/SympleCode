@@ -184,6 +184,8 @@ namespace Symple::Syntax
 		KEYWORD(return, Return);
 
 		KEYWORD(default, Default);
+		KEYWORD(extern, Extern);
+		KEYWORD(external, Extern);
 
 		else
 			return make_shared<Token>(Token::Identifier, text, mLine, column, mFile);

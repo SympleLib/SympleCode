@@ -3,7 +3,10 @@ _main: # int main()
 	push    %ebp
 	mov     %esp, %ebp
 	# Push Stack
-	mov     @@ERROR, %eax
+	mov     $69, %eax
+	push    %eax
+	call    _putchar
+	add     $4, %esp
 	mov     $0, %eax
 	jmp     _main.Return
 _main.Return:

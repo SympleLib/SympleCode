@@ -125,6 +125,20 @@ namespace Symple::Binding
 		return symbol;
 	}
 
+	shared_ptr<Symbol::FunctionSymbol> Binder::BindExternFunction(shared_ptr<Syntax::ExternFunctionSyntax> syntax)
+	{
+		shared_ptr<Symbol::TypeSymbol> ty = BindType(syntax->GetType());
+		std::string_view name = syntax->GetName()->GetText();
+		Symbol::ParameterList params;
+		for (auto param : syntax->GetParameters())
+			params.push_back(BindParameter(param));
+
+		shared_ptr<Symbol::FunctionSymbol> symbol = make_shared<Symbol::FunctionSymbol>(ty, name, params);
+
+		mFunctions.push_back({ symbol, nullptr });
+		return symbol;
+	}
+
 	shared_ptr<Symbol::ParameterSymbol> Binder::BindParameter(shared_ptr<Syntax::VariableDeclarationSyntax> syntax)
 	{
 		shared_ptr<Symbol::TypeSymbol> ty = BindType(syntax->GetType());
@@ -159,9 +173,14 @@ namespace Symple::Binding
 		{
 		case Syntax::Node::GlobalStatement:
 			return BindGlobalStatement(dynamic_pointer_cast<Syntax::GlobalStatementSyntax>(syntax));
+		case Syntax::Node::ExternFunction:
+			BindExternFunction(dynamic_pointer_cast<Syntax::ExternFunctionSyntax>(syntax));
+			goto Return;
 		case Syntax::Node::FunctionDeclaration:
 			BindFunction(dynamic_pointer_cast<Syntax::FunctionDeclarationSyntax>(syntax));
+			goto Return;
 		default:
+		Return:
 			return make_shared<Node>(syntax);
 		}
 	}

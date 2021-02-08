@@ -5,6 +5,7 @@
 #include "SympleCode/DiagnosticBag.h"
 
 #include "SympleCode/Syntax/TypeSyntax.h"
+#include "SympleCode/Syntax/ExternFunctionSyntax.h"
 #include "SympleCode/Syntax/GlobalStatementSyntax.h"
 #include "SympleCode/Syntax/FunctionDeclarationSyntax.h"
 
@@ -56,6 +57,7 @@ namespace Symple::Binding
 
 		shared_ptr<Symbol::TypeSymbol> BindType(shared_ptr<Syntax::TypeSyntax>);
 		shared_ptr<Symbol::FunctionSymbol> BindFunction(shared_ptr<Syntax::FunctionDeclarationSyntax>);
+		shared_ptr<Symbol::FunctionSymbol> BindExternFunction(shared_ptr<Syntax::ExternFunctionSyntax>);
 		shared_ptr<Symbol::ParameterSymbol> BindParameter(shared_ptr<Syntax::VariableDeclarationSyntax>);
 
 		shared_ptr<BoundStatement> BindStatement(shared_ptr<Syntax::StatementSyntax>);

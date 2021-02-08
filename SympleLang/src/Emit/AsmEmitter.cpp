@@ -72,6 +72,9 @@ namespace Symple::Emit
 
 	void AsmEmitter::EmitFunction(shared_ptr<Symbol::FunctionSymbol> func, shared_ptr<Binding::BoundStatement> body)
 	{
+		if (!body) // External Function just ignore
+			return;
+
 		mFunction = func;
 		auto name = mFunction->GetName().data();
 

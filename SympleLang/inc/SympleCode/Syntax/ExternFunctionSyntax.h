@@ -12,14 +12,15 @@ namespace Symple::Syntax
 	class ExternFunctionSyntax : public MemberSyntax
 	{
 	private:
+		shared_ptr<Token> mKeyword;
 		shared_ptr<TypeSyntax> mType;
 		shared_ptr<Token> mOpenParenthesis;
 		VariableDeclarationList mParameters;
 		shared_ptr<Token> mCloseParenthesis;
 	public:
-		ExternFunctionSyntax(shared_ptr<TypeSyntax> type, shared_ptr<Token> name,
+		ExternFunctionSyntax(shared_ptr<Token> keyword, shared_ptr<TypeSyntax> type, shared_ptr<Token> name,
 			shared_ptr<Token> openParen, VariableDeclarationList params, shared_ptr<Token> closeParen)
-			: MemberSyntax(name), mType(type), mOpenParenthesis(openParen), mParameters(std::move(params)), mCloseParenthesis(closeParen) {}
+			: MemberSyntax(name), mKeyword(keyword), mType(type), mOpenParenthesis(openParen), mParameters(std::move(params)), mCloseParenthesis(closeParen) {}
 
 		virtual Kind GetKind() override
 		{ return ExternFunction; }
@@ -44,6 +45,9 @@ namespace Symple::Syntax
 			for (auto param : GetParameters()) 
 			{ os.put('\n'); param->Print(os, newIndent, false, "[Param] "); }
 		}
+
+		shared_ptr<Token> GetKeyword()
+		{ return mKeyword; }
 
 		shared_ptr<TypeSyntax> GetType()
 		{ return mType; }

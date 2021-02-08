@@ -53,18 +53,26 @@ namespace Symple::Syntax
 		if (IsType())
 			return ParseFunctionDeclaration();
 		else
-			return make_shared<GlobalStatementSyntax>(ParseStatement());
+			switch (Peek()->GetKind())
+			{
+			case Token::ExternKeyword:
+				return ParseExternFunction();
+			default:
+				return make_shared<GlobalStatementSyntax>(ParseStatement());
+			}
 	}
 
 	shared_ptr<ExternFunctionSyntax> Parser::ParseExternFunction()
 	{
+		shared_ptr<Token> keyword = Match(Token::ExternKeyword);
 		auto type = ParseType();
 		shared_ptr<Token> name = Match(Token::Identifier);
 		shared_ptr<Token> openParen = Match(Token::OpenParenthesis);
 		auto params = ParseVariableDeclarationList();
 		shared_ptr<Token> closeParen = Match(Token::CloseParenthesis);
+		Match(Token::Semicolon);
 
-		return make_shared<ExternFunctionSyntax>(type, name, openParen, params, closeParen);
+		return make_shared<ExternFunctionSyntax>(keyword, type, name, openParen, params, closeParen);
 	}
 
 	shared_ptr<FunctionDeclarationSyntax> Parser::ParseFunctionDeclaration()
@@ -86,22 +94,21 @@ namespace Symple::Syntax
 
 		if (IsType())
 			statement = ParseVariableDeclaration();
+		else
+			switch (Peek()->GetKind())
+			{
+			case Token::OpenBrace:
+				statement = ParseBlockStatement();
+				matchSemi = false;
+				break;
+			case Token::ReturnKeyword:
+				statement = ParseReturnStatement();
+				break;
 
-		switch (Peek()->GetKind())
-		{
-		case Token::OpenBrace:
-			statement = ParseBlockStatement();
-			matchSemi = false;
-			break;
-		case Token::ReturnKeyword:
-			statement = ParseReturnStatement();
-			break;
-
-		default:
-			if (!statement)
+			default:
 				statement = ParseExpressionStatement();
-			break;
-		}
+				break;
+			}
 
 		if (matchSemi)
 			Match(Token::Semicolon);
