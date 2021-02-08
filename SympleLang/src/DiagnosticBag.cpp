@@ -33,10 +33,10 @@ namespace Symple
 
 
 	void DiagnosticBag::ReportBindError(shared_ptr<Syntax::Node> syntax)
-	{ ReportWarning(syntax->GetToken(), "Bind error"); }
+	{ ReportError(syntax->GetToken(), "Bind error"); }
 	
 	void DiagnosticBag::ReportExpressionMustHaveValue(shared_ptr<Syntax::ExpressionSyntax> syntax)
-	{ ReportWarning(syntax->GetToken(), "Expression must have a value"); }
+	{ ReportError(syntax->GetToken(), "Expression must have a value"); }
 
 
 	void DiagnosticBag::ReportNoDefaultArgument(shared_ptr<Syntax::CallExpressionSyntax> syntax, unsigned param)
@@ -47,6 +47,9 @@ namespace Symple
 
 	void DiagnosticBag::ReportTooManyArguments(shared_ptr<Syntax::CallExpressionSyntax> syntax, unsigned param)
 	{ ReportError(syntax->GetArguments()[param]->GetToken(), "Too many arguments"); }
+
+	void DiagnosticBag::ReportNoSuchFunction(shared_ptr<Syntax::CallExpressionSyntax> syntax)
+	{ ReportError(syntax->GetToken(), "Function Doesn't Exist"); }
 
 
 	void DiagnosticBag::ReportUnexpectedEndOfFile(shared_ptr<Syntax::Token> tok)

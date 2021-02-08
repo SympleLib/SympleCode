@@ -257,9 +257,14 @@ namespace Symple::Binding
 		}
 	}
 
-	shared_ptr<BoundCallExpression> Binder::BindCallExpression(shared_ptr<Syntax::CallExpressionSyntax> syntax)
+	shared_ptr<BoundExpression> Binder::BindCallExpression(shared_ptr<Syntax::CallExpressionSyntax> syntax)
 	{
 		shared_ptr<Symbol::FunctionSymbol> funcSymbol = FindFunction(mFunctions, syntax->GetName()->GetText());
+		if (!funcSymbol)
+		{
+			mDiagnosticBag->ReportNoSuchFunction(syntax);
+			return make_shared<BoundErrorExpression>(syntax);
+		}
 
 		ExpressionList args;
 		if (syntax->GetArguments().size() > funcSymbol->GetParameters().size())

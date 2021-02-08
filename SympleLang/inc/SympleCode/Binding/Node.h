@@ -60,6 +60,7 @@ namespace Symple::Binding
 			UnaryExpression,
 			BinaryExpression,
 			LiteralExpression,
+			AssignmentExpression,
 
 			DefaultExpression,
 			ConstantExpression,
@@ -89,6 +90,7 @@ namespace Symple::Binding
 			"UnaryExpression",
 			"BinaryExpression",
 			"LiteralExpression",
+			"AssignmentExpression",
 			
 			"DefaultExpression",
 			"ConstantExpression",

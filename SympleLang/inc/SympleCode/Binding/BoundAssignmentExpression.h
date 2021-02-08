@@ -10,7 +10,7 @@ namespace Symple::Binding
 	class BoundAssignmentExpression : public BoundExpression
 	{
 	private:
-		shared_ptr<BoundAssignmentOperator> mOperator;
+		shared_ptr<BoundBinaryOperator> mOperator;
 		shared_ptr<BoundExpression> mLeft, mRight;
 	public:
 		BoundAssignmentExpression(shared_ptr<Syntax::BinaryExpressionSyntax> syntax, shared_ptr<BoundBinaryOperator> oqerator, shared_ptr<BoundExpression> left, shared_ptr<BoundExpression> right)
@@ -18,14 +18,10 @@ namespace Symple::Binding
 		{}
 
 		virtual Kind GetKind() override
-		{
-			return BinaryExpression;
-		}
+		{ return AssignmentExpression; }
 
 		virtual shared_ptr<Symbol::TypeSymbol> GetType() override
-		{
-			return mOperator->GetType();
-		}
+		{ return mOperator->GetType(); }
 
 		virtual void Print(std::ostream& os = std::cout, std::string_view indent = "", bool last = true, std::string_view label = "") override
 		{
@@ -42,18 +38,12 @@ namespace Symple::Binding
 		}
 
 		shared_ptr<BoundBinaryOperator> GetOperator()
-		{
-			return mOperator;
-		}
+		{ return mOperator; }
 
 		shared_ptr<BoundExpression> GetLeft()
-		{
-			return mLeft;
-		}
+		{ return mLeft; }
 
 		shared_ptr<BoundExpression> GetRight()
-		{
-			return mRight;
-		}
+		{ return mRight; }
 	};
 }

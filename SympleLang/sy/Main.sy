@@ -1,29 +1,6 @@
-int pos(int a)
-	return +a;
-int neg(int a)
-	return -a;
-
-int add(int a, int b)
-	return a + b;
-int sub(int a, int b)
-	return a - b;
-int mul(int a, int b)
-	return a * b;
-int div(int a, int b)
-	return a / b;
-int mod(int a, int b)
-	return a % b;
-
 int main()
 {
-	pos(1);
-	neg(1);
-
-	add(1, 1);
-	sub(1, 1);
-	mul(1, 1);
-	div(1, 1);
-	mod(1, 1);
+	putc(69);
 
 	return 0;
 }

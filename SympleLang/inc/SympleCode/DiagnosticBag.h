@@ -33,6 +33,7 @@ namespace Symple
 		void ReportNoDefaultArgument(shared_ptr<Syntax::CallExpressionSyntax>, unsigned paramIndex);
 		void ReportTooFewArguments(shared_ptr<Syntax::CallExpressionSyntax>);
 		void ReportTooManyArguments(shared_ptr<Syntax::CallExpressionSyntax>, unsigned paramIndex);
+		void ReportNoSuchFunction(shared_ptr<Syntax::CallExpressionSyntax>);
 
 		void ReportUnexpectedEndOfFile(shared_ptr<Syntax::Token>);
 		void ReportUnexpectedToken(shared_ptr<Syntax::Token>, Syntax::Token::Kind expectedKind);
