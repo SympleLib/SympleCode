@@ -295,43 +295,45 @@ namespace Symple::Binding
 	shared_ptr<BoundExpression> Binder::BindCallExpression(shared_ptr<Syntax::CallExpressionSyntax> syntax)
 	{
 		shared_ptr<Symbol::FunctionSymbol> funcSymbol = FindFunction(mFunctions, syntax->GetName()->GetText());
-		if (!funcSymbol)
+		ExpressionList args;
+		if (funcSymbol)
+		{
+			if (syntax->GetArguments().size() > funcSymbol->GetParameters().size())
+				mDiagnosticBag->ReportTooManyArguments(syntax, funcSymbol->GetParameters().size());
+			else
+				for (unsigned i = 0; i < funcSymbol->GetParameters().size(); i++)
+				{
+					shared_ptr<BoundExpression> arg = make_shared<BoundConstantExpression>(funcSymbol->GetParameters()[i]->GetInitializer());
+					if (i < syntax->GetArguments().size())
+					{
+						auto boundArg = BindExpression(syntax->GetArguments()[i]);
+						if (boundArg->GetKind() == Node::DefaultExpression)
+						{
+							if (!arg->ConstantValue())
+							{
+								mDiagnosticBag->ReportNoDefaultArgument(syntax, i);
+								break;
+							}
+						}
+						else
+							arg = boundArg;
+					}
+					else if (!arg->ConstantValue())
+					{
+						mDiagnosticBag->ReportTooFewArguments(syntax);
+						break;
+					}
+
+					args.push_back(arg);
+				}
+
+			return make_shared<BoundCallExpression>(syntax, funcSymbol, args);
+		}
+		else
 		{
 			mDiagnosticBag->ReportNoSuchFunction(syntax);
 			return make_shared<BoundErrorExpression>(syntax);
 		}
-
-		ExpressionList args;
-		if (syntax->GetArguments().size() > funcSymbol->GetParameters().size())
-			mDiagnosticBag->ReportTooManyArguments(syntax, funcSymbol->GetParameters().size());
-		else
-			for (unsigned i = 0; i < funcSymbol->GetParameters().size(); i++)
-			{
-				shared_ptr<BoundExpression> arg = make_shared<BoundConstantExpression>(funcSymbol->GetParameters()[i]->GetInitializer());
-				if (i < syntax->GetArguments().size())
-				{
-					auto boundArg = BindExpression(syntax->GetArguments()[i]);
-					if (boundArg->GetKind() == Node::DefaultExpression)
-					{
-						if (!arg->ConstantValue())
-						{
-							mDiagnosticBag->ReportNoDefaultArgument(syntax, i);
-							break;
-						}
-					}
-					else
-						arg = boundArg;
-				}
-				else if (!arg->ConstantValue())
-				{
-					mDiagnosticBag->ReportTooFewArguments(syntax);
-					break;
-				}
-				
-				args.push_back(arg);
-			}
-
-		return make_shared<BoundCallExpression>(syntax, funcSymbol, args);
 	}
 
 	shared_ptr<BoundUnaryExpression> Binder::BindUnaryExpression(shared_ptr<Syntax::UnaryExpressionSyntax> syntax)

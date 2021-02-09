@@ -2,14 +2,12 @@ extern int putchar(int);
 
 int main()
 {
-	int EChar = 69;
-	putchar(EChar);
-	EChar = 32;
-	putchar(EChar);
+	int EChar;
 	EChar = 69;
 	putchar(EChar);
 
-	void* putc = putchar;
+	EChar = 90;
+	putchar(EChar);
 
 	return 0;
 }
