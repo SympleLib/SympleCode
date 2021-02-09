@@ -82,9 +82,11 @@ namespace Symple::Emit
 		std::stringstream fnSig;
 		mFunction->PrintSignature(fnSig);
 		_Emit(Text, "_%s: # %s", name, fnSig.str().c_str());
+		_Emit(Text, "\t# Begin Stack Frame");
 		_Emit(Text, "\tpush    %%ebp");
 		_Emit(Text, "\tmov     %%esp, %%ebp");
-		_Emit(Text, "\t# Push Stack");
+		_Emit(Text, "\tsub     %s.StackSize, %%esp", name);
+		mStackSize = 0;
 
 		BeginScope();
 
@@ -103,10 +105,13 @@ namespace Symple::Emit
 
 		if (mReturning)
 			_Emit(Text, "_%s.Return:", name);
-		_Emit(Text, "\t# Pop Stack");
+		_Emit(Text, "\t# End Stack Frame");
 		_Emit(Text, "\tmov     %%ebp, %%esp");
 		_Emit(Text, "\tpop     %%ebp");
 		_Emit(Text, "\tret");
+
+		_Emit(Data, "%s.StackSize:", name);
+		_Emit(Data, "\t.long %i", mStackSize);
 	}
 
 
@@ -152,12 +157,11 @@ namespace Symple::Emit
 	void AsmEmitter::EmitVariableDeclaration(shared_ptr<Binding::BoundVariableDeclaration> stmt)
 	{
 		std::string_view name = stmt->GetSymbol()->GetName();
-		_Emit(Text, "_%s$%i = %i", name.data(), mScope->GetDepth(), mStackPos);
+		_Emit(Text, "_%s$%i = %i", name.data(), mScope->GetDepth(), mStackSize);
 
 		unsigned sz = stmt->GetSymbol()->GetType()->GetSize();
-		mStackPos += sz;
+		mStackSize += sz;
 
-		_Emit(Text, "\tsub     $%i, %%esp", sz); // Bad usage if using gotos and loops
 		if (stmt->GetInitializer())
 		{
 			EmitExpression(stmt->GetInitializer());

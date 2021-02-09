@@ -36,7 +36,7 @@ namespace Symple::Emit
 		bool mClosed = false;
 		bool mReturning;
 
-		unsigned mStackPos = 0;
+		unsigned mStackSize = 0;
 	public:
 		AsmEmitter(char* file = nullptr);
 		~AsmEmitter();
