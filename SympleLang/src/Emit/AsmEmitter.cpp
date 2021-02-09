@@ -359,7 +359,7 @@ namespace Symple::Emit
 			// Print Output
 			Util::SetConsoleColor(Util::ConsoleColor::Yellow);
 			spdlog::debug("Assembly Code:");
-			Util::SetConsoleColor(Util::ConsoleColor::Red);
+			Util::SetConsoleColor(Util::ConsoleColor::DarkYellow);
 			rewind(mTextStream);
 			Util::DumpFile(mTextStream);
 			putchar('\n');
