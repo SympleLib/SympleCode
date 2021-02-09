@@ -65,6 +65,16 @@ namespace Symple::Binding
 				shared_ptr<BoundBinaryOperator>(new BoundBinaryOperator(Syntax::Token::Percentage, Modulo, Symbol::TypeSymbol::FloatType, Symbol::TypeSymbol::FloatType, Symbol::TypeSymbol::FloatType)),
 				shared_ptr<BoundBinaryOperator>(new BoundBinaryOperator(Syntax::Token::Percentage, Modulo, Symbol::TypeSymbol::DoubleType, Symbol::TypeSymbol::DoubleType, Symbol::TypeSymbol::DoubleType)),
 				shared_ptr<BoundBinaryOperator>(new BoundBinaryOperator(Syntax::Token::Percentage, Modulo, Symbol::TypeSymbol::TripleType, Symbol::TypeSymbol::TripleType, Symbol::TypeSymbol::TripleType)),
+
+
+				shared_ptr<BoundBinaryOperator>(new BoundBinaryOperator(Syntax::Token::Equal, Assign, Symbol::TypeSymbol::ByteType, Symbol::TypeSymbol::ByteType, Symbol::TypeSymbol::ByteType)),
+				shared_ptr<BoundBinaryOperator>(new BoundBinaryOperator(Syntax::Token::Equal, Assign, Symbol::TypeSymbol::ShortType, Symbol::TypeSymbol::ShortType, Symbol::TypeSymbol::ShortType)),
+				shared_ptr<BoundBinaryOperator>(new BoundBinaryOperator(Syntax::Token::Equal, Assign, Symbol::TypeSymbol::IntType, Symbol::TypeSymbol::IntType, Symbol::TypeSymbol::IntType)),
+				shared_ptr<BoundBinaryOperator>(new BoundBinaryOperator(Syntax::Token::Equal, Assign, Symbol::TypeSymbol::LongType, Symbol::TypeSymbol::LongType, Symbol::TypeSymbol::LongType)),
+
+				shared_ptr<BoundBinaryOperator>(new BoundBinaryOperator(Syntax::Token::Equal, Assign, Symbol::TypeSymbol::FloatType, Symbol::TypeSymbol::FloatType, Symbol::TypeSymbol::FloatType)),
+				shared_ptr<BoundBinaryOperator>(new BoundBinaryOperator(Syntax::Token::Equal, Assign, Symbol::TypeSymbol::DoubleType, Symbol::TypeSymbol::DoubleType, Symbol::TypeSymbol::DoubleType)),
+				shared_ptr<BoundBinaryOperator>(new BoundBinaryOperator(Syntax::Token::Equal, Assign, Symbol::TypeSymbol::TripleType, Symbol::TypeSymbol::TripleType, Symbol::TypeSymbol::TripleType)),
 			};
 
 		for (auto op : sOperators)

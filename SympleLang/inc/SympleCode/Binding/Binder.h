@@ -34,7 +34,6 @@
 #include "SympleCode/Binding/BoundBinaryExpression.h"
 #include "SympleCode/Binding/BoundLiteralExpression.h"
 #include "SympleCode/Binding/BoundVariableExpression.h"
-#include "SympleCode/Binding/BoundAssignmentExpression.h"
 
 namespace Symple::Binding
 {
@@ -75,7 +74,6 @@ namespace Symple::Binding
 		shared_ptr<BoundExpression> BindBinaryExpression(shared_ptr<Syntax::BinaryExpressionSyntax>);
 		shared_ptr<BoundExpression> BindLiteralExpression(shared_ptr<Syntax::LiteralExpressionSyntax>);
 		shared_ptr<BoundExpression> BindNameExpression(shared_ptr<Syntax::NameExpressionSyntax>);
-		shared_ptr<BoundAssignmentExpression> BindAssignmentExpression(shared_ptr<Syntax::BinaryExpressionSyntax>);
 
 		shared_ptr<DiagnosticBag> GetDiagnosticBag();
 	};

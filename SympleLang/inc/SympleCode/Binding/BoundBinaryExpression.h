@@ -23,6 +23,9 @@ namespace Symple::Binding
 		virtual shared_ptr<Symbol::TypeSymbol> GetType() override
 		{ return mOperator->GetType(); }
 
+		virtual bool IsMutable() override
+		{ return GetOperator()->GetKind() == BoundBinaryOperator::Assign; }
+
 		virtual void Print(std::ostream& os = std::cout, std::string_view indent = "", bool last = true, std::string_view label = "") override
 		{
 			PrintIndent(os, indent, last, label);

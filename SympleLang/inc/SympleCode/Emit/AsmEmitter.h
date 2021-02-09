@@ -32,6 +32,7 @@ namespace Symple::Emit
 		void EndScope();
 
 		char* RegAx(unsigned sz);
+		char* RegDx(unsigned sz);
 		char Suf(unsigned sz);
 
 		bool mClosed = false;
@@ -53,11 +54,11 @@ namespace Symple::Emit
 		void EmitVariableDeclaration(shared_ptr<Binding::BoundVariableDeclaration>);
 
 		void EmitConstant(shared_ptr<Binding::BoundConstant>);
-		void EmitExpression(shared_ptr<Binding::BoundExpression>);
-		void EmitCallExpression(shared_ptr<Binding::BoundCallExpression>);
-		void EmitUnaryExpression(shared_ptr<Binding::BoundUnaryExpression>);
-		void EmitBinaryExpression(shared_ptr<Binding::BoundBinaryExpression>);
-		void EmitVariableExpression(shared_ptr<Binding::BoundVariableExpression>);
+		shared_ptr<Symbol::TypeSymbol> EmitExpression(shared_ptr<Binding::BoundExpression>);
+		shared_ptr<Symbol::TypeSymbol> EmitCallExpression(shared_ptr<Binding::BoundCallExpression>);
+		shared_ptr<Symbol::TypeSymbol> EmitUnaryExpression(shared_ptr<Binding::BoundUnaryExpression>);
+		shared_ptr<Symbol::TypeSymbol> EmitBinaryExpression(shared_ptr<Binding::BoundBinaryExpression>);
+		shared_ptr<Symbol::TypeSymbol> EmitVariableExpression(shared_ptr<Binding::BoundVariableExpression>);
 
 		shared_ptr<Symbol::TypeSymbol> EmitExpressionPointer(shared_ptr<Binding::BoundExpression>);
 		shared_ptr<Symbol::TypeSymbol> EmitVariableExpressionPointer(shared_ptr<Binding::BoundVariableExpression>);

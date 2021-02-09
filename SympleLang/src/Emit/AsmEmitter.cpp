@@ -27,6 +27,18 @@ namespace Symple::Emit
 		return nullptr;
 	}
 
+	char* AsmEmitter::RegDx(unsigned sz)
+	{
+		if (sz <= 1)
+			return "%dl";
+		else if (sz <= 2)
+			return "%dx";
+		else if (sz <= 4)
+			return "%edx";
+
+		return nullptr;
+	}
+
 	char AsmEmitter::Suf(unsigned sz)
 	{
 		if (sz <= 1)
@@ -159,7 +171,7 @@ namespace Symple::Emit
 	void AsmEmitter::EmitExpressionStatement(shared_ptr<Binding::BoundExpressionStatement> stmt)
 	{ EmitExpression(stmt->GetExpression()); }
 
-	void AsmEmitter::EmitVariableDeclaration(shared_ptr<Binding::BoundVariableDeclaration> stmt)
+	void  AsmEmitter::EmitVariableDeclaration(shared_ptr<Binding::BoundVariableDeclaration> stmt)
 	{
 		std::string_view name = stmt->GetSymbol()->GetName();
 		_Emit(Text, "_%s$%i = %i", name.data(), mScope->GetDepth(), mStackSize);
@@ -180,10 +192,13 @@ namespace Symple::Emit
 	void AsmEmitter::EmitConstant(shared_ptr<Binding::BoundConstant> val)
 	{ _Emit(Text, "\tmov     $%i, %%eax", val->GetValue()); }
 
-	void AsmEmitter::EmitExpression(shared_ptr<Binding::BoundExpression> expr)
+	shared_ptr<Symbol::TypeSymbol>  AsmEmitter::EmitExpression(shared_ptr<Binding::BoundExpression> expr)
 	{
 		if (expr->ConstantValue())
-			return EmitConstant(expr->ConstantValue());
+		{
+			EmitConstant(expr->ConstantValue());
+			return expr->GetType();
+		}
 
 		switch (expr->GetKind())
 		{
@@ -196,11 +211,12 @@ namespace Symple::Emit
 		case Binding::Node::VariableExpression:
 			return EmitVariableExpression(dynamic_pointer_cast<Binding::BoundVariableExpression> (expr));
 		default:
-			return _Emit(Text, "\tmov     @@ERROR, %%eax");
+			_Emit(Text, "\tmov     @@ERROR, %%eax");
+			return Symbol::TypeSymbol::ErrorType;
 		}
 	}
 
-	void AsmEmitter::EmitCallExpression(shared_ptr<Binding::BoundCallExpression> expr)
+	shared_ptr<Symbol::TypeSymbol>  AsmEmitter::EmitCallExpression(shared_ptr<Binding::BoundCallExpression> expr)
 	{
 		for (unsigned i = expr->GetArguments().size(); i; i--)
 		{
@@ -209,9 +225,11 @@ namespace Symple::Emit
 		}
 		_Emit(Text, "\tcall    _%s", expr->GetFunction()->GetName().data());
 		_Emit(Text, "\tadd     $%i, %%esp", expr->GetFunction()->GetParameters().size() * 4);
+
+		return expr->GetFunction()->GetType();
 	}
 
-	void AsmEmitter::EmitUnaryExpression(shared_ptr<Binding::BoundUnaryExpression> expr)
+	shared_ptr<Symbol::TypeSymbol>  AsmEmitter::EmitUnaryExpression(shared_ptr<Binding::BoundUnaryExpression> expr)
 	{
 		EmitExpression(expr->GetOperand());
 
@@ -221,47 +239,67 @@ namespace Symple::Emit
 			_Emit(Text, "\tneg     %%eax");
 			break;
 		}
+
+		return expr->GetType();
 	}
 
-	void AsmEmitter::EmitBinaryExpression(shared_ptr<Binding::BoundBinaryExpression> expr)
+	shared_ptr<Symbol::TypeSymbol>  AsmEmitter::EmitBinaryExpression(shared_ptr<Binding::BoundBinaryExpression> expr)
 	{
 		EmitExpression(expr->GetRight());
 		_Emit(Text, "\tpush    %%eax");
-		EmitExpression(expr->GetLeft());
-		_Emit(Text, "\tpop     %%edx");
 
-		switch (expr->GetOperator()->GetKind())
+		if (expr->IsMutable()) // Assignment
 		{
-		case Binding::BoundBinaryOperator::Addition:
-			_Emit(Text, "\tadd     %%edx, %%eax");
-			break;
-		case Binding::BoundBinaryOperator::Subtraction:
-			_Emit(Text, "\tsub     %%edx, %%eax");
-			break;
-		case Binding::BoundBinaryOperator::Multiplication:
-			_Emit(Text, "\timul    %%edx, %%eax");
-			break;
-		case Binding::BoundBinaryOperator::Division:
-			_Emit(Text, "\tmov     %%edx, %%ecx");
-			_Emit(Text, "\tcltd");
-			_Emit(Text, "\tidiv    %%ecx");
-			break;
-		case Binding::BoundBinaryOperator::Modulo:
-			_Emit(Text, "\tmov     %%edx, %%ecx");
-			_Emit(Text, "\tcltd");
-			_Emit(Text, "\tidiv    %%ecx");
-			_Emit(Text, "\tmov     %%edx, %%eax");
-			break;
+			EmitExpressionPointer(expr->GetLeft());
+			_Emit(Text, "\tpop     %%edx");
+
+			switch (expr->GetOperator()->GetKind())
+			{
+			case Binding::BoundBinaryOperator::Assign:
+				_Emit(Text, "\tmov     %s, (%%eax)", RegDx(expr->GetLeft()->GetType()->GetSize()));
+				break;
+			}
 		}
+		else
+		{
+			EmitExpression(expr->GetLeft());
+			_Emit(Text, "\tpop     %%edx");
+
+			switch (expr->GetOperator()->GetKind())
+			{
+			case Binding::BoundBinaryOperator::Addition:
+				_Emit(Text, "\tadd     %%edx, %%eax");
+				break;
+			case Binding::BoundBinaryOperator::Subtraction:
+				_Emit(Text, "\tsub     %%edx, %%eax");
+				break;
+			case Binding::BoundBinaryOperator::Multiplication:
+				_Emit(Text, "\timul    %%edx, %%eax");
+				break;
+			case Binding::BoundBinaryOperator::Division:
+				_Emit(Text, "\tmov     %%edx, %%ecx");
+				_Emit(Text, "\tcltd");
+				_Emit(Text, "\tidiv    %%ecx");
+				break;
+			case Binding::BoundBinaryOperator::Modulo:
+				_Emit(Text, "\tmov     %%edx, %%ecx");
+				_Emit(Text, "\tcltd");
+				_Emit(Text, "\tidiv    %%ecx");
+				_Emit(Text, "\tmov     %%edx, %%eax");
+				break;
+			}
+		}
+
+		return expr->GetType();
 	}
 
-	void AsmEmitter::EmitVariableExpression(shared_ptr<Binding::BoundVariableExpression> expr)
+	shared_ptr<Symbol::TypeSymbol> AsmEmitter::EmitVariableExpression(shared_ptr<Binding::BoundVariableExpression> expr)
 	{
 		shared_ptr<Symbol::VariableSymbol> var = mScope->GetVariableSymbol(expr->GetSymbol()->GetName());
 		if (var != expr->GetSymbol())
 		{
 			abort(); // Something bad, happening in code...
-			return;
+			return Symbol::TypeSymbol::ErrorType;
 		}
 
 		std::string_view name = var->GetName();
@@ -270,6 +308,8 @@ namespace Symple::Emit
 		_Emit(Text, "\tmov     _%s$%i(%%ebp), %s", name.data(), depth, RegAx(sz));
 		if (sz <= 2)
 			_Emit(Text, "\tmovs%cl  %s, %%eax", Suf(sz), RegAx(sz));
+
+		return expr->GetType();
 	}
 
 
@@ -281,7 +321,7 @@ namespace Symple::Emit
 			return EmitVariableExpressionPointer(dynamic_pointer_cast<Binding::BoundVariableExpression>(expr));
 		default:
 			_Emit(Text, "\tmov     @@ERROR, %%eax");
-			return {};
+			return Symbol::TypeSymbol::ErrorType;
 		}
 	}
 
@@ -291,7 +331,7 @@ namespace Symple::Emit
 		if (var != expr->GetSymbol())
 		{
 			abort(); // Something bad, happening in code...
-			return {};
+			return Symbol::TypeSymbol::ErrorType;
 		}
 
 		std::string_view name = var->GetName();

@@ -1,8 +1,12 @@
-extern int putchar(char);
+extern int putchar(int);
 
 int main()
 {
-	char EChar = 69;
+	int EChar = 69;
+	putchar(EChar);
+	EChar = 32;
+	putchar(EChar);
+	EChar = 69;
 	putchar(EChar);
 
 	return 0;
