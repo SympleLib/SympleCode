@@ -1,13 +1,11 @@
 extern int putchar(int);
+extern void atexit(void*);
+
+void PrintEZ()
+{
+	putchar(69);
+	putchar(90);
+}
 
 int main()
-{
-	int EChar;
-	EChar = 69;
-	putchar(EChar);
-
-	EChar = 90;
-	putchar(EChar);
-
-	return 0;
-}
+	atexit(PrintEZ);
