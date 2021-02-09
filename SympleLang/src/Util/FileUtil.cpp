@@ -43,6 +43,17 @@ namespace Symple::Util
 	int (*CloseFile)(FILE*) = fclose;
 
 
+	void DumpFile(FILE* from, FILE* to)
+	{
+		unsigned start = ftell(from);
+
+		char c;
+		while ((c = fgetc(from)) != EOF)
+			fputc(c, to);
+
+		fseek(from, start, SEEK_SET);
+	}
+
 	std::string ReadFile(FILE* fs, unsigned max)
 	{
 		if (!fs)

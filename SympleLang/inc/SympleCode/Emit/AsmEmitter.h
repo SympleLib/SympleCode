@@ -22,6 +22,7 @@ namespace Symple::Emit
 		char* mFile;
 		FILE* mTextStream;
 		FILE* mDataStream;
+		FILE* mBssStream;
 
 		shared_ptr<Symbol::FunctionSymbol> mFunction;
 		shared_ptr<Binding::BoundCompilationUnit> mCompilationUnit;

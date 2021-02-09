@@ -1,9 +1,10 @@
+.text
 .global _main
 _main: # int main()
 	# Begin Stack Frame
 	push    %ebp
 	mov     %esp, %ebp
-	sub     main.StackSize, %esp
+	sub     _main.StackSize, %esp
 _EChar$0 = 0
 	mov     $69, %eax
 	mov     %eax, _EChar$0(%ebp)
@@ -18,5 +19,7 @@ _main.Return:
 	mov     %ebp, %esp
 	pop     %ebp
 	ret
-main.StackSize:
+.data
+_main.StackSize:
 	.long 4
+.bss

@@ -7,11 +7,13 @@
 #include "SympleCode/Syntax/Parser.h"
 #include "SympleCode/Binding/Binder.h"
 #include "SympleCode/Emit/AsmEmitter.h"
+#include "SympleCode/Util/ConsoleColor.h"
 
 using namespace Symple;
 using namespace Symple::Binding;
 using namespace Symple::Syntax;
 using namespace Symple::Emit;
+using namespace Symple::Util;
 
 using std::shared_ptr;
 using std::make_shared;
@@ -21,35 +23,9 @@ using std::make_unique;
 
 using spdlog::level::level_enum;
 
-#ifdef _WIN32
-enum ConsoleColor
-{
-	Black,
-	DarkBlue,
-	DarkGreen,
-	DarkCyan,
-	DarkRed,
-	DarkMagenta,
-	DarkYellow,
-	Grey,
-	DarkGrey,
-	Blue,
-	Green,
-	Cyan,
-	Red,
-	Magenta,
-	Yellow,
-	White,
-
-	Reset = White,
-};
-#endif
-
 bool PrintDiagnosticBag(shared_ptr<DiagnosticBag> diagnostics, char step[] = "Null Step")
 {
-#ifdef _WIN32
-	SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), Yellow);
-#endif
+	SetConsoleColor(Yellow);
 
 	unsigned errCount = 0, warningCount = 0, messageCount = 0;
 
@@ -179,9 +155,7 @@ int main()
 {
 	spdlog::set_pattern("[Symple]%^<%l>%$: %v");
 	spdlog::set_level(level_enum::trace);
-#ifdef _WIN32
-	SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), Yellow);
-#endif
+	SetConsoleColor(Yellow);
 
 	Lex();
 	Parse();

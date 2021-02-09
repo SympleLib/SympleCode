@@ -1,6 +1,7 @@
 #include "SympleCode/Emit/AsmEmitter.h"
 
 #include <sstream>
+#include <spdlog/spdlog.h>
 
 #include "SympleCode/Util/FileUtil.h"
 
@@ -45,8 +46,12 @@ namespace Symple::Emit
 			mTextStream = Util::OpenFile(mFile, "wb+");
 		else
 			mTextStream = Util::OpenFile(mFile = "a.S", "wb+");
-		//mTextStream = stdout;
 		mDataStream = Util::OpenTempFile();
+		mBssStream = Util::OpenTempFile();
+
+		_Emit(Text, ".text");
+		_Emit(Data, ".data");
+		_Emit(Bss, ".bss");
 	}
 
 	AsmEmitter::~AsmEmitter()
@@ -85,7 +90,7 @@ namespace Symple::Emit
 		_Emit(Text, "\t# Begin Stack Frame");
 		_Emit(Text, "\tpush    %%ebp");
 		_Emit(Text, "\tmov     %%esp, %%ebp");
-		_Emit(Text, "\tsub     %s.StackSize, %%esp", name);
+		_Emit(Text, "\tsub     _%s.StackSize, %%esp", name);
 		mStackSize = 0;
 
 		BeginScope();
@@ -110,7 +115,7 @@ namespace Symple::Emit
 		_Emit(Text, "\tpop     %%ebp");
 		_Emit(Text, "\tret");
 
-		_Emit(Data, "%s.StackSize:", name);
+		_Emit(Data, "_%s.StackSize:", name);
 		_Emit(Data, "\t.long %i", mStackSize);
 	}
 
@@ -302,15 +307,21 @@ namespace Symple::Emit
 		if (!mClosed)
 		{
 			rewind(mDataStream);
+			Util::DumpFile(mDataStream, mTextStream);
+			rewind(mBssStream);
+			Util::DumpFile(mBssStream, mTextStream);
 
-			char c;
-			while ((c = fgetc(mDataStream)) != EOF)
-				fputc(c, mTextStream);
+			// Print Output
+			Util::SetConsoleColor(Util::ConsoleColor::Yellow);
+			spdlog::debug("Assembly Code:");
+			Util::SetConsoleColor(Util::ConsoleColor::Red);
+			rewind(mTextStream);
+			Util::DumpFile(mTextStream);
+			putchar('\n');
+			Util::ResetConsoleColor();
 
 			Util::CloseFile(mDataStream);
-			rewind(mTextStream);
-			puts(Util::ReadFile(mTextStream).c_str());
-
+			Util::CloseFile(mBssStream);
 			Util::CloseFile(mTextStream);
 
 			mClosed = true;
