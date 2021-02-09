@@ -111,7 +111,7 @@ namespace Symple::Emit
 		for (auto param : func->GetParameters())
 		{
 			stackPos += 4;
-			_Emit(Text, "_%s$%i = %i", param->GetName().data(), mScope->GetDepth(), stackPos);
+			_Emit(Text, "_%s$%i = -%i", param->GetName().data(), mScope->GetDepth(), stackPos);
 			mScope->DeclareVariable(param);
 		}
 
@@ -174,7 +174,7 @@ namespace Symple::Emit
 	void  AsmEmitter::EmitVariableDeclaration(shared_ptr<Binding::BoundVariableDeclaration> stmt)
 	{
 		std::string_view name = stmt->GetSymbol()->GetName();
-		_Emit(Text, "_%s$%i = %i", name.data(), mScope->GetDepth(), mStackSize);
+		_Emit(Text, "_%s$%i = -%i", name.data(), mScope->GetDepth(), mStackSize);
 
 		unsigned sz = stmt->GetSymbol()->GetType()->GetSize();
 		mStackSize += sz;
