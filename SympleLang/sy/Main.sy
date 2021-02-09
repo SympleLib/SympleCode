@@ -9,5 +9,7 @@ int main()
 	EChar = 69;
 	putchar(EChar);
 
+	void* putc = putchar;
+
 	return 0;
 }

@@ -68,6 +68,7 @@ namespace Symple::Binding
 			ImplicitCastExpression,
 
 			CallExpression,
+			FunctionPointer,
 			VariableExpression,
 
 			Last = VariableExpression,
@@ -99,6 +100,7 @@ namespace Symple::Binding
 			"ImplicitCastExpression",
 
 			"CallExpression",
+			"FunctionPointer",
 			"VariableExpression",
 		};
 	};

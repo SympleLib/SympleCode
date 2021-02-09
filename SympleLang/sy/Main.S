@@ -30,6 +30,9 @@ _EChar$0 = 0
 	push    %eax
 	call    _putchar
 	add     $4, %esp
+_putc$0 = 4
+	lea     _putchar, %eax
+	mov     %eax, _putc$0(%ebp)
 	mov     $0, %eax
 	jmp     _main.Return
 _main.Return:
@@ -39,5 +42,5 @@ _main.Return:
 	ret
 .data
 _main.StackSize:
-	.long 4
+	.long 8
 .bss

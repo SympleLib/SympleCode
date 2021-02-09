@@ -10,6 +10,7 @@
 #include "SympleCode/Binding/BoundVariableExpression.h"
 #include "SympleCode/Binding/BoundExpressionStatement.h"
 #include "SympleCode/Binding/BoundVariableDeclaration.h"
+#include "SympleCode/Binding/BoundFunctionPointer.h"
 
 #include "SympleCode/Symbol/FunctionSymbol.h"
 #include "SympleCode/Emit/Scope.h"
@@ -57,6 +58,7 @@ namespace Symple::Emit
 		shared_ptr<Symbol::TypeSymbol> EmitExpression(shared_ptr<Binding::BoundExpression>);
 		shared_ptr<Symbol::TypeSymbol> EmitCallExpression(shared_ptr<Binding::BoundCallExpression>);
 		shared_ptr<Symbol::TypeSymbol> EmitUnaryExpression(shared_ptr<Binding::BoundUnaryExpression>);
+		shared_ptr<Symbol::TypeSymbol> EmitFunctionPointer(shared_ptr<Binding::BoundFunctionPointer>);
 		shared_ptr<Symbol::TypeSymbol> EmitBinaryExpression(shared_ptr<Binding::BoundBinaryExpression>);
 		shared_ptr<Symbol::TypeSymbol> EmitVariableExpression(shared_ptr<Binding::BoundVariableExpression>);
 

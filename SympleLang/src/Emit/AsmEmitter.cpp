@@ -206,6 +206,8 @@ namespace Symple::Emit
 			return EmitCallExpression(dynamic_pointer_cast<Binding::BoundCallExpression>(expr));
 		case Binding::Node::UnaryExpression:
 			return EmitUnaryExpression(dynamic_pointer_cast<Binding::BoundUnaryExpression> (expr));
+		case Binding::Node::FunctionPointer:
+			return EmitFunctionPointer(dynamic_pointer_cast<Binding::BoundFunctionPointer> (expr));
 		case Binding::Node::BinaryExpression:
 			return EmitBinaryExpression(dynamic_pointer_cast<Binding::BoundBinaryExpression> (expr));
 		case Binding::Node::VariableExpression:
@@ -216,7 +218,7 @@ namespace Symple::Emit
 		}
 	}
 
-	shared_ptr<Symbol::TypeSymbol>  AsmEmitter::EmitCallExpression(shared_ptr<Binding::BoundCallExpression> expr)
+	shared_ptr<Symbol::TypeSymbol> AsmEmitter::EmitCallExpression(shared_ptr<Binding::BoundCallExpression> expr)
 	{
 		for (unsigned i = expr->GetArguments().size(); i; i--)
 		{
@@ -229,7 +231,7 @@ namespace Symple::Emit
 		return expr->GetFunction()->GetType();
 	}
 
-	shared_ptr<Symbol::TypeSymbol>  AsmEmitter::EmitUnaryExpression(shared_ptr<Binding::BoundUnaryExpression> expr)
+	shared_ptr<Symbol::TypeSymbol> AsmEmitter::EmitUnaryExpression(shared_ptr<Binding::BoundUnaryExpression> expr)
 	{
 		EmitExpression(expr->GetOperand());
 
@@ -243,7 +245,14 @@ namespace Symple::Emit
 		return expr->GetType();
 	}
 
-	shared_ptr<Symbol::TypeSymbol>  AsmEmitter::EmitBinaryExpression(shared_ptr<Binding::BoundBinaryExpression> expr)
+	shared_ptr<Symbol::TypeSymbol> AsmEmitter::EmitFunctionPointer(shared_ptr<Binding::BoundFunctionPointer> expr)
+	{
+		_Emit(Text, "\tlea     _%s, %%eax", expr->GetSymbol()->GetName().data());
+
+		return expr->GetType();
+	}
+
+	shared_ptr<Symbol::TypeSymbol> AsmEmitter::EmitBinaryExpression(shared_ptr<Binding::BoundBinaryExpression> expr)
 	{
 		EmitExpression(expr->GetRight());
 		_Emit(Text, "\tpush    %%eax");

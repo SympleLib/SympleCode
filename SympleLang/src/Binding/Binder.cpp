@@ -10,6 +10,7 @@
 #include "SympleCode/Binding/BoundDefaultExpression.h"
 #include "SympleCode/Binding/BoundConstantExpression.h"
 #include "SympleCode/Binding/BoundImplicitCastExpression.h"
+#include "SympleCode/Binding/BoundFunctionPointer.h"
 
 namespace Symple::Binding
 {
@@ -405,14 +406,21 @@ namespace Symple::Binding
 
 	shared_ptr<BoundExpression> Binder::BindNameExpression(shared_ptr<Syntax::NameExpressionSyntax> syntax)
 	{
-		shared_ptr<Symbol::VariableSymbol> symbol = mScope->GetVariableSymbol(syntax->GetToken()->GetText());
-		if (!symbol)
+		shared_ptr<Symbol::VariableSymbol> varSymbol = mScope->GetVariableSymbol(syntax->GetToken()->GetText());
+		if (varSymbol)
+			return make_shared<BoundVariableExpression>(syntax, varSymbol);
+		else
 		{
-			mDiagnosticBag->ReportUnimplimentedError(syntax->GetToken());
-			return make_shared<BoundErrorExpression>(syntax);
-		}
+			shared_ptr<Symbol::FunctionSymbol> fnSymbol = FindFunction(mFunctions, syntax->GetToken()->GetText());
 
-		return make_shared<BoundVariableExpression>(syntax, symbol);
+			if (fnSymbol)
+				return make_shared<BoundFunctionPointer>(syntax, fnSymbol);
+			else
+			{
+				mDiagnosticBag->ReportUnimplimentedError(syntax->GetToken());
+				return make_shared<BoundErrorExpression>(syntax);
+			}
+		}
 	}
 
 	#pragma endregion
