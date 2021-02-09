@@ -337,7 +337,7 @@ namespace Symple::Emit
 	shared_ptr<Symbol::TypeSymbol> AsmEmitter::EmitVariableExpressionPointer(shared_ptr<Binding::BoundVariableExpression> expr)
 	{
 		shared_ptr<Symbol::VariableSymbol> var = mScope->GetVariableSymbol(expr->GetSymbol()->GetName());
-		__SY_ASSERT(var != expr->GetSymbol());
+		__SY_ASSERT(var == expr->GetSymbol(), "Internal Error");
 
 		std::string_view name = var->GetName();
 		unsigned depth = mScope->GetVariableDepth(var->GetName());

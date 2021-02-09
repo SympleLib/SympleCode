@@ -5,7 +5,7 @@ _main: # int main()
 	push    %ebp
 	mov     %esp, %ebp
 	sub     _main.StackSize, %esp
-_EChar$0 = 0
+_EChar$0 = -0
 	mov     $69, %eax
 	mov     %eax, _EChar$0(%ebp)
 	mov     _EChar$0(%ebp), %eax
@@ -30,7 +30,7 @@ _EChar$0 = 0
 	push    %eax
 	call    _putchar
 	add     $4, %esp
-_putc$0 = 4
+_putc$0 = -4
 	lea     _putchar, %eax
 	mov     %eax, _putc$0(%ebp)
 	mov     $0, %eax
