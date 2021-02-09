@@ -3,17 +3,17 @@
 #include "SympleCode/Syntax/BinaryExpressionSyntax.h"
 
 #include "SympleCode/Binding/BoundExpression.h"
-#include "SympleCode/Binding/BoundAssignmentOperator.h"
+#include "SympleCode/Binding/BoundBinaryOperator.h"
 
 namespace Symple::Binding
 {
 	class BoundAssignmentExpression : public BoundExpression
 	{
 	private:
-		shared_ptr<BoundAssignmentOperator> mOperator;
+		shared_ptr<BoundBinaryOperator> mOperator;
 		shared_ptr<BoundExpression> mLeft, mRight;
 	public:
-		BoundAssignmentExpression(shared_ptr<Syntax::BinaryExpressionSyntax> syntax, shared_ptr<BoundAssignmentOperator> oqerator, shared_ptr<BoundExpression> left, shared_ptr<BoundExpression> right)
+		BoundAssignmentExpression(shared_ptr<Syntax::BinaryExpressionSyntax> syntax, shared_ptr<BoundBinaryOperator> oqerator, shared_ptr<BoundExpression> left, shared_ptr<BoundExpression> right)
 			: BoundExpression(syntax), mOperator(oqerator), mLeft(left), mRight(right)
 		{}
 
@@ -37,7 +37,7 @@ namespace Symple::Binding
 			os.put('\n'); GetRight()->Print(os, newIndent, true, "Right = ");
 		}
 
-		shared_ptr<BoundAssignmentOperator> GetOperator()
+		shared_ptr<BoundBinaryOperator> GetOperator()
 		{ return mOperator; }
 
 		shared_ptr<BoundExpression> GetLeft()

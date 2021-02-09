@@ -344,7 +344,7 @@ namespace Symple::Binding
 		return make_shared<BoundUnaryExpression>(syntax, op, operand);
 	}
 
-	shared_ptr<BoundBinaryExpression> Binder::BindBinaryExpression(shared_ptr<Syntax::BinaryExpressionSyntax> syntax)
+	shared_ptr<BoundExpression> Binder::BindBinaryExpression(shared_ptr<Syntax::BinaryExpressionSyntax> syntax)
 	{
 		shared_ptr<BoundExpression> left = BindExpression(syntax->GetLeft());
 		shared_ptr<BoundExpression> right = BindExpression(syntax->GetRight());

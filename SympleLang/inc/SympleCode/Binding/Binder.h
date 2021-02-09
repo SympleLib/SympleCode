@@ -72,7 +72,7 @@ namespace Symple::Binding
 		shared_ptr<BoundExpression> BindExpression(shared_ptr<Syntax::ExpressionSyntax>);
 		shared_ptr<BoundExpression> BindCallExpression(shared_ptr<Syntax::CallExpressionSyntax>);
 		shared_ptr<BoundUnaryExpression> BindUnaryExpression(shared_ptr<Syntax::UnaryExpressionSyntax>);
-		shared_ptr<BoundBinaryExpression> BindBinaryExpression(shared_ptr<Syntax::BinaryExpressionSyntax>);
+		shared_ptr<BoundExpression> BindBinaryExpression(shared_ptr<Syntax::BinaryExpressionSyntax>);
 		shared_ptr<BoundExpression> BindLiteralExpression(shared_ptr<Syntax::LiteralExpressionSyntax>);
 		shared_ptr<BoundExpression> BindNameExpression(shared_ptr<Syntax::NameExpressionSyntax>);
 		shared_ptr<BoundAssignmentExpression> BindAssignmentExpression(shared_ptr<Syntax::BinaryExpressionSyntax>);

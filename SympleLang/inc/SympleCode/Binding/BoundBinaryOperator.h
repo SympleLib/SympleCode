@@ -42,7 +42,9 @@ namespace Symple::Binding
 			Division,
 			Modulo,
 
-			Last = Modulo,
+			Assign,
+
+			Last = Assign,
 		};
 
 		static constexpr char* KindMap[Last + 1] = {
@@ -53,6 +55,8 @@ namespace Symple::Binding
 			"Multiplication",
 			"Division",
 			"Modulo",
+
+			"Assign",
 		};
 	};
 }
