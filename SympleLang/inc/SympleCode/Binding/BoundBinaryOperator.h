@@ -16,8 +16,9 @@ namespace Symple::Binding
 		Syntax::Token::Kind mTokenKind;
 		Kind mKind;
 		shared_ptr<Symbol::TypeSymbol> mLeftType, mRightType, mType;
+		bool mMutable;
 
-		BoundBinaryOperator(Syntax::Token::Kind, Kind, shared_ptr<Symbol::TypeSymbol> leftType, shared_ptr<Symbol::TypeSymbol> rightType, shared_ptr<Symbol::TypeSymbol> type);
+		BoundBinaryOperator(Syntax::Token::Kind, Kind, shared_ptr<Symbol::TypeSymbol> leftType, shared_ptr<Symbol::TypeSymbol> rightType, shared_ptr<Symbol::TypeSymbol> type, bool isMutable = false);
 		static std::vector<shared_ptr<BoundBinaryOperator>> sOperators;
 	public:
 		void Print(std::ostream& = std::cout, std::string_view indent = "", bool last = true, std::string_view label = "");
@@ -25,6 +26,8 @@ namespace Symple::Binding
 
 		static shared_ptr<BoundBinaryOperator> Bind(Syntax::Token::Kind, shared_ptr<Symbol::TypeSymbol> leftType, shared_ptr<Symbol::TypeSymbol> rightType);
 		static shared_ptr<BoundBinaryOperator> ErrorOperator;
+
+		bool IsMutable();
 
 		Syntax::Token::Kind GetTokenKind();
 		Kind GetKind();

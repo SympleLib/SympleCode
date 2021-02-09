@@ -352,6 +352,8 @@ namespace Symple::Binding
 		shared_ptr<BoundBinaryOperator> op = BoundBinaryOperator::Bind(syntax->GetOperator()->GetKind(), left->GetType(), right->GetType());
 		if (op == BoundBinaryOperator::ErrorOperator)
 			mDiagnosticBag->ReportInvalidOperation(syntax->GetOperator(), left->GetType(), right->GetType());
+		else if (op->IsMutable() && !left->IsMutable())
+			mDiagnosticBag->ReportUnimplimentedError(left->GetSyntax()->GetToken());
 
 		return make_shared<BoundBinaryExpression>(syntax, op, left, right);
 	}

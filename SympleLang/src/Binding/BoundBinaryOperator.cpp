@@ -8,8 +8,8 @@ namespace Symple::Binding
 	std::vector<shared_ptr<BoundBinaryOperator>> BoundBinaryOperator::sOperators;
 	shared_ptr<BoundBinaryOperator> BoundBinaryOperator::ErrorOperator = shared_ptr<BoundBinaryOperator>(new BoundBinaryOperator(Syntax::Token::Unknown, Unknown, Symbol::TypeSymbol::ErrorType, Symbol::TypeSymbol::ErrorType, Symbol::TypeSymbol::ErrorType));;
 
-	BoundBinaryOperator::BoundBinaryOperator(Syntax::Token::Kind tokenKind, Kind kind, shared_ptr<Symbol::TypeSymbol> leftType, shared_ptr<Symbol::TypeSymbol> rightType, shared_ptr<Symbol::TypeSymbol> type)
-		: mTokenKind(tokenKind), mKind(kind), mLeftType(leftType), mRightType(rightType), mType(type)
+	BoundBinaryOperator::BoundBinaryOperator(Syntax::Token::Kind tokenKind, Kind kind, shared_ptr<Symbol::TypeSymbol> leftType, shared_ptr<Symbol::TypeSymbol> rightType, shared_ptr<Symbol::TypeSymbol> type, bool mut)
+		: mTokenKind(tokenKind), mKind(kind), mLeftType(leftType), mRightType(rightType), mType(type), mMutable(mut)
 	{}
 
 
@@ -67,14 +67,14 @@ namespace Symple::Binding
 				shared_ptr<BoundBinaryOperator>(new BoundBinaryOperator(Syntax::Token::Percentage, Modulo, Symbol::TypeSymbol::TripleType, Symbol::TypeSymbol::TripleType, Symbol::TypeSymbol::TripleType)),
 
 
-				shared_ptr<BoundBinaryOperator>(new BoundBinaryOperator(Syntax::Token::Equal, Assign, Symbol::TypeSymbol::ByteType, Symbol::TypeSymbol::ByteType, Symbol::TypeSymbol::ByteType)),
-				shared_ptr<BoundBinaryOperator>(new BoundBinaryOperator(Syntax::Token::Equal, Assign, Symbol::TypeSymbol::ShortType, Symbol::TypeSymbol::ShortType, Symbol::TypeSymbol::ShortType)),
-				shared_ptr<BoundBinaryOperator>(new BoundBinaryOperator(Syntax::Token::Equal, Assign, Symbol::TypeSymbol::IntType, Symbol::TypeSymbol::IntType, Symbol::TypeSymbol::IntType)),
-				shared_ptr<BoundBinaryOperator>(new BoundBinaryOperator(Syntax::Token::Equal, Assign, Symbol::TypeSymbol::LongType, Symbol::TypeSymbol::LongType, Symbol::TypeSymbol::LongType)),
+				shared_ptr<BoundBinaryOperator>(new BoundBinaryOperator(Syntax::Token::Equal, Assign, Symbol::TypeSymbol::ByteType, Symbol::TypeSymbol::ByteType, Symbol::TypeSymbol::ByteType, true)),
+				shared_ptr<BoundBinaryOperator>(new BoundBinaryOperator(Syntax::Token::Equal, Assign, Symbol::TypeSymbol::ShortType, Symbol::TypeSymbol::ShortType, Symbol::TypeSymbol::ShortType, true)),
+				shared_ptr<BoundBinaryOperator>(new BoundBinaryOperator(Syntax::Token::Equal, Assign, Symbol::TypeSymbol::IntType, Symbol::TypeSymbol::IntType, Symbol::TypeSymbol::IntType, true)),
+				shared_ptr<BoundBinaryOperator>(new BoundBinaryOperator(Syntax::Token::Equal, Assign, Symbol::TypeSymbol::LongType, Symbol::TypeSymbol::LongType, Symbol::TypeSymbol::LongType, true)),
 
-				shared_ptr<BoundBinaryOperator>(new BoundBinaryOperator(Syntax::Token::Equal, Assign, Symbol::TypeSymbol::FloatType, Symbol::TypeSymbol::FloatType, Symbol::TypeSymbol::FloatType)),
-				shared_ptr<BoundBinaryOperator>(new BoundBinaryOperator(Syntax::Token::Equal, Assign, Symbol::TypeSymbol::DoubleType, Symbol::TypeSymbol::DoubleType, Symbol::TypeSymbol::DoubleType)),
-				shared_ptr<BoundBinaryOperator>(new BoundBinaryOperator(Syntax::Token::Equal, Assign, Symbol::TypeSymbol::TripleType, Symbol::TypeSymbol::TripleType, Symbol::TypeSymbol::TripleType)),
+				shared_ptr<BoundBinaryOperator>(new BoundBinaryOperator(Syntax::Token::Equal, Assign, Symbol::TypeSymbol::FloatType, Symbol::TypeSymbol::FloatType, Symbol::TypeSymbol::FloatType, true)),
+				shared_ptr<BoundBinaryOperator>(new BoundBinaryOperator(Syntax::Token::Equal, Assign, Symbol::TypeSymbol::DoubleType, Symbol::TypeSymbol::DoubleType, Symbol::TypeSymbol::DoubleType, true)),
+				shared_ptr<BoundBinaryOperator>(new BoundBinaryOperator(Syntax::Token::Equal, Assign, Symbol::TypeSymbol::TripleType, Symbol::TypeSymbol::TripleType, Symbol::TypeSymbol::TripleType, true)),
 			};
 
 		for (auto op : sOperators)
@@ -88,6 +88,9 @@ namespace Symple::Binding
 		return ErrorOperator;
 	}
 
+
+	bool BoundBinaryOperator::IsMutable()
+	{ return mMutable; }
 
 	Syntax::Token::Kind BoundBinaryOperator::GetTokenKind()
 	{ return mTokenKind; }
