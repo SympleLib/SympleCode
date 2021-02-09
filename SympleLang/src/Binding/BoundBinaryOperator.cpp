@@ -6,7 +6,7 @@ namespace Symple::Binding
 {
 	// Explicit Declaration instead of using 'make_shared' because this is a private constructor
 	std::vector<shared_ptr<BoundBinaryOperator>> BoundBinaryOperator::sOperators;
-	shared_ptr<BoundBinaryOperator> BoundBinaryOperator::ErrorOperator;
+	shared_ptr<BoundBinaryOperator> BoundBinaryOperator::ErrorOperator = shared_ptr<BoundBinaryOperator>(new BoundBinaryOperator(Syntax::Token::Unknown, Unknown, Symbol::TypeSymbol::ErrorType, Symbol::TypeSymbol::ErrorType, Symbol::TypeSymbol::ErrorType));;
 
 	BoundBinaryOperator::BoundBinaryOperator(Syntax::Token::Kind tokenKind, Kind kind, shared_ptr<Symbol::TypeSymbol> leftType, shared_ptr<Symbol::TypeSymbol> rightType, shared_ptr<Symbol::TypeSymbol> type)
 		: mTokenKind(tokenKind), mKind(kind), mLeftType(leftType), mRightType(rightType), mType(type)
@@ -26,7 +26,6 @@ namespace Symple::Binding
 	shared_ptr<BoundBinaryOperator> BoundBinaryOperator::Bind(Syntax::Token::Kind tokenKind, shared_ptr<Symbol::TypeSymbol> leftType, shared_ptr<Symbol::TypeSymbol> rightType)
 	{
 		if (sOperators.empty())
-		{
 			sOperators = {
 				shared_ptr<BoundBinaryOperator>(new BoundBinaryOperator(Syntax::Token::Plus, Addition, Symbol::TypeSymbol::IntType, Symbol::TypeSymbol::IntType, Symbol::TypeSymbol::IntType)),
 				shared_ptr<BoundBinaryOperator>(new BoundBinaryOperator(Syntax::Token::Plus, Addition, Symbol::TypeSymbol::LongType, Symbol::TypeSymbol::LongType, Symbol::TypeSymbol::LongType)),
@@ -67,9 +66,6 @@ namespace Symple::Binding
 				shared_ptr<BoundBinaryOperator>(new BoundBinaryOperator(Syntax::Token::Percentage, Modulo, Symbol::TypeSymbol::DoubleType, Symbol::TypeSymbol::DoubleType, Symbol::TypeSymbol::DoubleType)),
 				shared_ptr<BoundBinaryOperator>(new BoundBinaryOperator(Syntax::Token::Percentage, Modulo, Symbol::TypeSymbol::TripleType, Symbol::TypeSymbol::TripleType, Symbol::TypeSymbol::TripleType)),
 			};
-
-			ErrorOperator = shared_ptr<BoundBinaryOperator>(new BoundBinaryOperator(Syntax::Token::Unknown, Unknown, Symbol::TypeSymbol::ErrorType, Symbol::TypeSymbol::ErrorType, Symbol::TypeSymbol::ErrorType));
-		}
 
 		for (auto op : sOperators)
 		{

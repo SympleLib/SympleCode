@@ -4,7 +4,7 @@ namespace Symple::Binding
 {
 	// Explicit Declaration instead of using 'make_shared' because this is a private constructor
 	std::vector<shared_ptr<BoundUnaryOperator>> BoundUnaryOperator::sOperators;
-	shared_ptr<BoundUnaryOperator> BoundUnaryOperator::ErrorOperator;
+	shared_ptr<BoundUnaryOperator> BoundUnaryOperator::ErrorOperator = shared_ptr<BoundUnaryOperator>(new BoundUnaryOperator(Syntax::Token::Unknown, Negative, Symbol::TypeSymbol::ErrorType, Symbol::TypeSymbol::ErrorType));;
 
 	BoundUnaryOperator::BoundUnaryOperator(Syntax::Token::Kind tokenKind, Kind kind, shared_ptr<Symbol::TypeSymbol> operandType, shared_ptr<Symbol::TypeSymbol> type)
 		: mTokenKind(tokenKind), mKind(kind), mOperandType(operandType), mType(type)
@@ -26,7 +26,6 @@ namespace Symple::Binding
 	shared_ptr<BoundUnaryOperator> BoundUnaryOperator::Bind(Syntax::Token::Kind tokenKind, shared_ptr<Symbol::TypeSymbol> operandType)
 	{
 		if (sOperators.empty())
-		{
 			sOperators = {
 				shared_ptr<BoundUnaryOperator>(new BoundUnaryOperator(Syntax::Token::Plus, Positive, Symbol::TypeSymbol::IntType, Symbol::TypeSymbol::IntType)),
 				shared_ptr<BoundUnaryOperator>(new BoundUnaryOperator(Syntax::Token::Plus, Positive, Symbol::TypeSymbol::LongType, Symbol::TypeSymbol::LongType)),
@@ -43,9 +42,6 @@ namespace Symple::Binding
 				shared_ptr<BoundUnaryOperator>(new BoundUnaryOperator(Syntax::Token::Dash, Negative, Symbol::TypeSymbol::DoubleType, Symbol::TypeSymbol::DoubleType)),
 				shared_ptr<BoundUnaryOperator>(new BoundUnaryOperator(Syntax::Token::Dash, Negative, Symbol::TypeSymbol::TripleType, Symbol::TypeSymbol::TripleType)),
 			};
-
-			ErrorOperator = shared_ptr<BoundUnaryOperator>(new BoundUnaryOperator(Syntax::Token::Unknown, Negative, Symbol::TypeSymbol::ErrorType, Symbol::TypeSymbol::ErrorType));
-		}
 
 		for (auto op : sOperators)
 			if (op->GetTokenKind() == tokenKind && op->GetOperandType()->Equals(operandType))

@@ -413,6 +413,11 @@ namespace Symple::Binding
 		return make_shared<BoundVariableExpression>(syntax, symbol);
 	}
 
+	shared_ptr<BoundAssignmentExpression> Binder::BindAssignmentExpression(shared_ptr<Syntax::BinaryExpressionSyntax> syntax)
+	{
+
+	}
+
 	#pragma endregion
 
 

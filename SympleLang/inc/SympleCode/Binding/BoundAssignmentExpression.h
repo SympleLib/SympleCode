@@ -3,24 +3,25 @@
 #include "SympleCode/Syntax/BinaryExpressionSyntax.h"
 
 #include "SympleCode/Binding/BoundExpression.h"
-#include "SympleCode/Binding/BoundBinaryOperator.h"
+#include "SympleCode/Binding/BoundAssignmentOperator.h"
 
 namespace Symple::Binding
 {
 	class BoundAssignmentExpression : public BoundExpression
 	{
 	private:
+		shared_ptr<BoundAssignmentOperator> mOperator;
 		shared_ptr<BoundExpression> mLeft, mRight;
 	public:
-		BoundAssignmentExpression(shared_ptr<Syntax::BinaryExpressionSyntax> syntax, shared_ptr<BoundExpression> left, shared_ptr<BoundExpression> right)
-			: BoundExpression(syntax), mLeft(left), mRight(right)
+		BoundAssignmentExpression(shared_ptr<Syntax::BinaryExpressionSyntax> syntax, shared_ptr<BoundAssignmentOperator> oqerator, shared_ptr<BoundExpression> left, shared_ptr<BoundExpression> right)
+			: BoundExpression(syntax), mOperator(oqerator), mLeft(left), mRight(right)
 		{}
 
 		virtual Kind GetKind() override
 		{ return AssignmentExpression; }
 
 		virtual shared_ptr<Symbol::TypeSymbol> GetType() override
-		{ return mOperator->GetType(); }
+		{ return GetOperator()->GetType(); }
 
 		virtual void Print(std::ostream& os = std::cout, std::string_view indent = "", bool last = true, std::string_view label = "") override
 		{
@@ -36,8 +37,8 @@ namespace Symple::Binding
 			os.put('\n'); GetRight()->Print(os, newIndent, true, "Right = ");
 		}
 
-		shared_ptr<BoundBinaryOperator> GetOperator()
-		{ return ; }
+		shared_ptr<BoundAssignmentOperator> GetOperator()
+		{ return mOperator; }
 
 		shared_ptr<BoundExpression> GetLeft()
 		{ return mLeft; }

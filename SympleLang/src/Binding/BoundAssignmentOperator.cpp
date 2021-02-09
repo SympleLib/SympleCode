@@ -6,7 +6,7 @@ namespace Symple::Binding
 {
 	// Explicit Declaration instead of using 'make_shared' because this is a private constructor
 	std::vector<shared_ptr<BoundAssignmentOperator>> BoundAssignmentOperator::sOperators;
-	shared_ptr<BoundAssignmentOperator> BoundAssignmentOperator::ErrorOperator;
+	shared_ptr<BoundAssignmentOperator> BoundAssignmentOperator::ErrorOperator = shared_ptr<BoundAssignmentOperator>(new BoundAssignmentOperator(Syntax::Token::Unknown, Unknown, Symbol::TypeSymbol::ErrorType, Symbol::TypeSymbol::ErrorType, Symbol::TypeSymbol::ErrorType));
 
 	BoundAssignmentOperator::BoundAssignmentOperator(Syntax::Token::Kind tokenKind, Kind kind, shared_ptr<Symbol::TypeSymbol> leftType, shared_ptr<Symbol::TypeSymbol> rightType, shared_ptr<Symbol::TypeSymbol> type)
 		: mTokenKind(tokenKind), mKind(kind), mLeftType(leftType), mRightType(rightType), mType(type)
@@ -27,20 +27,6 @@ namespace Symple::Binding
 
 	shared_ptr<BoundAssignmentOperator> BoundAssignmentOperator::Bind(Syntax::Token::Kind tokenKind, shared_ptr<Symbol::TypeSymbol> leftType, shared_ptr<Symbol::TypeSymbol> rightType)
 	{
-		if (sOperators.empty())
-		{
-			sOperators = {
-				shared_ptr<BoundAssignmentOperator>(new BoundAssignmentOperator(Syntax::Token::Plus, Addition, Symbol::TypeSymbol::IntType, Symbol::TypeSymbol::IntType, Symbol::TypeSymbol::IntType)),
-				shared_ptr<BoundAssignmentOperator>(new BoundAssignmentOperator(Syntax::Token::Plus, Addition, Symbol::TypeSymbol::LongType, Symbol::TypeSymbol::LongType, Symbol::TypeSymbol::LongType)),
-
-				shared_ptr<BoundAssignmentOperator>(new BoundAssignmentOperator(Syntax::Token::Plus, Addition, Symbol::TypeSymbol::FloatType, Symbol::TypeSymbol::FloatType, Symbol::TypeSymbol::FloatType)),
-				shared_ptr<BoundAssignmentOperator>(new BoundAssignmentOperator(Syntax::Token::Plus, Addition, Symbol::TypeSymbol::DoubleType, Symbol::TypeSymbol::DoubleType, Symbol::TypeSymbol::DoubleType)),
-				shared_ptr<BoundAssignmentOperator>(new BoundAssignmentOperator(Syntax::Token::Plus, Addition, Symbol::TypeSymbol::TripleType, Symbol::TypeSymbol::TripleType, Symbol::TypeSymbol::TripleType)),
-			};
-
-			ErrorOperator = shared_ptr<BoundAssignmentOperator>(new BoundAssignmentOperator(Syntax::Token::Unknown, Unknown, Symbol::TypeSymbol::ErrorType, Symbol::TypeSymbol::ErrorType, Symbol::TypeSymbol::ErrorType));
-		}
-
 		for (auto op : sOperators)
 		{
 			bool exactSame = op->GetLeftType()->Equals(leftType) && op->GetRightType()->Equals(rightType);
@@ -49,7 +35,8 @@ namespace Symple::Binding
 				return op;
 		}
 
-		return ErrorOperator;
+		sOperators.push_back(make_shared<BoundAssignmentOperator>(tokenKind, Assign, leftType, rightType, leftType));
+		return sOperators.back();
 	}
 
 
