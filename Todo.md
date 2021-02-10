@@ -14,7 +14,7 @@
 ---
 
 - [ ] C Preprocessor
-- [ ] Import Symbols from File
+- [X] Import Symbols from File
 - [ ] Global Variables
 - [ ] Function Types
 - [ ] Loops
