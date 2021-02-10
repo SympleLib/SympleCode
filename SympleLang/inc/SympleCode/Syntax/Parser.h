@@ -37,14 +37,14 @@ namespace Symple::Syntax
 	class Parser
 	{
 	private:
-		std::vector<shared_ptr<Token>> mTokens;
+		TokenList mTokens;
 		unsigned mPosition = 0;
 
 		shared_ptr<DiagnosticBag> mDiagnosticBag = make_shared<DiagnosticBag>();
 	public:
 		Parser(shared_ptr<Lexer>);
-		Parser(shared_ptr<Lexer>, std::vector<shared_ptr<Token>>);
-		Parser(std::vector<shared_ptr<Token>>);
+		Parser(shared_ptr<Lexer>, TokenList);
+		Parser(TokenList);
 
 		shared_ptr<TranslationUnitSyntax> Parse();
 

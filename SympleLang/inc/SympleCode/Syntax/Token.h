@@ -142,4 +142,6 @@ namespace Symple::Syntax
 			"ImportKeyword",
 		};
 	};
+
+	typedef std::vector<shared_ptr<Token>> TokenList;
 }

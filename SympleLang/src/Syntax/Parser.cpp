@@ -16,7 +16,7 @@ namespace Symple::Syntax
 		while (!mTokens.back()->Is(Token::EndOfFile));
 	}
 
-	Parser::Parser(shared_ptr<Lexer> lexer, std::vector<shared_ptr<Token>> tokens)
+	Parser::Parser(shared_ptr<Lexer> lexer, TokenList tokens)
 		: mTokens(tokens)
 	{
 		if (!tokens.empty() && tokens.back()->Is(Token::EndOfFile))
@@ -27,7 +27,7 @@ namespace Symple::Syntax
 		while (!mTokens.back()->Is(Token::EndOfFile));
 	}
 
-	Parser::Parser(std::vector<shared_ptr<Token>> tokens)
+	Parser::Parser(TokenList tokens)
 		: mTokens(tokens)
 	{}
 
