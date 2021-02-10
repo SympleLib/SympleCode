@@ -1,9 +1,10 @@
 import "libc.sy";
-
-extern void ExitProcess(int ec) stdcall;
+import "Windows.sy";
 
 int main()
 {
+	char* testStr = "Hello, world";
+
 	atexit(PrintEZ);
-	ExitProcess(69);
+	exit(69);
 }

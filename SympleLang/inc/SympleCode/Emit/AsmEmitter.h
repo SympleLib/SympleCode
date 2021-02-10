@@ -40,6 +40,7 @@ namespace Symple::Emit
 		bool mReturning;
 
 		unsigned mStackSize = 0;
+		unsigned mDataCount = 0;
 	public:
 		AsmEmitter(char* file = nullptr);
 		~AsmEmitter();

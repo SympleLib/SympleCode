@@ -24,7 +24,7 @@ namespace Symple::Binding
 
 	shared_ptr<BoundCompilationUnit> Binder::BindImport(shared_ptr<Syntax::ImportStatementSyntax> syntax)
 	{
-		std::string path = "sy/";
+		std::string path = "sy/inc/";
 		path += syntax->GetImport()->GetText();
 		unique_ptr<Symple::Compiler> compiler = make_unique<Symple::Compiler>((char*)path.c_str());
 		compiler->Lex();
@@ -464,6 +464,11 @@ namespace Symple::Binding
 
 			float val = std::stof(std::string(syntax->GetLiteral()->GetText()));
 			constant = make_shared<BoundConstant>(BoundConstant::Float, &val);
+			break;
+		}
+		case Syntax::Token::String:
+		{
+			ty = Symbol::TypeSymbol::CharPointerType;
 			break;
 		}
 		case Syntax::Token::DefaultKeyword:

@@ -14,7 +14,7 @@ namespace Symple
 {
 	Compiler::Compiler(char *path)
 		: mPath(path)
-	{ mAsmPath = mPath.substr(0, mPath.find_last_of('.')) + ".S"; }
+	{ mAsmPath = mPath.substr(0, mPath.find_first_of('/')) + "/bin" + mPath.substr(mPath.find_first_of('/'), mPath.find_last_of('.') - mPath.find_first_of('/')) + ".S"; }
 
 	shared_ptr<DiagnosticBag> Compiler::Lex()
 	{
@@ -108,14 +108,18 @@ namespace Symple
 	int Compiler::Exec()
 	{
 		std::stringstream linkcmd;
-		linkcmd << "clang -m32 --optimize -o sy/Main.exe " << mAsmPath;
+		linkcmd << "clang -m32 --optimize -o sy/bin/Main.exe " << mAsmPath;
 		for (auto compiler : mUnits)
 			linkcmd << compiler->mAsmPath;
 
 		system(linkcmd.str().c_str());
+		Util::SetConsoleColor(Util::Yellow);
 		puts("Executing program...");
-		int ec = system("sy\\Main.exe");
+		Util::ResetConsoleColor();
+		int ec = system("sy\\bin\\Main.exe");
+		Util::SetConsoleColor(Util::Yellow);
 		printf("\nProgram Exited with code %i (0x%x)", ec, ec);
+		Util::ResetConsoleColor();
 
 		return ec;
 	}

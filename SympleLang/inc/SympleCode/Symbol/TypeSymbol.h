@@ -55,6 +55,7 @@ namespace Symple::Symbol
 
 		static shared_ptr<TypeSymbol> VoidPointerType;
 		static shared_ptr<TypeSymbol> BytePointerType;
+		static shared_ptr<TypeSymbol> CharPointerType;
 	public:
 		enum TypeKind : unsigned
 		{

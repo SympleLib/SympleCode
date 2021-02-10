@@ -1,0 +1,9 @@
+extern int putchar(int) cdecl;
+extern void atexit(void*) cdecl;
+extern void exit(int exitCode) cdecl;
+
+void PrintEZ()
+{
+	putchar(69);
+	putchar(90);
+}

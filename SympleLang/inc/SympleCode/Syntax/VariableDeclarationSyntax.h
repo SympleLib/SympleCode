@@ -26,7 +26,7 @@ namespace Symple::Syntax
 			PrintIndent(os, indent, last, label);
 			PrintName(os);
 
-			os << " '"; GetType()->PrintShort();
+			os << " '"; GetType()->PrintShort(os);
 			if (GetName() != Token::Default)
 				os << ' ' << GetName()->GetText();
 			os.put('\'');

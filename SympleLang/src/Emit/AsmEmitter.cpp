@@ -221,6 +221,12 @@ namespace Symple::Emit
 			EmitConstant(expr->ConstantValue());
 			return expr->GetType();
 		}
+		else if (expr->GetType()->Equals(Symbol::TypeSymbol::CharPointerType)) // String Literal
+		{
+			_Emit(Data, "..%i:", mDataCount++);
+			_Emit(Data, "\t.string \"%s\"", expr->GetSyntax()->GetToken()->GetText().data());
+			return expr->GetType();
+		}
 
 		switch (expr->GetKind())
 		{

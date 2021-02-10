@@ -20,6 +20,7 @@ namespace Symple::Symbol
 
 	shared_ptr<TypeSymbol> TypeSymbol::VoidPointerType  = make_shared<TypeSymbol>(Pointer, "*", 4, false, VoidType);
 	shared_ptr<TypeSymbol> TypeSymbol::BytePointerType  = make_shared<TypeSymbol>(Pointer, "*", 4, false, ByteType);
+	shared_ptr<TypeSymbol> TypeSymbol::CharPointerType  = make_shared<TypeSymbol>(Pointer, "*", 4, false, CharType);
 
 	TypeSymbol::TypeSymbol(TypeKind kind, std::string_view name, unsigned sz, bool isFloat, shared_ptr<TypeSymbol> base)
 		: mTypeKind(kind), mName(name), mSize(sz), mFloat(isFloat), mBase(base)

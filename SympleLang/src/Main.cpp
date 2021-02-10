@@ -22,7 +22,7 @@ using spdlog::level::level_enum;
 
 int main()
 {
-	spdlog::sinks_init_list sinks = { make_shared<spdlog::sinks::stderr_color_sink_mt>(), make_shared<spdlog::sinks::basic_file_sink_mt>("stdout.log") };
+	spdlog::sinks_init_list sinks = { /* make_shared<spdlog::sinks::stdout_color_sink_mt>(), */ make_shared<spdlog::sinks::basic_file_sink_mt>("stdout.log") };
 	spdlog::set_default_logger(make_shared<spdlog::logger>("Symple Logger", sinks));
 	spdlog::set_pattern("[Symple]%^<%l>%$: %v");
 	spdlog::set_level(level_enum::trace);

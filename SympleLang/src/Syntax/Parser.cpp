@@ -303,6 +303,7 @@ namespace Symple::Syntax
 		case Token::Number:
 		case Token::Float:
 		case Token::Integer:
+		case Token::String:
 		case Token::DefaultKeyword:
 			return ParseLiteralExpression();
 		case Token::OpenParenthesis:

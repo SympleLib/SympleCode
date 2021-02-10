@@ -20,9 +20,9 @@ namespace Symple::Syntax
 		TokenList mModifiers;
 	public:
 		ExternFunctionSyntax(shared_ptr<Token> keyword, shared_ptr<TypeSyntax> type, shared_ptr<Token> name,
-			shared_ptr<Token> openParen, VariableDeclarationList params, shared_ptr<Token> closeParen,
+			shared_ptr<Token> openParen, VariableDeclarationList& params, shared_ptr<Token> closeParen,
 			TokenList mods)
-			: MemberSyntax(name), mKeyword(keyword), mType(type), mOpenParenthesis(openParen), mParameters(std::move(params)), mCloseParenthesis(closeParen), mModifiers(mods) {}
+			: MemberSyntax(name), mKeyword(keyword), mType(type), mOpenParenthesis(openParen), mParameters(params), mCloseParenthesis(closeParen), mModifiers(mods) {}
 
 		virtual Kind GetKind() override
 		{ return ExternFunction; }
