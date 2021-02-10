@@ -108,7 +108,7 @@ namespace Symple
 	int Compiler::Exec()
 	{
 		std::stringstream linkcmd;
-		linkcmd << "clang -m32 --optimize -o sy/bin/Main.exe " << mAsmPath;
+		linkcmd << "clang -m32 --optimize -lUser32.lib -o sy/bin/Main.exe " << mAsmPath;
 		for (auto compiler : mUnits)
 			linkcmd << compiler->mAsmPath;
 

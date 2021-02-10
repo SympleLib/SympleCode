@@ -3,8 +3,5 @@ import "Windows.sy";
 
 int main()
 {
-	char* testStr = "Hello, world";
-
-	atexit(PrintEZ);
-	exit(69);
+	MessageBoxA(0, "Hello!", "No You", 0);
 }

@@ -223,8 +223,10 @@ namespace Symple::Emit
 		}
 		else if (expr->GetType()->Equals(Symbol::TypeSymbol::CharPointerType)) // String Literal
 		{
-			_Emit(Data, "..%i:", mDataCount++);
+			_Emit(Data, "..%i:", mDataCount);
 			_Emit(Data, "\t.string \"%s\"", expr->GetSyntax()->GetToken()->GetText().data());
+
+			_Emit(Text, "lea     ..%i, %%eax", mDataCount++);
 			return expr->GetType();
 		}
 

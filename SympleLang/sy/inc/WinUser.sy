@@ -1,0 +1,1 @@
+extern int MessageBoxA(int win, char* text, char* title, int attr) stdcall;
