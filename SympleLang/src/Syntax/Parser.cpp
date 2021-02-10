@@ -57,6 +57,8 @@ namespace Symple::Syntax
 			{
 			case Token::ExternKeyword:
 				return ParseExternFunction();
+			case Token::ImportKeyword:
+				return ParseImportStatement();
 			default:
 				return make_shared<GlobalStatementSyntax>(ParseStatement());
 			}
@@ -85,6 +87,15 @@ namespace Symple::Syntax
 		shared_ptr<StatementSyntax> statement = ParseStatement();
 
 		return make_shared<FunctionDeclarationSyntax>(type, name, openParen, params, closeParen, statement);
+	}
+
+	shared_ptr<ImportStatementSyntax> Parser::ParseImportStatement()
+	{
+		shared_ptr<Token> tok = Match(Token::ImportKeyword);
+		shared_ptr<Token> import = Match(Token::String);
+		Match(Token::Semicolon);
+
+		return make_shared<ImportStatementSyntax>(tok, import);
 	}
 
 

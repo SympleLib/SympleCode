@@ -66,6 +66,9 @@ namespace Symple::Syntax
 		case '}':
 			return LexAtom(Token::CloseBrace);
 
+		case '"':
+			return LexString();
+
 		default:
 			auto tok = LexAtom(Token::Unknown);
 			mDiagnosticBag->ReportUnknownToken(tok);
@@ -187,8 +190,23 @@ namespace Symple::Syntax
 		KEYWORD(extern, Extern);
 		KEYWORD(external, Extern);
 
+		KEYWORD(import, Import);
+
 		else
 			return make_shared<Token>(Token::Identifier, text, mLine, column, mFile);
+	}
+
+	shared_ptr<Token> Lexer::LexString()
+	{
+		Next(); // Eat "
+		char* beg = Current;
+		unsigned column = mColumn;
+		while (Peek() != '"')
+			Next();
+		char* end = Current;
+		Next();
+
+		return make_shared<Token>(Token::String, beg, end, mLine, column, mFile);
 	}
 
 	shared_ptr<Token> Lexer::LexNumber()

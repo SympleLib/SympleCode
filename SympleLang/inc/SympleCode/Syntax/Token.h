@@ -49,6 +49,7 @@ namespace Symple::Syntax
 			Unknown,
 
 			Identifier,
+			String,
 			Integer,
 			Number,
 			Float,
@@ -88,8 +89,9 @@ namespace Symple::Syntax
 			DefaultKeyword,
 
 			ExternKeyword,
+			ImportKeyword,
 
-			Last = ExternKeyword,
+			Last = ImportKeyword,
 		};
 
 		static constexpr char* KindMap[Last + 1] = {
@@ -97,6 +99,7 @@ namespace Symple::Syntax
 			"Unknown",
 
 			"Identifier",
+			"String",
 			"Integer",
 			"Number",
 			"Float",
@@ -136,6 +139,7 @@ namespace Symple::Syntax
 			"DefaultKeyword",
 
 			"ExternKeyword",
+			"ImportKeyword",
 		};
 	};
 }

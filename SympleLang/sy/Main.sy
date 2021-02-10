@@ -1,6 +1,8 @@
 extern int putchar(int);
 extern void atexit(void*);
 
+import "libc";
+
 void PrintEZ()
 {
 	putchar(69);

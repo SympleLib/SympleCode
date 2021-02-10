@@ -25,6 +25,7 @@ namespace Symple::Syntax
 
 		shared_ptr<Token> LexAtom(Token::Kind);
 		shared_ptr<Token> LexIdentifier();
+		shared_ptr<Token> LexString();
 		shared_ptr<Token> LexNumber();
 
 		static bool IsWhiteSpace(char);

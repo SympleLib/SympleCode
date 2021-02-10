@@ -81,6 +81,7 @@ namespace Symple::Syntax
 			Statement,
 			Type,
 			TypeReference,
+			ImportStatement,
 
 			BlockStatement,
 			ReturnStatement,
@@ -114,6 +115,8 @@ namespace Symple::Syntax
 			"Statement",
 			"Type",
 			"TypeReference",
+			"ImportStatement",
+
 			"BlockStatement",
 			"ReturnStatement",
 			"ExpressionStatement",
