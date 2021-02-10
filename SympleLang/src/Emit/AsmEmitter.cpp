@@ -357,12 +357,13 @@ namespace Symple::Emit
 			Util::DumpFile(mBssStream, mTextStream);
 
 			// Print Output
+			rewind(mTextStream);
+			std::stringstream ss;
+			ss << Util::ReadFile(mTextStream);
 			Util::SetConsoleColor(Util::ConsoleColor::Yellow);
 			spdlog::debug("Assembly Code:");
 			Util::SetConsoleColor(Util::ConsoleColor::DarkYellow);
-			rewind(mTextStream);
-			Util::DumpFile(mTextStream);
-			putchar('\n');
+			spdlog::debug("{}", ss.str());
 			Util::ResetConsoleColor();
 
 			Util::CloseFile(mDataStream);

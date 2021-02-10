@@ -29,12 +29,13 @@ namespace Symple
 			return lexer->GetDiagnosticBag();
 
 #if __SY_DEBUG
-		spdlog::debug("Lex Tokens:");
+		std::stringstream ss;
 		for (auto tok : mTokens)
 		{
-			tok->Print(std::cout, "", tok->Is(Syntax::Token::EndOfFile));
-			putchar('\n');
+			tok->Print(ss, "", tok->Is(Syntax::Token::EndOfFile));
+			ss.put('\n');
 		}
+		spdlog::debug("Lex Tokens:\n{}", ss.str());
 #endif
 
 		return lexer->GetDiagnosticBag();
@@ -44,14 +45,14 @@ namespace Symple
 	{
 		unique_ptr<Syntax::Parser> parser = make_unique<Syntax::Parser>(mTokens);
 		mAST = parser->Parse();
-		putchar('\n');
 		if (PrintDiagnosticBag(parser->GetDiagnosticBag(), "Parsing"))
 			return parser->GetDiagnosticBag();
 
 #if __SY_DEBUG
-		spdlog::debug("Parse Tree:");
-		mAST->Print();
-		putchar('\n');
+		std::stringstream ss;
+		mAST->Print(ss);
+		ss.put('\n');
+		spdlog::debug("Parse Tree:\n{}", ss.str());
 #endif
 
 		return parser->GetDiagnosticBag();
@@ -61,16 +62,18 @@ namespace Symple
 	{
 		shared_ptr<Binding::Binder> binder = make_shared<Binding::Binder>();
 		mTree = binder->Bind(mAST);
-		putchar('\n');
 		if (PrintDiagnosticBag(binder->GetDiagnosticBag(), "Binding"))
 			return binder->GetDiagnosticBag();
 
+#if __SY_DEBUG
+		std::stringstream ss;
+		mTree->Print(ss);
+		ss.put('\n');
 		spdlog::info("Bound Tree:");
-		mTree->Print();
-		putchar('\n');
 
 		using namespace Symple::Util;
 		ResetConsoleColor();
+#endif
 
 		return binder->GetDiagnosticBag();
 	}
@@ -79,16 +82,18 @@ namespace Symple
 	{
 		shared_ptr<Binding::Binder> binder = make_shared<Binding::Binder>();
 		mTree = binder->BindSymbols(mAST);
-		putchar('\n');
 		if (PrintDiagnosticBag(binder->GetDiagnosticBag(), "Importing"))
 			return mTree;
 
-		spdlog::info("Bound Tree:");
-		mTree->Print();
-		putchar('\n');
+#if __SY_DEBUG
+		std::stringstream ss;
+		mTree->Print(ss);
+		spdlog::info("Bound Tree:\n{}", ss.str());
+		ss.put('\n');
 
 		using namespace Symple::Util;
 		ResetConsoleColor();
+#endif
 
 		return mTree;
 	}
