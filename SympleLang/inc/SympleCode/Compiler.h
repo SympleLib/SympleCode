@@ -5,6 +5,7 @@
 #include "SympleCode/DiagnosticBag.h"
 #include "SympleCode/Syntax/Token.h"
 #include "SympleCode/Syntax/TranslationUnitSyntax.h"
+#include "SympleCode/Binding/Binder.h"
 #include "SympleCode/Binding/BoundCompilationUnit.h"
 
 namespace Symple
@@ -12,10 +13,13 @@ namespace Symple
 	class Compiler
 	{
 	private:
-		std::string mPath, AsmPath;
+		std::string mPath, mAsmPath;
 		Syntax::TokenList mTokens;
 		shared_ptr<Syntax::TranslationUnitSyntax> mAST;
 		shared_ptr<Binding::BoundCompilationUnit> mTree;
+		std::vector<shared_ptr<Compiler>> mUnits;
+
+		friend class Binding::Binder;
 	public:
 		Compiler(char *path);
 

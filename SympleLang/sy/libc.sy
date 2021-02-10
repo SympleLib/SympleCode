@@ -1,2 +1,8 @@
 extern int putchar(int);
 extern void atexit(void*);
+
+void PrintEZ()
+{
+	putchar(69);
+	putchar(90);
+}

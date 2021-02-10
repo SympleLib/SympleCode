@@ -1,10 +1,4 @@
 import "libc.sy";
 
-void PrintEZ()
-{
-	putchar(69);
-	putchar(90);
-}
-
 int main()
 	atexit(PrintEZ);

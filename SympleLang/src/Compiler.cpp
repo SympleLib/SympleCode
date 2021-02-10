@@ -1,5 +1,7 @@
 #include "SympleCode/Compiler.h"
 
+#include <sstream>
+
 #include <spdlog/spdlog.h>
 
 #include "SympleCode/Syntax/Lexer.h"
@@ -12,9 +14,7 @@ namespace Symple
 {
 	Compiler::Compiler(char *path)
 		: mPath(path)
-	{
-		AsmPath = mPath.substr(0, mPath.find_last_of('.')) + ".S";
-	}
+	{ mAsmPath = mPath.substr(0, mPath.find_last_of('.')) + ".S"; }
 
 	shared_ptr<DiagnosticBag> Compiler::Lex()
 	{
@@ -95,14 +95,19 @@ namespace Symple
 
 	void Compiler::Emit()
 	{
-		shared_ptr<Emit::AsmEmitter> emitter = make_shared<Emit::AsmEmitter>((char*)AsmPath.c_str());
+		shared_ptr<Emit::AsmEmitter> emitter = make_shared<Emit::AsmEmitter>((char*)mAsmPath.c_str());
 		emitter->Emit(mTree);
 		emitter->Compile();
 	}
 	
 	int Compiler::Exec()
 	{
-		system(("clang -m32 --optimize -o sy/Main.exe " + AsmPath).c_str());
+		std::stringstream linkcmd;
+		linkcmd << "clang -m32 --optimize -o sy/Main.exe " << mAsmPath;
+		for (auto compiler : mUnits)
+			linkcmd << compiler->mAsmPath;
+
+		system(linkcmd.str().c_str());
 		puts("Executing program...");
 		int ec = system("sy\\Main.exe");
 		printf("\nProgram Exited with code %i (0x%x)", ec, ec);

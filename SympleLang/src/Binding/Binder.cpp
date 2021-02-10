@@ -29,7 +29,9 @@ namespace Symple::Binding
 		unique_ptr<Symple::Compiler> compiler = make_unique<Symple::Compiler>((char*)path.c_str());
 		compiler->Lex();
 		compiler->Parse();
-		auto unit = compiler->BindSymbols();
+		compiler->Bind();
+		compiler->Emit();
+		auto unit = compiler->mTree;
 
 		for (auto fn : unit->GetFunctions())
 			mFunctions.push_back(fn);
