@@ -84,9 +84,24 @@ namespace Symple::Syntax
 		shared_ptr<Token> openParen = Match(Token::OpenParenthesis);
 		auto params = ParseVariableDeclarationList();
 		shared_ptr<Token> closeParen = Match(Token::CloseParenthesis);
+		TokenList modifiers = ParseFunctionModifiers();
 		shared_ptr<StatementSyntax> statement = ParseStatement();
 
-		return make_shared<FunctionDeclarationSyntax>(type, name, openParen, params, closeParen, statement);
+		return make_shared<FunctionDeclarationSyntax>(type, name, openParen, params, closeParen, modifiers, statement);
+	}
+
+	TokenList Parser::ParseFunctionModifiers()
+	{
+		TokenList list;
+
+		while (Peek()->Is(Token::CDeclKeyword, Token::StdCallKeyword, Token::Comma))
+		{
+			if (Peek()->Is(Token::Comma))
+				Next();
+			list.push_back(Next());
+		}
+
+		return list;
 	}
 
 	shared_ptr<ImportStatementSyntax> Parser::ParseImportStatement()

@@ -191,6 +191,10 @@ namespace Symple::Syntax
 		KEYWORD(external, Extern);
 
 		KEYWORD(import, Import);
+		KEYWORD(cdecl, CDecl);
+		KEYWORD(__cdecl, CDecl);
+		KEYWORD(stdcall, StdCall);
+		KEYWORD(__stdcall, StdCall);
 
 		else
 			return make_shared<Token>(Token::Identifier, text, mLine, column, mFile);

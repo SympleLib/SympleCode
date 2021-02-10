@@ -16,12 +16,13 @@ namespace Symple::Syntax
 		shared_ptr<Token> mOpenParenthesis;
 		VariableDeclarationList mParameters;
 		shared_ptr<Token> mCloseParenthesis;
+		TokenList mModifiers;
 		shared_ptr<StatementSyntax> mBody;
 	public:
 		FunctionDeclarationSyntax(shared_ptr<TypeSyntax> type, shared_ptr<Token> name,
 			shared_ptr<Token> openParen, VariableDeclarationList params, shared_ptr<Token> closeParen,
-			shared_ptr<StatementSyntax> body)
-			: MemberSyntax(name), mType(type), mOpenParenthesis(openParen), mParameters(std::move(params)), mCloseParenthesis(closeParen), mBody(body) {}
+			TokenList& modifiers, shared_ptr<StatementSyntax> body)
+			: MemberSyntax(name), mType(type), mOpenParenthesis(openParen), mParameters(std::move(params)), mCloseParenthesis(closeParen), mModifiers(modifiers), mBody(body) {}
 
 		virtual Kind GetKind() override
 		{ return FunctionDeclaration; }
@@ -31,14 +32,23 @@ namespace Symple::Syntax
 			PrintIndent(os, indent, last, label);
 			PrintName(os);
 
-			os << " '"; GetType()->PrintShort(os); os << ' ' << GetName()->GetText(); os.put('(');
+			os << " '"; GetType()->PrintShort(os); os << ' ' << GetName()->GetText() << '(';
 			for (auto param : GetParameters())
 			{
 				param->GetType()->PrintShort(os);
 				if (param != GetParameters().back())
 					os << ", ";
 			}
-			os << ")'";
+			os.put(')');
+			if (!GetModifiers().empty())
+				os.put(' ');
+			for (auto mod : GetModifiers())
+			{
+				mod->PrintShort(os);
+				if (mod != GetModifiers().back())
+					os << ", ";
+			}
+			os.put('\'');
 
 			std::string newIndent(indent);
 			newIndent += GetAddIndent(last);
@@ -62,6 +72,9 @@ namespace Symple::Syntax
 
 		shared_ptr<Token> GetCloseParenthesis()
 		{ return mCloseParenthesis; }
+
+		TokenList& GetModifiers()
+		{ return mModifiers; }
 
 		shared_ptr<StatementSyntax> GetBody()
 		{ return mBody; }

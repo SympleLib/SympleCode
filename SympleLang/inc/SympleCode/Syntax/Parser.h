@@ -51,6 +51,7 @@ namespace Symple::Syntax
 		shared_ptr<MemberSyntax> ParseMember();
 		shared_ptr<ExternFunctionSyntax> ParseExternFunction();
 		shared_ptr<FunctionDeclarationSyntax> ParseFunctionDeclaration();
+		TokenList ParseFunctionModifiers();
 
 		shared_ptr<StatementSyntax> ParseStatement(bool matchSemicolon = true);
 		shared_ptr<BlockStatementSyntax> ParseBlockStatement();

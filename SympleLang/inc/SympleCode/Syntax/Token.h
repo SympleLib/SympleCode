@@ -91,7 +91,10 @@ namespace Symple::Syntax
 			ExternKeyword,
 			ImportKeyword,
 
-			Last = ImportKeyword,
+			CDeclKeyword,
+			StdCallKeyword,
+
+			Last = StdCallKeyword,
 		};
 
 		static constexpr char* KindMap[Last + 1] = {
@@ -140,6 +143,9 @@ namespace Symple::Syntax
 
 			"ExternKeyword",
 			"ImportKeyword",
+
+			"CDeclKeyword",
+			"StdCallKeyword",
 		};
 	};
 
