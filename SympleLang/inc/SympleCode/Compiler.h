@@ -12,16 +12,17 @@ namespace Symple
 	class Compiler
 	{
 	private:
-		char* mPath;
+		std::string mPath, AsmPath;
 		Syntax::TokenList mTokens;
 		shared_ptr<Syntax::TranslationUnitSyntax> mAST;
 		shared_ptr<Binding::BoundCompilationUnit> mTree;
 	public:
-		Compiler(char path[]);
+		Compiler(char *path);
 
 		shared_ptr<DiagnosticBag> Lex();
 		shared_ptr<DiagnosticBag> Parse();
 		shared_ptr<DiagnosticBag> Bind();
+		shared_ptr<Binding::BoundCompilationUnit> BindSymbols();
 		void Emit();
 		int Exec();
 

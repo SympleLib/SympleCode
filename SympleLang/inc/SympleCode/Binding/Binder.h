@@ -5,6 +5,7 @@
 #include "SympleCode/DiagnosticBag.h"
 
 #include "SympleCode/Syntax/TypeSyntax.h"
+#include "SympleCode/Syntax/ImportStatementSyntax.h"
 #include "SympleCode/Syntax/ExternFunctionSyntax.h"
 #include "SympleCode/Syntax/GlobalStatementSyntax.h"
 #include "SympleCode/Syntax/FunctionDeclarationSyntax.h"
@@ -53,7 +54,10 @@ namespace Symple::Binding
 		shared_ptr<BoundStatement> BindStatementInternal(shared_ptr<Syntax::StatementSyntax>);
 		shared_ptr<BoundExpression> BindExpressionInternal(shared_ptr<Syntax::ExpressionSyntax>);
 	public:
+		shared_ptr<BoundCompilationUnit> BindImport(shared_ptr<Syntax::ImportStatementSyntax>);
+		shared_ptr<BoundCompilationUnit> BindSymbols(shared_ptr<Syntax::TranslationUnitSyntax>);
 		shared_ptr<BoundCompilationUnit> Bind(shared_ptr<Syntax::TranslationUnitSyntax>);
+		shared_ptr<Symbol::Symbol> BindMemberSymbol(shared_ptr<Syntax::MemberSyntax>);
 		shared_ptr<Node> BindMember(shared_ptr<Syntax::MemberSyntax>);
 
 		shared_ptr<Symbol::TypeSymbol> BindType(shared_ptr<Syntax::TypeSyntax>);

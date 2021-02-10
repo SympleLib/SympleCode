@@ -1,7 +1,4 @@
-extern int putchar(int);
-extern void atexit(void*);
-
-import "libc";
+import "libc.sy";
 
 void PrintEZ()
 {

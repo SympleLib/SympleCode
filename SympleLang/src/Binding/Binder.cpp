@@ -12,6 +12,8 @@
 #include "SympleCode/Binding/BoundImplicitCastExpression.h"
 #include "SympleCode/Binding/BoundFunctionPointer.h"
 
+#include "SympleCode/Compiler.h"
+
 namespace Symple::Binding
 {
 	void Binder::BeginScope()
@@ -19,6 +21,35 @@ namespace Symple::Binding
 
 	void Binder::EndScope()
 	{ mScope = mScope->GetBase(); }
+
+	shared_ptr<BoundCompilationUnit> Binder::BindImport(shared_ptr<Syntax::ImportStatementSyntax> syntax)
+	{
+		std::string path = "sy/";
+		path += syntax->GetImport()->GetText();
+		unique_ptr<Symple::Compiler> compiler = make_unique<Symple::Compiler>((char*)path.c_str());
+		compiler->Lex();
+		compiler->Parse();
+		auto unit = compiler->BindSymbols();
+
+		for (auto fn : unit->GetFunctions())
+			mFunctions.push_back(fn);
+		return unit;
+	}
+
+	shared_ptr<BoundCompilationUnit> Binder::BindSymbols(shared_ptr<Syntax::TranslationUnitSyntax> unit)
+	{
+		mCompilationUnit = unit;
+		mFunctions.clear();
+		mScope.reset();
+		BeginScope();
+
+		for (auto member : mCompilationUnit->GetMembers())
+			BindMemberSymbol(member);
+
+		EndScope();
+
+		return make_shared<BoundCompilationUnit>(unit, mFunctions);
+	}
 
 	shared_ptr<BoundCompilationUnit> Binder::Bind(shared_ptr<Syntax::TranslationUnitSyntax> unit)
 	{
@@ -156,6 +187,20 @@ namespace Symple::Binding
 
 	#pragma region Members
 
+	shared_ptr<Symbol::Symbol> Binder::BindMemberSymbol(shared_ptr<Syntax::MemberSyntax> syntax)
+	{
+		switch (syntax->GetKind())
+		{
+		case Syntax::Node::ExternFunction:
+			return BindExternFunction(dynamic_pointer_cast<Syntax::ExternFunctionSyntax>(syntax));
+		case Syntax::Node::FunctionDeclaration:
+			return BindFunction(dynamic_pointer_cast<Syntax::FunctionDeclarationSyntax>(syntax));
+		case Syntax::Node::ImportStatement:
+			BindImport(dynamic_pointer_cast<Syntax::ImportStatementSyntax>(syntax));
+			return make_shared<Symbol::Symbol>();
+		}
+	}
+
 	shared_ptr<Node> Binder::BindMember(shared_ptr<Syntax::MemberSyntax> syntax)
 	{
 		shared_ptr<Node> result = BindMemberInternal(syntax);
@@ -179,6 +224,9 @@ namespace Symple::Binding
 			goto Return;
 		case Syntax::Node::FunctionDeclaration:
 			BindFunction(dynamic_pointer_cast<Syntax::FunctionDeclarationSyntax>(syntax));
+			goto Return;
+		case Syntax::Node::ImportStatement:
+			BindImport(dynamic_pointer_cast<Syntax::ImportStatementSyntax>(syntax));
 			goto Return;
 		default:
 		Return:

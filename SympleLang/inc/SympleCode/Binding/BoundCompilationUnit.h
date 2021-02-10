@@ -26,7 +26,7 @@ namespace Symple::Binding
 	private:
 		FunctionMap mFunctions;
 	public:
-		BoundCompilationUnit(shared_ptr<Syntax::TranslationUnitSyntax> syntax, FunctionMap funcs)
+		BoundCompilationUnit(shared_ptr<Syntax::Node> syntax, FunctionMap funcs)
 			: Node(syntax), mFunctions(funcs) {}
 
 		virtual Kind GetKind() override

@@ -11,11 +11,14 @@
 namespace Symple
 {
 	Compiler::Compiler(char *path)
-		: mPath(path) {}
+		: mPath(path)
+	{
+		AsmPath = mPath.substr(0, mPath.find_last_of('.')) + ".S";
+	}
 
 	shared_ptr<DiagnosticBag> Compiler::Lex()
 	{
-		unique_ptr<Syntax::Lexer> lexer = make_unique<Syntax::Lexer>((char*)"sy/Main.sy");
+		unique_ptr<Syntax::Lexer> lexer = make_unique<Syntax::Lexer>((char*)mPath.c_str());
 		mTokens.clear();
 
 		do
@@ -23,10 +26,7 @@ namespace Symple
 		while (!mTokens.back()->Is(Syntax::Token::EndOfFile));
 
 		if (PrintDiagnosticBag(lexer->GetDiagnosticBag(), "Lexing"))
-		{
-			mTokens.clear();
 			return lexer->GetDiagnosticBag();
-		}
 
 #if __SY_DEBUG
 		spdlog::debug("Lex Tokens:");
@@ -46,10 +46,7 @@ namespace Symple
 		mAST = parser->Parse();
 		putchar('\n');
 		if (PrintDiagnosticBag(parser->GetDiagnosticBag(), "Parsing"))
-		{
-			mAST = nullptr;
 			return parser->GetDiagnosticBag();
-		}
 
 #if __SY_DEBUG
 		spdlog::debug("Parse Tree:");
@@ -66,10 +63,7 @@ namespace Symple
 		mTree = binder->Bind(mAST);
 		putchar('\n');
 		if (PrintDiagnosticBag(binder->GetDiagnosticBag(), "Binding"))
-		{
-			mTree = false;
 			return binder->GetDiagnosticBag();
-		}
 
 		spdlog::info("Bound Tree:");
 		mTree->Print();
@@ -81,18 +75,36 @@ namespace Symple
 		return binder->GetDiagnosticBag();
 	}
 
+	shared_ptr<Binding::BoundCompilationUnit> Compiler::BindSymbols()
+	{
+		shared_ptr<Binding::Binder> binder = make_shared<Binding::Binder>();
+		mTree = binder->BindSymbols(mAST);
+		putchar('\n');
+		if (PrintDiagnosticBag(binder->GetDiagnosticBag(), "Importing"))
+			return mTree;
+
+		spdlog::info("Bound Tree:");
+		mTree->Print();
+		putchar('\n');
+
+		using namespace Symple::Util;
+		ResetConsoleColor();
+
+		return mTree;
+	}
+
 	void Compiler::Emit()
 	{
-		shared_ptr<Emit::AsmEmitter> emitter = make_shared<Emit::AsmEmitter>((char*)"sy/Main.S");
+		shared_ptr<Emit::AsmEmitter> emitter = make_shared<Emit::AsmEmitter>((char*)AsmPath.c_str());
 		emitter->Emit(mTree);
 		emitter->Compile();
 	}
 	
 	int Compiler::Exec()
 	{
-		system("clang -m32 --optimize sy/Main.S -o sy/Main.exe");
+		system(("clang -m32 --optimize -o sy/Main.exe " + AsmPath).c_str());
 		puts("Executing program...");
-		int ec = system("sy\\Main");
+		int ec = system("sy\\Main.exe");
 		printf("\nProgram Exited with code %i (0x%x)", ec, ec);
 
 		return ec;
