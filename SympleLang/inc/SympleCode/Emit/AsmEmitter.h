@@ -64,6 +64,8 @@ namespace Symple::Emit
 
 		shared_ptr<Symbol::TypeSymbol> EmitExpressionPointer(shared_ptr<Binding::BoundExpression>);
 		shared_ptr<Symbol::TypeSymbol> EmitVariableExpressionPointer(shared_ptr<Binding::BoundVariableExpression>);
+
+		static std::string GetFunctionAssemblyName(shared_ptr<Symbol::FunctionSymbol>);
 	private:
 		void CloseStreams();
 	};

@@ -20,9 +20,9 @@ namespace Symple::Syntax
 		shared_ptr<StatementSyntax> mBody;
 	public:
 		FunctionDeclarationSyntax(shared_ptr<TypeSyntax> type, shared_ptr<Token> name,
-			shared_ptr<Token> openParen, VariableDeclarationList params, shared_ptr<Token> closeParen,
+			shared_ptr<Token> openParen, VariableDeclarationList& params, shared_ptr<Token> closeParen,
 			TokenList& modifiers, shared_ptr<StatementSyntax> body)
-			: MemberSyntax(name), mType(type), mOpenParenthesis(openParen), mParameters(std::move(params)), mCloseParenthesis(closeParen), mModifiers(modifiers), mBody(body) {}
+			: MemberSyntax(name), mType(type), mOpenParenthesis(openParen), mParameters(params), mCloseParenthesis(closeParen), mModifiers(modifiers), mBody(body) {}
 
 		virtual Kind GetKind() override
 		{ return FunctionDeclaration; }

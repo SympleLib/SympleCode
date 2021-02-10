@@ -146,8 +146,19 @@ namespace Symple::Binding
 		Symbol::ParameterList params;
 		for (auto param : syntax->GetParameters())
 			params.push_back(BindParameter(param));
+		Symbol::FunctionSymbol::CallingConvention conv = Symbol::FunctionSymbol::CDecl;
+		for (auto mod : syntax->GetModifiers())
+			switch (mod->GetKind())
+			{
+			case Syntax::Token::CDeclKeyword:
+				conv = Symbol::FunctionSymbol::CDecl;
+				break;
+			case Syntax::Token::StdCallKeyword:
+				conv = Symbol::FunctionSymbol::StdCall;
+				break;
+			}
 
-		shared_ptr<Symbol::FunctionSymbol> symbol = make_shared<Symbol::FunctionSymbol>(ty, name, params);
+		shared_ptr<Symbol::FunctionSymbol> symbol = make_shared<Symbol::FunctionSymbol>(ty, name, params, conv);
 
 		BeginScope();
 		for (auto param : symbol->GetParameters())
@@ -166,8 +177,19 @@ namespace Symple::Binding
 		Symbol::ParameterList params;
 		for (auto param : syntax->GetParameters())
 			params.push_back(BindParameter(param));
+		Symbol::FunctionSymbol::CallingConvention conv = Symbol::FunctionSymbol::CDecl;
+		for (auto mod : syntax->GetModifiers())
+			switch (mod->GetKind())
+			{
+			case Syntax::Token::CDeclKeyword:
+				conv = Symbol::FunctionSymbol::CDecl;
+				break;
+			case Syntax::Token::StdCallKeyword:
+				conv = Symbol::FunctionSymbol::StdCall;
+				break;
+			}
 
-		shared_ptr<Symbol::FunctionSymbol> symbol = make_shared<Symbol::FunctionSymbol>(ty, name, params);
+		shared_ptr<Symbol::FunctionSymbol> symbol = make_shared<Symbol::FunctionSymbol>(ty, name, params, conv);
 
 		mFunctions.push_back({ symbol, nullptr });
 		return symbol;

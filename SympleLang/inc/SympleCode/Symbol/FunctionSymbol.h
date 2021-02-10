@@ -8,13 +8,15 @@ namespace Symple::Symbol
 {
 	class FunctionSymbol : public Symbol
 	{
+	public: enum CallingConvention : unsigned;
 	private:
 		shared_ptr<TypeSymbol> mType;
 		std::string mName;
 		ParameterList mParameters;
+		CallingConvention mCallingConvention;
 	public:
-		FunctionSymbol(shared_ptr<TypeSymbol> ty, std::string_view name, ParameterList& params)
-			: mType(ty), mName(name), mParameters(params)
+		FunctionSymbol(shared_ptr<TypeSymbol> ty, std::string_view name, ParameterList& params, CallingConvention conv)
+			: mType(ty), mName(name), mParameters(params), mCallingConvention(conv)
 		{}
 
 		virtual Kind GetKind() override
@@ -66,5 +68,14 @@ namespace Symple::Symbol
 
 		ParameterList GetParameters()
 		{ return mParameters; }
+
+		CallingConvention GetCallingConvention()
+		{ return mCallingConvention; }
+	public:
+		enum CallingConvention : unsigned
+		{
+			CDecl,
+			StdCall,
+		};
 	};
 }

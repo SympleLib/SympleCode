@@ -51,6 +51,28 @@ namespace Symple::Emit
 		return 0xCC;
 	}
 
+
+	std::string AsmEmitter::GetFunctionAssemblyName(shared_ptr<Symbol::FunctionSymbol> fn)
+	{
+		std::stringstream ss;
+		switch (fn->GetCallingConvention())
+		{
+		case Symbol::FunctionSymbol::CDecl:
+			ss << '_' << fn->GetName();
+			break;
+		case Symbol::FunctionSymbol::StdCall:
+			ss << '_' << fn->GetName() << '@';
+			unsigned numBytes = 0;
+			for (auto param : fn->GetParameters())
+				numBytes += param->GetType()->GetSize();
+			ss << numBytes;
+			break;
+		}
+
+		return ss.str();
+	}
+
+
 	AsmEmitter::AsmEmitter(char* file)
 		: mFile(file)
 	{
@@ -93,16 +115,16 @@ namespace Symple::Emit
 			return;
 
 		mFunction = func;
-		auto name = mFunction->GetName().data();
+		std::string name = GetFunctionAssemblyName(func);
 
-		_Emit(Text, ".global _%s", name);
+		_Emit(Text, ".global %s", name.c_str());
 		std::stringstream fnSig;
 		mFunction->PrintSignature(fnSig);
-		_Emit(Text, "_%s: # %s", name, fnSig.str().c_str());
+		_Emit(Text, "%s: # %s", name.c_str(), fnSig.str().c_str());
 		_Emit(Text, "\t# Begin Stack Frame");
 		_Emit(Text, "\tpush    %%ebp");
 		_Emit(Text, "\tmov     %%esp, %%ebp");
-		_Emit(Text, "\tsub     _%s.StackSize, %%esp", name);
+		_Emit(Text, "\tsub     %s.StackSize, %%esp", name.c_str());
 		mStackSize = 0;
 
 		BeginScope();
@@ -121,13 +143,13 @@ namespace Symple::Emit
 		EndScope();
 
 		if (mReturning)
-			_Emit(Text, "_%s.Return:", name);
+			_Emit(Text, "%s.Return:", name.c_str());
 		_Emit(Text, "\t# End Stack Frame");
 		_Emit(Text, "\tmov     %%ebp, %%esp");
 		_Emit(Text, "\tpop     %%ebp");
 		_Emit(Text, "\tret");
 
-		_Emit(Data, "_%s.StackSize:", name);
+		_Emit(Data, "%s.StackSize:", name.c_str());
 		_Emit(Data, "\t.long %i", mStackSize);
 	}
 
@@ -164,7 +186,7 @@ namespace Symple::Emit
 	void AsmEmitter::EmitReturnStatement(shared_ptr<Binding::BoundReturnStatement> stmt)
 	{
 		EmitExpression(stmt->GetValue());
-		_Emit(Text, "\tjmp     _%s.Return", mFunction->GetName().data());
+		_Emit(Text, "\tjmp     %s.Return", GetFunctionAssemblyName(mFunction).c_str());
 		mReturning = true;
 	}
 
@@ -225,7 +247,7 @@ namespace Symple::Emit
 			EmitExpression(expr->GetArguments()[i - 1]);
 			_Emit(Text, "\tpush    %%eax");
 		}
-		_Emit(Text, "\tcall    _%s", expr->GetFunction()->GetName().data());
+		_Emit(Text, "\tcall    %s", GetFunctionAssemblyName(expr->GetFunction()).c_str());
 		_Emit(Text, "\tadd     $%i, %%esp", expr->GetFunction()->GetParameters().size() * 4);
 
 		return expr->GetFunction()->GetType();
@@ -247,7 +269,7 @@ namespace Symple::Emit
 
 	shared_ptr<Symbol::TypeSymbol> AsmEmitter::EmitFunctionPointer(shared_ptr<Binding::BoundFunctionPointer> expr)
 	{
-		_Emit(Text, "\tlea     _%s, %%eax", expr->GetSymbol()->GetName().data());
+		_Emit(Text, "\tlea     %s, %%eax", GetFunctionAssemblyName(expr->GetSymbol()).c_str());
 
 		return expr->GetType();
 	}

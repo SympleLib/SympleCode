@@ -1,4 +1,9 @@
 import "libc.sy";
 
+extern void ExitProcess(int ec) stdcall;
+
 int main()
+{
 	atexit(PrintEZ);
+	ExitProcess(69);
+}

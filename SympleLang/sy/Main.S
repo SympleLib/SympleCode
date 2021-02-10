@@ -27,6 +27,10 @@ _main: # int main()
 	push    %eax
 	call    _atexit
 	add     $4, %esp
+	mov     $69, %eax
+	push    %eax
+	call    _ExitProcess@4
+	add     $4, %esp
 	# End Stack Frame
 	mov     %ebp, %esp
 	pop     %ebp

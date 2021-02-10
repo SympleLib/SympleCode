@@ -72,9 +72,10 @@ namespace Symple::Syntax
 		shared_ptr<Token> openParen = Match(Token::OpenParenthesis);
 		auto params = ParseVariableDeclarationList();
 		shared_ptr<Token> closeParen = Match(Token::CloseParenthesis);
+		TokenList modifiers = ParseFunctionModifiers();
 		Match(Token::Semicolon);
 
-		return make_shared<ExternFunctionSyntax>(keyword, type, name, openParen, params, closeParen);
+		return make_shared<ExternFunctionSyntax>(keyword, type, name, openParen, params, closeParen, modifiers);
 	}
 
 	shared_ptr<FunctionDeclarationSyntax> Parser::ParseFunctionDeclaration()

@@ -17,10 +17,12 @@ namespace Symple::Syntax
 		shared_ptr<Token> mOpenParenthesis;
 		VariableDeclarationList mParameters;
 		shared_ptr<Token> mCloseParenthesis;
+		TokenList mModifiers;
 	public:
 		ExternFunctionSyntax(shared_ptr<Token> keyword, shared_ptr<TypeSyntax> type, shared_ptr<Token> name,
-			shared_ptr<Token> openParen, VariableDeclarationList params, shared_ptr<Token> closeParen)
-			: MemberSyntax(name), mKeyword(keyword), mType(type), mOpenParenthesis(openParen), mParameters(std::move(params)), mCloseParenthesis(closeParen) {}
+			shared_ptr<Token> openParen, VariableDeclarationList params, shared_ptr<Token> closeParen,
+			TokenList mods)
+			: MemberSyntax(name), mKeyword(keyword), mType(type), mOpenParenthesis(openParen), mParameters(std::move(params)), mCloseParenthesis(closeParen), mModifiers(mods) {}
 
 		virtual Kind GetKind() override
 		{ return ExternFunction; }
@@ -37,7 +39,16 @@ namespace Symple::Syntax
 				if (param != GetParameters().back())
 					os << ", ";
 			}
-			os << ")'";
+			os.put(')');
+			if (!GetModifiers().empty())
+				os.put(' ');
+			for (auto mod : GetModifiers())
+			{
+				mod->PrintShort(os);
+				if (mod != GetModifiers().back())
+					os << ", ";
+			}
+			os.put('\'');
 
 			std::string newIndent(indent);
 			newIndent += GetAddIndent(last);
@@ -63,5 +74,8 @@ namespace Symple::Syntax
 
 		shared_ptr<Token> GetCloseParenthesis()
 		{ return mCloseParenthesis; }
+
+		TokenList& GetModifiers()
+		{ return mModifiers; }
 	};
 }
