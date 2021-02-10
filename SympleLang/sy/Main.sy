@@ -2,6 +2,4 @@ import "libc.sy";
 import "Windows.sy";
 
 int main()
-{
 	MessageBoxA(0, "Hello!", "No You", 0);
-}
