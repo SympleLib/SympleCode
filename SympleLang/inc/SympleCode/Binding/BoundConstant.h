@@ -11,11 +11,21 @@ namespace Symple::Binding
 	public: enum Kind : unsigned;
 	private:
 		Kind mKind;
-		char mValue[16];
+		char mValue[16] = "\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0";
 	public:
 		BoundConstant(Kind kind, void* data)
-			: mKind(kind), mValue("\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0")
-		{ __SY_ASSERT(!memcpy_s(mValue, sizeof(mValue), data, 16), "Internal error"); }
+			: mKind(kind)
+		{
+			errno_t err = memcpy_s(mValue, sizeof(mValue), data, 16);
+			if (err)
+			{
+				char msg[16];
+				if (strerror_s(msg, err))
+					spdlog::critical("Error copying data");
+				else
+					spdlog::critical("Error copying data: {}", msg);
+			}
+		}
 
 		void Print(std::ostream& os = std::cout, std::string_view indent = "", bool last = true, std::string_view label = "")
 		{
@@ -58,7 +68,7 @@ namespace Symple::Binding
 		T& GetValue()
 		{
 			__SY_ASSERT(sizeof(T) <= 16, "BoundConstant buffer to large");
-			return (T&)mValue;
+			return *(T*)mValue;
 		}
 	public:
 		enum Kind : unsigned

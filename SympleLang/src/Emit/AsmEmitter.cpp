@@ -219,7 +219,7 @@ namespace Symple::Emit
 		if (expr->ConstantValue())
 		{
 			EmitConstant(expr->ConstantValue());
-			std::cout << expr->ConstantValue()->GetValue() << std::endl;
+			expr->ConstantValue()->Print(); putchar('\n');
 			return expr->GetType();
 		}
 		else if (expr->GetType()->Equals(Symbol::TypeSymbol::CharPointerType)) // String Literal
