@@ -51,6 +51,7 @@ namespace Symple::Binding
 			Function,
 
 			Statement,
+			NativeCode,
 			BlockStatement,
 			ReturnStatement,
 			ExpressionStatement,
@@ -83,6 +84,7 @@ namespace Symple::Binding
 			"Function",
 
 			"Statement",
+			"NativeCode",
 			"BlockStatement",
 			"ReturnStatement",
 			"ExpressionStatement",

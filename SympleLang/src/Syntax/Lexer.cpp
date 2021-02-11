@@ -202,6 +202,9 @@ namespace Symple::Syntax
 		KEYWORD(dllexport, DllExport);
 		KEYWORD(__dllexport, DllExport);
 
+		KEYWORD(__asm, Native);
+		KEYWORD(native, Native);
+
 		else
 			return make_shared<Token>(Token::Identifier, text, mLine, column, mFile);
 	}

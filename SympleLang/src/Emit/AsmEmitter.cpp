@@ -415,9 +415,7 @@ namespace Symple::Emit
 			std::stringstream ss;
 			ss << Util::ReadFile(mTextStream);
 			Util::SetConsoleColor(Util::ConsoleColor::Yellow);
-			spdlog::debug("Assembly Code:");
-			Util::SetConsoleColor(Util::ConsoleColor::DarkYellow);
-			spdlog::debug("{}", ss.str());
+			spdlog::debug("Assembly Code:\n{}", ss.str());
 			Util::ResetConsoleColor();
 
 			Util::CloseFile(mDataStream);

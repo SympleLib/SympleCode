@@ -31,6 +31,7 @@ int main()
 
 	spdlog::set_default_logger(make_shared<spdlog::logger>("Symple Logger", sinks));
 	spdlog::set_pattern("[Symple]%^<%l>%$: %v");
+	spdlog::flush_on(level_enum::info);
 #if __SY_DEBUG
 	spdlog::set_level(level_enum::trace);
 #else

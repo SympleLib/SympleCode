@@ -71,7 +71,7 @@ namespace Symple
 		std::stringstream ss;
 		mTree->Print(ss);
 		ss.put('\n');
-		spdlog::info("Bound Tree:");
+		spdlog::info("Bound Tree:\n{}", ss.str());
 
 		using namespace Symple::Util;
 		ResetConsoleColor();

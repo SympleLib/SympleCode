@@ -1,19 +1,19 @@
 #pragma once
 
-#include "SympleCode/Syntax/MemberSyntax.h"
+#include "SympleCode/Syntax/StatementSyntax.h"
 
 namespace Symple::Syntax
 {
-	class ImportStatementSyntax : public MemberSyntax
+	class NativeStatementSyntax : public StatementSyntax
 	{
 	private:
-		shared_ptr<Token> mKeyword;
+		shared_ptr<Token> mAssembly;
 	public:
-		ImportStatementSyntax(shared_ptr<Token> key, shared_ptr<Token> import)
-			: MemberSyntax(import), mKeyword(key) {}
+		NativeStatementSyntax(shared_ptr<Token> key, shared_ptr<Token> code)
+			: StatementSyntax(key), mAssembly(code) {}
 
 		virtual Kind GetKind() override
-		{ return ImportStatement; }
+		{ return NativeStatement; }
 
 		virtual void Print(std::ostream& os = std::cout, std::string_view indent = "", bool last = true, std::string_view label = "") override
 		{
@@ -23,13 +23,13 @@ namespace Symple::Syntax
 			std::string newIndent(indent);
 			newIndent += GetAddIndent(last);
 
-			os.put('\n'); GetImport()->Print(os, newIndent, true, "Import = ");
+			os.put('\n'); GetAssembly()->Print(os, newIndent, true, "Assembly = ");
 		}
 
 		shared_ptr<Token> GetKeyword()
-		{ return mKeyword; }
-
-		shared_ptr<Token> GetImport()
 		{ return GetToken(); }
+
+		shared_ptr<Token> GetAssembly()
+		{ return mAssembly; }
 	};
 }

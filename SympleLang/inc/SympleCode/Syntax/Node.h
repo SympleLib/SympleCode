@@ -82,6 +82,7 @@ namespace Symple::Syntax
 			Type,
 			TypeReference,
 			ImportStatement,
+			NativeStatement,
 
 			BlockStatement,
 			ReturnStatement,
@@ -116,6 +117,7 @@ namespace Symple::Syntax
 			"Type",
 			"TypeReference",
 			"ImportStatement",
+			"NativeStatement",
 
 			"BlockStatement",
 			"ReturnStatement",

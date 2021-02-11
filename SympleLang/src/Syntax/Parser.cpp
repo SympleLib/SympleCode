@@ -124,6 +124,9 @@ namespace Symple::Syntax
 		else
 			switch (Peek()->GetKind())
 			{
+			case Token::NativeKeyword:
+				statement = ParseNativeStatement();
+				break;
 			case Token::OpenBrace:
 				statement = ParseBlockStatement();
 				matchSemi = false;
@@ -140,6 +143,14 @@ namespace Symple::Syntax
 		if (matchSemi)
 			Match(Token::Semicolon);
 		return statement;
+	}
+
+	shared_ptr<NativeStatementSyntax> Parser::ParseNativeStatement()
+	{
+		shared_ptr<Token> tok = Match(Token::NativeKeyword);
+		shared_ptr<Token> code = Match(Token::String);
+
+		return make_shared<NativeStatementSyntax>(tok, code);
 	}
 
 	shared_ptr<BlockStatementSyntax> Parser::ParseBlockStatement()
