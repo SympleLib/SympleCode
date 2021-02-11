@@ -1,10 +1,6 @@
+import "WinUser.sy";
+
 int main()
 {
-	{
-		int t = 4;
-	}
-	
-	{
-		int t = 5;
-	}
+	MessageBoxA(0, "Your PC ran into an error and needs to restart", "Critical Error", 16);
 }

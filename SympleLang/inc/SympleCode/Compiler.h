@@ -18,6 +18,7 @@ namespace Symple
 		shared_ptr<Syntax::TranslationUnitSyntax> mAST;
 		shared_ptr<Binding::BoundCompilationUnit> mTree;
 		std::vector<shared_ptr<Compiler>> mUnits;
+		static std::vector<std::string> sLibraries;
 
 		friend class Binding::Binder;
 	public:

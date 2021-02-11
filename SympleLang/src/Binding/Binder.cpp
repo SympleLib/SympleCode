@@ -37,27 +37,38 @@ namespace Symple::Binding
 					mFunctions.push_back(fn);
 				return unit;
 			}
+		for (auto symbol : Compiler::sLibraries)
+			if (path == symbol)
+				return make_shared<BoundCompilationUnit>(syntax, FunctionMap());
+		
+		if (access(path.c_str(), 0) != -1)
+		{
+			Util::ConsoleColor col = Util::GetConsoleColor();
+			Util::SetConsoleColor(Util::Cyan);
+			spdlog::info("Import '{}'", path);
+			Util::SetConsoleColor(col);
+			unique_ptr<Symple::Compiler> compiler = make_unique<Symple::Compiler>((char*)path.c_str());
+			compiler->Lex();
+			compiler->Parse();
+			compiler->Bind();
+			compiler->Emit();
+			col = Util::GetConsoleColor();
+			Util::SetConsoleColor(Util::Cyan);
+			spdlog::info("Imported '{}'", path);
+			Util::SetConsoleColor(col);
 
-		Util::ConsoleColor col = Util::GetConsoleColor();
-		Util::SetConsoleColor(Util::Cyan);
-		spdlog::info("Import '{}'", path);
-		Util::SetConsoleColor(col);
-		unique_ptr<Symple::Compiler> compiler = make_unique<Symple::Compiler>((char*)path.c_str());
-		compiler->Lex();
-		compiler->Parse();
-		compiler->Bind();
-		compiler->Emit();
-		col = Util::GetConsoleColor();
-		Util::SetConsoleColor(Util::Cyan);
-		spdlog::info("Imported '{}'", path);
-		Util::SetConsoleColor(col);
+			auto unit = compiler->mTree;
+			sImportedSymbols.insert({ path, unit });
 
-		auto unit = compiler->mTree;
-		sImportedSymbols.insert({ path, unit });
-
-		for (auto fn : unit->GetFunctions())
-			mFunctions.push_back(fn);
-		return unit;
+			for (auto fn : unit->GetFunctions())
+				mFunctions.push_back(fn);
+			return unit;
+		}
+		else
+		{
+			Compiler::sLibraries.push_back(std::string(syntax->GetImport()->GetText()));
+			return make_shared<BoundCompilationUnit>(syntax, FunctionMap());
+		}
 	}
 
 	shared_ptr<BoundCompilationUnit> Binder::BindSymbols(shared_ptr<Syntax::TranslationUnitSyntax> unit)

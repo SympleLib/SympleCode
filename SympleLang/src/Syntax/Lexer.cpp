@@ -190,6 +190,7 @@ namespace Symple::Syntax
 		KEYWORD(extern, Extern);
 		KEYWORD(external, Extern);
 
+		KEYWORD(link, Import);
 		KEYWORD(import, Import);
 		KEYWORD(cdecl, CDecl);
 		KEYWORD(__cdecl, CDecl);

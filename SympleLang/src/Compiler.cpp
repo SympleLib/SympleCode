@@ -12,6 +12,8 @@
 
 namespace Symple
 {
+	std::vector<std::string> Compiler::sLibraries;
+
 	Compiler::Compiler(char *path)
 		: mPath(path)
 	{ mAsmPath = mPath.substr(0, mPath.find_first_of('/')) + "/bin" + mPath.substr(mPath.find_first_of('/'), mPath.find_last_of('.') - mPath.find_first_of('/')) + ".S"; }
@@ -103,17 +105,19 @@ namespace Symple
 		unique_ptr<Emit::AsmEmitter> emitter = make_unique<Emit::AsmEmitter>((char*)mAsmPath.c_str());
 		emitter->Emit(mTree);
 		emitter->Compile();
-
-		std::stringstream linkcmd;
-		linkcmd << "clang -m32 --optimize -o sy/bin/Main.exe " << mAsmPath.substr(0, mAsmPath.find_last_of('.')) << ".obj";
-		for (auto compiler : mUnits)
-			linkcmd << compiler->mAsmPath.substr(0, mAsmPath.find_last_of('.')) << ".obj";
-
-		system(linkcmd.str().c_str());
 	}
 	
 	int Compiler::Exec()
 	{
+		std::stringstream linkcmd;
+		linkcmd << "clang -m32 --optimize -o sy/bin/Main.exe " << mAsmPath.substr(0, mAsmPath.find_last_of('.')) << ".obj";
+		for (auto compiler : mUnits)
+			linkcmd << ' ' << compiler->mAsmPath.substr(0, mAsmPath.find_last_of('.')) << ".obj";
+		for (auto lib : sLibraries)
+			linkcmd << " -l " << lib;
+
+		system(linkcmd.str().c_str());
+
 		Util::SetConsoleColor(Util::Yellow);
 		puts("Executing program...");
 		Util::ResetConsoleColor();
