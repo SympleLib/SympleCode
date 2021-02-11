@@ -1,4 +1,6 @@
-import "libc.sy";
+import "windows.sy";
 
-void Java_Test_Hello(void*) __stdcall, __dllexport
-	puts("Hello!");
+int main()
+{
+	ExitProcess(3);
+}

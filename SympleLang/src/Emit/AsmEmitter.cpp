@@ -56,7 +56,7 @@ namespace Symple::Emit
 	{
 		std::stringstream ss;
 		if (fn->IsForDll())
-			ss << "__impl__";
+			ss << "*__imp__";
 		else
 			ss << '_';
 		ss << fn->GetName();
@@ -222,7 +222,6 @@ namespace Symple::Emit
 		if (expr->ConstantValue())
 		{
 			EmitConstant(expr->ConstantValue());
-			expr->ConstantValue()->Print(); putchar('\n');
 			return expr->GetType();
 		}
 		else if (expr->GetType()->Equals(Symbol::TypeSymbol::CharPointerType)) // String Literal
