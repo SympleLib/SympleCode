@@ -1,5 +1,4 @@
-import "libc.sy";
 import "Windows.sy";
 
 int main()
-	MessageBoxA(0, "Hello!", "No You", 0);
+	MessageBoxA(0, "Your PC ran into an error and needs to restart", "Fatal Error :(", 16);

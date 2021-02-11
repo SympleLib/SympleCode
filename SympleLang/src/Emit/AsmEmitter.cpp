@@ -226,7 +226,7 @@ namespace Symple::Emit
 			_Emit(Data, "..%i:", mDataCount);
 			_Emit(Data, "\t.string \"%s\"", expr->GetSyntax()->GetToken()->GetText().data());
 
-			_Emit(Text, "lea     ..%i, %%eax", mDataCount++);
+			_Emit(Text, "\tlea     ..%i, %%eax", mDataCount++);
 			return expr->GetType();
 		}
 
