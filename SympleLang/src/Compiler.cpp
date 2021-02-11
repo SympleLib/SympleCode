@@ -100,19 +100,20 @@ namespace Symple
 
 	void Compiler::Emit()
 	{
-		shared_ptr<Emit::AsmEmitter> emitter = make_shared<Emit::AsmEmitter>((char*)mAsmPath.c_str());
+		unique_ptr<Emit::AsmEmitter> emitter = make_unique<Emit::AsmEmitter>((char*)mAsmPath.c_str());
 		emitter->Emit(mTree);
 		emitter->Compile();
+
+		std::stringstream linkcmd;
+		linkcmd << "clang -m32 --optimize -o sy/bin/Main.exe " << mAsmPath.substr(0, mAsmPath.find_last_of('.')) << ".obj";
+		for (auto compiler : mUnits)
+			linkcmd << compiler->mAsmPath.substr(0, mAsmPath.find_last_of('.')) << ".obj";
+
+		system(linkcmd.str().c_str());
 	}
 	
 	int Compiler::Exec()
 	{
-		std::stringstream linkcmd;
-		linkcmd << "clang -m32 --optimize -l User32 -o sy/bin/Main.exe " << mAsmPath;
-		for (auto compiler : mUnits)
-			linkcmd << compiler->mAsmPath;
-
-		system(linkcmd.str().c_str());
 		Util::SetConsoleColor(Util::Yellow);
 		puts("Executing program...");
 		Util::ResetConsoleColor();
