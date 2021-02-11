@@ -55,13 +55,16 @@ namespace Symple::Emit
 	std::string AsmEmitter::GetFunctionAssemblyName(shared_ptr<Symbol::FunctionSymbol> fn)
 	{
 		std::stringstream ss;
+		if (fn->IsForDll())
+			ss << "__impl__";
+		else
+			ss << '_';
+		ss << fn->GetName();
+
 		switch (fn->GetCallingConvention())
 		{
-		case Symbol::FunctionSymbol::CDecl:
-			ss << '_' << fn->GetName();
-			break;
 		case Symbol::FunctionSymbol::StdCall:
-			ss << '_' << fn->GetName() << '@';
+			ss << '@';
 			unsigned numBytes = 0;
 			for (auto param : fn->GetParameters())
 				numBytes += param->GetType()->GetSize();

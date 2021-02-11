@@ -93,8 +93,10 @@ namespace Symple::Syntax
 
 			CDeclKeyword,
 			StdCallKeyword,
+			DllImportKeyword,
+			DllExportKeyword,
 
-			Last = StdCallKeyword,
+			Last = DllExportKeyword,
 		};
 
 		static constexpr char* KindMap[Last + 1] = {
@@ -146,6 +148,8 @@ namespace Symple::Syntax
 
 			"CDeclKeyword",
 			"StdCallKeyword",
+			"DllImportKeyword",
+			"DllExportKeyword",
 		};
 	};
 

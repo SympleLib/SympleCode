@@ -1,6 +1,4 @@
-import "Windows.sy";
+import "libc.sy";
 
-int main()
-{
-	MessageBoxA(0, "err", "err", 16);
-}
+void Java_Test_Hello(void*) __stdcall, __dllexport
+	puts("Hello!");

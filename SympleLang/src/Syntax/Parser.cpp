@@ -95,7 +95,7 @@ namespace Symple::Syntax
 	{
 		TokenList list;
 
-		while (Peek()->Is(Token::CDeclKeyword, Token::StdCallKeyword, Token::Comma))
+		while (Peek()->Is(Token::CDeclKeyword, Token::StdCallKeyword, Token::DllExportKeyword, Token::DllImportKeyword, Token::Comma))
 		{
 			if (Peek()->Is(Token::Comma))
 				Next();

@@ -14,9 +14,10 @@ namespace Symple::Symbol
 		std::string mName;
 		ParameterList mParameters;
 		CallingConvention mCallingConvention;
+		bool mForDll;
 	public:
-		FunctionSymbol(shared_ptr<TypeSymbol> ty, std::string_view name, ParameterList& params, CallingConvention conv)
-			: mType(ty), mName(name), mParameters(params), mCallingConvention(conv)
+		FunctionSymbol(shared_ptr<TypeSymbol> ty, std::string_view name, ParameterList& params, CallingConvention conv, bool dll)
+			: mType(ty), mName(name), mParameters(params), mCallingConvention(conv), mForDll(dll)
 		{}
 
 		virtual Kind GetKind() override
@@ -71,6 +72,9 @@ namespace Symple::Symbol
 
 		CallingConvention GetCallingConvention()
 		{ return mCallingConvention; }
+
+		bool IsForDll()
+		{ return mForDll; }
 	public:
 		enum CallingConvention : unsigned
 		{

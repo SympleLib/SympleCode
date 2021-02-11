@@ -168,7 +168,9 @@ namespace Symple::Binding
 		Symbol::ParameterList params;
 		for (auto param : syntax->GetParameters())
 			params.push_back(BindParameter(param));
+
 		Symbol::FunctionSymbol::CallingConvention conv = Symbol::FunctionSymbol::CDecl;
+		bool dll = false;
 		for (auto mod : syntax->GetModifiers())
 			switch (mod->GetKind())
 			{
@@ -178,9 +180,12 @@ namespace Symple::Binding
 			case Syntax::Token::StdCallKeyword:
 				conv = Symbol::FunctionSymbol::StdCall;
 				break;
+			case Syntax::Token::DllImportKeyword:
+				mDiagnosticBag->ReportUnimplimentedError(mod);
+				break;
 			}
 
-		shared_ptr<Symbol::FunctionSymbol> symbol = make_shared<Symbol::FunctionSymbol>(ty, name, params, conv);
+		shared_ptr<Symbol::FunctionSymbol> symbol = make_shared<Symbol::FunctionSymbol>(ty, name, params, conv, dll);
 
 		BeginScope();
 		for (auto param : symbol->GetParameters())
@@ -199,7 +204,9 @@ namespace Symple::Binding
 		Symbol::ParameterList params;
 		for (auto param : syntax->GetParameters())
 			params.push_back(BindParameter(param));
+
 		Symbol::FunctionSymbol::CallingConvention conv = Symbol::FunctionSymbol::CDecl;
+		bool dll = false;
 		for (auto mod : syntax->GetModifiers())
 			switch (mod->GetKind())
 			{
@@ -209,9 +216,15 @@ namespace Symple::Binding
 			case Syntax::Token::StdCallKeyword:
 				conv = Symbol::FunctionSymbol::StdCall;
 				break;
+			case Syntax::Token::DllExportKeyword:
+				mDiagnosticBag->ReportUnimplimentedError(mod);
+				break;
+			case Syntax::Token::DllImportKeyword:
+				dll = true;
+				break;
 			}
 
-		shared_ptr<Symbol::FunctionSymbol> symbol = make_shared<Symbol::FunctionSymbol>(ty, name, params, conv);
+		shared_ptr<Symbol::FunctionSymbol> symbol = make_shared<Symbol::FunctionSymbol>(ty, name, params, conv, dll);
 
 		mFunctions.push_back({ symbol, nullptr });
 		return symbol;

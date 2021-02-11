@@ -196,6 +196,11 @@ namespace Symple::Syntax
 		KEYWORD(stdcall, StdCall);
 		KEYWORD(__stdcall, StdCall);
 
+		KEYWORD(dllimport, DllImport);
+		KEYWORD(__dllimport, DllImport);
+		KEYWORD(dllexport, DllExport);
+		KEYWORD(__dllexport, DllExport);
+
 		else
 			return make_shared<Token>(Token::Identifier, text, mLine, column, mFile);
 	}
