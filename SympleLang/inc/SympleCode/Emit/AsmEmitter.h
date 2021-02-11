@@ -37,10 +37,14 @@ namespace Symple::Emit
 		char* RegDx(unsigned sz);
 		char Suf(unsigned sz);
 
+		void Alloc(unsigned sz);
+		void Free(unsigned sz);
+
 		bool mClosed = false;
 		bool mReturning;
 
-		unsigned mStackSize = 0;
+		unsigned mAllocatedStack = 0;
+		unsigned mStackUsage = 0;
 		unsigned mDataCount = 0;
 	public:
 		AsmEmitter(char* file = nullptr);

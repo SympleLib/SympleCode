@@ -1,6 +1,10 @@
-import "windows.sy";
-
 int main()
 {
-	ExitProcess(3);
+	{
+		int t = 4;
+	}
+	
+	{
+		int t = 5;
+	}
 }

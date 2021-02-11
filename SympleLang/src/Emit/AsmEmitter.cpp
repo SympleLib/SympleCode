@@ -52,6 +52,17 @@ namespace Symple::Emit
 	}
 
 
+	void AsmEmitter::Alloc(unsigned sz)
+	{
+		mStackUsage += sz;
+		if (mStackUsage > mAllocatedStack)
+			mAllocatedStack = mStackUsage;
+	}
+
+	void AsmEmitter::Free(unsigned sz)
+	{ mStackUsage -= sz; }
+
+
 	std::string AsmEmitter::GetFunctionAssemblyName(shared_ptr<Symbol::FunctionSymbol> fn)
 	{
 		std::stringstream ss;
@@ -128,7 +139,7 @@ namespace Symple::Emit
 		_Emit(Text, "\tpush    %%ebp");
 		_Emit(Text, "\tmov     %%esp, %%ebp");
 		_Emit(Text, "\tsub     %s.StackSize, %%esp", name.c_str());
-		mStackSize = 0;
+		mStackUsage = mAllocatedStack = 0;
 
 		BeginScope();
 
@@ -153,7 +164,7 @@ namespace Symple::Emit
 		_Emit(Text, "\tret");
 
 		_Emit(Data, "%s.StackSize:", name.c_str());
-		_Emit(Data, "\t.long %i", mStackSize);
+		_Emit(Data, "\t.long %i", mAllocatedStack);
 	}
 
 
@@ -179,10 +190,12 @@ namespace Symple::Emit
 	void AsmEmitter::EmitBlockStatement(shared_ptr<Binding::BoundBlockStatement> stmt)
 	{
 		BeginScope();
+		unsigned pStackUsage = mStackUsage;
 
 		for (auto ln : stmt->GetStatements())
 			EmitStatement(ln);
 
+		mStackUsage = pStackUsage;
 		EndScope();
 	}
 
@@ -199,10 +212,9 @@ namespace Symple::Emit
 	void  AsmEmitter::EmitVariableDeclaration(shared_ptr<Binding::BoundVariableDeclaration> stmt)
 	{
 		std::string_view name = stmt->GetSymbol()->GetName();
-		_Emit(Text, "_%s$%i = -%i", name.data(), mScope->GetDepth(), mStackSize);
-
 		unsigned sz = stmt->GetSymbol()->GetType()->GetSize();
-		mStackSize += sz;
+		Alloc(sz);
+		_Emit(Text, "_%s$%i = -%i", name.data(), mScope->GetDepth(), mStackUsage);
 
 		if (stmt->GetInitializer())
 		{
