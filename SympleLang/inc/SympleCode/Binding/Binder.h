@@ -1,6 +1,6 @@
 #pragma once
 
-#include <ctype.h>
+#include <map>
 
 #include "SympleCode/DiagnosticBag.h"
 
@@ -41,6 +41,7 @@ namespace Symple::Binding
 	class Binder
 	{
 	private:
+		static std::map<std::string, shared_ptr<BoundCompilationUnit>> sImportedSymbols;
 		shared_ptr<Syntax::TranslationUnitSyntax> mCompilationUnit;
 		FunctionMap mFunctions;
 

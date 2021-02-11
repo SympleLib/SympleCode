@@ -150,13 +150,13 @@ namespace Symple
 
 		if (errCount)
 		{
-			spdlog::info("{} failed with {} errors, {} warnings, {} messages", step, errCount, warningCount, messageCount);
+			spdlog::info("{} '{}' failed with {} errors, {} warnings, {} messages", step, mPath, errCount, warningCount, messageCount);
 
 			return true;
 		}
 		else
 		{
-			spdlog::info("{} completed with {} errors, {} warnings, {} messages", step, errCount, warningCount, messageCount);
+			spdlog::info("{} '{}' completed with {} errors, {} warnings, {} messages", step, mPath, errCount, warningCount, messageCount);
 
 			return false;
 		}

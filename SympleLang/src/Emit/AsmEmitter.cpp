@@ -256,7 +256,8 @@ namespace Symple::Emit
 			_Emit(Text, "\tpush    %%eax");
 		}
 		_Emit(Text, "\tcall    %s", GetFunctionAssemblyName(expr->GetFunction()).c_str());
-		_Emit(Text, "\tadd     $%i, %%esp", expr->GetFunction()->GetParameters().size() * 4);
+		if (expr->GetFunction()->GetCallingConvention() != Symbol::FunctionSymbol::StdCall)
+			_Emit(Text, "\tadd     $%i, %%esp", expr->GetFunction()->GetParameters().size() * 4);
 
 		return expr->GetFunction()->GetType();
 	}

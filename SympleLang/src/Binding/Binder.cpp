@@ -22,16 +22,38 @@ namespace Symple::Binding
 	void Binder::EndScope()
 	{ mScope = mScope->GetBase(); }
 
+	std::map<std::string, shared_ptr<BoundCompilationUnit>> Binder::sImportedSymbols;
+
 	shared_ptr<BoundCompilationUnit> Binder::BindImport(shared_ptr<Syntax::ImportStatementSyntax> syntax)
 	{
 		std::string path = "sy/inc/";
 		path += syntax->GetImport()->GetText();
+		for (auto symbol : sImportedSymbols)
+			if (path == symbol.first)
+			{
+				auto unit = symbol.second;
+
+				for (auto fn : unit->GetFunctions())
+					mFunctions.push_back(fn);
+				return unit;
+			}
+
+		Util::ConsoleColor col = Util::GetConsoleColor();
+		Util::SetConsoleColor(Util::Cyan);
+		spdlog::info("Import '{}'", path);
+		Util::SetConsoleColor(col);
 		unique_ptr<Symple::Compiler> compiler = make_unique<Symple::Compiler>((char*)path.c_str());
 		compiler->Lex();
 		compiler->Parse();
 		compiler->Bind();
 		compiler->Emit();
+		col = Util::GetConsoleColor();
+		Util::SetConsoleColor(Util::Cyan);
+		spdlog::info("Imported '{}'", path);
+		Util::SetConsoleColor(col);
+
 		auto unit = compiler->mTree;
+		sImportedSymbols.insert({ path, unit });
 
 		for (auto fn : unit->GetFunctions())
 			mFunctions.push_back(fn);
