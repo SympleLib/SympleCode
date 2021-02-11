@@ -219,12 +219,21 @@ namespace Symple::Emit
 		if (expr->ConstantValue())
 		{
 			EmitConstant(expr->ConstantValue());
+			std::cout << expr->ConstantValue()->GetValue() << std::endl;
 			return expr->GetType();
 		}
 		else if (expr->GetType()->Equals(Symbol::TypeSymbol::CharPointerType)) // String Literal
 		{
+			for (unsigned i = 0; i < mStringLiterals.size(); i++)
+				if (mStringLiterals[i] == expr->GetSyntax()->GetToken()->GetText())
+				{
+					_Emit(Text, "\tlea     ..%i, %%eax", i);
+					return expr->GetType();
+				}
+
 			_Emit(Data, "..%i:", mDataCount);
 			_Emit(Data, "\t.string \"%s\"", expr->GetSyntax()->GetToken()->GetText().data());
+			mStringLiterals.push_back(std::string(expr->GetSyntax()->GetToken()->GetText()));
 
 			_Emit(Text, "\tlea     ..%i, %%eax", mDataCount++);
 			return expr->GetType();

@@ -14,7 +14,7 @@ namespace Symple::Binding
 		char mValue[16];
 	public:
 		BoundConstant(Kind kind, void* data)
-			: mKind(kind)
+			: mKind(kind), mValue("\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0")
 		{ __SY_ASSERT(!memcpy_s(mValue, sizeof(mValue), data, 16), "Internal error"); }
 
 		void Print(std::ostream& os = std::cout, std::string_view indent = "", bool last = true, std::string_view label = "")

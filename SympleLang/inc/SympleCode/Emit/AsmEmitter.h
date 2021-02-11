@@ -28,6 +28,7 @@ namespace Symple::Emit
 		shared_ptr<Symbol::FunctionSymbol> mFunction;
 		shared_ptr<Binding::BoundCompilationUnit> mCompilationUnit;
 		shared_ptr<Scope> mScope;
+		std::vector<std::string> mStringLiterals;
 
 		void BeginScope();
 		void EndScope();
