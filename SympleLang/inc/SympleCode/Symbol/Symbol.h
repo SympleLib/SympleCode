@@ -36,6 +36,7 @@ namespace Symple::Symbol
 			Unknown,
 
 			Type,
+			Label,
 			Function,
 			Variable,
 			Parameter,
@@ -47,6 +48,7 @@ namespace Symple::Symbol
 			"Unknown",
 
 			"Type",
+			"Label",
 			"Function",
 			"Variable",
 			"Parameter",

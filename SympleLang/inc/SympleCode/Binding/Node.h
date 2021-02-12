@@ -50,6 +50,7 @@ namespace Symple::Binding
 			Member,
 			Function,
 
+			Label,
 			Statement,
 			NativeCode,
 			BlockStatement,
@@ -83,6 +84,7 @@ namespace Symple::Binding
 			"Member",
 			"Function",
 
+			"Label",
 			"Statement",
 			"NativeCode",
 			"BlockStatement",

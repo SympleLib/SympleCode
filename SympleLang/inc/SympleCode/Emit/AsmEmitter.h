@@ -1,6 +1,7 @@
 #pragma once
 
 #include <cstdio>
+#include "SympleCode/Binding/BoundLabel.h"
 #include "SympleCode/Binding/BoundStatement.h"
 #include "SympleCode/Binding/BoundNativeCode.h"
 #include "SympleCode/Binding/BoundCallExpression.h"
@@ -44,6 +45,8 @@ namespace Symple::Emit
 		bool mClosed = false;
 		bool mReturning;
 
+		std::string mFunctionAssemblyName;
+
 		unsigned mAllocatedStack = 0;
 		unsigned mStackUsage = 0;
 		unsigned mDataCount = 0;
@@ -56,6 +59,7 @@ namespace Symple::Emit
 		void EmitFunction(shared_ptr<Symbol::FunctionSymbol>, shared_ptr<Binding::BoundStatement>);
 
 		void EmitStatement(shared_ptr<Binding::BoundStatement>);
+		void EmitLabel(shared_ptr<Binding::BoundLabel>);
 		void EmitNativeCode(shared_ptr<Binding::BoundNativeCode>);
 		void EmitBlockStatement(shared_ptr<Binding::BoundBlockStatement>);
 		void EmitReturnStatement(shared_ptr<Binding::BoundReturnStatement>);

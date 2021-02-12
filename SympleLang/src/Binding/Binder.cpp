@@ -173,6 +173,9 @@ namespace Symple::Binding
 		}
 	}
 
+	shared_ptr<Symbol::LabelSymbol> Binder::BindLabelSymbol(shared_ptr<Syntax::LabelSyntax> syntax)
+	{ return make_shared<Symbol::LabelSymbol>(syntax->GetLabel()->GetText()); }
+
 	shared_ptr<Symbol::FunctionSymbol> Binder::BindFunction(shared_ptr<Syntax::FunctionDeclarationSyntax> syntax)
 	{
 		shared_ptr<Symbol::TypeSymbol> ty = BindType(syntax->GetType());
@@ -275,6 +278,7 @@ namespace Symple::Binding
 	shared_ptr<Node> Binder::BindMember(shared_ptr<Syntax::MemberSyntax> syntax)
 	{
 		shared_ptr<Node> result = BindMemberInternal(syntax);
+		mLabels.clear();
 		if (!result /* Should not be null, but just in case */)
 		{
 			mDiagnosticBag->ReportBindError(syntax);
@@ -329,6 +333,8 @@ namespace Symple::Binding
 	{
 		switch (syntax->GetKind())
 		{
+		case Syntax::Node::Label:
+			return BindLabel(dynamic_pointer_cast<Syntax::LabelSyntax>(syntax));
 		case Syntax::Node::NativeStatement:
 			return BindNativeCode(dynamic_pointer_cast<Syntax::NativeStatementSyntax>(syntax));
 		case Syntax::Node::BlockStatement:
@@ -343,6 +349,9 @@ namespace Symple::Binding
 			return make_shared<BoundStatement>(syntax);
 		}
 	}
+
+	shared_ptr<BoundLabel> Binder::BindLabel(shared_ptr<Syntax::LabelSyntax> syntax)
+	{ return make_shared<BoundLabel>(syntax, BindLabelSymbol(syntax)); }
 
 	shared_ptr<BoundNativeCode> Binder::BindNativeCode(shared_ptr<Syntax::NativeStatementSyntax> syntax)
 	{ return make_shared<BoundNativeCode>(syntax); }

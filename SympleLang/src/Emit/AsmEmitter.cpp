@@ -129,16 +129,16 @@ namespace Symple::Emit
 			return;
 
 		mFunction = func;
-		std::string name = GetFunctionAssemblyName(func);
+		mFunctionAssemblyName = GetFunctionAssemblyName(func);
 
-		_Emit(Text, ".global %s", name.c_str());
+		_Emit(Text, ".global %s", mFunctionAssemblyName.c_str());
 		std::stringstream fnSig;
 		mFunction->PrintSignature(fnSig);
-		_Emit(Text, "%s: # %s", name.c_str(), fnSig.str().c_str());
+		_Emit(Text, "%s: # %s", mFunctionAssemblyName.c_str(), fnSig.str().c_str());
 		_Emit(Text, "\t# Begin Stack Frame");
 		_Emit(Text, "\tpush    %%ebp");
 		_Emit(Text, "\tmov     %%esp, %%ebp");
-		_Emit(Text, "\tsub     %s.StackSize, %%esp", name.c_str());
+		_Emit(Text, "\tsub     ..%s.StackSize, %%esp", mFunctionAssemblyName.c_str());
 		mStackUsage = mAllocatedStack = 0;
 
 		BeginScope();
@@ -147,7 +147,7 @@ namespace Symple::Emit
 		for (auto param : func->GetParameters())
 		{
 			stackPos += 4;
-			_Emit(Text, "_%s$%i = -%i", param->GetName().data(), mScope->GetDepth(), stackPos);
+			_Emit(Text, "_%s$%i = %i", param->GetName().data(), mScope->GetDepth(), stackPos);
 			mScope->DeclareVariable(param);
 		}
 
@@ -157,13 +157,13 @@ namespace Symple::Emit
 		EndScope();
 
 		if (mReturning)
-			_Emit(Text, "%s.Return:", name.c_str());
+			_Emit(Text, "..%s.Return:", mFunctionAssemblyName.c_str());
 		_Emit(Text, "\t# End Stack Frame");
 		_Emit(Text, "\tmov     %%ebp, %%esp");
 		_Emit(Text, "\tpop     %%ebp");
 		_Emit(Text, "\tret");
 
-		_Emit(Data, "%s.StackSize:", name.c_str());
+		_Emit(Data, "..%s.StackSize:", mFunctionAssemblyName.c_str());
 		_Emit(Data, "\t.long %i", mAllocatedStack);
 	}
 
@@ -172,6 +172,9 @@ namespace Symple::Emit
 	{
 		switch (stmt->GetKind())
 		{
+		case Binding::Node::Label:
+			EmitLabel(dynamic_pointer_cast<Binding::BoundLabel>(stmt));
+			break;
 		case Binding::Node::NativeCode:
 			EmitNativeCode(dynamic_pointer_cast<Binding::BoundNativeCode>(stmt));
 			break;
@@ -189,6 +192,9 @@ namespace Symple::Emit
 			break;
 		}
 	}
+
+	void AsmEmitter::EmitLabel(shared_ptr<Binding::BoundLabel> stmt)
+	{ _Emit(Text, "%s.%s:", mFunctionAssemblyName.c_str(), stmt->GetLabel().data()); }
 
 	void AsmEmitter::EmitNativeCode(shared_ptr<Binding::BoundNativeCode> stmt)
 	{ _Emit(Text, "%s", stmt->GetAssembly().data()); }
