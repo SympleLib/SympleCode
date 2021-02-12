@@ -52,6 +52,7 @@ namespace Symple::Binding
 			compiler->Parse();
 			compiler->Bind();
 			compiler->Emit();
+			compiler->Compile();
 			col = Util::GetConsoleColor();
 			Util::SetConsoleColor(Util::Cyan);
 			spdlog::info("Imported '{}'", path);

@@ -45,7 +45,9 @@ int main()
 	compiler->Parse();
 	compiler->Bind();
 	compiler->Emit();
-	compiler->Exec();
+	compiler->Compile();
+	if (compiler->Link())
+		compiler->Exec();
 
 	return !getc(stdin);
 }

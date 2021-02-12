@@ -102,12 +102,17 @@ namespace Symple
 
 	void Compiler::Emit()
 	{
-		unique_ptr<Emit::AsmEmitter> emitter = make_unique<Emit::AsmEmitter>((char*)mAsmPath.c_str());
-		emitter->Emit(mTree);
-		emitter->Compile();
+		mEmitter = make_unique<Emit::AsmEmitter>((char*)mAsmPath.c_str());
+		mEmitter->Emit(mTree);
 	}
-	
-	int Compiler::Exec()
+
+	void Compiler::Compile()
+	{
+		mEmitter->Compile();
+		mEmitter.release();
+	}
+
+	bool Compiler::Link()
 	{
 		std::stringstream linkcmd;
 		linkcmd << "clang -m32 --optimize -o sy/bin/Main.exe " << mAsmPath.substr(0, mAsmPath.find_last_of('.')) << ".obj";
@@ -116,8 +121,11 @@ namespace Symple
 		for (auto lib : sLibraries)
 			linkcmd << " -l " << lib;
 
-		system(linkcmd.str().c_str());
-
+		return !system(linkcmd.str().c_str());
+	}
+	
+	int Compiler::Exec()
+	{
 		Util::SetConsoleColor(Util::Yellow);
 		puts("Executing program...");
 		Util::ResetConsoleColor();

@@ -7,6 +7,7 @@
 #include "SympleCode/Syntax/TranslationUnitSyntax.h"
 #include "SympleCode/Binding/Binder.h"
 #include "SympleCode/Binding/BoundCompilationUnit.h"
+#include "SympleCode/Emit/AsmEmitter.h"
 
 namespace Symple
 {
@@ -17,6 +18,7 @@ namespace Symple
 		Syntax::TokenList mTokens;
 		shared_ptr<Syntax::TranslationUnitSyntax> mAST;
 		shared_ptr<Binding::BoundCompilationUnit> mTree;
+		unique_ptr<Emit::AsmEmitter> mEmitter;
 		std::vector<shared_ptr<Compiler>> mUnits;
 		static std::vector<std::string> sLibraries;
 
@@ -29,6 +31,9 @@ namespace Symple
 		shared_ptr<DiagnosticBag> Bind();
 		shared_ptr<Binding::BoundCompilationUnit> BindSymbols();
 		void Emit();
+		void Compile();
+		// Returns true if links successfully
+		bool Link();
 		int Exec();
 
 		/// <summary>
@@ -37,6 +42,6 @@ namespace Symple
 		/// <param name="diagnostics">Diagnostic Bag</param>
 		/// <param name="step">Step in witch diagnostics are for</param>
 		/// <returns>Returns true if there is an error</returns>
-		bool PrintDiagnosticBag(shared_ptr<DiagnosticBag> diagnostics, char step[] = "Null Step");
+		bool PrintDiagnosticBag(shared_ptr<DiagnosticBag> diagnostics, char *step = "Null Step");
 	};
 }
