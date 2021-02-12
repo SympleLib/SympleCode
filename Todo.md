@@ -21,4 +21,4 @@
 - [ ] Function Types
 - [ ] Loops
 - [ ] Labels and Gotos
-- [ ] Native Code (Assembly)
+- [X] Native Code (Assembly)
