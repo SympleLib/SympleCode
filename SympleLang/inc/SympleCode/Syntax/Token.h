@@ -55,6 +55,7 @@ namespace Symple::Syntax
 			Float,
 
 			Comma,
+			Colon,
 			Semicolon,
 
 			Plus,
@@ -112,6 +113,7 @@ namespace Symple::Syntax
 			"Float",
 
 			"Comma",
+			"Colon",
 			"Semicolon",
 
 			"Plus",

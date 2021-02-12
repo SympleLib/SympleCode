@@ -21,7 +21,11 @@ namespace Symple::Syntax
 		: mFile(file), mSource(source)
 	{}
 
-	
+
+#define ATOM(char, ty) \
+	case char: \
+		return LexAtom(Token::##ty)
+
 	shared_ptr<Token> Lexer::Lex()
 	{
 		while (CheckNewLine() || IsWhiteSpace(Peek()))
@@ -38,33 +42,22 @@ namespace Symple::Syntax
 
 		switch (c)
 		{
-		case ',':
-			return LexAtom(Token::Comma);
-		case ';':
-			return LexAtom(Token::Semicolon);
+		ATOM(',', Comma);
+		ATOM(':', Colon);
+		ATOM(';', Semicolon);
 
-		case '+':
-			return LexAtom(Token::Plus);
-		case '-':
-			return LexAtom(Token::Dash);
-		case '*':
-			return LexAtom(Token::Asterisk);
-		case '/':
-			return LexAtom(Token::Slash);
-		case '%':
-			return LexAtom(Token::Percentage);
+		ATOM('+', Plus);
+		ATOM('-', Dash);
+		ATOM('*', Asterisk);
+		ATOM('/', Slash);
+		ATOM('%', Percentage);
 
-		case '=':
-			return LexAtom(Token::Equal);
+		ATOM('=', Equal);
 
-		case '(':
-			return LexAtom(Token::OpenParenthesis);
-		case ')':
-			return LexAtom(Token::CloseParenthesis);
-		case '{':
-			return LexAtom(Token::OpenBrace);
-		case '}':
-			return LexAtom(Token::CloseBrace);
+		ATOM('(', OpenParenthesis);
+		ATOM(')', CloseParenthesis);
+		ATOM('{', OpenBrace);
+		ATOM('}', CloseBrace);
 
 		case '"':
 			return LexString();
@@ -213,13 +206,14 @@ namespace Symple::Syntax
 	{
 		Next(); // Eat "
 		char* beg = Current;
+		unsigned ln = mLine;
 		unsigned column = mColumn;
 		while (Peek() != '"')
 			Next();
 		char* end = Current;
 		Next();
 
-		return make_shared<Token>(Token::String, beg, end, mLine, column, mFile);
+		return make_shared<Token>(Token::String, beg, end, ln, column, mFile);
 	}
 
 	shared_ptr<Token> Lexer::LexNumber()

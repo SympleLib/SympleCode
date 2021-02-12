@@ -5,10 +5,5 @@ int main()
 	FreeConsole();
 	MessageBoxA(0, "Your PC ran into an error and needs to restart", "Critical Error", 16);
 	
-	__asm "
-	mov $420, %eax
-	jmp _main.Return
-	mov $69, %eax
-_main.Return:
-	";
+NoError:
 }

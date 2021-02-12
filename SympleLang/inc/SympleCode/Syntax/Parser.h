@@ -18,6 +18,7 @@
 #include "SympleCode/Syntax/ImportStatementSyntax.h"
 #include "SympleCode/Syntax/NativeStatementSyntax.h"
 
+#include "SympleCode/Syntax/LabelSyntax.h"
 #include "SympleCode/Syntax/BlockStatementSyntax.h"
 #include "SympleCode/Syntax/ReturnStatementSyntax.h"
 #include "SympleCode/Syntax/ExpressionStatementSyntax.h"
@@ -60,6 +61,7 @@ namespace Symple::Syntax
 		shared_ptr<ReturnStatementSyntax> ParseReturnStatement();
 		shared_ptr<ImportStatementSyntax> ParseImportStatement();
 		shared_ptr<NativeStatementSyntax> ParseNativeStatement();
+		shared_ptr<LabelSyntax> ParseLabel();
 
 		shared_ptr<ExpressionStatementSyntax> ParseExpressionStatement();
 		shared_ptr<VariableDeclarationSyntax> ParseVariableDeclaration();

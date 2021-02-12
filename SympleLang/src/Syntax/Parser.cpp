@@ -134,6 +134,13 @@ namespace Symple::Syntax
 			case Token::ReturnKeyword:
 				statement = ParseReturnStatement();
 				break;
+			case Token::Identifier:
+				if (Peek(1)->Is(Token::Colon))
+				{
+					statement = ParseLabel();
+					matchSemi = false;
+					break;
+				}
 
 			default:
 				statement = ParseExpressionStatement();
@@ -143,6 +150,14 @@ namespace Symple::Syntax
 		if (matchSemi)
 			Match(Token::Semicolon);
 		return statement;
+	}
+
+	shared_ptr<LabelSyntax> Parser::ParseLabel()
+	{
+		shared_ptr<Token> label = Match(Token::Identifier);
+		shared_ptr<Token> colon = Match(Token::Colon);
+
+		return make_shared<LabelSyntax>(label, colon);
 	}
 
 	shared_ptr<NativeStatementSyntax> Parser::ParseNativeStatement()
