@@ -172,6 +172,9 @@ namespace Symple::Emit
 	{
 		switch (stmt->GetKind())
 		{
+		case Binding::Node::NativeCode:
+			EmitNativeCode(dynamic_pointer_cast<Binding::BoundNativeCode>(stmt));
+			break;
 		case Binding::Node::BlockStatement:
 			EmitBlockStatement(dynamic_pointer_cast<Binding::BoundBlockStatement>(stmt));
 			break;
@@ -186,6 +189,9 @@ namespace Symple::Emit
 			break;
 		}
 	}
+
+	void AsmEmitter::EmitNativeCode(shared_ptr<Binding::BoundNativeCode> stmt)
+	{ _Emit(Text, "%s", stmt->GetAssembly().data()); }
 
 	void AsmEmitter::EmitBlockStatement(shared_ptr<Binding::BoundBlockStatement> stmt)
 	{

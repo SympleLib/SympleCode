@@ -2,6 +2,7 @@
 
 #include <cstdio>
 #include "SympleCode/Binding/BoundStatement.h"
+#include "SympleCode/Binding/BoundNativeCode.h"
 #include "SympleCode/Binding/BoundCallExpression.h"
 #include "SympleCode/Binding/BoundCompilationUnit.h"
 #include "SympleCode/Binding/BoundReturnStatement.h"
@@ -55,6 +56,7 @@ namespace Symple::Emit
 		void EmitFunction(shared_ptr<Symbol::FunctionSymbol>, shared_ptr<Binding::BoundStatement>);
 
 		void EmitStatement(shared_ptr<Binding::BoundStatement>);
+		void EmitNativeCode(shared_ptr<Binding::BoundNativeCode>);
 		void EmitBlockStatement(shared_ptr<Binding::BoundBlockStatement>);
 		void EmitReturnStatement(shared_ptr<Binding::BoundReturnStatement>);
 		void EmitExpressionStatement(shared_ptr<Binding::BoundExpressionStatement>);

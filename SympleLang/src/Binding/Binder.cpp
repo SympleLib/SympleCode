@@ -41,7 +41,7 @@ namespace Symple::Binding
 			if (path == symbol)
 				return make_shared<BoundCompilationUnit>(syntax, FunctionMap());
 		
-		if (access(path.c_str(), 0) != -1)
+		if (_access(path.c_str(), 0) != -1)
 		{
 			Util::ConsoleColor col = Util::GetConsoleColor();
 			Util::SetConsoleColor(Util::Cyan);
@@ -328,6 +328,8 @@ namespace Symple::Binding
 	{
 		switch (syntax->GetKind())
 		{
+		case Syntax::Node::NativeStatement:
+			return BindNativeCode(dynamic_pointer_cast<Syntax::NativeStatementSyntax>(syntax));
 		case Syntax::Node::BlockStatement:
 			return BindBlockStatement(dynamic_pointer_cast<Syntax::BlockStatementSyntax>(syntax));
 		case Syntax::Node::ReturnStatement:
@@ -340,6 +342,9 @@ namespace Symple::Binding
 			return make_shared<BoundStatement>(syntax);
 		}
 	}
+
+	shared_ptr<BoundNativeCode> Binder::BindNativeCode(shared_ptr<Syntax::NativeStatementSyntax> syntax)
+	{ return make_shared<BoundNativeCode>(syntax); }
 
 	shared_ptr<BoundBlockStatement> Binder::BindBlockStatement(shared_ptr<Syntax::BlockStatementSyntax> syntax)
 	{

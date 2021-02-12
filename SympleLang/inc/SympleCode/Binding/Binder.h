@@ -23,6 +23,7 @@
 #include "SympleCode/Binding/BoundCompilationUnit.h"
 
 #include "SympleCode/Binding/BoundStatement.h"
+#include "SympleCode/Binding/BoundNativeCode.h"
 #include "SympleCode/Binding/BoundBlockStatement.h"
 #include "SympleCode/Binding/BoundReturnStatement.h"
 #include "SympleCode/Binding/BoundExpressionStatement.h"
@@ -67,6 +68,7 @@ namespace Symple::Binding
 		shared_ptr<Symbol::ParameterSymbol> BindParameter(shared_ptr<Syntax::VariableDeclarationSyntax>);
 
 		shared_ptr<BoundStatement> BindStatement(shared_ptr<Syntax::StatementSyntax>);
+		shared_ptr<BoundNativeCode> BindNativeCode(shared_ptr<Syntax::NativeStatementSyntax>);
 		shared_ptr<BoundStatement> BindGlobalStatement(shared_ptr<Syntax::GlobalStatementSyntax>);
 		shared_ptr<BoundBlockStatement> BindBlockStatement(shared_ptr<Syntax::BlockStatementSyntax>);
 		shared_ptr<BoundReturnStatement> BindReturnStatement(shared_ptr<Syntax::ReturnStatementSyntax>);

@@ -4,8 +4,6 @@
 
 #include "SympleCode/Binding/BoundStatement.h"
 
-#include "SympleCode/Symbol/FunctionSymbol.h"
-
 namespace Symple::Binding
 {
 	class BoundNativeCode : public BoundStatement
