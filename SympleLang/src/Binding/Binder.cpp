@@ -200,7 +200,7 @@ namespace Symple::Binding
 				conv = Symbol::FunctionSymbol::StdCall;
 				break;
 			case Syntax::Token::DllImportKeyword:
-				mDiagnosticBag->ReportUnimplimentedError(mod);
+				mDiagnosticBag->ReportUnexpectedDllImportBody(mod);
 				break;
 			}
 
@@ -246,9 +246,6 @@ namespace Symple::Binding
 				break;
 			case Syntax::Token::StdCallKeyword:
 				conv = Symbol::FunctionSymbol::StdCall;
-				break;
-			case Syntax::Token::DllExportKeyword:
-				mDiagnosticBag->ReportUnimplimentedError(mod);
 				break;
 			case Syntax::Token::DllImportKeyword:
 				dll = true;
@@ -514,7 +511,7 @@ namespace Symple::Binding
 		if (op == BoundBinaryOperator::ErrorOperator)
 			mDiagnosticBag->ReportInvalidOperation(syntax->GetOperator(), left->GetType(), right->GetType());
 		else if (op->IsMutable() && !left->IsMutable())
-			mDiagnosticBag->ReportUnimplimentedError(left->GetSyntax()->GetToken());
+			mDiagnosticBag->ReportExpectedLValue(left->GetSyntax()->GetToken());
 
 		return make_shared<BoundBinaryExpression>(syntax, op, left, right);
 	}
@@ -582,7 +579,7 @@ namespace Symple::Binding
 				return make_shared<BoundFunctionPointer>(syntax, fnSymbol);
 			else
 			{
-				mDiagnosticBag->ReportUnimplimentedError(syntax->GetToken());
+				mDiagnosticBag->ReportUndeclaredIdentifier(syntax->GetToken());
 				return make_shared<BoundErrorExpression>(syntax);
 			}
 		}

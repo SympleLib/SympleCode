@@ -22,48 +22,56 @@ namespace Symple
 	{ return mDiagnostics; }
 
 
+#if __SY_ALLOW_UNIMPLIMENTED
 	void DiagnosticBag::ReportUnimplimentedMessage(shared_ptr<Syntax::Token> tok)
-	{ ReportWarning(tok, "Message not implemented"); }
+	{ ReportWarning(tok, "message not implemented"); }
 
 	void DiagnosticBag::ReportUnimplimentedWarning(shared_ptr<Syntax::Token> tok)
-	{ ReportWarning(tok, "Warning not implemented"); }
+	{ ReportWarning(tok, "warning not implemented"); }
 
 	void DiagnosticBag::ReportUnimplimentedError(shared_ptr<Syntax::Token> tok)
-	{ ReportWarning(tok, "Error not implemented"); }
+	{ ReportWarning(tok, "error not implemented"); }
+#endif
 
 
 	void DiagnosticBag::ReportBindError(shared_ptr<Syntax::Node> syntax)
-	{ ReportError(syntax->GetToken(), "Bind error"); }
+	{ ReportError(syntax->GetToken(), "bind error"); }
 	
 	void DiagnosticBag::ReportExpressionMustHaveValue(shared_ptr<Syntax::ExpressionSyntax> syntax)
-	{ ReportError(syntax->GetToken(), "Expression must have a value"); }
+	{ ReportError(syntax->GetToken(), "expression must have a value"); }
 
 
 	void DiagnosticBag::ReportNoDefaultArgument(shared_ptr<Syntax::CallExpressionSyntax> syntax, unsigned param)
-	{ ReportError(syntax->GetCloseParenthesis(), fmt::format("No default argument for parameter {}", param + 1)); }
+	{ ReportError(syntax->GetCloseParenthesis(), fmt::format("no default argument for parameter {}", param + 1)); }
 
 	void DiagnosticBag::ReportTooFewArguments(shared_ptr<Syntax::CallExpressionSyntax> syntax)
-	{ ReportError(syntax->GetCloseParenthesis(), "Too few Arguments"); }
+	{ ReportError(syntax->GetCloseParenthesis(), "too few Arguments"); }
 
 	void DiagnosticBag::ReportTooManyArguments(shared_ptr<Syntax::CallExpressionSyntax> syntax, unsigned param)
-	{ ReportError(syntax->GetArguments()[param]->GetToken(), "Too many arguments"); }
+	{ ReportError(syntax->GetArguments()[param]->GetToken(), "too many arguments"); }
 
 	void DiagnosticBag::ReportNoSuchFunction(shared_ptr<Syntax::CallExpressionSyntax> syntax)
-	{ ReportError(syntax->GetToken(), "Function Doesn't Exist"); }
+	{ ReportError(syntax->GetToken(), "function Doesn't Exist"); }
 
 
 	void DiagnosticBag::ReportUnexpectedEndOfFile(shared_ptr<Syntax::Token> tok)
-	{ ReportError(tok, fmt::format("Unexpected end of file")); }
+	{ ReportError(tok, "unexpected end of file"); }
+
+	void DiagnosticBag::ReportUnexpectedDllImportBody(shared_ptr<Syntax::Token> tok)
+	{ ReportError(tok, "unexpected dllimport body"); }
+
+	void DiagnosticBag::ReportUndeclaredIdentifier(shared_ptr<Syntax::Token> tok)
+	{ ReportError(tok, "undeclared identifier"); }
 
 	void DiagnosticBag::ReportUnexpectedToken(shared_ptr<Token> tok, Token::Kind expected)
 	{
 		std::stringstream tokStr;
 		tok->PrintShort(tokStr);
-		ReportError(tok, fmt::format("Unexpected token '{}', expected {}", tokStr.str(), Token::KindMap[expected]));
+		ReportError(tok, fmt::format("unexpected token '{}', expected {}", tokStr.str(), Token::KindMap[expected]));
 	}
 
 	void DiagnosticBag::ReportUnknownToken(shared_ptr<Syntax::Token> tok)
-	{ ReportError(tok, fmt::format("Unknown token '{}'", tok->GetText())); }
+	{ ReportError(tok, fmt::format("unknown token '{}'", tok->GetText())); }
 
 
 	void DiagnosticBag::ReportInvalidOperation(shared_ptr<Syntax::Token> tok, shared_ptr<Symbol::TypeSymbol> l, shared_ptr<Symbol::TypeSymbol> r)
@@ -79,7 +87,7 @@ namespace Symple
 		ss.str({}); // Clear stream
 		r->PrintShort(ss);
 		std::string rstr = ss.str();
-		ReportError(tok, fmt::format("Invalid operation [{}] of types {}, and {}", tokstr, lstr, rstr));
+		ReportError(tok, fmt::format("invalid operation [{}] of types {}, and {}", tokstr, lstr, rstr));
 	}
 
 	void DiagnosticBag::ReportInvalidOperation(shared_ptr<Syntax::Token> tok, shared_ptr<Symbol::TypeSymbol> ty)
@@ -91,17 +99,20 @@ namespace Symple
 		ss.str({}); // Clear stream
 		ty->PrintShort(ss);
 		std::string tystr = ss.str();
-		ReportError(tok, fmt::format("Invalid operation [{}] of type {}", tokstr, tystr));
+		ReportError(tok, fmt::format("invalid operation [{}] of type {}", tokstr, tystr));
 	}
 
 
 	void DiagnosticBag::ReportExpectedUnqualifiedID(shared_ptr<Syntax::Token> tok)
-	{ ReportError(tok, "Expected unqualidied-id"); }
+	{ ReportError(tok, "expected unqualidied-id"); }
+
+	void DiagnosticBag::ReportExpectedLValue(shared_ptr<Syntax::Token> tok)
+	{ ReportError(tok, "expected lvalue"); }
 
 	void DiagnosticBag::ReportInvalidLiteral(shared_ptr<LiteralExpressionSyntax> literal)
 	{
 		std::stringstream tokStr;
 		literal->GetLiteral()->PrintShort(tokStr);
-		ReportError(literal->GetLiteral(), fmt::format("Invalid literal '{}'", tokStr.str()));
+		ReportError(literal->GetLiteral(), fmt::format("invalid literal '{}'", tokStr.str()));
 	}
 }
