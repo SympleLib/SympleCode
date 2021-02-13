@@ -124,6 +124,9 @@ namespace Symple::Syntax
 		else
 			switch (Peek()->GetKind())
 			{
+			case Token::GotoKeyword:
+				statement = ParseGotoStatement();
+				break;
 			case Token::NativeKeyword:
 				statement = ParseNativeStatement();
 				break;
@@ -158,6 +161,14 @@ namespace Symple::Syntax
 		shared_ptr<Token> colon = Match(Token::Colon);
 
 		return make_shared<LabelSyntax>(label, colon);
+	}
+
+	shared_ptr<GotoStatementSyntax> Parser::ParseGotoStatement()
+	{
+		shared_ptr<Token> keyword = Match(Token::GotoKeyword);
+		shared_ptr<Token> label = Match(Token::Identifier);
+
+		return make_shared<GotoStatementSyntax>(keyword, label);
 	}
 
 	shared_ptr<NativeStatementSyntax> Parser::ParseNativeStatement()

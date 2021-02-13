@@ -174,7 +174,11 @@ namespace Symple::Binding
 	}
 
 	shared_ptr<Symbol::LabelSymbol> Binder::BindLabelSymbol(shared_ptr<Syntax::LabelSyntax> syntax)
-	{ return make_shared<Symbol::LabelSymbol>(syntax->GetLabel()->GetText()); }
+	{
+		shared_ptr<Symbol::LabelSymbol> label = make_shared<Symbol::LabelSymbol>(syntax->GetLabel()->GetText());
+		mLabels.push_back(label);
+		return label;
+	}
 
 	shared_ptr<Symbol::FunctionSymbol> Binder::BindFunction(shared_ptr<Syntax::FunctionDeclarationSyntax> syntax)
 	{
@@ -207,6 +211,18 @@ namespace Symple::Binding
 			mScope->DeclareVariable(param);
 		shared_ptr<BoundStatement> body = BindStatement(syntax->GetBody());
 		EndScope();
+
+		for (auto promise : mGotoPromises)
+		{
+			bool works = false;
+			for (auto label : mLabels)
+				if (label->GetLabel() == promise)
+				{
+					works = true;
+					break;
+				}
+			__SY_ASSERT(works);
+		}
 
 		mFunctions.push_back({ symbol, body });
 		return symbol;
@@ -278,6 +294,7 @@ namespace Symple::Binding
 	shared_ptr<Node> Binder::BindMember(shared_ptr<Syntax::MemberSyntax> syntax)
 	{
 		shared_ptr<Node> result = BindMemberInternal(syntax);
+		mGotoPromises.clear();
 		mLabels.clear();
 		if (!result /* Should not be null, but just in case */)
 		{
@@ -337,6 +354,8 @@ namespace Symple::Binding
 			return BindLabel(dynamic_pointer_cast<Syntax::LabelSyntax>(syntax));
 		case Syntax::Node::NativeStatement:
 			return BindNativeCode(dynamic_pointer_cast<Syntax::NativeStatementSyntax>(syntax));
+		case Syntax::Node::GotoStatement:
+			return BindGotoStatement(dynamic_pointer_cast<Syntax::GotoStatementSyntax>(syntax));
 		case Syntax::Node::BlockStatement:
 			return BindBlockStatement(dynamic_pointer_cast<Syntax::BlockStatementSyntax>(syntax));
 		case Syntax::Node::ReturnStatement:
@@ -355,6 +374,12 @@ namespace Symple::Binding
 
 	shared_ptr<BoundNativeCode> Binder::BindNativeCode(shared_ptr<Syntax::NativeStatementSyntax> syntax)
 	{ return make_shared<BoundNativeCode>(syntax); }
+
+	shared_ptr<BoundGotoStatement> Binder::BindGotoStatement(shared_ptr<Syntax::GotoStatementSyntax> syntax)
+	{
+		mGotoPromises.push_back(std::string(syntax->GetLabel()->GetText()));
+		return make_shared<BoundGotoStatement>(syntax);
+	}
 
 	shared_ptr<BoundBlockStatement> Binder::BindBlockStatement(shared_ptr<Syntax::BlockStatementSyntax> syntax)
 	{

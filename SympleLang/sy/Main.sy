@@ -2,6 +2,7 @@ import "libc.sy";
 
 int main()
 {
+	goto SomeLabel;
 	puts("Before");
 SomeLabel:
 	puts("After");

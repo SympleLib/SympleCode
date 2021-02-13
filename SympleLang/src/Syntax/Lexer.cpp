@@ -197,6 +197,7 @@ namespace Symple::Syntax
 
 		KEYWORD(__asm, Native);
 		KEYWORD(native, Native);
+		KEYWORD(goto, Goto);
 
 		else
 			return make_shared<Token>(Token::Identifier, text, mLine, column, mFile);

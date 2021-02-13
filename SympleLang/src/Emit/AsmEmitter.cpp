@@ -178,6 +178,9 @@ namespace Symple::Emit
 		case Binding::Node::NativeCode:
 			EmitNativeCode(dynamic_pointer_cast<Binding::BoundNativeCode>(stmt));
 			break;
+		case Binding::Node::GotoStatement:
+			EmitGotoStatement(dynamic_pointer_cast<Binding::BoundGotoStatement>(stmt));
+			break;
 		case Binding::Node::BlockStatement:
 			EmitBlockStatement(dynamic_pointer_cast<Binding::BoundBlockStatement>(stmt));
 			break;
@@ -198,6 +201,9 @@ namespace Symple::Emit
 
 	void AsmEmitter::EmitNativeCode(shared_ptr<Binding::BoundNativeCode> stmt)
 	{ _Emit(Text, "%s", stmt->GetAssembly().data()); }
+
+	void AsmEmitter::EmitGotoStatement(shared_ptr<Binding::BoundGotoStatement> stmt)
+	{ _Emit(Text, "\tjmp     %s.%s", mFunctionAssemblyName.c_str(), stmt->GetLabel().data()); }
 
 	void AsmEmitter::EmitBlockStatement(shared_ptr<Binding::BoundBlockStatement> stmt)
 	{
