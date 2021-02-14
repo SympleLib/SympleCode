@@ -178,6 +178,9 @@ namespace Symple::Emit
 		case Binding::Node::NativeCode:
 			EmitNativeCode(dynamic_pointer_cast<Binding::BoundNativeCode>(stmt));
 			break;
+		case Binding::Node::IfStatement:
+			EmitIfStatement(dynamic_pointer_cast<Binding::BoundIfStatement>(stmt));
+			break;
 		case Binding::Node::GotoStatement:
 			EmitGotoStatement(dynamic_pointer_cast<Binding::BoundGotoStatement>(stmt));
 			break;
@@ -201,6 +204,23 @@ namespace Symple::Emit
 
 	void AsmEmitter::EmitNativeCode(shared_ptr<Binding::BoundNativeCode> stmt)
 	{ _Emit(Text, "%s", stmt->GetAssembly().data()); }
+
+	void AsmEmitter::EmitIfStatement(shared_ptr<Binding::BoundIfStatement> stmt)
+	{
+		unsigned c = mDataCount++;
+
+		EmitExpression(stmt->GetCondition());
+		_Emit(Text, "\ttest    %%eax, %%eax");
+		_Emit(Text, "\tje      ..else.%i", c);
+
+		_Emit(Text, "..if.%i:", c);
+		EmitStatement(stmt->GetThen());
+		_Emit(Text, "\tjmp     ..end.%i", c);
+
+		_Emit(Text, "..else.%i:", c);
+		EmitStatement(stmt->GetElse());
+		_Emit(Text, "..end.%i:", c);
+	}
 
 	void AsmEmitter::EmitGotoStatement(shared_ptr<Binding::BoundGotoStatement> stmt)
 	{ _Emit(Text, "\tjmp     %s.%s", mFunctionAssemblyName.c_str(), stmt->GetLabel().data()); }

@@ -351,6 +351,8 @@ namespace Symple::Binding
 			return BindLabel(dynamic_pointer_cast<Syntax::LabelSyntax>(syntax));
 		case Syntax::Node::NativeStatement:
 			return BindNativeCode(dynamic_pointer_cast<Syntax::NativeStatementSyntax>(syntax));
+		case Syntax::Node::IfStatement:
+			return BindIfStatement(dynamic_pointer_cast<Syntax::IfStatementSyntax>(syntax));
 		case Syntax::Node::GotoStatement:
 			return BindGotoStatement(dynamic_pointer_cast<Syntax::GotoStatementSyntax>(syntax));
 		case Syntax::Node::BlockStatement:
@@ -371,6 +373,15 @@ namespace Symple::Binding
 
 	shared_ptr<BoundNativeCode> Binder::BindNativeCode(shared_ptr<Syntax::NativeStatementSyntax> syntax)
 	{ return make_shared<BoundNativeCode>(syntax); }
+
+	shared_ptr<BoundIfStatement> Binder::BindIfStatement(shared_ptr<Syntax::IfStatementSyntax> syntax)
+	{
+		shared_ptr<BoundExpression> cond = BindExpression(syntax->GetCondition());
+		shared_ptr<BoundStatement> then = BindStatement(syntax->GetThen());
+		shared_ptr<BoundStatement> elze = BindStatement(syntax->GetElse());
+
+		return make_shared<BoundIfStatement>(syntax, cond, then, elze);
+	}
 
 	shared_ptr<BoundGotoStatement> Binder::BindGotoStatement(shared_ptr<Syntax::GotoStatementSyntax> syntax)
 	{

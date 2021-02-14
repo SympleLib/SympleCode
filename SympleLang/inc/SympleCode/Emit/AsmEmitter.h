@@ -4,6 +4,7 @@
 #include "SympleCode/Binding/BoundLabel.h"
 #include "SympleCode/Binding/BoundStatement.h"
 #include "SympleCode/Binding/BoundNativeCode.h"
+#include "SympleCode/Binding/BoundIfStatement.h"
 #include "SympleCode/Binding/BoundGotoStatement.h"
 #include "SympleCode/Binding/BoundCallExpression.h"
 #include "SympleCode/Binding/BoundCompilationUnit.h"
@@ -62,6 +63,7 @@ namespace Symple::Emit
 		void EmitStatement(shared_ptr<Binding::BoundStatement>);
 		void EmitLabel(shared_ptr<Binding::BoundLabel>);
 		void EmitNativeCode(shared_ptr<Binding::BoundNativeCode>);
+		void EmitIfStatement(shared_ptr<Binding::BoundIfStatement>);
 		void EmitGotoStatement(shared_ptr<Binding::BoundGotoStatement>);
 		void EmitBlockStatement(shared_ptr<Binding::BoundBlockStatement>);
 		void EmitReturnStatement(shared_ptr<Binding::BoundReturnStatement>);

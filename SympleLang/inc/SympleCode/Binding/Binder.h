@@ -25,6 +25,7 @@
 #include "SympleCode/Binding/BoundLabel.h"
 #include "SympleCode/Binding/BoundStatement.h"
 #include "SympleCode/Binding/BoundNativeCode.h"
+#include "SympleCode/Binding/BoundIfStatement.h"
 #include "SympleCode/Binding/BoundGotoStatement.h"
 #include "SympleCode/Binding/BoundBlockStatement.h"
 #include "SympleCode/Binding/BoundReturnStatement.h"
@@ -75,6 +76,7 @@ namespace Symple::Binding
 		shared_ptr<BoundStatement> BindStatement(shared_ptr<Syntax::StatementSyntax>);
 		shared_ptr<BoundLabel> BindLabel(shared_ptr<Syntax::LabelSyntax>);
 		shared_ptr<BoundNativeCode> BindNativeCode(shared_ptr<Syntax::NativeStatementSyntax>);
+		shared_ptr<BoundIfStatement> BindIfStatement(shared_ptr<Syntax::IfStatementSyntax>);
 		shared_ptr<BoundStatement> BindGlobalStatement(shared_ptr<Syntax::GlobalStatementSyntax>);
 		shared_ptr<BoundGotoStatement> BindGotoStatement(shared_ptr<Syntax::GotoStatementSyntax>);
 		shared_ptr<BoundBlockStatement> BindBlockStatement(shared_ptr<Syntax::BlockStatementSyntax>);

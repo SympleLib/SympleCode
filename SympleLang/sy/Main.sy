@@ -2,7 +2,7 @@ import "libc.sy";
 
 int main()
 {
-	if (1)
+	if (0)
 		puts("True");
 	else
 		puts("False");
