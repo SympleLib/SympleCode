@@ -100,7 +100,10 @@ namespace Symple::Syntax
 			NativeKeyword,
 			GotoKeyword,
 
-			Last = GotoKeyword,
+			IfKeyword,
+			ElseKeyword,
+
+			Last = ElseKeyword,
 		};
 
 		static constexpr char* KindMap[Last + 1] = {
@@ -158,6 +161,9 @@ namespace Symple::Syntax
 
 			"NativeKeyword",
 			"GotoKeyword",
+
+			"IfKeyword",
+			"ElseKeyword",
 		};
 	};
 

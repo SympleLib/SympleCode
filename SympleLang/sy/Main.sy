@@ -2,8 +2,8 @@ import "libc.sy";
 
 int main()
 {
-	goto SomeLabel;
-	puts("Before");
-SomeLabel:
-	puts("After");
+	if (1)
+		puts("True");
+	else
+		puts("False");
 }

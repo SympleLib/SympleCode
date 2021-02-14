@@ -199,6 +199,9 @@ namespace Symple::Syntax
 		KEYWORD(native, Native);
 		KEYWORD(goto, Goto);
 
+		KEYWORD(if, If);
+		KEYWORD(else, Else);
+
 		else
 			return make_shared<Token>(Token::Identifier, text, mLine, column, mFile);
 	}

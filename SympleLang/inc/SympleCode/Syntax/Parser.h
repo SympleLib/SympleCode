@@ -19,6 +19,7 @@
 #include "SympleCode/Syntax/NativeStatementSyntax.h"
 
 #include "SympleCode/Syntax/LabelSyntax.h"
+#include "SympleCode/Syntax/IfStatementSyntax.h"
 #include "SympleCode/Syntax/GotoStatementSyntax.h"
 #include "SympleCode/Syntax/BlockStatementSyntax.h"
 #include "SympleCode/Syntax/ReturnStatementSyntax.h"
@@ -59,6 +60,7 @@ namespace Symple::Syntax
 
 		shared_ptr<StatementSyntax> ParseStatement(bool matchSemicolon = true);
 		shared_ptr<LabelSyntax> ParseLabel();
+		shared_ptr<IfStatementSyntax> ParseIfStatement();
 		shared_ptr<GotoStatementSyntax> ParseGotoStatement();
 		shared_ptr<BlockStatementSyntax> ParseBlockStatement();
 		shared_ptr<ReturnStatementSyntax> ParseReturnStatement();

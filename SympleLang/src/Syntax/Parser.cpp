@@ -124,6 +124,10 @@ namespace Symple::Syntax
 		else
 			switch (Peek()->GetKind())
 			{
+			case Token::IfKeyword:
+				statement = ParseIfStatement();
+				matchSemi = false;
+				break;
 			case Token::GotoKeyword:
 				statement = ParseGotoStatement();
 				break;
@@ -161,6 +165,23 @@ namespace Symple::Syntax
 		shared_ptr<Token> colon = Match(Token::Colon);
 
 		return make_shared<LabelSyntax>(label, colon);
+	}
+
+	shared_ptr<IfStatementSyntax> Parser::ParseIfStatement()
+	{
+		shared_ptr<Token> ifKey = Match(Token::IfKeyword);
+		shared_ptr<ParenthesizedExpressionSyntax> cond = ParseParenthesizedExpression();
+		shared_ptr<StatementSyntax> then = ParseStatement();
+
+		shared_ptr<Token> elseKey;
+		shared_ptr<StatementSyntax> elze;
+		if (Peek()->Is(Token::ElseKeyword))
+		{
+			elseKey = Next();
+			elze = ParseStatement();
+		}
+
+		return make_shared<IfStatementSyntax>(ifKey, cond, then, elseKey, elze);
 	}
 
 	shared_ptr<GotoStatementSyntax> Parser::ParseGotoStatement()

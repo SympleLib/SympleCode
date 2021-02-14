@@ -85,6 +85,7 @@ namespace Symple::Syntax
 			NativeStatement,
 			
 			Label,
+			IfStatement,
 			GotoStatement,
 			BlockStatement,
 			ReturnStatement,
@@ -122,6 +123,7 @@ namespace Symple::Syntax
 			"NativeStatement",
 
 			"Label",
+			"IfStatement",
 			"GotoStatement",
 			"BlockStatement",
 			"ReturnStatement",
