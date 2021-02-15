@@ -6,6 +6,7 @@ namespace Symple::Syntax
 	{
 		switch (kind)
 		{
+		case Token::Exclamation:
 		case Token::Plus:
 		case Token::Dash:
 			return 4;

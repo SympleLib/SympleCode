@@ -240,7 +240,7 @@ namespace Symple::Emit
 	void AsmEmitter::EmitReturnStatement(shared_ptr<Binding::BoundReturnStatement> stmt)
 	{
 		EmitExpression(stmt->GetValue());
-		_Emit(Text, "\tjmp     %s.Return", GetFunctionAssemblyName(mFunction).c_str());
+		_Emit(Text, "\tjmp     ..%s.Return", GetFunctionAssemblyName(mFunction).c_str());
 		mReturning = true;
 	}
 
@@ -331,6 +331,11 @@ namespace Symple::Emit
 		{
 		case Binding::BoundUnaryOperator::Negative:
 			_Emit(Text, "\tneg     %%eax");
+			break;
+		case Binding::BoundUnaryOperator::Not:
+			_Emit(Text, "\ttest    %%eax, %%eax");
+			_Emit(Text, "\tsete    %%al");
+			_Emit(Text, "\tmovzbl  %%al, %%eax");
 			break;
 		}
 

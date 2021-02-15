@@ -38,7 +38,9 @@ namespace Symple::Binding
 			Positive,
 			Negative,
 
-			Last = Negative,
+			Not,
+
+			Last = Not,
 		};
 
 		static constexpr char* KindMap[Last + 1] = {
@@ -46,6 +48,8 @@ namespace Symple::Binding
 
 			"Positive",
 			"Negative",
+
+			"Not",
 		};
 	};
 }

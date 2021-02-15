@@ -64,6 +64,8 @@ namespace Symple::Syntax
 			Slash,
 			Percentage,
 
+			Exclamation,
+
 			Equal,
 
 			OpenParenthesis,
@@ -125,6 +127,8 @@ namespace Symple::Syntax
 			"Asterisk",
 			"Slash",
 			"Percentage",
+
+			"Exclamation",
 
 			"Equal",
 

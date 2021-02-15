@@ -48,6 +48,7 @@ namespace Symple::Syntax
 
 		ATOM('+', Plus);
 		ATOM('-', Dash);
+		ATOM('!', Exclamation);
 		ATOM('*', Asterisk);
 		ATOM('/', Slash);
 		ATOM('%', Percentage);

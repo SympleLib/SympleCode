@@ -2,8 +2,10 @@ import "libc.sy";
 
 int main()
 {
-	if (0)
+	if (!0)
 		puts("True");
 	else
 		puts("False");
+		
+	ret !0;
 }

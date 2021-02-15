@@ -41,6 +41,14 @@ namespace Symple::Binding
 				shared_ptr<BoundUnaryOperator>(new BoundUnaryOperator(Syntax::Token::Dash, Negative, Symbol::TypeSymbol::FloatType, Symbol::TypeSymbol::FloatType)),
 				shared_ptr<BoundUnaryOperator>(new BoundUnaryOperator(Syntax::Token::Dash, Negative, Symbol::TypeSymbol::DoubleType, Symbol::TypeSymbol::DoubleType)),
 				shared_ptr<BoundUnaryOperator>(new BoundUnaryOperator(Syntax::Token::Dash, Negative, Symbol::TypeSymbol::TripleType, Symbol::TypeSymbol::TripleType)),
+
+
+				shared_ptr<BoundUnaryOperator>(new BoundUnaryOperator(Syntax::Token::Exclamation, Not, Symbol::TypeSymbol::IntType, Symbol::TypeSymbol::BoolType)),
+				shared_ptr<BoundUnaryOperator>(new BoundUnaryOperator(Syntax::Token::Exclamation, Not, Symbol::TypeSymbol::LongType, Symbol::TypeSymbol::BoolType)),
+				
+				shared_ptr<BoundUnaryOperator>(new BoundUnaryOperator(Syntax::Token::Exclamation, Not, Symbol::TypeSymbol::FloatType, Symbol::TypeSymbol::BoolType)),
+				shared_ptr<BoundUnaryOperator>(new BoundUnaryOperator(Syntax::Token::Exclamation, Not, Symbol::TypeSymbol::DoubleType, Symbol::TypeSymbol::BoolType)),
+				shared_ptr<BoundUnaryOperator>(new BoundUnaryOperator(Syntax::Token::Exclamation, Not, Symbol::TypeSymbol::TripleType, Symbol::TypeSymbol::BoolType)),
 			};
 
 		for (auto op : sOperators)
