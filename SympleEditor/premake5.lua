@@ -6,9 +6,12 @@ project "SympleEditor"
 	targetdir ("%{wks.location}/bin/" .. outputdir .. "/%{prj.name}")
 	objdir ("%{wks.location}/bin-int/" .. outputdir .. "/%{prj.name}")
 	
-	defines
+	defines {
 		"SY_32"
 		-- "SY_64"
+		
+		,"null=0"
+	}
 	
 	files {
 		"inc/**.h",
