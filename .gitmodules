@@ -7,3 +7,6 @@
 [submodule "SympleLang/vendor/llvm-c"]
 	path = SympleLang/vendor/llvm-c
 	url = https://github.com/TeddyTelanoff/llvm-c
+[submodule "SympleEditor/vendor/glfw"]
+	path = SympleEditor/vendor/glfw
+	url = https://github.com/glfw/glfw

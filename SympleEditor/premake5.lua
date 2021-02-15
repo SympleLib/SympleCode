@@ -7,10 +7,9 @@ project "SympleEditor"
 	objdir ("%{wks.location}/bin-int/" .. outputdir .. "/%{prj.name}")
 	
 	defines {
-		"SY_32"
-		-- "SY_64"
+		"SY_32",
 		
-		,"null=0"
+		"null=0"
 	}
 	
 	files {
@@ -20,10 +19,27 @@ project "SympleEditor"
 		"src/**.c",
 		"src/**.cpp",
 		
-		"sy/**.sy"
+		"sy/**.sy",
+		
+		
+		"vendor/glfw/include/GLFW/glfw3.h",
+		"vendor/glfw/include/GLFW/glfw3native.h",
+		"vendor/glfw/src/glfw_config.h",
+		"vendor/glfw/src/context.c",
+		"vendor/glfw/src/init.c",
+		"vendor/glfw/src/input.c",
+		"vendor/glfw/src/monitor.c",
+		"vendor/glfw/src/vulkan.c",
+		"vendor/glfw/src/window.c"
 	}
 	
-	includedirs "inc"
+	includedirs {
+		"inc",
+		
+		"vendor/glfw/include"
+	}
+	
+	filter "system:windows"
 	
 	filter "configurations:Debug"
 		defines "__SY_DEBUG"
