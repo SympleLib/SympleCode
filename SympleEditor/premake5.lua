@@ -1,4 +1,4 @@
-project "SympleLang"
+project "SympleEditor"
 	kind "ConsoleApp"
 	language "C++"
 	cppdialect "C++17"
