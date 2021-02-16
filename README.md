@@ -1,4 +1,4 @@
-# Symple C (Symple Code) [![License](https://img.shields.io/github/license/TeddyTelanoff/SympleCode.svg)](LICENSE)
+# Symple C *(Symple Code)* [![License](https://img.shields.io/github/license/TeddyTelanoff/SympleCode.svg)](LICENSE)
 
 ![Symple](/res/Symple.png?raw=true "Symple")
 
