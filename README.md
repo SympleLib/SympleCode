@@ -2,7 +2,7 @@
 
 ![Symple](/res/Symple.png?raw=true "Symple")
 
-## About SympleCode
+## About Symple C
 
 Symple C is a programming language that is similar to the [C Programming Lanaguage](https://en.wikipedia.org/wiki/C_(programming_language)), but with some additional features.
 
