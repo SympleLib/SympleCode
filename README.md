@@ -1,10 +1,10 @@
-# SympleCode [![License](https://img.shields.io/github/license/TeddyTelanoff/SympleCode.svg)](LICENSE)
+# Symple C (Symple Code) [![License](https://img.shields.io/github/license/TeddyTelanoff/SympleCode.svg)](LICENSE)
 
 ![Symple](/res/Symple.png?raw=true "Symple")
 
 ## About SympleCode
 
-SympleCode is a programming language that is similar to the [C Programming Lanaguage](https://en.wikipedia.org/wiki/C_(programming_language)), but with some additional features.
+Symple C is a programming language that is similar to the [C Programming Lanaguage](https://en.wikipedia.org/wiki/C_(programming_language)), but with some additional features.
 
 ## Getting the source
 
@@ -15,7 +15,7 @@ Disclamer: Symple Code only supports windows at the moment!
 1) Get required tools
     - **Git** (Source control program) you can download from https://git-scm.com/download
     - **Visual Studio 2017 or later**
-   - **Clang** (Compiler)
+    - **Clang** (Compiler)
 2) Clone the repository
    - `git clone --recursive https://github.com/TeddyTelanoff/SympleCode.git`
 3) Run premake
