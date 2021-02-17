@@ -34,7 +34,7 @@ namespace Symple::Syntax
 		unsigned trCl = mColumn;
 
 		bool checkNewLine;
-		while (checkNewLine = CheckNewLine() || IsWhiteSpace(Peek()))
+		while ((checkNewLine = CheckNewLine()) || IsWhiteSpace(Peek()))
 		{
 			if (checkNewLine)
 				trKind |= Trivia::StartOfLine;
