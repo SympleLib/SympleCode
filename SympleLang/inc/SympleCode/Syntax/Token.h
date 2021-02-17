@@ -7,9 +7,9 @@
 
 namespace Symple::Syntax
 {
-	class Lexer;
+	class __SYC_API Lexer;
 
-	class Token
+	class __SYC_API Token
 	{
 	public: enum Kind : unsigned;
 	private:
