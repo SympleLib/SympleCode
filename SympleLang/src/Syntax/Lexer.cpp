@@ -28,7 +28,7 @@ namespace Symple::Syntax
 
 	shared_ptr<Token> Lexer::Lex()
 	{
-		unsigned trKind = Trivia::Unknown;
+		unsigned trKind = mPosition ? Trivia::Unknown : Trivia::StartOfLine;
 		unsigned trPosition = mPosition;
 		unsigned trLn = mLine;
 		unsigned trCl = mColumn;
