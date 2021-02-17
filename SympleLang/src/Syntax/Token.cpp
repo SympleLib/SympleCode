@@ -6,8 +6,8 @@
 
 namespace Symple::Syntax
 {
-	shared_ptr<Token> Token::Error = make_shared<Token>();
-	shared_ptr<Token> Token::Default = make_shared<Token>();
+	__SYC_API shared_ptr<Token> Token::Error = make_shared<Token>();
+	__SYC_API shared_ptr<Token> Token::Default = make_shared<Token>();
 
 
 	Token::Token(Kind kind, unsigned ln, unsigned col, char* file)
