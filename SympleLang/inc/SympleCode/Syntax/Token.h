@@ -1,28 +1,24 @@
 #pragma once
 
-#include <iostream>
-#include <string_view>
-
-#include "SympleCode/Memory.h"
+#include "SympleCode/Syntax/Trivia.h"
 
 namespace Symple::Syntax
 {
-	class __SYC_API Lexer;
-
 	class __SYC_API Token
 	{
 	public: enum Kind : unsigned;
 	private:
 		Kind mKind;
 		std::string mText;
+		shared_ptr<Trivia> mTrivia;
 
 		char* mFile;
 		unsigned mLine, mColumn;
 	public:
-		Token(Kind = Unknown, unsigned ln = 0, unsigned col = 0, char* file = "<NA>");
-		Token(Kind, std::string_view text, unsigned ln = 0, unsigned col = 0, char* file = "<NA>");
-		Token(Kind, char* beg, unsigned len = 1, unsigned ln = 0, unsigned col = 0, char* file = "<NA>");
-		Token(Kind, char* beg, char* end, unsigned ln = 0, unsigned col = 0, char* file = "<NA>");
+		Token(Kind = Unknown, shared_ptr<Trivia> = Trivia::Default, unsigned ln = 0, unsigned col = 0, char* file = "<NA>");
+		Token(Kind, std::string_view text, shared_ptr<Trivia> = Trivia::Default, unsigned ln = 0, unsigned col = 0, char* file = "<NA>");
+		Token(Kind, char* beg, unsigned len = 1, shared_ptr<Trivia> = Trivia::Default, unsigned ln = 0, unsigned col = 0, char* file = "<NA>");
+		Token(Kind, char* beg, char* end, shared_ptr<Trivia> = Trivia::Default, unsigned ln = 0, unsigned col = 0, char* file = "<NA>");
 
 		bool IsKeyword();
 		bool Is(Kind kind);
@@ -35,7 +31,7 @@ namespace Symple::Syntax
 
 		Kind GetKind();
 		std::string_view GetText();
-		shared_ptr<Lexer> GetLexer();
+		shared_ptr<Trivia> GetTrivia();
 
 		char* GetFile();
 		unsigned GetLine();

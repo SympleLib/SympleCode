@@ -10,20 +10,20 @@ namespace Symple::Syntax
 	__SYC_API shared_ptr<Token> Token::Default = make_shared<Token>();
 
 
-	Token::Token(Kind kind, unsigned ln, unsigned col, char* file)
-		: mKind(kind), mText(), mLine(ln), mColumn(col), mFile(file)
+	Token::Token(Kind kind, shared_ptr<Trivia> trivia, unsigned ln, unsigned col, char* file)
+		: mKind(kind), mText(), mTrivia(trivia), mLine(ln), mColumn(col), mFile(file)
 	{}
 
-	Token::Token(Kind kind, std::string_view text, unsigned ln, unsigned col, char* file)
-		: mKind(kind), mText(text), mLine(ln), mColumn(col), mFile(file)
+	Token::Token(Kind kind, std::string_view text, shared_ptr<Trivia> trivia, unsigned ln, unsigned col, char* file)
+		: mKind(kind), mText(text), mTrivia(trivia), mLine(ln), mColumn(col), mFile(file)
 	{}
 
-	Token::Token(Kind kind, char* beg, unsigned len, unsigned ln, unsigned col, char* file)
-		: mKind(kind), mText(beg, len), mLine(ln), mColumn(col), mFile(file)
+	Token::Token(Kind kind, char* beg, unsigned len, shared_ptr<Trivia> trivia, unsigned ln, unsigned col, char* file)
+		: mKind(kind), mText(beg, len), mTrivia(trivia), mLine(ln), mColumn(col), mFile(file)
 	{}
 
-	Token::Token(Kind kind, char* beg, char* end, unsigned ln, unsigned col, char* file)
-		: mKind(kind), mText(beg, std::distance(beg, end)), mLine(ln), mColumn(col), mFile(file)
+	Token::Token(Kind kind, char* beg, char* end, shared_ptr<Trivia> trivia, unsigned ln, unsigned col, char* file)
+		: mKind(kind), mText(beg, std::distance(beg, end)), mTrivia(trivia), mLine(ln), mColumn(col), mFile(file)
 	{}
 
 
@@ -37,7 +37,9 @@ namespace Symple::Syntax
 	void Token::Print(std::ostream& os, std::string_view indent, bool last, std::string_view label)
 	{
 		Node::PrintIndent(os, indent, last, label);
-		os << KindMap[GetKind()] << "Token '" << GetText() << "' <" << GetLine() << ':' << GetColumn() << ">";
+		os << KindMap[GetKind()] << "Token '" << GetText() << "' ";
+		GetTrivia()->PrintShort(os);
+		os << " <" << GetLine() << ':' << GetColumn() << ">";
 	}
 
 	void Token::PrintShort(std::ostream& os)
@@ -50,6 +52,9 @@ namespace Symple::Syntax
 	std::string_view Token::GetText()
 	{ return mText; }
 
+	shared_ptr<Trivia> Token::GetTrivia()
+	{ return mTrivia; }
+
 
 	char* Token::GetFile()
 	{ return mFile; }
@@ -59,5 +64,4 @@ namespace Symple::Syntax
 
 	unsigned Token::GetColumn()
 	{ return mColumn; }
-
 }

@@ -28,8 +28,23 @@ namespace Symple::Syntax
 
 	shared_ptr<Token> Lexer::Lex()
 	{
-		while (CheckNewLine() || IsWhiteSpace(Peek()))
+		unsigned trKind = Trivia::Unknown;
+		unsigned trPosition = mPosition;
+		unsigned trLn = mLine;
+		unsigned trCl = mColumn;
+
+		bool checkNewLine;
+		while (checkNewLine = CheckNewLine() || IsWhiteSpace(Peek()))
+		{
+			if (checkNewLine)
+				trKind |= Trivia::StartOfLine;
+			else
+				trKind |= Trivia::LeadingSpace;
+
 			Next();
+		}
+
+		mTrivia = make_shared<Trivia>(trKind, &mSource[trPosition], Current, trLn, trCl, mFile);
 
 		char c = Peek();
 		if (!c)
@@ -141,13 +156,11 @@ namespace Symple::Syntax
 
 
 	shared_ptr<Token> Lexer::LexAtom(Token::Kind kind)
-	{
-		return make_shared<Token>(kind, &Next(), 1, mLine, mColumn, mFile);
-	}
+	{ return make_shared<Token>(kind, &Next(), 1, mTrivia, mLine, mColumn, mFile); }
 
 #define KEYWORD(word, key) \
 	else if (text == #word) \
-		return make_shared<Token>(Token::##key##Keyword, text, mLine, column, mFile)
+		return make_shared<Token>(Token::##key##Keyword, text, mTrivia, mLine, column, mFile)
 
 	shared_ptr<Token> Lexer::LexIdentifier()
 	{
@@ -204,7 +217,7 @@ namespace Symple::Syntax
 		KEYWORD(else, Else);
 
 		else
-			return make_shared<Token>(Token::Identifier, text, mLine, column, mFile);
+			return make_shared<Token>(Token::Identifier, text, mTrivia, mLine, column, mFile);
 	}
 
 	shared_ptr<Token> Lexer::LexString()
@@ -218,7 +231,7 @@ namespace Symple::Syntax
 		char* end = Current;
 		Next();
 
-		return make_shared<Token>(Token::String, beg, end, ln, column, mFile);
+		return make_shared<Token>(Token::String, beg, end, mTrivia, ln, column, mFile);
 	}
 
 	shared_ptr<Token> Lexer::LexNumber()
@@ -233,10 +246,10 @@ namespace Symple::Syntax
 			Next();
 
 		if (Peek() == 'f' || Peek() == 'F')
-			return make_shared<Token>(Token::Float, beg, &Next(), mLine, column, mFile);
+			return make_shared<Token>(Token::Float, beg, &Next(), mTrivia, mLine, column, mFile);
 		else if (dotCount)
-			return make_shared<Token>(Token::Number, beg, Current, mLine, column, mFile);
+			return make_shared<Token>(Token::Number, beg, Current, mTrivia, mLine, column, mFile);
 		else
-			return make_shared<Token>(Token::Integer, beg, Current, mLine, column, mFile);
+			return make_shared<Token>(Token::Integer, beg, Current, mTrivia, mLine, column, mFile);
 	}
 }

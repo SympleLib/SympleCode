@@ -13,6 +13,7 @@ namespace Symple::Syntax
 	private:
 		std::string mSource;
 		unsigned mPosition = 0;
+		shared_ptr<Trivia> mTrivia;
 
 		char* mFile;
 		unsigned mLine = 1, mColumn = 0;

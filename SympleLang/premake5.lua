@@ -27,13 +27,6 @@ project "SympleLang"
 		"vendor/spdlog/include"
 	}
 	
-	links {}
-	
-	disablewarnings {
-		"26812",
-		"write-strings"
-	}
-	
 	filter "configurations:Debug"
 		defines "__SY_DEBUG"
 		symbols "On"
