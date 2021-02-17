@@ -27,6 +27,9 @@ namespace Symple::Syntax
 	{}
 
 
+	bool Token::IsKeyword()
+	{ return mKind > FirstKeyword; }
+
 	bool Token::Is(Kind kind)
 	{ return mKind == kind; }
 

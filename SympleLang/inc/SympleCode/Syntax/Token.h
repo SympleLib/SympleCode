@@ -24,6 +24,7 @@ namespace Symple::Syntax
 		Token(Kind, char* beg, unsigned len = 1, unsigned ln = 0, unsigned col = 0, char* file = "<NA>");
 		Token(Kind, char* beg, char* end, unsigned ln = 0, unsigned col = 0, char* file = "<NA>");
 
+		bool IsKeyword();
 		bool Is(Kind kind);
 		template <typename... Args>
 		bool Is(Kind kind, Args... kinds)
@@ -73,8 +74,8 @@ namespace Symple::Syntax
 			OpenBrace,
 			CloseBrace,
 
-
-			VoidKeyword,
+			FirstKeyword,
+			VoidKeyword = FirstKeyword,
 			ByteKeyword,
 			ShortKeyword,
 			IntKeyword,
