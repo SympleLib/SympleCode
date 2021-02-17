@@ -39,7 +39,7 @@
 
 namespace Symple::Syntax
 {
-	class Parser
+	class __SYC_API Parser
 	{
 	private:
 		TokenList mTokens;

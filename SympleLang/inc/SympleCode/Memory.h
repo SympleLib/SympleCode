@@ -9,6 +9,14 @@
 #define __SY_ASSERT(cond, msg, ...)
 #endif
 
+#if __SY_BUILD_DLL
+#define __SYC_API __declspec(dllexport)
+#elif __SY_BUILD_STATIC
+#define __SYC_API
+#else
+#define __SYC_API
+#endif
+
 namespace Symple
 {
 	using std::shared_ptr;

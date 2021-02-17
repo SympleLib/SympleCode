@@ -8,7 +8,7 @@
 
 namespace Symple::Syntax
 {
-	class Lexer
+	class __SYC_API Lexer
 	{
 	private:
 		std::string mSource;
