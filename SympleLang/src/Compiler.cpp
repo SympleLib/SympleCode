@@ -145,12 +145,17 @@ namespace Symple
 		return !system(linkcmd.str().c_str());
 	}
 	
-	int Compiler::Exec()
+	int Compiler::Exec(std::string_view args)
 	{
 		Util::SetConsoleColor(Util::Yellow);
 		puts("Executing program...");
 		Util::ResetConsoleColor();
-		int ec = system("sy\\bin\\Main.exe");
+
+		char* cmd = new char[17 + args.length()];
+		snprintf(cmd, 17 + args.length(), "sy\\bin\\Main.exe %s", args.data());
+		int ec = system(cmd);
+		delete cmd;
+
 		Util::SetConsoleColor(Util::Yellow);
 		printf("\nProgram Exited with code %i (0x%x)", ec, ec);
 		Util::ResetConsoleColor();

@@ -47,7 +47,7 @@ int main()
 	compiler->Emit();
 	compiler->Compile();
 	if (compiler->Link())
-		compiler->Exec();
+		compiler->Exec("\"Argument Test!\"");
 
 	return !getc(stdin);
 }

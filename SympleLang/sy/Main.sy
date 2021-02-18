@@ -1,23 +1,14 @@
-import "libc.sy";
+extern int puts(char*);
 
-char* BoolToStr(bool b, cap = 1)
+int main(int argv, char** argc)
 {
-	if (cap)
-		if (b)
-			ret("True");
-		else
-			ret("False");
-	else
-		if (b)
-			ret("true");
-		else
-			ret("false");
-}
+	char* firstArg = "s";
+	
+	__asm "mov _argc$0(%ebp), %eax";
+	__asm "mov 4(%eax), %eax";
+	__asm "mov %eax, _firstArg$0(%ebp)";
+	
+	puts(firstArg);
 
-int main()
-{
-	char* str = BoolToStr();
-	puts(str);
-		
 	ret 0;
 }

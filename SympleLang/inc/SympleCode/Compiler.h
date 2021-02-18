@@ -36,7 +36,7 @@ namespace Symple
 		void Compile();
 		// Returns true if links successfully
 		bool Link();
-		int Exec();
+		int Exec(std::string_view args = "");
 
 		/// <summary>
 		/// Print Diagnostics
