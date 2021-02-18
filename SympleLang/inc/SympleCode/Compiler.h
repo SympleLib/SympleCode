@@ -11,7 +11,7 @@
 
 namespace Symple
 {
-	class Compiler
+	class __SYC_API Compiler
 	{
 	private:
 		std::string mPath, mAsmPath;
@@ -20,6 +20,8 @@ namespace Symple
 		shared_ptr<Binding::BoundCompilationUnit> mTree;
 		unique_ptr<Emit::AsmEmitter> mEmitter;
 		std::vector<shared_ptr<Compiler>> mUnits;
+
+		bool mAnyErrors = false;
 		static std::vector<std::string> sLibraries;
 
 		friend class Binding::Binder;

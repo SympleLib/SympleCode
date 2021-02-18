@@ -3,24 +3,20 @@ import "libc.sy";
 char* BoolToStr(bool b, cap = 1)
 {
 	if (cap)
-	{
 		if (b)
 			ret("True");
 		else
 			ret("False");
-	}
 	else
-	{
 		if (b)
 			ret("true");
 		else
 			ret("false");
-	}
 }
 
 int main()
 {
-	char* str = BoolToStr(1);
+	char* str = BoolToStr();
 	puts(str);
 		
 	ret 0;

@@ -9,13 +9,32 @@ namespace Symple
 	using namespace Syntax;
 
 	void DiagnosticBag::ReportMessage(shared_ptr<Token> tok, std::string_view msg)
-	{ mDiagnostics.push_back(make_shared<Diagnostic>(Diagnostic::Message, tok, msg)); }
+	{
+		mDiagnostics.push_back(make_shared<Diagnostic>(Diagnostic::Message, tok, msg));
+		mMessageCount++;
+	}
 
 	void DiagnosticBag::ReportWarning(shared_ptr<Token> tok, std::string_view msg)
-	{ mDiagnostics.push_back(make_shared<Diagnostic>(Diagnostic::Warning, tok, msg)); }
+	{
+		mDiagnostics.push_back(make_shared<Diagnostic>(Diagnostic::Warning, tok, msg));
+		mWarningCount++;
+	}
 
 	void DiagnosticBag::ReportError(shared_ptr<Token> tok, std::string_view msg)
-	{ mDiagnostics.push_back(make_shared<Diagnostic>(Diagnostic::Error, tok, msg)); }
+	{
+		mDiagnostics.push_back(make_shared<Diagnostic>(Diagnostic::Error, tok, msg));
+		mErrorCount++;
+	}
+
+
+	unsigned DiagnosticBag::GetMessageCount()
+	{ return mMessageCount; }
+
+	unsigned DiagnosticBag::GetWarningCount()
+	{ return mWarningCount; }
+
+	unsigned DiagnosticBag::GetErrorCount()
+	{ return mErrorCount; }
 
 
 	std::vector<shared_ptr<Diagnostic>>& DiagnosticBag::GetDiagnostics()

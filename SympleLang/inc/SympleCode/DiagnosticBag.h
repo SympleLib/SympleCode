@@ -18,10 +18,15 @@ namespace Symple
 	{
 	private:
 		std::vector<shared_ptr<Diagnostic>> mDiagnostics;
+		unsigned mMessageCount, mWarningCount, mErrorCount;
 	public:
 		void ReportMessage(shared_ptr<Syntax::Token>, std::string_view msg);
 		void ReportWarning(shared_ptr<Syntax::Token>, std::string_view msg);
 		void ReportError(shared_ptr<Syntax::Token>, std::string_view msg);
+
+		unsigned GetMessageCount();
+		unsigned GetWarningCount();
+		unsigned GetErrorCount();
 
 		std::vector<shared_ptr<Diagnostic>>& GetDiagnostics();
 

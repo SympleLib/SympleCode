@@ -20,6 +20,9 @@ namespace Symple
 
 	shared_ptr<DiagnosticBag> Compiler::Lex()
 	{
+		if (mAnyErrors)
+			return nullptr;
+
 		unique_ptr<Syntax::Lexer> lexer = make_unique<Syntax::Lexer>((char*)mPath.c_str());
 		mTokens.clear();
 
@@ -45,6 +48,9 @@ namespace Symple
 
 	shared_ptr<DiagnosticBag> Compiler::Parse()
 	{
+		if (mAnyErrors)
+			return nullptr;
+
 		unique_ptr<Syntax::Parser> parser = make_unique<Syntax::Parser>(mTokens);
 		mAST = parser->Parse();
 		if (PrintDiagnosticBag(parser->GetDiagnosticBag(), "Parsing"))
@@ -62,6 +68,9 @@ namespace Symple
 
 	shared_ptr<DiagnosticBag> Compiler::Bind()
 	{
+		if (mAnyErrors)
+			return nullptr;
+
 		shared_ptr<Binding::Binder> binder = make_shared<Binding::Binder>();
 		mTree = binder->Bind(mAST);
 		if (PrintDiagnosticBag(binder->GetDiagnosticBag(), "Binding"))
@@ -82,6 +91,9 @@ namespace Symple
 
 	shared_ptr<Binding::BoundCompilationUnit> Compiler::BindSymbols()
 	{
+		if (mAnyErrors)
+			return nullptr;
+
 		shared_ptr<Binding::Binder> binder = make_shared<Binding::Binder>();
 		mTree = binder->BindSymbols(mAST);
 		if (PrintDiagnosticBag(binder->GetDiagnosticBag(), "Importing"))
@@ -102,18 +114,27 @@ namespace Symple
 
 	void Compiler::Emit()
 	{
+		if (mAnyErrors)
+			return;
+
 		mEmitter = make_unique<Emit::AsmEmitter>((char*)mAsmPath.c_str());
 		mEmitter->Emit(mTree);
 	}
 
 	void Compiler::Compile()
 	{
+		if (mAnyErrors)
+			return;
+
 		mEmitter->Compile();
 		mEmitter.release();
 	}
 
 	bool Compiler::Link()
 	{
+		if (mAnyErrors)
+			return false;
+
 		std::stringstream linkcmd;
 		linkcmd << "clang -m32 --optimize -o sy/bin/Main.exe " << mAsmPath.substr(0, mAsmPath.find_last_of('.')) << ".obj";
 		for (auto compiler : mUnits)
@@ -142,34 +163,29 @@ namespace Symple
 		using namespace Symple::Util;
 		SetConsoleColor(Yellow);
 
-		unsigned errCount = 0, warningCount = 0, messageCount = 0;
-
 		for (shared_ptr<Diagnostic> diagnostic : diagnostics->GetDiagnostics())
 			switch (diagnostic->GetLevel())
 			{
 			case Diagnostic::Message:
 				spdlog::info("'{}' {}:{} \"{}\"", diagnostic->GetToken()->GetFile(), diagnostic->GetToken()->GetLine(), diagnostic->GetToken()->GetColumn(), diagnostic->GetMessage());
-				messageCount++;
 				break;
 			case Diagnostic::Warning:
 				spdlog::warn("'{}' {}:{} \"{}\"", diagnostic->GetToken()->GetFile(), diagnostic->GetToken()->GetLine(), diagnostic->GetToken()->GetColumn(), diagnostic->GetMessage());
-				warningCount++;
 				break;
 			case Diagnostic::Error:
 				spdlog::error("'{}' {}:{} \"{}\"", diagnostic->GetToken()->GetFile(), diagnostic->GetToken()->GetLine(), diagnostic->GetToken()->GetColumn(), diagnostic->GetMessage());
-				errCount++;
 				break;
 			}
 
-		if (errCount)
+		if (diagnostics->GetErrorCount())
 		{
-			spdlog::info("{} '{}' failed with {} errors, {} warnings, {} messages", step, mPath, errCount, warningCount, messageCount);
+			spdlog::info("{} '{}' failed with {} errors, {} warnings, {} messages", step, mPath, diagnostics->GetErrorCount(), diagnostics->GetWarningCount(), diagnostics->GetMessageCount());
 
-			return true;
+			return mAnyErrors = true;
 		}
 		else
 		{
-			spdlog::info("{} '{}' completed with {} errors, {} warnings, {} messages", step, mPath, errCount, warningCount, messageCount);
+			spdlog::info("{} '{}' completed with {} errors, {} warnings, {} messages", step, mPath, diagnostics->GetErrorCount(), diagnostics->GetWarningCount(), diagnostics->GetMessageCount());
 
 			return false;
 		}
