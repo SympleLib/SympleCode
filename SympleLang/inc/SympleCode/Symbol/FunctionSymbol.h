@@ -14,10 +14,10 @@ namespace Symple::Symbol
 		std::string mName;
 		ParameterList mParameters;
 		CallingConvention mCallingConvention;
-		bool mDllImport : 1, mDllExport : 1;
+		bool mDllImport : 1, mDllExport : 1, mGlobal : 1;
 	public:
-		FunctionSymbol(shared_ptr<TypeSymbol> ty, std::string_view name, ParameterList& params, CallingConvention conv, bool dllin, bool dllout)
-			: mType(ty), mName(name), mParameters(params), mCallingConvention(conv), mDllImport(dllin), mDllExport(dllout)
+		FunctionSymbol(shared_ptr<TypeSymbol> ty, std::string_view name, ParameterList& params, CallingConvention conv, bool dllin, bool dllout, bool isGlobal)
+			: mType(ty), mName(name), mParameters(params), mCallingConvention(conv), mDllImport(dllin), mDllExport(dllout), mGlobal(isGlobal)
 		{}
 
 		virtual Kind GetKind() override
@@ -78,6 +78,9 @@ namespace Symple::Symbol
 
 		bool IsDllExport()
 		{ return mDllExport; }
+
+		bool IsGlobal()
+		{ return mGlobal; }
 	public:
 		enum CallingConvention : unsigned
 		{

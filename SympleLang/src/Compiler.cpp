@@ -13,6 +13,7 @@
 namespace Symple
 {
 	std::vector<std::string> Compiler::sLibraries;
+	std::vector<std::string> Compiler::sUnits;
 
 	Compiler::Compiler(char *path)
 		: mPath(path)
@@ -137,10 +138,13 @@ namespace Symple
 
 		std::stringstream linkcmd;
 		linkcmd << "clang -m32 --optimize" << (isLib ? " -shared" : "") << " -o " << output << ' ' << mAsmPath.substr(0, mAsmPath.find_last_of('.')) << ".obj";
-		for (auto compiler : mUnits)
-			linkcmd << ' ' << compiler->mAsmPath.substr(0, mAsmPath.find_last_of('.')) << ".obj";
+		for (auto unit : sUnits)
+			linkcmd << ' ' << unit.substr(0, unit.find_last_of('.')) << ".obj";
 		for (auto lib : sLibraries)
 			linkcmd << " -l " << lib;
+
+		sUnits.clear();
+		sLibraries.clear();
 
 		return !system(linkcmd.str().c_str());
 	}

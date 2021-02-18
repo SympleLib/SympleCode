@@ -19,10 +19,10 @@ namespace Symple
 		shared_ptr<Syntax::TranslationUnitSyntax> mAST;
 		shared_ptr<Binding::BoundCompilationUnit> mTree;
 		unique_ptr<Emit::AsmEmitter> mEmitter;
-		std::vector<shared_ptr<Compiler>> mUnits;
 
 		bool mAnyErrors = false;
 		static std::vector<std::string> sLibraries;
+		static std::vector<std::string> sUnits;
 
 		friend class Binding::Binder;
 	public:

@@ -34,7 +34,7 @@ namespace Symple::Binding
 				auto unit = symbol.second;
 
 				for (auto fn : unit->GetFunctions())
-					mFunctions.push_back(fn);
+					mFunctions.push_back({ fn.first, nullptr });
 				return unit;
 			}
 		for (auto symbol : Compiler::sLibraries)
@@ -59,10 +59,11 @@ namespace Symple::Binding
 			Util::SetConsoleColor(col);
 
 			auto unit = compiler->mTree;
+			Symple::Compiler::sUnits.push_back(compiler->mAsmPath);
 			sImportedSymbols.insert({ path, unit });
 
 			for (auto fn : unit->GetFunctions())
-				mFunctions.push_back(fn);
+				mFunctions.push_back({ fn.first, nullptr });
 			return unit;
 		}
 		else
@@ -189,7 +190,7 @@ namespace Symple::Binding
 			params.push_back(BindParameter(param));
 
 		Symbol::FunctionSymbol::CallingConvention conv = Symbol::FunctionSymbol::CDecl;
-		bool dll = false;
+		bool dll = false, isGlobal = true;
 		for (auto mod : syntax->GetModifiers())
 			switch (mod->GetKind())
 			{
@@ -205,9 +206,15 @@ namespace Symple::Binding
 			case Syntax::Token::DllImportKeyword:
 				mDiagnosticBag->ReportUnexpectedDllImportBody(mod);
 				break;
+			case Syntax::Token::LocalKeyword:
+				isGlobal = false;
+				break;
+			case Syntax::Token::GlobalKeyword:
+				isGlobal = true;
+				break;
 			}
 
-		shared_ptr<Symbol::FunctionSymbol> symbol = make_shared<Symbol::FunctionSymbol>(ty, name, params, conv, false, dll);
+		shared_ptr<Symbol::FunctionSymbol> symbol = make_shared<Symbol::FunctionSymbol>(ty, name, params, conv, false, dll, isGlobal);
 
 		BeginScope();
 		for (auto param : symbol->GetParameters())
@@ -240,7 +247,7 @@ namespace Symple::Binding
 			params.push_back(BindParameter(param));
 
 		Symbol::FunctionSymbol::CallingConvention conv = Symbol::FunctionSymbol::CDecl;
-		bool dll = false;
+		bool dll = false, isGlobal = true;
 		for (auto mod : syntax->GetModifiers())
 			switch (mod->GetKind())
 			{
@@ -253,9 +260,15 @@ namespace Symple::Binding
 			case Syntax::Token::DllImportKeyword:
 				dll = true;
 				break;
+			case Syntax::Token::LocalKeyword:
+				isGlobal = false;
+				break;
+			case Syntax::Token::GlobalKeyword:
+				isGlobal = true;
+				break;
 			}
 
-		shared_ptr<Symbol::FunctionSymbol> symbol = make_shared<Symbol::FunctionSymbol>(ty, name, params, conv, dll, false);
+		shared_ptr<Symbol::FunctionSymbol> symbol = make_shared<Symbol::FunctionSymbol>(ty, name, params, conv, dll, false, isGlobal);
 
 		mFunctions.push_back({ symbol, nullptr });
 		return symbol;

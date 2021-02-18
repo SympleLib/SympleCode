@@ -47,7 +47,7 @@ int main()
 	compiler->Emit();
 	compiler->Compile();
 
-	constexpr bool isLib = true;
+	constexpr bool isLib = false;
 	if (compiler->Link(isLib ? "sy/bin/Main.dll" : "sy/bin/Main.exe", isLib) && !isLib)
 		compiler->Exec("\"Argument Test!\"");
 

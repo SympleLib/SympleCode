@@ -131,9 +131,10 @@ namespace Symple::Emit
 			return;
 
 		mFunction = func;
-		mFunctionAssemblyName = GetFunctionAssemblyName(func);
+		mFunctionAssemblyName = GetFunctionAssemblyName(mFunction);
 
-		_Emit(Text, ".global %s", mFunctionAssemblyName.c_str());
+		if (mFunction->IsGlobal())
+			_Emit(Text, ".global %s", mFunctionAssemblyName.c_str());
 		std::stringstream fnSig;
 		mFunction->PrintSignature(fnSig);
 		_Emit(Text, "%s: # %s", mFunctionAssemblyName.c_str(), fnSig.str().c_str());

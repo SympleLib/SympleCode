@@ -1,5 +1,7 @@
-void ExportFn() dllexport
-{}
+import "LocalFunc.sy";
 
 int main()
-	ret 0;
+{
+	LocalFunction();
+	GlobalFunction();
+}
