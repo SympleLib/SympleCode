@@ -20,7 +20,8 @@ char* BoolToStr(bool b, cap = 1)
 
 int main()
 {
-	puts(BoolToStr(1));
+	char* str = BoolToStr(1);
+	puts(str);
 		
 	ret 0;
 }

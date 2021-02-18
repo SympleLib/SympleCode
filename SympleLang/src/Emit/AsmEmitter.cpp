@@ -274,7 +274,7 @@ namespace Symple::Emit
 			EmitConstant(expr->ConstantValue());
 			return expr->GetType();
 		}
-		else if (expr->GetType()->Equals(Symbol::TypeSymbol::CharPointerType)) // String Literal
+		else if (expr->GetType()->Equals(Symbol::TypeSymbol::CharPointerType) && expr->Is(Binding::Node::LiteralExpression)) // String Literal
 		{
 			for (unsigned i = 0; i < mStringLiterals.size(); i++)
 				if (mStringLiterals[i] == expr->GetSyntax()->GetToken()->GetText())
