@@ -1,14 +1,5 @@
-extern int puts(char*);
+void ExportFn() dllexport
+{}
 
-int main(int argv, char** argc)
-{
-	char* firstArg = "s";
-	
-	__asm "mov _argc$0(%ebp), %eax";
-	__asm "mov 4(%eax), %eax";
-	__asm "mov %eax, _firstArg$0(%ebp)";
-	
-	puts(firstArg);
-
+int main()
 	ret 0;
-}

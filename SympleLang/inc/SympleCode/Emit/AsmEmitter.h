@@ -28,6 +28,7 @@ namespace Symple::Emit
 		FILE* mTextStream;
 		FILE* mDataStream;
 		FILE* mBssStream;
+		FILE* mExportStream;
 
 		shared_ptr<Symbol::FunctionSymbol> mFunction;
 		shared_ptr<Binding::BoundCompilationUnit> mCompilationUnit;

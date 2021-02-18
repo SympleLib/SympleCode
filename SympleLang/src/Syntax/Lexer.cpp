@@ -209,6 +209,13 @@ namespace Symple::Syntax
 		KEYWORD(dllexport, DllExport);
 		KEYWORD(__dllexport, DllExport);
 
+		KEYWORD(static, Static);
+		KEYWORD(local, Local);
+		KEYWORD(private, Local);
+		KEYWORD(globl, Global);
+		KEYWORD(global, Global);
+		KEYWORD(public, Global);
+
 		KEYWORD(__asm, Native);
 		KEYWORD(native, Native);
 		KEYWORD(goto, Goto);

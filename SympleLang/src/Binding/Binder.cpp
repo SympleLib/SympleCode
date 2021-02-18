@@ -199,12 +199,15 @@ namespace Symple::Binding
 			case Syntax::Token::StdCallKeyword:
 				conv = Symbol::FunctionSymbol::StdCall;
 				break;
+			case Syntax::Token::DllExportKeyword:
+				dll = true;
+				break;
 			case Syntax::Token::DllImportKeyword:
 				mDiagnosticBag->ReportUnexpectedDllImportBody(mod);
 				break;
 			}
 
-		shared_ptr<Symbol::FunctionSymbol> symbol = make_shared<Symbol::FunctionSymbol>(ty, name, params, conv, dll);
+		shared_ptr<Symbol::FunctionSymbol> symbol = make_shared<Symbol::FunctionSymbol>(ty, name, params, conv, false, dll);
 
 		BeginScope();
 		for (auto param : symbol->GetParameters())
@@ -252,7 +255,7 @@ namespace Symple::Binding
 				break;
 			}
 
-		shared_ptr<Symbol::FunctionSymbol> symbol = make_shared<Symbol::FunctionSymbol>(ty, name, params, conv, dll);
+		shared_ptr<Symbol::FunctionSymbol> symbol = make_shared<Symbol::FunctionSymbol>(ty, name, params, conv, dll, false);
 
 		mFunctions.push_back({ symbol, nullptr });
 		return symbol;

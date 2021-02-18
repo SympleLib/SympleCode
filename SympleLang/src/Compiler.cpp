@@ -130,13 +130,13 @@ namespace Symple
 		mEmitter.release();
 	}
 
-	bool Compiler::Link()
+	bool Compiler::Link(std::string_view output, bool isLib)
 	{
 		if (mAnyErrors)
 			return false;
 
 		std::stringstream linkcmd;
-		linkcmd << "clang -m32 --optimize -o sy/bin/Main.exe " << mAsmPath.substr(0, mAsmPath.find_last_of('.')) << ".obj";
+		linkcmd << "clang -m32 --optimize" << (isLib ? " -shared" : "") << " -o " << output << ' ' << mAsmPath.substr(0, mAsmPath.find_last_of('.')) << ".obj";
 		for (auto compiler : mUnits)
 			linkcmd << ' ' << compiler->mAsmPath.substr(0, mAsmPath.find_last_of('.')) << ".obj";
 		for (auto lib : sLibraries)

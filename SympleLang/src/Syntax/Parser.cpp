@@ -124,11 +124,15 @@ namespace Symple::Syntax
 	{
 		TokenList list;
 
-		while (Peek()->Is(Token::CDeclKeyword, Token::StdCallKeyword, Token::DllExportKeyword, Token::DllImportKeyword, Token::Comma))
+		while (Peek()->Is(Token::CDeclKeyword, Token::StdCallKeyword,           // Naming Conventions
+			Token::DllExportKeyword, Token::DllImportKeyword,                   // Dll Stuff
+			Token::StaticKeyword, Token::LocalKeyword, Token::GlobalKeyword,    // Visibility Modifiers
+			Token::Comma))                                                      // Commas
 		{
 			if (Peek()->Is(Token::Comma))
 				Next();
-			list.push_back(Next());
+			else
+				list.push_back(Next());
 		}
 
 		return list;

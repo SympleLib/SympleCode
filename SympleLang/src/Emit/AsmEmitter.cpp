@@ -66,7 +66,7 @@ namespace Symple::Emit
 	std::string AsmEmitter::GetFunctionAssemblyName(shared_ptr<Symbol::FunctionSymbol> fn)
 	{
 		std::stringstream ss;
-		if (fn->IsForDll())
+		if (fn->IsDllImport())
 			ss << "*__imp__";
 		else
 			ss << '_';
@@ -96,10 +96,12 @@ namespace Symple::Emit
 			mTextStream = Util::OpenFile(mFile = "a.S", "wb+");
 		mDataStream = Util::OpenTempFile();
 		mBssStream = Util::OpenTempFile();
+		mExportStream = Util::OpenTempFile();
 
 		_Emit(Text, ".text");
 		_Emit(Data, ".data");
 		_Emit(Bss, ".bss");
+		_Emit(Export, "\t.section .drectve,\"yn\"");
 	}
 
 	AsmEmitter::~AsmEmitter()
@@ -165,6 +167,15 @@ namespace Symple::Emit
 
 		_Emit(Data, "..%s.StackSize:", mFunctionAssemblyName.c_str());
 		_Emit(Data, "\t.long %i", mAllocatedStack);
+
+		/* Needed for dllexports
+			.section	.drectve,"yn"
+			.ascii	" /EXPORT:%export%"
+			.addrsig
+		*/
+
+		if (mFunction->IsDllExport())
+			_Emit(Export, "\t.ascii \" /EXPORT:%s\"", mFunctionAssemblyName.c_str());
 	}
 
 
@@ -452,6 +463,10 @@ namespace Symple::Emit
 			Util::DumpFile(mDataStream, mTextStream);
 			rewind(mBssStream);
 			Util::DumpFile(mBssStream, mTextStream);
+
+			_Emit(Export, "\t.addrsig");
+			rewind(mExportStream);
+			Util::DumpFile(mExportStream, mTextStream);
 
 			// Print Output
 			rewind(mTextStream);

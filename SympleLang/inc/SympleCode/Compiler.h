@@ -35,7 +35,7 @@ namespace Symple
 		void Emit();
 		void Compile();
 		// Returns true if links successfully
-		bool Link();
+		bool Link(std::string_view output = "sy/bin/Main.exe", bool isLibrary = false);
 		int Exec(std::string_view args = "");
 
 		/// <summary>

@@ -96,6 +96,10 @@ namespace Symple::Syntax
 			DllImportKeyword,
 			DllExportKeyword,
 
+			StaticKeyword,
+			LocalKeyword,
+			GlobalKeyword,
+
 			NativeKeyword,
 			GotoKeyword,
 
@@ -159,6 +163,10 @@ namespace Symple::Syntax
 			"StdCallKeyword",
 			"DllImportKeyword",
 			"DllExportKeyword",
+
+			"StaticKeyword",
+			"LocalKeyword",
+			"GlobalKeyword",
 
 			"NativeKeyword",
 			"GotoKeyword",
