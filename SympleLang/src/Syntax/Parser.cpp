@@ -70,7 +70,7 @@ namespace Symple::Syntax
 		auto type = ParseType();
 		shared_ptr<Token> name = Match(Token::Identifier);
 		shared_ptr<Token> openParen = Match(Token::OpenParenthesis);
-		auto params = ParseVariableDeclarationList();
+		auto params = ParseFunctionParameters();
 		shared_ptr<Token> closeParen = Match(Token::CloseParenthesis);
 		TokenList modifiers = ParseFunctionModifiers();
 		Match(Token::Semicolon);
@@ -83,12 +83,41 @@ namespace Symple::Syntax
 		auto type = ParseType();
 		shared_ptr<Token> name = Match(Token::Identifier);
 		shared_ptr<Token> openParen = Match(Token::OpenParenthesis);
-		auto params = ParseVariableDeclarationList();
+		auto params = ParseFunctionParameters();
 		shared_ptr<Token> closeParen = Match(Token::CloseParenthesis);
 		TokenList modifiers = ParseFunctionModifiers();
 		shared_ptr<StatementSyntax> statement = ParseStatement();
 
 		return make_shared<FunctionDeclarationSyntax>(type, name, openParen, params, closeParen, modifiers, statement);
+	}
+
+	VariableDeclarationList Parser::ParseFunctionParameters()
+	{
+		VariableDeclarationList list;
+
+		bool first = true;
+		shared_ptr<TypeSyntax> pty;
+		while (!Peek()->Is(Token::CloseParenthesis))
+		{
+			if (Peek()->Is(Token::EndOfFile))
+			{
+				mDiagnosticBag->ReportUnexpectedEndOfFile(Peek());
+				break;
+			}
+
+			if (first)
+				first = false;
+			else
+				Match(Token::Comma);
+
+			if (!Peek()->Is(Token::CloseParenthesis))
+			{
+				list.push_back(ParseVariableDeclaration(pty));
+				pty = list.back()->GetType();
+			}
+		}
+
+		return list;
 	}
 
 	TokenList Parser::ParseFunctionModifiers()
@@ -241,9 +270,10 @@ namespace Symple::Syntax
 		return make_shared<ExpressionStatementSyntax>(expr);
 	}
 
-	shared_ptr<VariableDeclarationSyntax> Parser::ParseVariableDeclaration()
+	shared_ptr<VariableDeclarationSyntax> Parser::ParseVariableDeclaration(shared_ptr<TypeSyntax> ty)
 	{
-		shared_ptr<TypeSyntax> type = ParseType();
+		if (!ty || IsType())
+			ty = ParseType();
 		shared_ptr<Token> name = Token::Default;
 		if (Peek()->Is(Token::Identifier))
 			name = Next();
@@ -256,30 +286,7 @@ namespace Symple::Syntax
 			initializer = ParseExpression();
 		}
 
-		return make_shared<VariableDeclarationSyntax>(type, name, equals, initializer);
-	}
-
-	VariableDeclarationList Parser::ParseVariableDeclarationList()
-	{
-		VariableDeclarationList list;
-		
-		bool first = true;
-		while (!Peek()->Is(Token::CloseParenthesis, Token::CloseBrace))
-		{
-			if (Peek()->Is(Token::EndOfFile))
-			{
-				mDiagnosticBag->ReportUnexpectedEndOfFile(Peek());
-				break;
-			}
-
-			if (first)
-				first = false;
-			else
-				Match(Token::Comma);
-			list.push_back(ParseVariableDeclaration());
-		}
-
-		return list;
+		return make_shared<VariableDeclarationSyntax>(ty, name, equals, initializer);
 	}
 
 	shared_ptr<TypeSyntax> Parser::ParseType(shared_ptr<TypeSyntax> base)

@@ -56,6 +56,7 @@ namespace Symple::Syntax
 		shared_ptr<MemberSyntax> ParseMember();
 		shared_ptr<ExternFunctionSyntax> ParseExternFunction();
 		shared_ptr<FunctionDeclarationSyntax> ParseFunctionDeclaration();
+		VariableDeclarationList ParseFunctionParameters();
 		TokenList ParseFunctionModifiers();
 
 		shared_ptr<StatementSyntax> ParseStatement(bool matchSemicolon = true);
@@ -68,8 +69,7 @@ namespace Symple::Syntax
 		shared_ptr<NativeStatementSyntax> ParseNativeStatement();
 
 		shared_ptr<ExpressionStatementSyntax> ParseExpressionStatement();
-		shared_ptr<VariableDeclarationSyntax> ParseVariableDeclaration();
-		VariableDeclarationList ParseVariableDeclarationList();
+		shared_ptr<VariableDeclarationSyntax> ParseVariableDeclaration(shared_ptr<TypeSyntax> = nullptr);
 		shared_ptr<TypeSyntax> ParseType(shared_ptr<TypeSyntax> base = nullptr);
 
 		shared_ptr<ExpressionSyntax> ParseExpression();

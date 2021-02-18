@@ -44,14 +44,17 @@ namespace Symple::Symbol
 
 	void TypeSymbol::Print(std::ostream& os, std::string_view indent, bool last, std::string_view label)
 	{
+		PrintIndent(os, indent, last, label);
+		PrintName(os);
+		os << ": '";
+
 		if (GetBase())
 		{
-			os.put('\n');
-			GetBase()->Print(os);
+			GetBase()->PrintShort(os);
+			os.put(' ');
 		}
 
-		PrintIndent(os, indent, last, label);
-		os << GetName();
+		os << GetName() << '\'';
 	}
 
 	void TypeSymbol::PrintShort(std::ostream& os)
