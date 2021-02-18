@@ -19,6 +19,6 @@
 - [ ] Global Variables
 - [ ] Casting
 - [ ] Function Types
-- [ ] Loops
-- [ ] Labels and Gotos
+- [\] Loops
+- [X] Labels and Gotos
 - [X] Native Code (Assembly)
