@@ -6,10 +6,28 @@ project "SympleCompiler"
 	targetdir ("%{wks.location}/bin/" .. outputdir .. "/%{prj.name}")
 	objdir ("%{wks.location}/bin-int/" .. outputdir .. "/%{prj.name}")
 	
+	pchheader "sypch.h"
+	pchsource "src/sypch.cpp"
+	
 	defines
 	{
 		"SY_x86",
 		"SY_ASM",
+		"SY_BUILD_DLL",
+	}
+	
+	includedirs
+	{
+		"include",
+	}
+	
+	files
+	{
+		"include/**.h",
+		"include/**.hpp",
+		
+		"src/**.c",
+		"src/**.cpp",
 	}
 	
 	filter "configurations:Debug"
