@@ -1,4 +1,0 @@
-extern int putchar(int) cdecl;
-extern int puts(char*) cdecl;
-extern void atexit(void*) cdecl;
-extern void exit(int exitCode) cdecl;

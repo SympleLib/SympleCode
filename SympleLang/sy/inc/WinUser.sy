@@ -1,5 +1,0 @@
-link "User32";
-
-extern void FreeConsole() stdcall dllimport;
-extern void* GetConsoleWindow() stdcall dllimport;
-extern int MessageBoxA(int win, char* text, char* title, int attr) stdcall dllimport;

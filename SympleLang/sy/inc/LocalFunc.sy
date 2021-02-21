@@ -1,7 +1,0 @@
-import "libc.sy";
-
-void LocalFunction() local
-	puts("Local Function");
-
-void GlobalFunction() global
-	puts("Global Function");
