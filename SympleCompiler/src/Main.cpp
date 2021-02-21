@@ -1,6 +1,10 @@
-#include "Symple/Common/Test.h"
+#include <cstdio>
+
+#include "Symple/Common/Memory.h"
+
+using namespace Symple;
 
 int main()
 {
-	Test();
+	return !getchar();
 }
