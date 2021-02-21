@@ -4,31 +4,38 @@
 
 namespace Symple
 {
+	enum class TokenKind: uint8
+	{
+		EndOfFile,
+
+		Number,
+		Identifier,
+
+		// Markings
+		First = EndOfFile,
+		Last = Identifier,
+		Count, // Number of token kinds
+	};
+
+	constexpr const char *const TokenKindNames[(uint8)TokenKind::Count] = {
+		"EndOfFile",
+
+		"Number",
+		"Identifier",
+	};
+
 	class SY_API Token
 	{
-	public: enum Kind: uint8;
 	private:
-		std::string_view Text;
+		TokenKind kind;
+		std::string_view text;
 	public:
-	public:
-		enum Kind: uint8
-		{
-			EndOfFile,
+		Token(TokenKind);
 
-			Number,
-			Identifier,
+		TokenKind GetKind() const;
+		std::string_view GetText() const;
 
-			// Markings
-			First = EndOfFile,
-			Last = Identifier,
-			Count, // Number of token kinds
-		};
-
-		static constexpr const char *const KindNames[Count] = {
-			"EndOfFile",
-
-			"Number",
-			"Identifier",
-		};
+		SY_PROPERTY_GET(GetKind) TokenKind Kind;
+		SY_PROPERTY_GET(GetText) std::string_view Text;
 	};
 }
