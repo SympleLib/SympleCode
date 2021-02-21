@@ -1,5 +1,5 @@
-project "SympleCompiler"
-	kind "ConsoleApp"
+project "SympleLang"
+	kind "SharedLib"
 	language "C++"
 	cppdialect "C++Latest"
 	
@@ -9,13 +9,13 @@ project "SympleCompiler"
 	defines
 	{
 		"SY_x86",
+		"SY_ASM",
+		"SY_BUILD_DLL",
 	}
 	
 	includedirs
 	{
 		"include",
-		
-		"%{wks.location}/SympleLang/include",
 	}
 	
 	files
@@ -27,9 +27,9 @@ project "SympleCompiler"
 		"src/**.cpp",
 	}
 	
-	links
+	postbuildcommands
 	{
-		"SympleLang",
+		("{COPY} %{cfg.buildtarget.relpath} ../bin/" .. outputdir .. "/SympleCompiler")
 	}
 	
 	filter "configurations:Debug"

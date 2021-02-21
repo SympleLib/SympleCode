@@ -1,5 +1,7 @@
 #pragma once
 
+#include <memory>
+
 namespace Symple
 {
 	template<typename T>
@@ -12,6 +14,10 @@ namespace Symple
 	using WeakRef = std::weak_ptr<T>;
 
 	template<typename T, typename... Args>
-	Scope<T> MakeScope(Args&&... args)
+	inline Scope<T> MakeScope(Args&&... args)
+	{ return std::make_unique(std::forward(args)...); }
+
+	template<typename T, typename... Args>
+	inline GlobalRef<T> MakeGlobalRef(Args&&... args)
 	{ return std::make_shared(std::forward(args)...); }
 }
