@@ -6,6 +6,9 @@ project "SympleLang"
 	targetdir ("%{wks.location}/bin/" .. outputdir .. "/%{prj.name}")
 	objdir ("%{wks.location}/bin-int/" .. outputdir .. "/%{prj.name}")
 	
+	pchheader "Symple/Common/Common.h"
+	pchsource "src/Symple/Common/Common.cpp"
+	
 	defines
 	{
 		"SY_x86",

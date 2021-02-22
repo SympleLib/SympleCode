@@ -1,8 +1,8 @@
 #pragma once
 
 #if defined(_MSC_VER)
-	#define SY_PROPERTY_GET(getter) _declspec(property(get = getter))
-	#define SY_PROPERTY_GET_SET(getter, setter) _declspec(property(get = getter, put = setter))
+	#define SY_PROPERTY_GET(getter) __declspec(property(get = getter))
+	#define SY_PROPERTY_GET_SET(getter, setter) __declspec(property(get = getter, put = setter))
 #else
 #error Only MSVC supported for SympleCode
 #endif
@@ -31,5 +31,4 @@ namespace Symple
 #include <string>
 #include <sstream>
 
-#include "Symple/Common/Math.h"
 #include "Symple/Common/Memory.h"

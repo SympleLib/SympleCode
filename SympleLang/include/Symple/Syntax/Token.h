@@ -30,7 +30,7 @@ namespace Symple
 		TokenKind kind;
 		std::string_view text;
 	public:
-		Token(TokenKind);
+		Token(TokenKind, std::string_view text);
 
 		TokenKind GetKind() const;
 		std::string_view GetText() const;
