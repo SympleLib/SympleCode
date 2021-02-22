@@ -28,7 +28,9 @@ namespace Symple
 	using uint64 = unsigned long long;
 }
 
+#include <cassert>
 #include <string>
 #include <sstream>
 
+#include "Symple/Common/File.h"
 #include "Symple/Common/Memory.h"

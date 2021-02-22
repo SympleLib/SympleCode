@@ -25,6 +25,9 @@ project "SympleCompiler"
 		
 		"src/**.c",
 		"src/**.cpp",
+		
+		"sy/**.sy",
+		"sy/**.syc",
 	}
 	
 	links
