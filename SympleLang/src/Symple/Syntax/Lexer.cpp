@@ -30,14 +30,14 @@ namespace Symple
 		else
 		{
 			if (Current == 0)
-				return MakeGlobalRef<Token>(TokenKind::EndOfFile, --p, ++p, file); // Arguments gets push on the stack from right to left, so I can't do 'p++, p'
+				return MakeToken(TokenKind::EndOfFile, --p, ++p); // Arguments gets push on the stack from right to left, so I can't do 'p++, p'
 
 			// Single-line comments
 			if (StartsWith(p, "//"))
 			{
 				Next(); Next(); // Eat tokens
 				auto *beg = p;
-				while (!(Current == '\n' || Current == 0))
+				while (Current != '\n' && Current != 0)
 					Next();
 				return MakeToken(TokenKind::SingleLineComment, beg, p);
 			}
@@ -80,7 +80,7 @@ namespace Symple
 
 
 	GlobalRef<Token> Lexer::MakeToken(TokenKind kind, const char *beg, const char *end)
-	{ return MakeGlobalRef<Token>(kind, beg, end, file); }
+	{ return MakeGlobalRef<Token>(kind, beg, end, file, ln, disLn, col); }
 
 
 	GlobalRef<Token> Lexer::LexNumber(uint32 prefix)
