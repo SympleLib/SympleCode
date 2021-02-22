@@ -23,6 +23,8 @@ namespace Symple
 
 		SY_PROPERTY_GET(Peek) const char &Current;
 
+		GlobalRef<Token> MakeToken(TokenKind, const char *beg, const char *end);
+
 		GlobalRef<Token> LexNumber(uint32 prefix);
 		GlobalRef<Token> LexIdentifier();
 		GlobalRef<Token> LexPunctuation();
@@ -37,6 +39,11 @@ namespace Symple
 			"0b",
 			"0x",
 			"0",
+		};
+
+		static constexpr const char *const Punctuators[] =
+		{
+			"+", "-", "*", "/", "%",
 		};
 	};
 }

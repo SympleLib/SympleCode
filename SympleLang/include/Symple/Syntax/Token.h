@@ -4,30 +4,44 @@
 
 namespace Symple
 {
-	enum class TokenKind: uint8
+	enum class TokenKind: uint32
 	{
+		Unknown,
 		EndOfFile,
 
 		Number,
 		Identifier,
 
+		Plus,
+		Dash,
+		Star,
+		Slash,
+		Percent,
+
 		SingleLineComment,
 		MultiLineComment,
 
 		// Markings
+		Punctuator = Plus,
 		Comment = SingleLineComment,
 
-		First = EndOfFile,
+		First = Unknown,
 		Last = MultiLineComment,
 		Count, // Number of token kinds
 	};
 
-	constexpr const char *const TokenKindNames[(uint8)TokenKind::Count] =
+	constexpr const char *const TokenKindNames[(uint32)TokenKind::Count] =
 	{
+		"Unknown",
 		"EndOfFile",
 
 		"Number",
 		"Identifier",
+
+		"Plus",
+		"Dash",
+		"Star",
+		"Percent",
 
 		"SingleLineComment",
 		"MultiLineComment",

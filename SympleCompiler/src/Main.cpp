@@ -8,7 +8,7 @@ int main()
 	Lexer lexer(MakeGlobalRef<File>("sy/Main.sy", FilePermissions::Read));
 	while (auto tok = lexer.Lex())
 	{
-		std::cout << TokenKindNames[(int32)tok->Kind] << "Token '" << tok->Text << "'\n";
+		std::cout << TokenKindNames[(uint32)tok->Kind] << "Token '" << tok->Text << "'\n";
 
 		if (tok->Kind == TokenKind::EndOfFile)
 			break;
