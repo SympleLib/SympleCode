@@ -4,7 +4,7 @@
 
 namespace Symple
 {
-	enum class FilePermissions: uint8
+	enum class SY_API FilePermissions: uint8
 	{
 		Read   = 1 << 0,
 		Write  = 1 << 1,

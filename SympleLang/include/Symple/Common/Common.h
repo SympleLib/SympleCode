@@ -31,8 +31,9 @@ namespace Symple
 #include <cassert>
 #include <string>
 #include <sstream>
+#include <vector>
 
 #include "Symple/Common/File.h"
 #include "Symple/Common/Memory.h"
 
-bool StartsWith(const char *string, const char *start);
+bool SY_API StartsWith(const char *string, const char *start);

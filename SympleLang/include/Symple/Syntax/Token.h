@@ -4,7 +4,7 @@
 
 namespace Symple
 {
-	enum class TokenKind: uint32
+	enum class SY_API TokenKind: uint32
 	{
 		Unknown,
 		EndOfFile,
