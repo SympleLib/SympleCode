@@ -9,9 +9,39 @@ namespace Symple
 
 	GlobalRef<Token> Lexer::Lex()
 	{
-		
+		//if (uint32 pre = NumberPrefix(p))
+		//	return LexNumber(pre);
+		//else if (IsIdentifier(Current))
+		//	return LexIdentifier();
+		//else
+		{
+			// Single-line comments
+			if (StartsWith(p, "//"))
+			{
+				Next(); Next(); // Eat tokens
+				auto *beg = p;
+				while (!(Current == '\n' || Current == 0))
+					Next();
+				return MakeGlobalRef<Token>(TokenKind::SingleLineComment, beg, p, file);
+			}
+
+			// Multi-line comments
+			if (StartsWith(p, "/*"))
+			{
+				Next(); Next(); // Eat tokens
+				auto *beg = p;
+				while (!StartsWith(p, "*/"))
+					Next();
+				auto *end = p;
+				Next(); Next(); // Eat tokens
+				return MakeGlobalRef<Token>(TokenKind::SingleLineComment, beg, end, file);
+			}
+		}
 	}
 
+
+	const char &Lexer::Peek()
+	{ return *p; }
 
 	const char &Lexer::Peek(uint32 off)
 	{
@@ -26,27 +56,29 @@ namespace Symple
 		const char &prev = Current;
 		col++;
 		p++;
-		assert(p <= file->Source.cend().operator->());
 		return prev;
 	}
 
-	static int8 NumberPrefix(const std::string &str)
+	uint32 Lexer::NumberPrefix(const char *p)
 	{
-		str.starts_with("0");
+		for (uint32 i = 0; i < sizeof(NumberPrefixes) / sizeof(*NumberPrefixes); i++)
+			if (StartsWith(p, NumberPrefixes[i]))
+				return i + 1;
+		return 0;
 	}
 
-	static bool IsNumber(char)
+	bool Lexer::IsNumber(char)
 	{
-
+		return false;
 	}
 
-	static bool IsIdentifier(char)
+	bool Lexer::IsIdentifier(char)
 	{
-
+		return false;
 	}
 
-	static bool IsWhiteSpace(char)
+	bool Lexer::IsWhiteSpace(char)
 	{
-		
+		return false;
 	}
 }

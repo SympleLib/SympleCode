@@ -11,9 +11,14 @@ namespace Symple
 		Number,
 		Identifier,
 
+		SingleLineComment,
+		MultiLineComment,
+
 		// Markings
+		Comment = SingleLineComment,
+
 		First = EndOfFile,
-		Last = Identifier,
+		Last = MultiLineComment,
 		Count, // Number of token kinds
 	};
 
@@ -23,6 +28,9 @@ namespace Symple
 
 		"Number",
 		"Identifier",
+
+		"SingleLineComment",
+		"MultiLineComment",
 	};
 
 	class SY_API Token
@@ -33,7 +41,7 @@ namespace Symple
 
 		GlobalRef<File> file;
 	public:
-		Token(TokenKind, std::string_view text, const GlobalRef<File>&);
+		Token(TokenKind, const char *begin, const char *end, const GlobalRef<File>&);
 
 		TokenKind GetKind() const;
 		std::string_view GetText() const;

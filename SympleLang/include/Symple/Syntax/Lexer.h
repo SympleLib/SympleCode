@@ -17,16 +17,17 @@ namespace Symple
 
 		GlobalRef<Token> Lex();
 	private:
-		const char &Peek(uint32 offset = 0);
+		const char &Peek();
+		const char &Peek(uint32 offset);
 		const char &Next();
 
 		SY_PROPERTY_GET(Peek) const char &Current;
 
-		GlobalRef<Token> LexNumber();
+		GlobalRef<Token> LexNumber(uint32 prefix);
 		GlobalRef<Token> LexIdentifier();
 		GlobalRef<Token> LexPunctuation();
 
-		static int8 NumberPrefix(const std::string&);
+		static uint32 NumberPrefix(const char *);
 		static bool IsNumber(char);
 		static bool IsIdentifier(char);
 		static bool IsWhiteSpace(char);

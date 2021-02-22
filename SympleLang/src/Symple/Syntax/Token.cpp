@@ -3,8 +3,8 @@
 
 namespace Symple
 {
-	Token::Token(TokenKind kind, std::string_view text, const GlobalRef<Symple::File> &file)
-		: kind(kind), text(text), file(file) {}
+	Token::Token(TokenKind kind, const char *beg, const char *end, const GlobalRef<Symple::File> &file)
+		: kind(kind), text(beg, end - beg), file(file) {}
 
 	TokenKind Token::GetKind() const
 	{ return kind; }

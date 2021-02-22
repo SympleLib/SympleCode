@@ -1,12 +1,18 @@
 #include <iostream>
-#include "Symple/Syntax/Token.h"
+#include "Symple/Syntax/Lexer.h"
 
 using namespace Symple;
 
 int main()
 {
-	Scope<File> file = MakeScope<File>("sy/Main.sy", FilePermissions::Read);
-	std::cout << file->Source << std::endl;
+	Lexer lexer(MakeGlobalRef<File>("sy/Main.sy", FilePermissions::Read));
+	while (auto tok = lexer.Lex())
+	{
+		std::cout << TokenKindNames[(int32)tok->Kind] << "Token '" << tok->Text << "'\n";
+
+		if (tok->Kind == TokenKind::EndOfFile)
+			break;
+	}
 	
 	return !getchar();
 }

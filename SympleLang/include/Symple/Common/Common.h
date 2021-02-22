@@ -34,3 +34,5 @@ namespace Symple
 
 #include "Symple/Common/File.h"
 #include "Symple/Common/Memory.h"
+
+bool StartsWith(const char *string, const char *start);
