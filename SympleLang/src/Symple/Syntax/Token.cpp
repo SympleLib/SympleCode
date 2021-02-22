@@ -6,6 +6,11 @@ namespace Symple
 	Token::Token(TokenKind kind, const char *beg, const char *end, const GlobalRef<Symple::File> &file, uint32 ln, uint32 disLn, uint32 col)
 		: kind(kind), text(beg, end - beg), file(file), ln(ln), disLn(disLn), col(col) {}
 
+
+	bool Token::Is(TokenKind k) const
+	{ return kind == k; }
+
+
 	TokenKind Token::GetKind() const
 	{ return kind; }
 

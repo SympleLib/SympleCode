@@ -51,7 +51,7 @@ namespace Symple
 					Next();
 				auto *end = p;
 				Next(); Next(); // Eat tokens
-				return MakeToken(TokenKind::SingleLineComment, beg, end);
+				return MakeToken(TokenKind::MultiLineComment, beg, end);
 			}
 
 			return LexPunctuation();

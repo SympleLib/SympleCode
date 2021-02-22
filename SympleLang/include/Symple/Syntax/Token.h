@@ -41,6 +41,7 @@ namespace Symple
 		"Plus",
 		"Dash",
 		"Star",
+		"Slash",
 		"Percent",
 
 		"SingleLineComment",
@@ -58,6 +59,11 @@ namespace Symple
 		uint32 ln, disLn, col;
 	public:
 		Token(TokenKind, const char *begin, const char *end, const GlobalRef<File>&, uint32 line, uint32 displayLine, uint32 column);
+
+		bool Is(TokenKind) const;
+		template <typename... Args>
+		bool Is(TokenKind kind, Args&&... kinds) const
+		{ return Is(kind) || Is(kinds...); }
 
 		TokenKind GetKind() const;
 		std::string_view GetText() const;

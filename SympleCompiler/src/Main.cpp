@@ -6,14 +6,19 @@ using namespace Symple;
 
 int main()
 {
-	Lexer lexer(MakeGlobalRef<File>("sy/Main.sy", FilePermissions::Read));
+	GlobalRef<File> src = MakeGlobalRef<File>("sy/Main.sy", FilePermissions::Read);
+	std::cout << "Source:\n" << src->Source << '\n';
+
+	Lexer lexer(src);
 	std::vector<GlobalRef<Token>> toks;
+	std::cout << "Tokens:\n";
 	while (auto tok = lexer.Lex())
 	{
 		std::cout << TokenKindNames[(uint32)tok->Kind] << "Token '" << tok->Text << "'\n";
-		toks.push_back(tok);
+		if (!tok->Is(TokenKind::SingleLineComment, TokenKind::MultiLineComment))
+			toks.push_back(tok);
 
-		if (tok->Kind == TokenKind::EndOfFile)
+		if (tok->Is(TokenKind::EndOfFile))
 			break;
 	}
 
