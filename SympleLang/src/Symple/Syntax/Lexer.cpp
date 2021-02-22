@@ -15,6 +15,23 @@ namespace Symple
 		//	return LexIdentifier();
 		//else
 		{
+			bool isNewLine;
+			while ((isNewLine = Current == '\n') || IsWhiteSpace(Current))
+			{
+				if (isNewLine)
+				{
+					ln++;
+					disLn++;
+					col = 0;
+					p++;
+				}
+				else
+					Next();
+			}
+
+			if (Current == 0)
+				return MakeGlobalRef<Token>(TokenKind::EndOfFile, --p, ++p, file);
+
 			// Single-line comments
 			if (StartsWith(p, "//"))
 			{
@@ -77,8 +94,6 @@ namespace Symple
 		return false;
 	}
 
-	bool Lexer::IsWhiteSpace(char)
-	{
-		return false;
-	}
+	bool Lexer::IsWhiteSpace(char c)
+	{ return c == ' ' || c == '\t' || c == '\r'; }
 }
