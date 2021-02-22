@@ -35,5 +35,6 @@ namespace Symple
 
 #include "Symple/Common/File.h"
 #include "Symple/Common/Memory.h"
+#include "Symple/Common/Console.h"
 
 bool SY_API StartsWith(const char *string, const char *start);
