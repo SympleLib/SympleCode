@@ -17,7 +17,8 @@ namespace Symple
 		Count, // Number of token kinds
 	};
 
-	constexpr const char *const TokenKindNames[(uint8)TokenKind::Count] = {
+	constexpr const char *const TokenKindNames[(uint8)TokenKind::Count] =
+	{
 		"EndOfFile",
 
 		"Number",
@@ -29,13 +30,17 @@ namespace Symple
 	private:
 		TokenKind kind;
 		std::string_view text;
+
+		GlobalRef<File> file;
 	public:
-		Token(TokenKind, std::string_view text);
+		Token(TokenKind, std::string_view text, const GlobalRef<File>&);
 
 		TokenKind GetKind() const;
 		std::string_view GetText() const;
+		GlobalRef<File> GetFile() const;
 
 		SY_PROPERTY_GET(GetKind) TokenKind Kind;
 		SY_PROPERTY_GET(GetText) std::string_view Text;
+		SY_PROPERTY_GET(GetFile) GlobalRef<File> File;
 	};
 }
