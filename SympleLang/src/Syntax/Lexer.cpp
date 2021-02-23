@@ -26,6 +26,15 @@ namespace Symple::Syntax
 	case char: \
 		return LexAtom(Token::##ty)
 
+#define PUNC(str, ty) \
+	else if (!strncmp(Current, str, strlen(str))) \
+	{ \
+		char *beg = Current; \
+		for (unsigned i = 0; i < strlen(str); i++) \
+			Next(); \
+		return make_shared<Token>(Token::##ty, beg, &Next(), mTrivia, mLine, mColumn, mFile); \
+	}
+
 	shared_ptr<Token> Lexer::Lex()
 	{
 		unsigned trKind = mPosition ? Trivia::Unknown : Trivia::StartOfLine;
@@ -52,37 +61,40 @@ namespace Symple::Syntax
 
 		if (IsNumber())
 			return LexNumber();
-		if (IsIdentifier(c))
+		else if (IsIdentifier(c))
 			return LexIdentifier();
 
-		switch (c)
-		{
-		ATOM(',', Comma);
-		ATOM(':', Colon);
-		ATOM(';', Semicolon);
+		PUNC("=>", EqualArrow)
 
-		ATOM('+', Plus);
-		ATOM('-', Dash);
-		ATOM('!', Exclamation);
-		ATOM('*', Asterisk);
-		ATOM('/', Slash);
-		ATOM('%', Percentage);
+		else
+			switch (c)
+			{
+			ATOM(',', Comma);
+			ATOM(':', Colon);
+			ATOM(';', Semicolon);
 
-		ATOM('=', Equal);
+			ATOM('+', Plus);
+			ATOM('-', Dash);
+			ATOM('!', Exclamation);
+			ATOM('*', Asterisk);
+			ATOM('/', Slash);
+			ATOM('%', Percentage);
 
-		ATOM('(', OpenParenthesis);
-		ATOM(')', CloseParenthesis);
-		ATOM('{', OpenBrace);
-		ATOM('}', CloseBrace);
+			ATOM('=', Equal);
 
-		case '"':
-			return LexString();
+			ATOM('(', OpenParenthesis);
+			ATOM(')', CloseParenthesis);
+			ATOM('{', OpenBrace);
+			ATOM('}', CloseBrace);
 
-		default:
-			auto tok = LexAtom(Token::Unknown);
-			mDiagnosticBag->ReportUnknownToken(tok);
-			return tok;
-		}
+			case '"':
+				return LexString();
+
+			default:
+				auto tok = LexAtom(Token::Unknown);
+				mDiagnosticBag->ReportUnknownToken(tok);
+				return tok;
+			}
 	}
 
 

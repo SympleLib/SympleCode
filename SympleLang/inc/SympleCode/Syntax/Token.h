@@ -64,6 +64,7 @@ namespace Symple::Syntax
 			Exclamation,
 
 			Equal,
+			EqualArrow,
 
 			OpenParenthesis,
 			CloseParenthesis,
@@ -134,6 +135,7 @@ namespace Symple::Syntax
 			"Exclamation",
 
 			"Equal",
+			"EqualArrow",
 
 			"OpenParenthesis",
 			"CloseParenthesis",

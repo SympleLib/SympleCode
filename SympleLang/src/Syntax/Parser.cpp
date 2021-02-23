@@ -88,6 +88,10 @@ namespace Symple::Syntax
 		auto params = ParseFunctionParameters();
 		shared_ptr<Token> closeParen = Match(Token::CloseParenthesis);
 		TokenList modifiers = ParseFunctionModifiers();
+
+		if (Peek()->Is(Token::EqualArrow))
+			Next();
+
 		shared_ptr<StatementSyntax> statement = ParseStatement();
 
 		return make_shared<FunctionDeclarationSyntax>(type, name, openParen, params, closeParen, modifiers, statement);
