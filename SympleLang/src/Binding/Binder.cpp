@@ -101,6 +101,7 @@ namespace Symple::Binding
 
 		EndScope();
 
+		CheckMemberPromises();
 		CheckFunctionPromises();
 
 		return make_shared<BoundCompilationUnit>(unit, mFunctions);
@@ -120,6 +121,15 @@ namespace Symple::Binding
 
 			if (promise->IsBroken())
 				mDiagnosticBag->ReportUndeclaredLabel(promise->GetPrompt()->GetLabel());
+		}
+	}
+
+	void Binder::CheckMemberPromises()
+	{
+		for (auto promise : mMemPromises)
+		{
+			if (promise->IsBroken())
+				mDiagnosticBag->ReportBindError(promise->GetPrompt());
 		}
 	}
 
@@ -553,6 +563,14 @@ namespace Symple::Binding
 	shared_ptr<BoundExpression> Binder::BindBinaryExpression(shared_ptr<Syntax::BinaryExpressionSyntax> syntax)
 	{
 		shared_ptr<BoundExpression> left = BindExpression(syntax->GetLeft());
+
+		if (syntax->GetOperator()->Is(Syntax::Token::Period))
+		{
+			shared_ptr<MemberPromise> promise = make_shared<MemberPromise>(syntax);
+			mMemPromises.push_back(promise);
+			return make_shared<BoundFieldExpression>(syntax, promise);
+		}
+
 		shared_ptr<BoundExpression> right = BindExpression(syntax->GetRight());
 
 		shared_ptr<BoundBinaryOperator> op = BoundBinaryOperator::Bind(syntax->GetOperator()->GetKind(), left->GetType(), right->GetType());

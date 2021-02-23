@@ -33,6 +33,7 @@
 #include "SympleCode/Binding/BoundVariableDeclaration.h"
 
 #include "SympleCode/Binding/BoundExpression.h"
+#include "SympleCode/Binding/BoundFieldExpression.h"
 #include "SympleCode/Binding/BoundCallExpression.h"
 #include "SympleCode/Binding/BoundErrorExpression.h"
 #include "SympleCode/Binding/BoundUnaryExpression.h"
@@ -50,6 +51,7 @@ namespace Symple::Binding
 		FunctionMap mFunctions;
 		Symbol::LabelList mLabels;
 		std::vector<shared_ptr<GotoPromise>> mGotoPromises;
+		std::vector<shared_ptr<MemberPromise>> mMemPromises;
 		std::vector<shared_ptr<FunctionPromise>> mFuncPromises;
 
 		shared_ptr<BoundScope> mScope;
@@ -59,6 +61,7 @@ namespace Symple::Binding
 		void EndScope();
 
 		void CheckGotoPromises();
+		void CheckMemberPromises();
 		void CheckFunctionPromises();
 
 		shared_ptr<Node> BindMemberInternal(shared_ptr<Syntax::MemberSyntax>);

@@ -40,9 +40,9 @@ namespace Symple::Binding
 			std::string newIndent(indent);
 			newIndent += GetAddIndent(last);
 
-			for (auto& func : GetFunctions())
+			for (auto &func : GetFunctions())
 			{
-				os.put('\n'); func.first->Print(os, newIndent, false, "Function = ");
+				os.put('\n'); func.first->Print(os, newIndent, !func.second && func == GetFunctions().back(), "Function = ");
 				if (func.second)
 				{ os.put('\n'); func.second->Print(os, newIndent, func == GetFunctions().back(), "Body = "); }
 			}

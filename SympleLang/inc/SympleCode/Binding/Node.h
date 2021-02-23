@@ -67,6 +67,7 @@ namespace Symple::Binding
 			LiteralExpression,
 			AssignmentExpression,
 
+			FieldExpression,
 			DefaultExpression,
 			ConstantExpression,
 			ImplicitCastExpression,
@@ -103,6 +104,7 @@ namespace Symple::Binding
 			"LiteralExpression",
 			"AssignmentExpression",
 			
+			"FieldExpression",
 			"DefaultExpression",
 			"ConstantExpression",
 			"ImplicitCastExpression",
