@@ -20,12 +20,12 @@ using std::make_unique;
 
 using spdlog::level::level_enum;
 
-int main()
+static void SetupLogging()
 {
 	spdlog::sinks_init_list sinks = {
-#if __SY_RELEASE
+	#if __SY_RELEASE
 		make_shared<spdlog::sinks::stdout_color_sink_mt>(),
-#endif
+	#endif
 		make_shared<spdlog::sinks::basic_file_sink_mt>("stdout.log", true)
 	};
 
@@ -39,6 +39,11 @@ int main()
 
 #endif
 	SetConsoleColor(Yellow);
+}
+
+int main()
+{
+	SetupLogging();
 
 	unique_ptr<Symple::Compiler> compiler = make_unique<Symple::Compiler>((char*)"sy/Main.sy");
 	compiler->Lex();
