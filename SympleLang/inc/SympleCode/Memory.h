@@ -27,3 +27,5 @@ namespace Symple
 
 	using std::dynamic_pointer_cast;
 }
+
+#undef GetObject

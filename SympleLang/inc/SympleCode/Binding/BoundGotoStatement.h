@@ -9,12 +9,14 @@
 
 namespace Symple::Binding
 {
+	typedef Promise<shared_ptr<Symbol::LabelSymbol>, std::string> GotoPromise;
+
 	class BoundGotoStatement : public BoundStatement
 	{
 	private:
-		Promise<shared_ptr<Symbol::LabelSymbol>, std::string> mLabel;
+		shared_ptr<GotoPromise> mLabel;
 	public:
-		BoundGotoStatement(shared_ptr<Syntax::GotoStatementSyntax> syntax, Promise<shared_ptr<Symbol::LabelSymbol>, std::string>& symbol)
+		BoundGotoStatement(shared_ptr<Syntax::GotoStatementSyntax> syntax, shared_ptr<GotoPromise> symbol)
 			: BoundStatement(syntax), mLabel(symbol)
 		{}
 
@@ -32,6 +34,6 @@ namespace Symple::Binding
 		{ return mLabel; }
 
 		std::string_view GetLabel()
-		{ return mLabel.GetPrompt(); }
+		{ return mLabel->GetPrompt(); }
 	};
 }

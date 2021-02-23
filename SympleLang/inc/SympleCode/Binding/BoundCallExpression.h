@@ -8,27 +8,28 @@
 
 namespace Symple::Binding
 {
+	typedef Promise<std::pair<shared_ptr<Symbol::FunctionSymbol>, ExpressionList>, shared_ptr<Syntax::CallExpressionSyntax>> FunctionPromise;
+
 	class BoundCallExpression : public BoundExpression
 	{
 	private:
-		shared_ptr<Symbol::FunctionSymbol> mFunction;
-		ExpressionList mArguments;
+		shared_ptr<FunctionPromise> mFunction;
 	public:
-		BoundCallExpression(shared_ptr<Syntax::CallExpressionSyntax> syntax, shared_ptr<Symbol::FunctionSymbol> func, ExpressionList args)
-			: BoundExpression(syntax), mFunction(func), mArguments(args) {}
+		BoundCallExpression(shared_ptr<Syntax::CallExpressionSyntax> syntax, shared_ptr<FunctionPromise> func)
+			: BoundExpression(syntax), mFunction(func) {}
 
 		virtual Kind GetKind() override
 		{ return CallExpression; }
 
 		virtual shared_ptr<Symbol::TypeSymbol> GetType() override
-		{ return GetFunction()->GetType(); }
+		{ return GetFunction() ? GetFunction()->GetType() : Symbol::TypeSymbol::IntType; }
 
 		virtual void Print(std::ostream& os = std::cout, std::string_view indent = "", bool last = true, std::string_view label = "") override
 		{
 			PrintIndent(os, indent, last, label);
 			PrintName(os);
 
-			os << " '" << GetFunction()->GetName(); os << '(' << GetArguments().size() << ")'";
+			//os << " '" << GetSyntax()->GetToken()->GetText(); os << '(' << (GetArguments().size()) << ")'";
 			
 			std::string newIndent(indent);
 			newIndent += GetAddIndent(last);
@@ -38,9 +39,9 @@ namespace Symple::Binding
 		}
 
 		shared_ptr<Symbol::FunctionSymbol> GetFunction()
-		{ return mFunction; }
+		{ return mFunction->GetObject().first; }
 
 		ExpressionList GetArguments()
-		{ return mArguments; }
+		{ return mFunction->GetObject().second; }
 	};
 }

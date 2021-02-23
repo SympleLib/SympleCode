@@ -101,7 +101,57 @@ namespace Symple::Binding
 
 		EndScope();
 
+		CheckFunctionPromises();
+
 		return make_shared<BoundCompilationUnit>(unit, mFunctions);
+	}
+
+
+	void Binder::CheckFunctionPromises()
+	{
+		for (auto promise : mFuncPromises)
+		{
+			auto syntax = promise->GetPrompt();
+
+			shared_ptr<Symbol::FunctionSymbol> funcSymbol = FindFunction(mFunctions, syntax->GetName()->GetText());
+			ExpressionList args;
+			if (funcSymbol)
+			{
+				if (syntax->GetArguments().size() > funcSymbol->GetParameters().size())
+					mDiagnosticBag->ReportTooManyArguments(syntax, funcSymbol->GetParameters().size());
+				else
+					for (unsigned i = 0; i < funcSymbol->GetParameters().size(); i++)
+					{
+						shared_ptr<BoundExpression> arg = make_shared<BoundConstantExpression>(funcSymbol->GetParameters()[i]->GetInitializer());
+						if (i < syntax->GetArguments().size())
+						{
+							auto boundArg = BindExpression(syntax->GetArguments()[i]);
+							if (boundArg->GetKind() == Node::DefaultExpression)
+							{
+								if (!arg->ConstantValue())
+								{
+									mDiagnosticBag->ReportNoDefaultArgument(syntax, i);
+									break;
+								}
+							}
+							else
+								arg = boundArg;
+						}
+						else if (!arg->ConstantValue())
+						{
+							mDiagnosticBag->ReportTooFewArguments(syntax);
+							break;
+						}
+
+						args.push_back(arg);
+					}
+
+				auto pair = std::pair<shared_ptr<Symbol::FunctionSymbol>, ExpressionList>(funcSymbol, args);
+				promise->Complete(pair);
+			}
+			else
+				mDiagnosticBag->ReportNoSuchFunction(syntax);
+		}
 	}
 
 
@@ -226,12 +276,12 @@ namespace Symple::Binding
 		for (auto promise : mGotoPromises)
 		{
 			for (auto label : mLabels)
-				if (label->GetLabel() == promise.GetPrompt())
+				if (label->GetLabel() == promise->GetPrompt())
 				{
-					promise.Complete(label);
+					promise->Complete(label);
 					break;
 				}
-			if (promise.IsBroken())
+			if (promise->IsBroken())
 				abort();
 		}
 
@@ -402,7 +452,7 @@ namespace Symple::Binding
 
 	shared_ptr<BoundGotoStatement> Binder::BindGotoStatement(shared_ptr<Syntax::GotoStatementSyntax> syntax)
 	{
-		Promise<shared_ptr<Symbol::LabelSymbol>, std::string> promise(std::string(syntax->GetLabel()->GetText()));
+		shared_ptr<GotoPromise> promise = make_shared<GotoPromise>(std::string(syntax->GetLabel()->GetText()));
 		mGotoPromises.push_back(promise);
 		return make_shared<BoundGotoStatement>(syntax, promise);
 	}
@@ -478,46 +528,9 @@ namespace Symple::Binding
 
 	shared_ptr<BoundExpression> Binder::BindCallExpression(shared_ptr<Syntax::CallExpressionSyntax> syntax)
 	{
-		shared_ptr<Symbol::FunctionSymbol> funcSymbol = FindFunction(mFunctions, syntax->GetName()->GetText());
-		ExpressionList args;
-		if (funcSymbol)
-		{
-			if (syntax->GetArguments().size() > funcSymbol->GetParameters().size())
-				mDiagnosticBag->ReportTooManyArguments(syntax, funcSymbol->GetParameters().size());
-			else
-				for (unsigned i = 0; i < funcSymbol->GetParameters().size(); i++)
-				{
-					shared_ptr<BoundExpression> arg = make_shared<BoundConstantExpression>(funcSymbol->GetParameters()[i]->GetInitializer());
-					if (i < syntax->GetArguments().size())
-					{
-						auto boundArg = BindExpression(syntax->GetArguments()[i]);
-						if (boundArg->GetKind() == Node::DefaultExpression)
-						{
-							if (!arg->ConstantValue())
-							{
-								mDiagnosticBag->ReportNoDefaultArgument(syntax, i);
-								break;
-							}
-						}
-						else
-							arg = boundArg;
-					}
-					else if (!arg->ConstantValue())
-					{
-						mDiagnosticBag->ReportTooFewArguments(syntax);
-						break;
-					}
-
-					args.push_back(arg);
-				}
-
-			return make_shared<BoundCallExpression>(syntax, funcSymbol, args);
-		}
-		else
-		{
-			mDiagnosticBag->ReportNoSuchFunction(syntax);
-			return make_shared<BoundErrorExpression>(syntax);
-		}
+		shared_ptr<FunctionPromise> promise = make_shared<FunctionPromise>(syntax);
+		mFuncPromises.push_back(promise);
+		return make_shared<BoundCallExpression>(syntax, promise);
 	}
 
 	shared_ptr<BoundUnaryExpression> Binder::BindUnaryExpression(shared_ptr<Syntax::UnaryExpressionSyntax> syntax)

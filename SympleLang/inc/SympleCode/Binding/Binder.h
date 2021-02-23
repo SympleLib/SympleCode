@@ -49,13 +49,16 @@ namespace Symple::Binding
 		shared_ptr<Syntax::TranslationUnitSyntax> mCompilationUnit;
 		FunctionMap mFunctions;
 		Symbol::LabelList mLabels;
-		std::vector<Promise<shared_ptr<Symbol::LabelSymbol>, std::string>> mGotoPromises;
+		std::vector<shared_ptr<GotoPromise>> mGotoPromises;
+		std::vector<shared_ptr<FunctionPromise>> mFuncPromises;
 
 		shared_ptr<BoundScope> mScope;
 		shared_ptr<DiagnosticBag> mDiagnosticBag = make_shared<DiagnosticBag>();
 
 		void BeginScope();
 		void EndScope();
+
+		void CheckFunctionPromises();
 
 		shared_ptr<Node> BindMemberInternal(shared_ptr<Syntax::MemberSyntax>);
 		shared_ptr<BoundStatement> BindStatementInternal(shared_ptr<Syntax::StatementSyntax>);

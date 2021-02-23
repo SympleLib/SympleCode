@@ -1,4 +1,11 @@
 import "inc/libc.sy";
 
-int main() =>
+int main()
+{
+	Print();
+	
+	ret 0;
+}
+	
+void Print() =>
 	puts("Hello, world!");
