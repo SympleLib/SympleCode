@@ -36,6 +36,9 @@ namespace Symple::Symbol
 			Unknown,
 
 			Type,
+			StructType,
+			Member,
+
 			Label,
 			Function,
 			Variable,
@@ -48,6 +51,9 @@ namespace Symple::Symbol
 			"Unknown",
 
 			"Type",
+			"StructType",
+			"Member",
+
 			"Label",
 			"Function",
 			"Variable",

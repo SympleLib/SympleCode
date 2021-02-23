@@ -1,13 +1,5 @@
-import "libc.sy";
-
-void Print()
-	puts("Hello, world!");
-
-int main()
+struct Person
 {
-	goto DontPrint;
-	Print();
-	
-DontPrint:
-	ret 0;
+	char *name,
+	int age,
 }

@@ -57,6 +57,8 @@ namespace Symple::Syntax
 			{
 			case Token::ExternKeyword:
 				return ParseExternFunction();
+			case Token::StructKeyword:
+				return ParseStructDeclaration();
 			case Token::ImportKeyword:
 				return ParseImportStatement();
 			default:
@@ -133,6 +135,46 @@ namespace Symple::Syntax
 				Next();
 			else
 				list.push_back(Next());
+		}
+
+		return list;
+	}
+
+	shared_ptr<StructDeclarationSyntax> Parser::ParseStructDeclaration()
+	{
+		shared_ptr<Token> keyword = Match(Token::StructKeyword);
+		shared_ptr<Token> name = Match(Token::Identifier);
+		shared_ptr<Token> open = Match(Token::OpenBrace);
+		auto members = ParseStructMembers();
+		shared_ptr<Token> close = Match(Token::CloseBrace);
+
+		return make_shared<StructDeclarationSyntax>(keyword, name, open, members, close);
+	}
+
+	VariableDeclarationList Parser::ParseStructMembers()
+	{
+		VariableDeclarationList list;
+
+		bool first = true;
+		shared_ptr<TypeSyntax> pty;
+		while (!Peek()->Is(Token::CloseBrace))
+		{
+			if (Peek()->Is(Token::EndOfFile))
+			{
+				mDiagnosticBag->ReportUnexpectedEndOfFile(Peek());
+				break;
+			}
+
+			if (first)
+				first = false;
+			else
+				Match(Token::Comma);
+
+			if (!Peek()->Is(Token::CloseBrace))
+			{
+				list.push_back(ParseVariableDeclaration(pty));
+				pty = list.back()->GetType();
+			}
 		}
 
 		return list;

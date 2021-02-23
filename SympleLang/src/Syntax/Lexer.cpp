@@ -223,6 +223,9 @@ namespace Symple::Syntax
 		KEYWORD(if, If);
 		KEYWORD(else, Else);
 
+		KEYWORD(struct, Struct);
+		KEYWORD(structure, Struct);
+
 		else
 			return make_shared<Token>(Token::Identifier, text, mTrivia, mLine, column, mFile);
 	}

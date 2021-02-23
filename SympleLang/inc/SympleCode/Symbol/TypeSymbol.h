@@ -76,8 +76,9 @@ namespace Symple::Symbol
 			Triple,
 
 			Pointer,
+			Struct,
 
-			Last = Pointer,
+			Last = Struct,
 		};
 
 		static constexpr char* TypeKindMap[Last + 1] = {
@@ -94,6 +95,7 @@ namespace Symple::Symbol
 			"Triple",
 
 			"Pointer",
+			"Struct",
 		};
 	};
 }

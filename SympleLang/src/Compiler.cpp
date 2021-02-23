@@ -17,7 +17,22 @@ namespace Symple
 
 	Compiler::Compiler(char *path)
 		: mPath(path)
-	{ mAsmPath = mPath.substr(0, mPath.find_first_of('/')) + "/bin" + mPath.substr(mPath.find_first_of('/'), mPath.find_last_of('.') - mPath.find_first_of('/')) + ".S"; }
+	{
+		// Store output folder
+		mAsmPath = mPath.substr(0, mPath.find_first_of('/')) +
+			"/bin" + mPath.substr(mPath.find_first_of('/'),
+				mPath.find_last_of('.') - mPath.find_first_of('/')) + ".S";
+
+		// Make sure output path exists
+		unsigned last = 0;
+		while (mAsmPath.find('/', last) != std::string::npos)
+		{
+			std::string newDir = "./" + mAsmPath.substr(0, mAsmPath.find('/', last));
+			_mkdir(newDir.c_str());
+
+			last = mAsmPath.find('/', last) + 1;
+		}
+	}
 
 	shared_ptr<DiagnosticBag> Compiler::Lex()
 	{

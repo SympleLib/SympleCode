@@ -34,7 +34,7 @@ namespace Symple::Symbol
 			
 			os.put('\n'); GetType()->Print(os, newIndent, GetParameters().empty(), "Return Type = ");
 			for (auto param : GetParameters())
-			{ os.put('\n'); param->Print(os, newIndent, param == GetParameters().back()); }
+			{ os.put('\n'); param->Print(os, newIndent, param == GetParameters().back(), "[Param] "); }
 		}
 
 		void PrintShort(std::ostream& os = std::cout)

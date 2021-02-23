@@ -76,6 +76,7 @@ namespace Symple::Syntax
 			ExternFunction,
 			GlobalStatement,
 			FunctionDeclaration,
+			StructDeclaration,
 
 
 			Statement,
@@ -114,6 +115,7 @@ namespace Symple::Syntax
 			"ExternFunction",
 			"GlobalStatement",
 			"FunctionDeclaration",
+			"StructDeclaration",
 
 
 			"Statement",

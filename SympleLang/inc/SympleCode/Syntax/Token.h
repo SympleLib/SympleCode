@@ -106,7 +106,9 @@ namespace Symple::Syntax
 			IfKeyword,
 			ElseKeyword,
 
-			Last = ElseKeyword,
+			StructKeyword,
+
+			Last = StructKeyword,
 		};
 
 		static constexpr char* KindMap[Last + 1] = {
@@ -173,6 +175,8 @@ namespace Symple::Syntax
 
 			"IfKeyword",
 			"ElseKeyword",
+
+			"StructKeyword",
 		};
 	};
 

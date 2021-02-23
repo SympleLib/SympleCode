@@ -11,6 +11,7 @@
 #include "SympleCode/Syntax/MemberSyntax.h"
 #include "SympleCode/Syntax/ExternFunctionSyntax.h"
 #include "SympleCode/Syntax/FunctionDeclarationSyntax.h"
+#include "SympleCode/Syntax/StructDeclarationSyntax.h"
 
 #include "SympleCode/Syntax/StatementSyntax.h"
 #include "SympleCode/Syntax/TypeSyntax.h"
@@ -58,6 +59,9 @@ namespace Symple::Syntax
 		shared_ptr<FunctionDeclarationSyntax> ParseFunctionDeclaration();
 		VariableDeclarationList ParseFunctionParameters();
 		TokenList ParseFunctionModifiers();
+
+		shared_ptr<StructDeclarationSyntax> ParseStructDeclaration();
+		VariableDeclarationList ParseStructMembers();
 
 		shared_ptr<StatementSyntax> ParseStatement(bool matchSemicolon = true);
 		shared_ptr<LabelSyntax> ParseLabel();

@@ -54,7 +54,7 @@ namespace Symple::Syntax
 			newIndent += GetAddIndent(last);
 
 			for (auto param : GetParameters()) 
-			{ os.put('\n'); param->Print(os, newIndent, false, "[Param] "); }
+			{ os.put('\n'); param->Print(os, newIndent, param == GetParameters().back(), "[Param] "); }
 		}
 
 		shared_ptr<Token> GetKeyword()
