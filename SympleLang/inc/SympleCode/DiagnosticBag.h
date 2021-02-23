@@ -44,6 +44,7 @@ namespace Symple
 		void ReportTooManyArguments(shared_ptr<Syntax::CallExpressionSyntax>, unsigned paramIndex);
 		void ReportNoSuchFunction(shared_ptr<Syntax::CallExpressionSyntax>);
 
+		void ReportUndeclaredLabel(shared_ptr<Syntax::Token>);
 		void ReportUndeclaredIdentifier(shared_ptr<Syntax::Token>);
 		void ReportUnexpectedDllImportBody(shared_ptr<Syntax::Token>);
 		void ReportUnexpectedEndOfFile(shared_ptr<Syntax::Token>);

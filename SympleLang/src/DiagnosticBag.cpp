@@ -73,6 +73,9 @@ namespace Symple
 	{ ReportError(syntax->GetToken(), "function Doesn't Exist"); }
 
 
+	void DiagnosticBag::ReportUndeclaredLabel(shared_ptr<Syntax::Token> tok)
+	{ ReportError(tok, "undeclared label"); }
+
 	void DiagnosticBag::ReportUnexpectedEndOfFile(shared_ptr<Syntax::Token> tok)
 	{ ReportError(tok, "unexpected end of file"); }
 

@@ -3,7 +3,7 @@ import "inc/libc.sy";
 int main()
 {
 	Print();
-	
+
 	ret 0;
 }
 	

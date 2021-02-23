@@ -112,13 +112,14 @@ namespace Symple::Binding
 		for (auto promise : mGotoPromises)
 		{
 			for (auto label : mLabels)
-				if (label->GetLabel() == promise->GetPrompt())
+				if (label->GetLabel() == promise->GetPrompt()->GetLabel()->GetText())
 				{
 					promise->Complete(label);
 					break;
 				}
+
 			if (promise->IsBroken())
-				abort();
+				mDiagnosticBag->ReportUndeclaredLabel(promise->GetPrompt()->GetLabel());
 		}
 	}
 
@@ -457,7 +458,7 @@ namespace Symple::Binding
 
 	shared_ptr<BoundGotoStatement> Binder::BindGotoStatement(shared_ptr<Syntax::GotoStatementSyntax> syntax)
 	{
-		shared_ptr<GotoPromise> promise = make_shared<GotoPromise>(std::string(syntax->GetLabel()->GetText()));
+		shared_ptr<GotoPromise> promise = make_shared<GotoPromise>(syntax);
 		mGotoPromises.push_back(promise);
 		return make_shared<BoundGotoStatement>(syntax, promise);
 	}
