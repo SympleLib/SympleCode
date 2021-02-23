@@ -1,11 +1,15 @@
 import "inc/libc.sy";
 
+struct Person
+{
+	char *Name,
+	int Age,
+}
+
 int main()
 {
-	Print();
+	void me;
+	me.Name = "Teddy";
 
 	ret 0;
 }
-	
-void Print() =>
-	puts("Hello, world!");

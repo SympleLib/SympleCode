@@ -71,6 +71,7 @@ namespace Symple::Syntax
 			{
 			ATOM(',', Comma);
 			ATOM(':', Colon);
+			ATOM('.', Period);
 			ATOM(';', Semicolon);
 
 			ATOM('+', Plus);

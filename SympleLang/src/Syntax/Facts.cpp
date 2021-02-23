@@ -9,7 +9,7 @@ namespace Symple::Syntax
 		case Token::Exclamation:
 		case Token::Plus:
 		case Token::Dash:
-			return 4;
+			return 2;
 
 		default:
 			return 0;
@@ -20,6 +20,9 @@ namespace Symple::Syntax
 	{
 		switch (kind)
 		{
+		case Token::Period:
+			return 1;
+
 		case Token::Percentage:
 		case Token::Asterisk:
 		case Token::Slash:
@@ -27,10 +30,10 @@ namespace Symple::Syntax
 
 		case Token::Plus:
 		case Token::Dash:
-			return 2;
+			return 4;
 
 		case Token::Equal:
-			return 1;
+			return 14;
 
 		default:
 			return 0;

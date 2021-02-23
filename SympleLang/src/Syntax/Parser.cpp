@@ -379,7 +379,7 @@ namespace Symple::Syntax
 	shared_ptr<ExpressionSyntax> Parser::ParseUnaryExpression(unsigned parentPrecedence)
 	{
 		unsigned precedence = Facts::GetUnaryOperatorPrecedence(Peek()->GetKind());
-		if (precedence && precedence >= parentPrecedence)
+		if (precedence && precedence <= parentPrecedence)
 		{
 			shared_ptr<Token> oqerator = Next();
 			shared_ptr<ExpressionSyntax> operand = ParseBinaryExpression(precedence);
@@ -396,7 +396,7 @@ namespace Symple::Syntax
 		while (true)
 		{
 			unsigned precedence = Facts::GetBinaryOperatorPrecedence(Peek()->GetKind());
-			if (!precedence || precedence <= parentPrecedence)
+			if (!precedence || parentPrecedence && precedence >= parentPrecedence)
 				return left;
 
 			shared_ptr<Token> oqerator = Next();
