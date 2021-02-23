@@ -58,6 +58,7 @@ namespace Symple::Binding
 		void BeginScope();
 		void EndScope();
 
+		void CheckGotoPromises();
 		void CheckFunctionPromises();
 
 		shared_ptr<Node> BindMemberInternal(shared_ptr<Syntax::MemberSyntax>);

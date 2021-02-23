@@ -107,6 +107,21 @@ namespace Symple::Binding
 	}
 
 
+	void Binder::CheckGotoPromises()
+	{
+		for (auto promise : mGotoPromises)
+		{
+			for (auto label : mLabels)
+				if (label->GetLabel() == promise->GetPrompt())
+				{
+					promise->Complete(label);
+					break;
+				}
+			if (promise->IsBroken())
+				abort();
+		}
+	}
+
 	void Binder::CheckFunctionPromises()
 	{
 		for (auto promise : mFuncPromises)
@@ -273,17 +288,7 @@ namespace Symple::Binding
 		shared_ptr<BoundStatement> body = BindStatement(syntax->GetBody());
 		EndScope();
 
-		for (auto promise : mGotoPromises)
-		{
-			for (auto label : mLabels)
-				if (label->GetLabel() == promise->GetPrompt())
-				{
-					promise->Complete(label);
-					break;
-				}
-			if (promise->IsBroken())
-				abort();
-		}
+		CheckGotoPromises();
 
 		mFunctions.push_back({ symbol, body });
 		return symbol;
