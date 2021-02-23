@@ -4,6 +4,7 @@
 
 #include "SympleCode/Binding/BoundStatement.h"
 
+#include "SympleCode/Symbol/Promise.h"
 #include "SympleCode/Symbol/LabelSymbol.h"
 
 namespace Symple::Binding
@@ -11,10 +12,10 @@ namespace Symple::Binding
 	class BoundGotoStatement : public BoundStatement
 	{
 	private:
-		//shared_ptr<Symbol::LabelSymbol> mLabel;
+		Promise<shared_ptr<Symbol::LabelSymbol>, std::string> mLabel;
 	public:
-		BoundGotoStatement(shared_ptr<Syntax::GotoStatementSyntax> syntax/*, shared_ptr<Symbol::LabelSymbol> symbol*/)
-			: BoundStatement(syntax)/*, mLabel(symbol)*/
+		BoundGotoStatement(shared_ptr<Syntax::GotoStatementSyntax> syntax, Promise<shared_ptr<Symbol::LabelSymbol>, std::string>& symbol)
+			: BoundStatement(syntax), mLabel(symbol)
 		{}
 
 		virtual Kind GetKind() override
@@ -27,10 +28,10 @@ namespace Symple::Binding
 			os << " \'" << GetLabel() << '\'';
 		}
 
-		//shared_ptr<Symbol::LabelSymbol> GetLabelSymbol()
-		//{ return mLabel; }
+		auto GetLabelSymbol()
+		{ return mLabel; }
 
 		std::string_view GetLabel()
-		{ return GetSyntax()->GetToken()->GetText(); }
+		{ return mLabel.GetPrompt(); }
 	};
 }

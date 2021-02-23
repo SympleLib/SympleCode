@@ -1,7 +1,13 @@
-import "LocalFunc.sy";
+import "libc.sy";
+
+void Print()
+	puts("Hello, world!");
 
 int main()
 {
-	LocalFunction();
-	GlobalFunction();
+	goto DontPrint;
+	Print();
+	
+DontPrint:
+	ret 0;
 }

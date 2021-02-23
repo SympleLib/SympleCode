@@ -22,7 +22,7 @@ namespace Symple::Binding
 	void Binder::EndScope()
 	{ mScope = mScope->GetBase(); }
 
-	std::map<std::string, shared_ptr<BoundCompilationUnit>> Binder::sImportedSymbols;
+	std::unordered_map<std::string, shared_ptr<BoundCompilationUnit>> Binder::sImportedSymbols;
 
 	shared_ptr<BoundCompilationUnit> Binder::BindImport(shared_ptr<Syntax::ImportStatementSyntax> syntax)
 	{
@@ -224,14 +224,14 @@ namespace Symple::Binding
 
 		for (auto promise : mGotoPromises)
 		{
-			bool works = false;
 			for (auto label : mLabels)
-				if (label->GetLabel() == promise)
+				if (label->GetLabel() == promise.GetPrompt())
 				{
-					works = true;
+					promise.Complete(label);
 					break;
 				}
-			__SY_ASSERT(works);
+			if (promise.IsBroken())
+				abort();
 		}
 
 		mFunctions.push_back({ symbol, body });
@@ -401,8 +401,9 @@ namespace Symple::Binding
 
 	shared_ptr<BoundGotoStatement> Binder::BindGotoStatement(shared_ptr<Syntax::GotoStatementSyntax> syntax)
 	{
-		mGotoPromises.push_back(std::string(syntax->GetLabel()->GetText()));
-		return make_shared<BoundGotoStatement>(syntax);
+		Promise<shared_ptr<Symbol::LabelSymbol>, std::string> promise(std::string(syntax->GetLabel()->GetText()));
+		mGotoPromises.push_back(promise);
+		return make_shared<BoundGotoStatement>(syntax, promise);
 	}
 
 	shared_ptr<BoundBlockStatement> Binder::BindBlockStatement(shared_ptr<Syntax::BlockStatementSyntax> syntax)

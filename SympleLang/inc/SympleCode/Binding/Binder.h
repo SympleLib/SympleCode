@@ -1,6 +1,6 @@
 #pragma once
 
-#include <map>
+#include <unordered_map>
 
 #include "SympleCode/DiagnosticBag.h"
 
@@ -45,11 +45,11 @@ namespace Symple::Binding
 	class Binder
 	{
 	private:
-		static std::map<std::string, shared_ptr<BoundCompilationUnit>> sImportedSymbols;
+		static std::unordered_map<std::string, shared_ptr<BoundCompilationUnit>> sImportedSymbols;
 		shared_ptr<Syntax::TranslationUnitSyntax> mCompilationUnit;
 		FunctionMap mFunctions;
 		Symbol::LabelList mLabels;
-		std::vector<std::string> mGotoPromises;
+		std::vector<Promise<shared_ptr<Symbol::LabelSymbol>, std::string>> mGotoPromises;
 
 		shared_ptr<BoundScope> mScope;
 		shared_ptr<DiagnosticBag> mDiagnosticBag = make_shared<DiagnosticBag>();
