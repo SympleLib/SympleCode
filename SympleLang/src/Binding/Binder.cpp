@@ -26,7 +26,8 @@ namespace Symple::Binding
 
 	shared_ptr<BoundCompilationUnit> Binder::BindImport(shared_ptr<Syntax::ImportStatementSyntax> syntax)
 	{
-		std::string path = "sy/inc/";
+		std::string path = syntax->GetImport()->GetFile();
+		path = path.substr(0, path.find_last_of('/') + 1);
 		path += syntax->GetImport()->GetText();
 		for (auto symbol : sImportedSymbols)
 			if (path == symbol.first)
