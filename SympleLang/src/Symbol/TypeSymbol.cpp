@@ -48,9 +48,9 @@ namespace Symple::Symbol
 
 	void TypeSymbol::PrintShort(std::ostream &os)
 	{
+		os << GetName();
 		for (unsigned p = 0; p < GetPointerCount(); p++)
 			os << '*';
-		os << GetName();
 	}
 
 
