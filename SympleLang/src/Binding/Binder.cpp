@@ -134,16 +134,17 @@ namespace Symple::Binding
 	{
 		for (auto promise : mMemPromises)
 		{
-			auto ztruct = dynamic_pointer_cast<Symbol::StructTypeSymbol>(promise);
-			for (auto member : ztruct->GetMembers())
-				if (promise->GetPrompt()->GetRight()->GetToken()->GetText() == member->GetName())
-				{
-					promise->Complete(member);
-					break;
-				}
+			auto ztruct = dynamic_pointer_cast<Symbol::StructTypeSymbol>(promise->GetPrompt().first->GetType());
+			if (ztruct)
+				for (auto member : ztruct->GetMembers())
+					if (promise->GetPrompt().second->GetRight()->GetToken()->GetText() == member->GetName())
+					{
+						promise->Complete(member);
+						break;
+					}
 
 			if (promise->IsBroken())
-				mDiagnosticBag->ReportBindError(promise->GetPrompt());
+				mDiagnosticBag->ReportBindError(promise->GetPrompt().second);
 		}
 	}
 
@@ -186,7 +187,7 @@ namespace Symple::Binding
 						args.push_back(arg);
 					}
 
-				auto pair = std::pair<shared_ptr<Symbol::FunctionSymbol>, ExpressionList>(funcSymbol, args);
+				auto pair = std::pair(funcSymbol, args);
 				promise->Complete(pair);
 			}
 			else
@@ -619,9 +620,9 @@ namespace Symple::Binding
 
 		if (syntax->GetOperator()->Is(Syntax::Token::Period))
 		{
-			shared_ptr<MemberPromise> promise = make_shared<MemberPromise>(syntax);
+			shared_ptr<MemberPromise> promise = make_shared<MemberPromise>(std::pair(left, syntax));
 			mMemPromises.push_back(promise);
-			return make_shared<BoundFieldExpression>(syntax, left, promise);
+			return make_shared<BoundFieldExpression>(syntax, promise);
 		}
 
 		shared_ptr<BoundExpression> right = BindExpression(syntax->GetRight());

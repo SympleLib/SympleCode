@@ -14,11 +14,10 @@ namespace Symple::Binding
 	class BoundFieldExpression: public BoundExpression
 	{
 	private:
-		shared_ptr<BoundExpression> mOperand;
 		shared_ptr<MemberPromise> mMember;
 	public:
-		BoundFieldExpression(shared_ptr<Syntax::BinaryExpressionSyntax> syntax, shared_ptr<BoundExpression> operand, shared_ptr<MemberPromise> member)
-			: BoundExpression(syntax), mOperand(operand), mMember(member) {}
+		BoundFieldExpression(shared_ptr<Syntax::BinaryExpressionSyntax> syntax, shared_ptr<MemberPromise> member)
+			: BoundExpression(syntax), mMember(member) {}
 
 		virtual Kind GetKind() override
 		{ return FieldExpression; }
@@ -44,7 +43,7 @@ namespace Symple::Binding
 		}
 
 		shared_ptr<BoundExpression> GetOperand()
-		{ return mOperand; }
+		{ return mMember->GetPrompt().first; }
 
 		shared_ptr<Symbol::MemberSymbol> GetMember()
 		{ return mMember->GetObject(); }
