@@ -9,15 +9,16 @@
 
 namespace Symple::Binding
 {
-	typedef Promise<shared_ptr<Symbol::MemberSymbol>, shared_ptr<Syntax::BinaryExpressionSyntax>> MemberPromise;
+	typedef Promise<shared_ptr<Symbol::MemberSymbol>, std::pair<shared_ptr<BoundExpression>, shared_ptr<Syntax::BinaryExpressionSyntax>>> MemberPromise;
 
 	class BoundFieldExpression: public BoundExpression
 	{
 	private:
+		shared_ptr<BoundExpression> mOperand;
 		shared_ptr<MemberPromise> mMember;
 	public:
-		BoundFieldExpression(shared_ptr<Syntax::BinaryExpressionSyntax> syntax, shared_ptr<MemberPromise> member)
-			: BoundExpression(syntax), mMember(member) {}
+		BoundFieldExpression(shared_ptr<Syntax::BinaryExpressionSyntax> syntax, shared_ptr<BoundExpression> operand, shared_ptr<MemberPromise> member)
+			: BoundExpression(syntax), mOperand(operand), mMember(member) {}
 
 		virtual Kind GetKind() override
 		{ return FieldExpression; }
@@ -36,9 +37,14 @@ namespace Symple::Binding
 			std::string newIndent(indent);
 			newIndent += GetAddIndent(last);
 
+			os << '\n'; GetOperand()->Print(os, newIndent, false, "Operand = ");
+
 			if (GetMember())
-			{ os.put('\n'); GetMember()->Print(os, newIndent, true, "Member = "); }
+			{ os << '\n'; GetMember()->Print(os, newIndent, true, "Member = "); }
 		}
+
+		shared_ptr<BoundExpression> GetOperand()
+		{ return mOperand; }
 
 		shared_ptr<Symbol::MemberSymbol> GetMember()
 		{ return mMember->GetObject(); }

@@ -134,7 +134,7 @@ namespace Symple::Binding
 	{
 		for (auto promise : mMemPromises)
 		{
-			auto ztruct = FindStruct(mStructures, promise->GetPrompt()->GetLeft()->GetToken()->GetText());
+			auto ztruct = dynamic_pointer_cast<Symbol::StructTypeSymbol>(promise);
 			for (auto member : ztruct->GetMembers())
 				if (promise->GetPrompt()->GetRight()->GetToken()->GetText() == member->GetName())
 				{
@@ -621,7 +621,7 @@ namespace Symple::Binding
 		{
 			shared_ptr<MemberPromise> promise = make_shared<MemberPromise>(syntax);
 			mMemPromises.push_back(promise);
-			return make_shared<BoundFieldExpression>(syntax, promise);
+			return make_shared<BoundFieldExpression>(syntax, left, promise);
 		}
 
 		shared_ptr<BoundExpression> right = BindExpression(syntax->GetRight());
