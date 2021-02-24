@@ -241,6 +241,9 @@ namespace Symple::Binding
 				return Symbol::TypeSymbol::VoidPointerType;
 
 			default:
+				for (auto s : mStructures)
+					if (syntax->GetName()->GetText() == s->GetName())
+						return make_shared<Symbol::TypeSymbol>(s->GetTypeKind(), s->GetName(), s->GetSize(), s->IsFloat(), pointerCount);
 				return Symbol::TypeSymbol::ErrorType;
 			}
 		}
@@ -268,6 +271,9 @@ namespace Symple::Binding
 				return Symbol::TypeSymbol::VoidPointerType;
 
 			default:
+				for (auto s : mStructures)
+					if (syntax->GetName()->GetText() == s->GetName())
+						return s;
 				return Symbol::TypeSymbol::ErrorType;
 			}
 		}
