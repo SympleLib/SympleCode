@@ -152,6 +152,7 @@ namespace Symple::Syntax
 		auto members = ParseStructMembers();
 		shared_ptr<Token> close = Match(Token::CloseBrace);
 
+		mStructNames.push_back(std::string(name->GetText()));
 		return make_shared<StructDeclarationSyntax>(keyword, name, open, members, close);
 	}
 
@@ -504,6 +505,11 @@ namespace Symple::Syntax
 
 		case Token::Asterisk:
 			return true;
+
+		case Token::Identifier:
+			for (auto name : mStructNames)
+				if (Peek()->GetText() == name)
+					return true;
 
 		default:
 			return false;

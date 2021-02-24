@@ -8,8 +8,7 @@ struct Person
 
 int main()
 {
-	void Person;
-	Person.Name;
+	Person me;
 
 	ret 0;
 }

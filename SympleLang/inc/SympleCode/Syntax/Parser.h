@@ -46,6 +46,7 @@ namespace Symple::Syntax
 		TokenList mTokens;
 		unsigned mPosition = 0;
 
+		std::vector<std::string> mStructNames;
 		shared_ptr<DiagnosticBag> mDiagnosticBag = make_shared<DiagnosticBag>();
 	public:
 		Parser(shared_ptr<Lexer>);
