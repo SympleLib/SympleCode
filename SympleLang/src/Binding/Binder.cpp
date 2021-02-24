@@ -34,13 +34,15 @@ namespace Symple::Binding
 			{
 				auto unit = symbol.second;
 
+				for (auto s : unit->GetStructures())
+					mStructures.push_back(s);
 				for (auto fn : unit->GetFunctions())
 					mFunctions.push_back({ fn.first, nullptr });
 				return unit;
 			}
 		for (auto symbol : Compiler::sLibraries)
 			if (path == symbol)
-				return make_shared<BoundCompilationUnit>(syntax, FunctionMap());
+				return make_shared<BoundCompilationUnit>(syntax, StructMap(), FunctionMap());
 		
 		if (_access(path.c_str(), 0) != -1)
 		{
@@ -63,6 +65,8 @@ namespace Symple::Binding
 			Symple::Compiler::sUnits.push_back(compiler->mAsmPath);
 			sImportedSymbols.insert({ path, unit });
 
+			for (auto s : unit->GetStructures())
+				mStructures.push_back(s);
 			for (auto fn : unit->GetFunctions())
 				mFunctions.push_back({ fn.first, nullptr });
 			return unit;
@@ -70,13 +74,14 @@ namespace Symple::Binding
 		else
 		{
 			Compiler::sLibraries.push_back(std::string(syntax->GetImport()->GetText()));
-			return make_shared<BoundCompilationUnit>(syntax, FunctionMap());
+			return make_shared<BoundCompilationUnit>(syntax, StructMap(), FunctionMap());
 		}
 	}
 
 	shared_ptr<BoundCompilationUnit> Binder::BindSymbols(shared_ptr<Syntax::TranslationUnitSyntax> unit)
 	{
 		mCompilationUnit = unit;
+		mStructures.clear();
 		mFunctions.clear();
 		mScope.reset();
 		BeginScope();
@@ -86,12 +91,13 @@ namespace Symple::Binding
 
 		EndScope();
 
-		return make_shared<BoundCompilationUnit>(unit, mFunctions);
+		return make_shared<BoundCompilationUnit>(unit, mStructures, mFunctions);
 	}
 
 	shared_ptr<BoundCompilationUnit> Binder::Bind(shared_ptr<Syntax::TranslationUnitSyntax> unit)
 	{
 		mCompilationUnit = unit;
+		mStructures.clear();
 		mFunctions.clear();
 		mScope.reset();
 		BeginScope();
@@ -104,7 +110,7 @@ namespace Symple::Binding
 		CheckMemberPromises();
 		CheckFunctionPromises();
 
-		return make_shared<BoundCompilationUnit>(unit, mFunctions);
+		return make_shared<BoundCompilationUnit>(unit, mStructures, mFunctions);
 	}
 
 
@@ -128,6 +134,14 @@ namespace Symple::Binding
 	{
 		for (auto promise : mMemPromises)
 		{
+			auto ztruct = FindStruct(mStructures, promise->GetPrompt()->GetLeft()->GetToken()->GetText());
+			for (auto member : ztruct->GetMembers())
+				if (promise->GetPrompt()->GetRight()->GetToken()->GetText() == member->GetName())
+				{
+					promise->Complete(member);
+					break;
+				}
+
 			if (promise->IsBroken())
 				mDiagnosticBag->ReportBindError(promise->GetPrompt());
 		}
@@ -185,7 +199,7 @@ namespace Symple::Binding
 
 #define TYPE_CONT(name) \
 		case Syntax::Token::##name##Keyword: \
-			return make_shared<Symbol::TypeSymbol>(Symbol::TypeSymbol::##name##Type->GetTypeKind(), Symbol::TypeSymbol::##name##Type->GetName(), Symbol::TypeSymbol::##name##Type->GetSize(), Symbol::TypeSymbol::##name##Type->IsFloat(), base)
+			return make_shared<Symbol::TypeSymbol>(Symbol::TypeSymbol::##name##Type->GetTypeKind(), Symbol::TypeSymbol::##name##Type->GetName(), Symbol::TypeSymbol::##name##Type->GetSize(), Symbol::TypeSymbol::##name##Type->IsFloat(), pointerCount)
 
 #define TYPE_CASE(name) \
 		case Syntax::Token::##name##Keyword: \
@@ -195,7 +209,14 @@ namespace Symple::Binding
 	{
 		if (dynamic_pointer_cast<Syntax::TypeReferenceSyntax>(syntax) && dynamic_pointer_cast<Syntax::TypeReferenceSyntax>(syntax)->GetBase())
 		{
-			shared_ptr<Symbol::TypeSymbol> base = BindType(dynamic_pointer_cast<Syntax::TypeReferenceSyntax>(syntax)->GetBase());
+			unsigned pointerCount = 0;
+			shared_ptr<Syntax::TypeSyntax> sy = syntax;
+			while (sy = dynamic_pointer_cast<Syntax::TypeReferenceSyntax>(sy) ? dynamic_pointer_cast<Syntax::TypeReferenceSyntax>(sy)->GetBase() : nullptr)
+			{
+				if (!sy->GetName()->Is(Syntax::Token::Asterisk))
+					mDiagnosticBag->ReportUnimplimentedError(sy->GetName());
+				pointerCount++;
+			}
 
 			switch (syntax->GetName()->GetKind())
 			{
@@ -216,7 +237,7 @@ namespace Symple::Binding
 
 				// Special
 			case Syntax::Token::Asterisk:
-				return make_shared<Symbol::TypeSymbol>(Symbol::TypeSymbol::VoidPointerType->GetTypeKind(), Symbol::TypeSymbol::VoidPointerType->GetName(), Symbol::TypeSymbol::VoidPointerType->GetSize(), false, base);
+				return Symbol::TypeSymbol::VoidPointerType;
 
 			default:
 				return Symbol::TypeSymbol::ErrorType;
@@ -352,6 +373,33 @@ namespace Symple::Binding
 		return make_shared<Symbol::ParameterSymbol>(ty, name, init);
 	}
 
+	shared_ptr<Symbol::MemberSymbol> Binder::BindMember(shared_ptr<Syntax::VariableDeclarationSyntax> syntax)
+	{
+		shared_ptr<Symbol::TypeSymbol> ty = BindType(syntax->GetType());
+		std::string_view name = syntax->GetName()->GetText();
+		shared_ptr<BoundConstant> init;
+		if (syntax->GetInitializer())
+			init = BindExpression(syntax->GetInitializer())->ConstantValue();
+
+		return make_shared<Symbol::MemberSymbol>(ty, name, init);
+	}
+
+	shared_ptr<Symbol::StructTypeSymbol> Binder::BindStructType(shared_ptr<Syntax::StructDeclarationSyntax> syntax)
+	{
+		unsigned sz = 0;
+		Symbol::MemberList members;
+		for (auto member : syntax->GetMembers())
+		{
+			auto memberSymbol = BindMember(member);
+			sz += memberSymbol->GetType()->GetSize();
+			members.push_back(memberSymbol);
+		}
+
+		shared_ptr<Symbol::StructTypeSymbol> symbol = make_shared<Symbol::StructTypeSymbol>(syntax->GetName()->GetText(), sz, members);
+		mStructures.push_back(symbol);
+		return symbol;
+	}
+
 	#pragma endregion
 
 
@@ -361,6 +409,8 @@ namespace Symple::Binding
 	{
 		switch (syntax->GetKind())
 		{
+		case Syntax::Node::StructDeclaration:
+			return BindStructType(dynamic_pointer_cast<Syntax::StructDeclarationSyntax>(syntax));
 		case Syntax::Node::ExternFunction:
 			return BindExternFunction(dynamic_pointer_cast<Syntax::ExternFunctionSyntax>(syntax));
 		case Syntax::Node::FunctionDeclaration:
@@ -391,6 +441,9 @@ namespace Symple::Binding
 		{
 		case Syntax::Node::GlobalStatement:
 			return BindGlobalStatement(dynamic_pointer_cast<Syntax::GlobalStatementSyntax>(syntax));
+		case Syntax::Node::StructDeclaration:
+			BindStructType(dynamic_pointer_cast<Syntax::StructDeclarationSyntax>(syntax));
+			goto Return;
 		case Syntax::Node::ExternFunction:
 			BindExternFunction(dynamic_pointer_cast<Syntax::ExternFunctionSyntax>(syntax));
 			goto Return;

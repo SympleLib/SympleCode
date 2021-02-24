@@ -8,6 +8,7 @@
 #include "SympleCode/Syntax/ImportStatementSyntax.h"
 #include "SympleCode/Syntax/ExternFunctionSyntax.h"
 #include "SympleCode/Syntax/GlobalStatementSyntax.h"
+#include "SympleCode/Syntax/StructDeclarationSyntax.h"
 #include "SympleCode/Syntax/FunctionDeclarationSyntax.h"
 
 #include "SympleCode/Syntax/StatementSyntax.h"
@@ -17,6 +18,7 @@
 
 #include "SympleCode/Symbol/Symbol.h"
 #include "SympleCode/Symbol/FunctionSymbol.h"
+#include "SympleCode/Symbol/StructTypeSymbol.h"
 
 #include "SympleCode/Binding/Node.h"
 #include "SympleCode/Binding/BoundScope.h"
@@ -48,6 +50,7 @@ namespace Symple::Binding
 	private:
 		static std::unordered_map<std::string, shared_ptr<BoundCompilationUnit>> sImportedSymbols;
 		shared_ptr<Syntax::TranslationUnitSyntax> mCompilationUnit;
+		StructMap mStructures;
 		FunctionMap mFunctions;
 		Symbol::LabelList mLabels;
 		std::vector<shared_ptr<GotoPromise>> mGotoPromises;
@@ -76,9 +79,11 @@ namespace Symple::Binding
 
 		shared_ptr<Symbol::TypeSymbol> BindType(shared_ptr<Syntax::TypeSyntax>);
 		shared_ptr<Symbol::LabelSymbol> BindLabelSymbol(shared_ptr<Syntax::LabelSyntax>);
+		shared_ptr<Symbol::MemberSymbol> BindMember(shared_ptr<Syntax::VariableDeclarationSyntax>);
 		shared_ptr<Symbol::FunctionSymbol> BindFunction(shared_ptr<Syntax::FunctionDeclarationSyntax>);
 		shared_ptr<Symbol::FunctionSymbol> BindExternFunction(shared_ptr<Syntax::ExternFunctionSyntax>);
 		shared_ptr<Symbol::ParameterSymbol> BindParameter(shared_ptr<Syntax::VariableDeclarationSyntax>);
+		shared_ptr<Symbol::StructTypeSymbol> BindStructType(shared_ptr<Syntax::StructDeclarationSyntax>);
 
 		shared_ptr<BoundStatement> BindStatement(shared_ptr<Syntax::StatementSyntax>);
 		shared_ptr<BoundLabel> BindLabel(shared_ptr<Syntax::LabelSyntax>);
