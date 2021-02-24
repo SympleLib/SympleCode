@@ -1,6 +1,7 @@
 #pragma once
 
 #include <string>
+#include <vector>
 #include <iostream>
 
 #include "SympleCode/Memory.h"
@@ -16,9 +17,12 @@ namespace Symple::Symbol
 		std::string mName;
 		unsigned mSize;
 		bool mFloat;
-		shared_ptr<TypeSymbol> mBase;
+		
+
+		unsigned mPointerCount;
+		std::vector<char> mModifiers;
 	public:
-		TypeSymbol(TypeKind, std::string_view name, unsigned size, bool isFloat = false, shared_ptr<TypeSymbol> base = nullptr);
+		TypeSymbol(TypeKind, std::string_view name, unsigned size, bool isFloat = false, unsigned pointerCount = 0, std::vector<char> mods = {});
 
 		bool Equals(shared_ptr<TypeSymbol>);
 
@@ -35,7 +39,9 @@ namespace Symple::Symbol
 		std::string_view GetName();
 		unsigned GetSize();
 		bool IsFloat();
-		shared_ptr<TypeSymbol> GetBase();
+
+		unsigned GetPointerCount();
+		std::vector<char>& GetModifiers();
 
 		static shared_ptr<TypeSymbol> ErrorType;
 
@@ -75,7 +81,6 @@ namespace Symple::Symbol
 			Double,
 			Triple,
 
-			Pointer,
 			Struct,
 
 			Last = Struct,
@@ -94,7 +99,6 @@ namespace Symple::Symbol
 			"Double",
 			"Triple",
 
-			"Pointer",
 			"Struct",
 		};
 	};

@@ -18,23 +18,18 @@ namespace Symple::Symbol
 	shared_ptr<TypeSymbol> TypeSymbol::DoubleType  = make_shared<TypeSymbol>(Double, "double", 8, true);
 	shared_ptr<TypeSymbol> TypeSymbol::TripleType  = make_shared<TypeSymbol>(Triple, "triple", 16, true);
 
-	shared_ptr<TypeSymbol> TypeSymbol::VoidPointerType  = make_shared<TypeSymbol>(Pointer, "*", 4, false, VoidType);
-	shared_ptr<TypeSymbol> TypeSymbol::BytePointerType  = make_shared<TypeSymbol>(Pointer, "*", 4, false, ByteType);
-	shared_ptr<TypeSymbol> TypeSymbol::CharPointerType  = make_shared<TypeSymbol>(Pointer, "*", 4, false, CharType);
+	shared_ptr<TypeSymbol> TypeSymbol::VoidPointerType  = make_shared<TypeSymbol>(Void, "void", 4, false, 1);
+	shared_ptr<TypeSymbol> TypeSymbol::BytePointerType  = make_shared<TypeSymbol>(Byte, "byte", 4, false, 1);
+	shared_ptr<TypeSymbol> TypeSymbol::CharPointerType  = make_shared<TypeSymbol>(Char, "char", 4, false, 1);
 
-	TypeSymbol::TypeSymbol(TypeKind kind, std::string_view name, unsigned sz, bool isFloat, shared_ptr<TypeSymbol> base)
-		: mTypeKind(kind), mName(name), mSize(sz), mFloat(isFloat), mBase(base)
+	TypeSymbol::TypeSymbol(TypeKind kind, std::string_view name, unsigned sz, bool isFloat, unsigned pointerCount, std::vector<char> mods)
+		: mTypeKind(kind), mName(name), mSize(sz), mFloat(isFloat), mPointerCount(pointerCount), mModifiers(mods)
 	{}
 
 
 	bool TypeSymbol::Equals(shared_ptr<TypeSymbol> other)
 	{
-		if (GetBase() && other->GetBase())
-			return Is(other->GetTypeKind()) && GetBase()->Equals(other->GetBase());
-		else if (GetBase() || other->GetBase())
-			return false;
-		else
-			return Is(other->GetTypeKind());
+		return GetPointerCount() == other->GetPointerCount() && Is(other->GetTypeKind());
 	}
 
 
@@ -46,22 +41,15 @@ namespace Symple::Symbol
 	{
 		PrintIndent(os, indent, last, label);
 		PrintName(os);
-		os << ": '";
-
-		if (GetBase())
-		{
-			GetBase()->PrintShort(os);
-			os.put(' ');
-		}
-
-		os << GetName() << '\'';
+		os << " '";
+		PrintShort(os);
+		os << '\'';
 	}
 
 	void TypeSymbol::PrintShort(std::ostream& os)
 	{
-		if (GetBase())
-			GetBase()->PrintShort(os);
-
+		for (unsigned p = 0; p < GetPointerCount(); p++)
+			os << '*';
 		os << GetName();
 	}
 
@@ -81,6 +69,10 @@ namespace Symple::Symbol
 	bool TypeSymbol::IsFloat()
 	{ return mFloat; }
 
-	shared_ptr<TypeSymbol> TypeSymbol::GetBase()
-	{ return mBase; }
+
+	unsigned TypeSymbol::GetPointerCount()
+	{ return mPointerCount; }
+
+	std::vector<char> &TypeSymbol::GetModifiers()
+	{ return mModifiers; }
 }
