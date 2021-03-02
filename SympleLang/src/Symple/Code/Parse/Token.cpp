@@ -17,7 +17,7 @@ namespace Symple::Code
 	{ return m_Text; }
 
 
-	GlobalRef<File> Token::GetFile() const
+	GlobalRef<const File> Token::GetFile() const
 	{ return m_File; }
 
 	uint32 Token::GetLine() const

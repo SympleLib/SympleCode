@@ -55,7 +55,7 @@ namespace Symple::Code
 		TokenKind m_Kind;
 		std::string_view m_Text;
 
-		GlobalRef<File> m_File;
+		const GlobalRef<const File> m_File;
 		// Line, Display Line, Column
 		uint32 m_Line, m_DisplayLine, m_Column;
 	public:
@@ -69,17 +69,19 @@ namespace Symple::Code
 		TokenKind GetKind() const;
 		std::string_view GetText() const;
 
-		GlobalRef<File> GetFile() const;
+		GlobalRef<const File> GetFile() const;
 		uint32 GetLine() const;
 		uint32 GetDisplayLine() const;
 		uint32 GetColumn() const;
 
-		SY_PROPERTY_GET(GetKind) TokenKind Kind;
+		__declspec(property(get = GetKind)) TokenKind Kind;
 		SY_PROPERTY_GET(GetText) std::string_view Text;
 
-		SY_PROPERTY_GET(GetFile) GlobalRef<File> File;
+		SY_PROPERTY_GET(GetFile) GlobalRef<const File> File;
 		SY_PROPERTY_GET(GetLine) uint32 Line;
 		SY_PROPERTY_GET(GetDisplayLine) uint32 DisplayLine;
 		SY_PROPERTY_GET(GetColumn) uint32 Column;
 	};
+
+	using TokenList = std::vector<GlobalRef<Token>>;
 }
