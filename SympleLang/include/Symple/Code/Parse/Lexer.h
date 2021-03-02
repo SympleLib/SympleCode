@@ -31,5 +31,13 @@ namespace Symple::Code
 		static bool IsNumber(char);
 		static bool IsIdentifier(char);
 		static bool IsWhiteSpace(char);
+
+		static constexpr const char *const s_Punctuators[] =
+		{
+			"+", "-", "*", "/", "%",
+			"=", "=>",
+			"(", ")",
+			";",
+		};
 	};
 }

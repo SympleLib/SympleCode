@@ -3,7 +3,7 @@
 namespace Symple::Code
 {
 	Lexer::Lexer(const GlobalRef<const File> &file)
-		: m_File(file) {}
+		: m_File(file), m_Pointer(file->Source.c_str()) {}
 
 	TokenList Lexer::LexAll()
 	{
@@ -12,6 +12,7 @@ namespace Symple::Code
 		do
 			toks.push_back(Lex());
 		while (Current);
+		toks.push_back(Lex());
 		return toks;
 	}
 
@@ -42,6 +43,51 @@ namespace Symple::Code
 			return LexIdentifier();
 		else
 			return LexPunctuation();
+	}
+
+	GlobalRef<Token> Lexer::LexNumber()
+	{
+		const char *beg = &Next();
+		while (IsNumber(Current))
+			Next();
+		return MakeToken(TokenKind::Number, beg, &Current);
+	}
+	
+	#define KEYWORD(key, word) if (identifier == #key) return MakeToken(TokenKind::##word##Keyword, beg, &Current)
+	GlobalRef<Token> Lexer::LexIdentifier()
+	{
+		const char *beg = &Next();
+		while (IsIdentifier(Current))
+			Next();
+
+		std::string_view identifier(beg, std::distance(beg, &Current));
+		KEYWORD(void, Void);
+		KEYWORD(byte, Byte);
+		KEYWORD(short, Short);
+		KEYWORD(int, Int);
+		KEYWORD(long, Long);
+
+		KEYWORD(ret, Return);
+		KEYWORD(return, Return);
+		
+		return MakeToken(TokenKind::Identifier, beg, &Current);
+	}
+	#undef KEYWORD
+
+	GlobalRef<Token> Lexer::LexPunctuation()
+	{
+		const char *beg = &Current;
+
+		for (uint32 i = 0; i < sizeof(s_Punctuators) / sizeof(*s_Punctuators); i++)
+			if (!strncmp(&Current, s_Punctuators[i], strlen(s_Punctuators[i])))
+			{
+				for (uint32 j = 0; j < strlen(s_Punctuators[i]); j++)
+					Next();
+				return MakeToken((TokenKind)((uint32)TokenKind::Punctuator + i), beg, &Current);
+			}
+
+		Next();
+		return MakeToken(TokenKind::Unknown, beg, &Current);
 	}
 
 

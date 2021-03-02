@@ -13,21 +13,36 @@ namespace Symple::Code
 		Number,
 		Identifier,
 
+		// Punctuators
 		Plus,
-		Dash,
+		Minus,
 		Star,
 		Slash,
 		Percent,
 
-		SingleLineComment,
-		MultiLineComment,
+		Equal,
+		EqualArrow,
+
+		OpenParen,
+		CloseParen,
+
+		Semicolon,
+
+		// Keywords
+		VoidKeyword,
+		ByteKeyword,
+		ShortKeyword,
+		IntKeyword,
+		LongKeyword,
+
+		ReturnKeyword,
 
 		// Markings
 		Punctuator = Plus,
-		Comment = SingleLineComment,
+		Keyword = VoidKeyword,
 
 		First = Unknown,
-		Last = MultiLineComment,
+		Last = ReturnKeyword,
 		Count, // Number of token kinds
 	};
 
@@ -40,13 +55,27 @@ namespace Symple::Code
 		"Identifier",
 
 		"Plus",
-		"Dash",
+		"Minus",
 		"Star",
 		"Slash",
 		"Percent",
 
-		"SingleLineComment",
-		"MultiLineComment",
+		"Equal",
+		"EqualArrow",
+
+		"OpenParen",
+		"CloseParen",
+
+		"Semicolon",
+
+
+		"VoidKeyword",
+		"ByteKeyword",
+		"ShortKeyword",
+		"IntKeyword",
+		"LongKeyword",
+
+		"ReturnKeyword",
 	};
 
 	class SYC_API Token
