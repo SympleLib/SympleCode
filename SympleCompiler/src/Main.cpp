@@ -20,14 +20,6 @@ int main()
 	uint32 pln = 1, pcol = 1;
 	for (auto tok : tokens)
 	{
-		uint32 kind = (uint32)tok->Kind;
-
-		if (kind >= (uint32)TokenKind::Keyword)
-			Console.Color = ConsoleColor::Magenta;
-		else if (kind >= (uint32)TokenKind::Punctuator)
-			Console.Color = ConsoleColor::Cyan;
-		else
-			Console.Color = ConsoleColor::White;
 		for (uint32 ln = tok->Line; ln > pln; ln--)
 		{
 			std::cout << '\n';
@@ -37,6 +29,18 @@ int main()
 		for (uint32 col = tok->Column - 1; col > pcol; col--)
 			std::cout << ' ';
 
+		uint32 kind = (uint32)tok->Kind;
+
+		if (kind >= (uint32)TokenKind::Keyword)
+			Console.Color = ConsoleColor::Magenta;
+		else if (kind >= (uint32)TokenKind::Punctuator)
+			Console.Color = ConsoleColor::Cyan;
+		else if (kind == (uint32)TokenKind::Number)
+			Console.Color = ConsoleColor::DarkYellow;
+		else if (kind == (uint32)TokenKind::Identifier)
+			Console.Color = ConsoleColor::White;
+		else
+			Console.Color = ConsoleColor::Red;
 		std::cout << tok->Text;
 
 		pln = tok->Line;
@@ -44,11 +48,11 @@ int main()
 	}
 	std::cout << '\n';
 
-	Console.Color = ConsoleColor::Yellow;
-	std::cout << "Tokens\n";
-	Console.Color = ConsoleColor::Green;
-	for (auto tok : tokens)
-		std::cout << TokenKindNames[(uint32)tok->Kind] << " | " << tok->Text << " <" << tok->Line << ':' << tok->Column << ">\n";
+	//Console.Color = ConsoleColor::Yellow;
+	//std::cout << "Tokens:\n";
+	//Console.Color = ConsoleColor::Green;
+	//for (auto tok : tokens)
+	//	std::cout << TokenKindNames[(uint32)tok->Kind] << " | " << tok->Text << " <" << tok->Line << ':' << tok->Column << ">\n";
 
 	std::cout.flush();
 	std::cin.get();

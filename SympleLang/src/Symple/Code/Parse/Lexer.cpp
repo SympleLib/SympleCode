@@ -78,12 +78,12 @@ namespace Symple::Code
 	{
 		const char *beg = &Current;
 
-		for (uint32 i = 0; i < sizeof(s_Punctuators) / sizeof(*s_Punctuators); i++)
-			if (!strncmp(&Current, s_Punctuators[i], strlen(s_Punctuators[i])))
+		for (uint32 i = sizeof(s_Punctuators) / sizeof(*s_Punctuators); i; i--)
+			if (!strncmp(&Current, s_Punctuators[i - 1], strlen(s_Punctuators[i - 1])))
 			{
-				for (uint32 j = 0; j < strlen(s_Punctuators[i]); j++)
+				for (uint32 j = 0; j < strlen(s_Punctuators[i - 1]); j++)
 					Next();
-				return MakeToken((TokenKind)((uint32)TokenKind::Punctuator + i), beg, &Current);
+				return MakeToken((TokenKind)((uint32)TokenKind::Punctuator + i - 1), beg, &Current);
 			}
 
 		Next();

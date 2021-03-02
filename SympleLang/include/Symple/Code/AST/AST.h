@@ -10,6 +10,7 @@ namespace Symple::Code
 
 		// Members
 		Member,
+		Function,
 
 		Count, // Count of ast kinds
 	};
@@ -20,11 +21,12 @@ namespace Symple::Code
 
 
 		"Member",
+		"Function",
 	};
 
 	class SYC_API AST
 	{
-	protected:
+	public:
 		using Token_t = Token;
 	public:
 		virtual ASTKind GetKind() const;
@@ -33,6 +35,11 @@ namespace Symple::Code
 		SY_PROPERTY_GET(GetKind) ASTKind Kind;
 		SY_PROPERTY_GET(GetToken) WeakRef<const Token_t> Token;
 	};
+
+	class SYC_API MemberAST;
+	class SYC_API FunctionAST;
+
+	class SYC_API StatementAST;
 }
 
 #include "Symple/Code/AST/MemberAST.h"
