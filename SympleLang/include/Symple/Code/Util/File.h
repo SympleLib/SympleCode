@@ -4,7 +4,7 @@
 
 namespace Symple::Code
 {
-	enum class SY_API FilePermissions: uint8
+	enum class SYC_API FilePermissions: uint8
 	{
 		Read   = 1 << 0,
 		Write  = 1 << 1,
@@ -14,18 +14,18 @@ namespace Symple::Code
 		ReadAppend = Read | Append,
 	};
 
-	class SY_API File
+	class SYC_API File
 	{
 	private:
-		const FilePermissions perms;
-		mutable std::FILE *stream;
-		std::string name;
-		std::string src;
-		bool open;
+		const FilePermissions m_Perms;
+		mutable std::FILE *m_Stream;
+		std::string m_Name;
+		std::string m_Source;
+		bool m_Open;
 
-		uint32 num;
+		uint32 m_Num;
 
-		static uint32 nextNum;
+		static uint32 s_NextNum;
 	private:
 		std::FILE *GetStream() const;
 	public:

@@ -4,7 +4,7 @@
 
 namespace Symple::Code
 {
-	enum class ConsoleColor
+	enum class SYC_API ConsoleColor
 	{
 		Black,
 		DarkBlue,
@@ -26,7 +26,7 @@ namespace Symple::Code
 		Reset = White,
 	};
 
-	struct SY_API _Console
+	struct SYC_API _Console
 	{
 		ConsoleColor GetConsoleColor() const;
 		void SetConsoleColor(ConsoleColor);
@@ -36,5 +36,5 @@ namespace Symple::Code
 		ConsoleColor col;
 	};
 
-	extern SY_API _Console Console;
+	extern SYC_API _Console Console;
 }

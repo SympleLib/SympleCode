@@ -6,7 +6,7 @@
 
 namespace Symple::Code
 {
-	SY_API _Console Console;
+	SYC_API _Console Console;
 
 	ConsoleColor _Console::GetConsoleColor() const
 	{ return col; }

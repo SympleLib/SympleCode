@@ -2,10 +2,10 @@
 
 namespace Symple::Code
 {
-	uint32 File::nextNum;
+	uint32 File::s_NextNum;
 
 	File::File(const std::string &name, FilePermissions perms)
-		: name(name), perms(perms)
+		: m_Name(name), m_Perms(perms)
 	{
 		const char *mode;
 		switch (perms)
@@ -32,17 +32,17 @@ namespace Symple::Code
 			break;
 		}
 
-		stream = std::fopen(name.c_str(), mode);
-		assert(stream);
-		num = nextNum++;
-		open = true;
+		m_Stream = std::fopen(name.c_str(), mode);
+		assert(m_Stream);
+		m_Num = s_NextNum++;
+		m_Open = true;
 
 		if (Seek(0, SEEK_END))
 		{
-			uint32 sz = std::ftell(stream);
-			src.resize(sz + 1);
-			std::rewind(stream);
-			std::fread(&src.front(), 1, sz, stream);
+			uint32 sz = std::ftell(m_Stream);
+			m_Source.resize(sz + 1);
+			std::rewind(m_Stream);
+			std::fread(m_Source.data(), 1, sz, m_Stream);
 		}
 	}
 
@@ -53,15 +53,15 @@ namespace Symple::Code
 	{ Close(); }
 
 	std::FILE *File::GetStream() const
-	{ return stream; }
+	{ return m_Stream; }
 
 
 	void File::Close()
 	{
-		if (open)
+		if (m_Open)
 		{
-			std::fclose(stream);
-			open = true;
+			std::fclose(m_Stream);
+			m_Open = true;
 		}
 	}
 
@@ -69,28 +69,28 @@ namespace Symple::Code
 	bool File::Seek(uint32 offset, int32 origin)
 	{
 		if (CanRead)
-			std::fseek(stream, offset, origin);
+			std::fseek(m_Stream, offset, origin);
 		return CanRead;
 	}
 
 
 	const std::string &File::GetName() const
-	{ return name; }
+	{ return m_Name; }
 
 	const std::string &File::GetSource() const
-	{ return src; }
+	{ return m_Source; }
 
 	bool File::GetIsOpen() const
-	{ return open; }
+	{ return m_Open; }
 
 
 	uint32 File::GetNumber() const
-	{ return num; }
+	{ return m_Num; }
 
 	
 	bool File::GetCanRead() const
-	{ return (uint8)perms & (uint8)FilePermissions::Read; }
+	{ return (uint8)m_Perms & (uint8)FilePermissions::Read; }
 
 	bool File::GetCanEdit() const
-	{ return (uint8)perms & (uint8)FilePermissions::Write || (uint8)perms & (uint8)FilePermissions::Append; }
+	{ return (uint8)m_Perms & (uint8)FilePermissions::Write || (uint8)m_Perms & (uint8)FilePermissions::Append; }
 }

@@ -1,18 +1,20 @@
 #pragma once
 
 #if defined(_MSC_VER)
+#if !defined(SY_PROPERTY_GET)
 	#define SY_PROPERTY_GET(getter) __declspec(property(get = getter))
 	#define SY_PROPERTY_GET_SET(getter, setter) __declspec(property(get = getter, put = setter))
+#endif
 #else
 #error Only MSVC supported for SympleCode
 #endif
 
-#if defined(SY_CODE_BUILD)
-	#define SY_API __declspec(dllexport)
+#if defined(SYC_BUILD)
+	#define SYC_API __declspec(dllexport)
 #elif defined(SY_CODE_USE_DLL)
-	#define SY_API __declspec(dllimport)
+	#define SYC_API __declspec(dllimport)
 #else
-	#define SY_API
+	#define SYC_API
 #endif
 
 namespace Symple::Code
