@@ -24,7 +24,7 @@ namespace Symple::Code
 			{
 				m_Line++;
 				m_DisplayLine++;
-				m_Column = 0;
+				m_Column = 1;
 				m_Pointer++;
 			}
 			else

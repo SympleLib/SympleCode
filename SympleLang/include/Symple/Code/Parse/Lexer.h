@@ -11,7 +11,7 @@ namespace Symple::Code
 	private:
 		const char *m_Pointer;
 		const GlobalRef<const File> m_File;
-		uint32 m_Line, m_DisplayLine, m_Column;
+		uint32 m_Line = 1, m_DisplayLine = 1, m_Column = 1;
 	public:
 		Lexer(const GlobalRef<const File> &);
 		TokenList LexAll();
