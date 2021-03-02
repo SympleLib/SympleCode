@@ -2,7 +2,7 @@
 
 namespace Symple::Code
 {
-	Token::Token(TokenKind kind, const char *beg, const char *end, const GlobalRef<Symple::Code::File> &file, uint32 ln, uint32 disLn, uint32 col)
+	Token::Token(TokenKind kind, const char *beg, const char *end, const GlobalRef<const Symple::Code::File> &file, uint32 ln, uint32 disLn, uint32 col)
 		: m_Kind(kind), m_Text(beg, end - beg), m_File(file), m_Line(ln), m_DisplayLine(disLn), m_Column(col) {}
 
 

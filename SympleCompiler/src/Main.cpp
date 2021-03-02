@@ -7,7 +7,7 @@ using namespace Symple::Code;
 
 int main()
 {
-	GlobalRef<File> src = MakeGlobalRef<File>("sy/Main.sy", FilePermissions::Read);
+	GlobalRef<File> src = MakeRef<File>("sy/Main.sy", FilePermissions::Read);
 	Console.Color = ConsoleColor::Yellow;
 	std::cout << "Source:\n";
 	Console.Color = ConsoleColor::Cyan;

@@ -59,7 +59,7 @@ namespace Symple::Code
 		// Line, Display Line, Column
 		uint32 m_Line, m_DisplayLine, m_Column;
 	public:
-		Token(TokenKind, const char *begin, const char *end, const GlobalRef<File> &, uint32 line, uint32 displayLine, uint32 column);
+		Token(TokenKind, const char *begin, const char *end, const GlobalRef<const File> &, uint32 line, uint32 displayLine, uint32 column);
 
 		bool Is(TokenKind) const;
 		template <typename... Args>
