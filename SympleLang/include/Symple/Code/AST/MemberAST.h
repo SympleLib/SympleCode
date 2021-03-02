@@ -28,6 +28,11 @@ namespace Symple::Code
 		GlobalRef<const Token_t> GetName() const;
 		WeakRef<const Token_t> GetOpen() const;
 		WeakRef<const Token_t> GetClose() const;
-		GlobalRef<const Token_t> GetBody() const;
+		GlobalRef<const StatementAST> GetBody() const;
+
+		SY_PROPERTY_GET(GetName) GlobalRef<const Token_t> Name;
+		SY_PROPERTY_GET(GetOpen) WeakRef<const Token_t> Open;
+		SY_PROPERTY_GET(GetClose) WeakRef<const Token_t> Close;
+		SY_PROPERTY_GET(GetBody) GlobalRef<const StatementAST> Body;
 	};
 }
