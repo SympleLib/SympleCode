@@ -1,8 +1,8 @@
 #pragma once
 
-#include "Symple/Common/Common.h"
+#include "Symple/Code/Common.h"
 
-namespace Symple
+namespace Symple::Code
 {
 	enum class SY_API FilePermissions: uint8
 	{

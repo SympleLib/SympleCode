@@ -2,7 +2,7 @@
 
 #include <memory>
 
-namespace Symple
+namespace Symple::Code
 {
 	template<typename T>
 	using Scope = std::unique_ptr<T>;

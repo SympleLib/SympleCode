@@ -1,9 +1,9 @@
 #include <iostream>
-#include "Symple/Common/Console.h"
-#include "Symple/Common/Memory.h"
-#include "Symple/Common/File.h"
+#include "Symple/Code/Util/Console.h"
+#include "Symple/Code/Util/File.h"
+#include "Symple/Code/Memory.h"
 
-using namespace Symple;
+using namespace Symple::Code;
 
 int main()
 {

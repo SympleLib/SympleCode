@@ -1,10 +1,10 @@
-#include "Symple/Common/Console.h"
+#include "Symple/Code/Util/Console.h"
 
 #if defined(_WIN32)
 #include <Windows.h>
 #endif
 
-namespace Symple
+namespace Symple::Code
 {
 	SY_API _Console Console;
 

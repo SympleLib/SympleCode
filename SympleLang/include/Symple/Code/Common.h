@@ -15,7 +15,7 @@
 	#define SY_API
 #endif
 
-namespace Symple
+namespace Symple::Code
 {
 	using int8 = char;
 	using int16 = short;
