@@ -7,12 +7,12 @@
 #error Only MSVC supported for SympleCode
 #endif
 
-#if defined(SY_BUILD_DLL)
+#if defined(SY_CODE_BUILD)
 	#define SY_API __declspec(dllexport)
-#elif defined(SY_BUILD_LIB)
-	#define SY_API
-#else
+#elif defined(SY_CODE_USE_DLL)
 	#define SY_API __declspec(dllimport)
+#else
+	#define SY_API
 #endif
 
 namespace Symple
@@ -32,9 +32,3 @@ namespace Symple
 #include <string>
 #include <sstream>
 #include <vector>
-
-#include "Symple/Common/File.h"
-#include "Symple/Common/Memory.h"
-#include "Symple/Common/Console.h"
-
-bool SY_API StartsWith(const char *string, const char *start);

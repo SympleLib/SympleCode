@@ -1,9 +1,2 @@
-// Single Comment Test
-/*
-
-MultiLine Comment Test
-
-*/
-qwerty
-6250
-%
+int main() =>
+	ret 0;

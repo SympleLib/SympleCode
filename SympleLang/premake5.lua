@@ -1,19 +1,19 @@
 project "SympleLang"
-	kind "SharedLib"
+	kind "StaticLib"
 	language "C++"
 	cppdialect "C++Latest"
 	
 	targetdir ("%{wks.location}/bin/" .. outputdir .. "/%{prj.name}")
 	objdir ("%{wks.location}/bin-int/" .. outputdir .. "/%{prj.name}")
 	
-	pchheader "Symple/Common/Common.h"
-	pchsource "src/Symple/Common/Common.cpp"
+	-- pchheader "Symple/Common/Common.h"
+	-- pchsource "src/Symple/Common/Common.cpp"
 	
 	defines
 	{
 		"SY_x86",
 		"SY_ASM",
-		"SY_BUILD_DLL",
+		"SY_CODE_BUILD",
 	}
 	
 	includedirs
@@ -30,10 +30,10 @@ project "SympleLang"
 		"src/**.cpp",
 	}
 	
-	postbuildcommands
-	{
-		("{COPY} %{cfg.buildtarget.relpath} ../bin/" .. outputdir .. "/SympleCompiler")
-	}
+	-- postbuildcommands
+	-- {
+		-- ("{COPY} %{cfg.buildtarget.relpath} ../bin/" .. outputdir .. "/SympleCompiler")
+	-- }
 	
 	filter "configurations:Debug"
 		defines

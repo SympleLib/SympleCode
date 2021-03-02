@@ -1,4 +1,3 @@
-#include "Symple/Common/Common.h"
 #include "Symple/Common/Console.h"
 
 #if defined(_WIN32)
