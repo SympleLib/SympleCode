@@ -27,12 +27,30 @@ namespace Symple::Code
 		auto open = Match(TokenKind::OpenParen);
 		auto close = Match(TokenKind::CloseParen);
 		Match(TokenKind::EqualArrow);
-		Match(TokenKind::ReturnKeyword);
-		Match(TokenKind::Number);
-		Match(TokenKind::Semicolon);
-		auto body = MakeRef<StatementAST>();
+		auto body = ParseStatement();
 
 		return MakeRef<FunctionAST>(ty, name, open, close, body);
+	}
+
+
+	GlobalRef<StatementAST> Parser::ParseStatement()
+	{ return ParseExpressionStatement(); }
+
+	GlobalRef<ExpressionStatementAST> Parser::ParseExpressionStatement()
+	{
+		auto expr = ParseExpression();
+		Match(TokenKind::Semicolon);
+		return MakeRef<ExpressionStatementAST>(expr);
+	}
+
+
+	GlobalRef<ExpressionAST> Parser::ParseExpression()
+	{ return ParseLiteralExpression(); }
+
+	GlobalRef<LiteralExpressionAST> Parser::ParseLiteralExpression()
+	{
+		auto literal = Next();
+		return MakeRef<LiteralExpressionAST>(literal);
 	}
 
 

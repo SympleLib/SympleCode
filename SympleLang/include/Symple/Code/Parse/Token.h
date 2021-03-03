@@ -96,6 +96,12 @@ namespace Symple::Code
 		bool Is(TokenKind kind, Args&&... kinds) const
 		{ return Is(kind) || Is(kinds...); }
 
+		friend std::ostream &operator <<(std::ostream &, const Token &);
+
+		friend std::ostream &operator <<(std::ostream &, const GlobalRef<const Token> &);
+		friend std::ostream &operator <<(std::ostream &, const WeakRef<const Token> &);
+		friend std::ostream &operator <<(std::ostream &, const Scope<const Token> &);
+
 		TokenKind GetKind() const;
 		std::string_view GetText() const;
 

@@ -60,11 +60,7 @@ int main()
 	Console.Color = ConsoleColor::Yellow;
 	std::cout << "AST:\n";
 	Console.Color = ConsoleColor::Cyan;
-	for (auto member : unit->Members)
-	{
-		auto fn = Cast<FunctionAST>(member);
-		std::cout << fn->Type->Text << ' ' << fn->Name->Text << "();\n";
-	}
+	std::cout << (GlobalRef<AST>)unit;
 
 	std::cout.flush();
 	std::cin.get();

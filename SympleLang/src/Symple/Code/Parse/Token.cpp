@@ -10,6 +10,24 @@ namespace Symple::Code
 	{ return m_Kind == k; }
 
 
+	std::ostream &operator <<(std::ostream &os, const Token &tok)
+	{ return os << '"' << tok.File->Name << "\" (" << tok.DisplayLine << ':' << tok.Column << ") [" << TokenKindNames[(uint32)tok.Kind] << "] '" << tok.Text << '\''; }
+
+	std::ostream &operator <<(std::ostream &os, const GlobalRef<const Token> &tok)
+	{
+		if (tok.get())
+			return os << *tok.get();
+		else
+			return os << "Null token";
+	}
+
+	std::ostream &operator <<(std::ostream &os, const WeakRef<const Token> &tok)
+	{ return os << tok.lock(); }
+
+	std::ostream &operator <<(std::ostream &os, const Scope<const Token> &tok)
+	{ return os << *tok.get(); }
+
+
 	TokenKind Token::GetKind() const
 	{ return m_Kind; }
 

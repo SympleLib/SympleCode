@@ -10,7 +10,7 @@ namespace Symple::Code
 		virtual ASTKind GetKind() const override;
 	};
 
-	class SYC_API ExpressionStatementAST: public AST
+	class SYC_API ExpressionStatementAST: public StatementAST
 	{
 	private:
 		GlobalRef<ExpressionAST> m_Expr;

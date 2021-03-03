@@ -17,6 +17,12 @@ namespace Symple::Code
 		GlobalRef<MemberAST> ParseMember();
 		GlobalRef<FunctionAST> ParseFunction();
 
+		GlobalRef<StatementAST> ParseStatement();
+		GlobalRef<ExpressionStatementAST> ParseExpressionStatement();
+
+		GlobalRef<ExpressionAST> ParseExpression();
+		GlobalRef<LiteralExpressionAST> ParseLiteralExpression();
+
 		GlobalRef<const Token> Peek();
 		GlobalRef<const Token> Peek(uint32 offset);
 		GlobalRef<const Token> Next();

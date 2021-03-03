@@ -62,6 +62,11 @@ namespace Symple::Code
 	public:
 		virtual ASTKind GetKind() const;
 		virtual WeakRef<const Token_t> GetToken() const;
+		friend std::ostream &operator <<(std::ostream &, const AST &);
+
+		friend std::ostream &operator <<(std::ostream &, const GlobalRef<AST> &);
+		friend std::ostream &operator <<(std::ostream &, const WeakRef<AST> &);
+		friend std::ostream &operator <<(std::ostream &, const Scope<AST> &);
 
 		SY_PROPERTY_GET(GetKind) ASTKind Kind;
 		SY_PROPERTY_GET(GetToken) WeakRef<const Token_t> Token;
