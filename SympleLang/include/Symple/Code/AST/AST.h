@@ -5,22 +5,22 @@
 
 namespace Symple::Code
 {
-	class SYC_API AST;
-	class SYC_API CompilationUnitAST;
+	class SYC_API Ast;
+	class SYC_API CompilationUnitAst;
 
-	class SYC_API MemberAST;
-	class SYC_API FunctionAST;
+	class SYC_API MemberAst;
+	class SYC_API FunctionAst;
 
-	class SYC_API StatementAST;
-	class SYC_API ReturnStatementAST;
-	class SYC_API ExpressionStatementAST;
+	class SYC_API StatementAst;
+	class SYC_API ReturnStatementAst;
+	class SYC_API ExpressionStatementAst;
 
-	class SYC_API ExpressionAST;
+	class SYC_API ExpressionAst;
 
-	using MemberList = std::vector<GlobalRef<MemberAST>>;
-	using ConstMemberList = std::vector<GlobalRef<const MemberAST>>;
+	using MemberList = std::vector<GlobalRef<MemberAst>>;
+	using ConstMemberList = std::vector<GlobalRef<const MemberAst>>;
 
-	enum class SYC_API ASTKind
+	enum class SYC_API AstKind
 	{
 		Unknown,
 		CompilationUnit,
@@ -41,7 +41,7 @@ namespace Symple::Code
 		Count, // Count of ast kinds
 	};
 
-	constexpr const char *const ASTKindNames[(uint32)ASTKind::Count] =
+	constexpr const char *const AstKindNames[(uint32)AstKind::Count] =
 	{
 		"Unknown",
 		"CompilationUnit",
@@ -60,30 +60,32 @@ namespace Symple::Code
 		"LiteralExpression",
 	};
 
-	class SYC_API AST: public Printable
+	SYC_API std::ostream &operator <<(std::ostream &, AstKind);
+
+	class SYC_API Ast: public Printable
 	{
 	protected:
 		void PrintKind(std::ostream &) const;
 	public:
 		using Token_t = Token;
 	public:
-		virtual ASTKind GetKind() const;
+		virtual AstKind GetKind() const;
 		virtual WeakRef<const Token_t> GetToken() const;
 		virtual void Print(std::ostream &, std::string indent = "", std::string_view label = "", bool last = true) const override;
 
-		SY_PROPERTY_GET(GetKind) ASTKind Kind;
+		SY_PROPERTY_GET(GetKind) AstKind Kind;
 		SY_PROPERTY_GET(GetToken) WeakRef<const Token_t> Token;
 	};
 
-	class SYC_API CompilationUnitAST: public AST
+	class SYC_API CompilationUnitAst: public Ast
 	{
 	private:
 		const MemberList m_Members;
 		WeakRef<const Token_t> m_EndOfFile;
 	public:
-		CompilationUnitAST(const MemberList &members, const WeakRef<const Token_t> &endOfFile);
+		CompilationUnitAst(const MemberList &members, const WeakRef<const Token_t> &endOfFile);
 
-		virtual ASTKind GetKind() const override;
+		virtual AstKind GetKind() const override;
 		virtual WeakRef<const Token_t> GetToken() const override;
 		virtual void Print(std::ostream &, std::string indent = "", std::string_view label = "", bool last = true) const override;
 
@@ -95,6 +97,6 @@ namespace Symple::Code
 	};
 }
 
-#include "Symple/Code/AST/MemberAST.h"
-#include "Symple/Code/AST/StatementAST.h"
-#include "Symple/Code/AST/ExpressionAST.h"
+#include "Symple/Code/Ast/MemberAst.h"
+#include "Symple/Code/Ast/StatementAst.h"
+#include "Symple/Code/Ast/ExpressionAst.h"

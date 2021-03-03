@@ -80,6 +80,8 @@ namespace Symple::Code
 		"ReturnKeyword",
 	};
 
+	SYC_API std::ostream &operator <<(std::ostream &, TokenKind);
+
 	class SYC_API Token: public Printable
 	{
 	private:

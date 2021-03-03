@@ -1,26 +1,26 @@
-#include "Symple/Code/AST/ExpressionAST.h"
+#include "Symple/Code/Ast/ExpressionAst.h"
 
 namespace Symple::Code
 {
-	using Token_t = AST::Token_t;
+	using Token_t = Ast::Token_t;
 
-	ASTKind ExpressionAST::GetKind() const
-	{ return ASTKind::Expression; }
+	AstKind ExpressionAst::GetKind() const
+	{ return AstKind::Expression; }
 
 
-	LiteralExpressionAST::LiteralExpressionAST(GlobalRef<const Token_t> literal)
+	LiteralExpressionAst::LiteralExpressionAst(GlobalRef<const Token_t> literal)
 		: m_Literal(literal) {}
 
-	ASTKind LiteralExpressionAST::GetKind() const
-	{ return ASTKind::LiteralExpression; }
+	AstKind LiteralExpressionAst::GetKind() const
+	{ return AstKind::LiteralExpression; }
 
-	WeakRef<const Token> LiteralExpressionAST::GetToken() const
+	WeakRef<const Token> LiteralExpressionAst::GetToken() const
 	{ return m_Literal; }
 
-	GlobalRef<const Token> LiteralExpressionAST::GetLiteral() const
+	GlobalRef<const Token> LiteralExpressionAst::GetLiteral() const
 	{ return m_Literal; }
 
-	void LiteralExpressionAST::Print(std::ostream &os, std::string indent, std::string_view label, bool last) const
+	void LiteralExpressionAst::Print(std::ostream &os, std::string indent, std::string_view label, bool last) const
 	{
 		PrintIndent(os, indent, label, last);
 		PrintKind(os);

@@ -1,2 +1,2 @@
 int main() =>
-  ret 0;
+  ret 6 * 9;

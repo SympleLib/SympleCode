@@ -2,6 +2,9 @@
 
 namespace Symple::Code
 {
+	SYC_API std::ostream &operator <<(std::ostream &os, TokenKind kind)
+	{ return os <<TokenKindNames[(uint32)kind]; }
+
 	Token::Token(TokenKind kind, const char *beg, const char *end, const GlobalRef<const Symple::Code::File> &file, uint32 ln, uint32 disLn, uint32 col)
 		: m_Kind(kind), m_Text(beg, end - beg), m_File(file), m_Line(ln), m_DisplayLine(disLn), m_Column(col - (end - beg)) {}
 
@@ -13,25 +16,8 @@ namespace Symple::Code
 	void Token::Print(std::ostream &os, std::string indent, std::string_view label, bool last) const
 	{
 		PrintIndent(os, indent, label, last);
-		os << '\"' << m_File->Name << "\" (" << m_DisplayLine << ':' << m_Column << ") [" << TokenKindNames[(uint32)m_Kind] << "] \'" << m_Text << '\'';
+		os << '\"' << m_File->Name << "\" (" << m_DisplayLine << ':' << m_Column << ") [" << m_Kind << "] \'" << m_Text << '\'';
 	}
-
-	std::ostream &operator <<(std::ostream &os, const Token &tok)
-	{ return os << '"' << tok.File->Name << "\" (" << tok.DisplayLine << ':' << tok.Column << ") [" << TokenKindNames[(uint32)tok.Kind] << "] '" << tok.Text << '\''; }
-
-	std::ostream &operator <<(std::ostream &os, const GlobalRef<const Token> &tok)
-	{
-		if (tok.get())
-			return os << *tok.get();
-		else
-			return os << "Null token";
-	}
-
-	std::ostream &operator <<(std::ostream &os, const WeakRef<const Token> &tok)
-	{ return os << tok.lock(); }
-
-	std::ostream &operator <<(std::ostream &os, const Scope<const Token> &tok)
-	{ return os << *tok.get(); }
 
 
 	TokenKind Token::GetKind() const

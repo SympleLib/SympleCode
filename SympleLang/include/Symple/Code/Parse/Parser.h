@@ -1,6 +1,6 @@
 #pragma once
 
-#include "Symple/Code/AST/AST.h"
+#include "Symple/Code/Ast/Ast.h"
 #include "Symple/Code/Parse/Token.h"
 
 namespace Symple::Code
@@ -12,17 +12,17 @@ namespace Symple::Code
 		uint32 m_Position = 0;
 	public:
 		Parser(const TokenList &tokens);
-		GlobalRef<CompilationUnitAST> Parse();
+		GlobalRef<CompilationUnitAst> Parse();
 	private:
-		GlobalRef<MemberAST> ParseMember();
-		GlobalRef<FunctionAST> ParseFunction();
+		GlobalRef<MemberAst> ParseMember();
+		GlobalRef<FunctionAst> ParseFunction();
 
-		GlobalRef<StatementAST> ParseStatement();
-		GlobalRef<ReturnStatementAST> ParseReturnStatement();
-		GlobalRef<ExpressionStatementAST> ParseExpressionStatement();
+		GlobalRef<StatementAst> ParseStatement();
+		GlobalRef<ReturnStatementAst> ParseReturnStatement();
+		GlobalRef<ExpressionStatementAst> ParseExpressionStatement();
 
-		GlobalRef<ExpressionAST> ParseExpression();
-		GlobalRef<LiteralExpressionAST> ParseLiteralExpression();
+		GlobalRef<ExpressionAst> ParseExpression();
+		GlobalRef<LiteralExpressionAst> ParseLiteralExpression();
 
 		GlobalRef<const Token> Peek();
 		GlobalRef<const Token> Peek(uint32 offset);

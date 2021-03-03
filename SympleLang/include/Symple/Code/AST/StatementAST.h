@@ -1,45 +1,45 @@
 #pragma once
 
-#include "Symple/Code/AST/AST.h"
+#include "Symple/Code/Ast/Ast.h"
 
 namespace Symple::Code
 {
-	class SYC_API StatementAST: public AST
+	class SYC_API StatementAst: public Ast
 	{
 	public:
-		virtual ASTKind GetKind() const override;
+		virtual AstKind GetKind() const override;
 	};
 
-	class SYC_API ExpressionStatementAST: public StatementAST
+	class SYC_API ExpressionStatementAst: public StatementAst
 	{
 	private:
-		GlobalRef<ExpressionAST> m_Expr;
+		GlobalRef<ExpressionAst> m_Expr;
 	public:
-		ExpressionStatementAST(GlobalRef<ExpressionAST> expression);
+		ExpressionStatementAst(GlobalRef<ExpressionAst> expression);
 
-		virtual ASTKind GetKind() const override;
+		virtual AstKind GetKind() const override;
 		virtual WeakRef<const Token_t> GetToken() const override;
 		virtual void Print(std::ostream &, std::string indent = "", std::string_view label = "", bool last = true) const override;
 
-		GlobalRef<const ExpressionAST> GetExpression() const;
+		GlobalRef<const ExpressionAst> GetExpression() const;
 
-		SY_PROPERTY_GET(GetExpression) GlobalRef<const ExpressionAST> Expression;
+		SY_PROPERTY_GET(GetExpression) GlobalRef<const ExpressionAst> Expression;
 	};
 
-	class SYC_API ReturnStatementAST: public StatementAST
+	class SYC_API ReturnStatementAst: public StatementAst
 	{
 	private:
 		WeakRef<const Token_t> m_Keyword;
-		GlobalRef<ExpressionAST> m_Value;
+		GlobalRef<ExpressionAst> m_Value;
 	public:
-		ReturnStatementAST(WeakRef<const Token_t> keyword, GlobalRef<ExpressionAST> value);
+		ReturnStatementAst(WeakRef<const Token_t> keyword, GlobalRef<ExpressionAst> value);
 
-		virtual ASTKind GetKind() const override;
+		virtual AstKind GetKind() const override;
 		virtual WeakRef<const Token_t> GetToken() const override;
 		virtual void Print(std::ostream &, std::string indent = "", std::string_view label = "", bool last = true) const override;
 
-		GlobalRef<const ExpressionAST> GetValue() const;
+		GlobalRef<const ExpressionAst> GetValue() const;
 
-		SY_PROPERTY_GET(GetValue) GlobalRef<const ExpressionAST> Value;
+		SY_PROPERTY_GET(GetValue) GlobalRef<const ExpressionAst> Value;
 	};
 }

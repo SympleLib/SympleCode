@@ -7,20 +7,20 @@ namespace Symple::Code
 	Parser::Parser(const TokenList &toks)
 		: m_Tokens(toks) {}
 
-	GlobalRef<CompilationUnitAST> Parser::Parse()
+	GlobalRef<CompilationUnitAst> Parser::Parse()
 	{
 		MemberList members;
 
 		while (!Current->Is(TokenKind::EndOfFile))
 			members.push_back(ParseMember());
 		auto eof = Match(TokenKind::EndOfFile);
-		return MakeRef<CompilationUnitAST>(members, eof);
+		return MakeRef<CompilationUnitAst>(members, eof);
 	}
 
-	GlobalRef<MemberAST> Parser::ParseMember()
+	GlobalRef<MemberAst> Parser::ParseMember()
 	{ return ParseFunction(); }
 
-	GlobalRef<FunctionAST> Parser::ParseFunction()
+	GlobalRef<FunctionAst> Parser::ParseFunction()
 	{
 		auto ty = Match(TokenKind::IntKeyword);
 		auto name = Match(TokenKind::Identifier);
@@ -29,11 +29,11 @@ namespace Symple::Code
 		Match(TokenKind::EqualArrow);
 		auto body = ParseStatement();
 
-		return MakeRef<FunctionAST>(ty, name, open, close, body);
+		return MakeRef<FunctionAst>(ty, name, open, close, body);
 	}
 
 
-	GlobalRef<StatementAST> Parser::ParseStatement()
+	GlobalRef<StatementAst> Parser::ParseStatement()
 	{
 		switch (Current->Kind)
 		{
@@ -44,29 +44,29 @@ namespace Symple::Code
 		}
 	}
 
-	GlobalRef<ReturnStatementAST> Parser::ParseReturnStatement()
+	GlobalRef<ReturnStatementAst> Parser::ParseReturnStatement()
 	{
 		auto keyword = Match(TokenKind::ReturnKeyword);
 		auto expr = ParseExpression();
 		Match(TokenKind::Semicolon);
-		return MakeRef<ReturnStatementAST>(keyword, expr);
+		return MakeRef<ReturnStatementAst>(keyword, expr);
 	}
 
-	GlobalRef<ExpressionStatementAST> Parser::ParseExpressionStatement()
+	GlobalRef<ExpressionStatementAst> Parser::ParseExpressionStatement()
 	{
 		auto expr = ParseExpression();
 		Match(TokenKind::Semicolon);
-		return MakeRef<ExpressionStatementAST>(expr);
+		return MakeRef<ExpressionStatementAst>(expr);
 	}
 
 
-	GlobalRef<ExpressionAST> Parser::ParseExpression()
+	GlobalRef<ExpressionAst> Parser::ParseExpression()
 	{ return ParseLiteralExpression(); }
 
-	GlobalRef<LiteralExpressionAST> Parser::ParseLiteralExpression()
+	GlobalRef<LiteralExpressionAst> Parser::ParseLiteralExpression()
 	{
 		auto literal = Next();
-		return MakeRef<LiteralExpressionAST>(literal);
+		return MakeRef<LiteralExpressionAst>(literal);
 	}
 
 
@@ -92,7 +92,7 @@ namespace Symple::Code
 	{
 		if (Current->Is(kind))
 			return Next();
-		std::cerr << '[' << Current->DisplayLine << ':' << Current->Column << "]: " << "Expected " << TokenKindNames[(uint32)kind] << '\n';
+		std::cerr << '[' << Current->DisplayLine << ':' << Current->Column << "]: " << "Unexpected " << Current->Kind << " '', Expected " << kind << '\n';
 		return Current;
 	}
 }

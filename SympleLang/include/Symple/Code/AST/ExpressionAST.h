@@ -1,23 +1,23 @@
 #pragma once
 
-#include "Symple/Code/AST/AST.h"
+#include "Symple/Code/Ast/Ast.h"
 
 namespace Symple::Code
 {
-	class SYC_API ExpressionAST: public AST
+	class SYC_API ExpressionAst: public Ast
 	{
 	public:
-		virtual ASTKind GetKind() const override;
+		virtual AstKind GetKind() const override;
 	};
 
-	class SYC_API LiteralExpressionAST: public ExpressionAST
+	class SYC_API LiteralExpressionAst: public ExpressionAst
 	{
 	private:
 		GlobalRef<const Token_t> m_Literal;
 	public:
-		LiteralExpressionAST(GlobalRef<const Token_t> literal);
+		LiteralExpressionAst(GlobalRef<const Token_t> literal);
 
-		virtual ASTKind GetKind() const override;
+		virtual AstKind GetKind() const override;
 		virtual WeakRef<const Token_t> GetToken() const override;
 		virtual void Print(std::ostream &, std::string indent = "", std::string_view label = "", bool last = true) const override;
 

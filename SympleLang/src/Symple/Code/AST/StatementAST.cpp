@@ -1,26 +1,26 @@
-#include "Symple/Code/AST/StatementAST.h"
+#include "Symple/Code/Ast/StatementAst.h"
 
 namespace Symple::Code
 {
-	using Token_t = AST::Token_t;
+	using Token_t = Ast::Token_t;
 
-	ASTKind StatementAST::GetKind() const
-	{ return ASTKind::Statement; }
+	AstKind StatementAst::GetKind() const
+	{ return AstKind::Statement; }
 
 
-	ExpressionStatementAST::ExpressionStatementAST(GlobalRef<ExpressionAST> expr)
+	ExpressionStatementAst::ExpressionStatementAst(GlobalRef<ExpressionAst> expr)
 		: m_Expr(expr) {}
 
-	ASTKind ExpressionStatementAST::GetKind() const
-	{ return ASTKind::ExpressionStatement; }
+	AstKind ExpressionStatementAst::GetKind() const
+	{ return AstKind::ExpressionStatement; }
 
-	WeakRef<const Token_t> ExpressionStatementAST::GetToken() const
+	WeakRef<const Token_t> ExpressionStatementAst::GetToken() const
 	{ return m_Expr->Token; }
 
-	GlobalRef<const ExpressionAST> ExpressionStatementAST::GetExpression() const
+	GlobalRef<const ExpressionAst> ExpressionStatementAst::GetExpression() const
 	{ return m_Expr; }
 
-	void ExpressionStatementAST::Print(std::ostream & os, std::string indent, std::string_view label, bool last) const
+	void ExpressionStatementAst::Print(std::ostream & os, std::string indent, std::string_view label, bool last) const
 	{
 		PrintIndent(os, indent, label, last);
 		PrintKind(os);
@@ -30,19 +30,19 @@ namespace Symple::Code
 	}
 
 
-	ReturnStatementAST::ReturnStatementAST(WeakRef<const Token_t> keyword, GlobalRef<ExpressionAST> val)
+	ReturnStatementAst::ReturnStatementAst(WeakRef<const Token_t> keyword, GlobalRef<ExpressionAst> val)
 		: m_Keyword(keyword), m_Value(val) {}
 
-	ASTKind ReturnStatementAST::GetKind() const
-	{ return ASTKind::ReturnStatement; }
+	AstKind ReturnStatementAst::GetKind() const
+	{ return AstKind::ReturnStatement; }
 
-	WeakRef<const Token_t> ReturnStatementAST::GetToken() const
+	WeakRef<const Token_t> ReturnStatementAst::GetToken() const
 	{ return m_Keyword; }
 
-	GlobalRef<const ExpressionAST> ReturnStatementAST::GetValue() const
+	GlobalRef<const ExpressionAst> ReturnStatementAst::GetValue() const
 	{ return m_Value; }
 
-	void ReturnStatementAST::Print(std::ostream &os, std::string indent, std::string_view label, bool last) const
+	void ReturnStatementAst::Print(std::ostream &os, std::string indent, std::string_view label, bool last) const
 	{
 		PrintIndent(os, indent, label, last);
 		PrintKind(os);
