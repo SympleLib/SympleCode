@@ -8,25 +8,29 @@ namespace Symple::Code
 	{ return AstKind::Expression; }
 
 
-	LiteralExpressionAst::LiteralExpressionAst(GlobalRef<const Token_t> literal)
-		: m_Literal(literal) {}
+	UnaryExpressionAst::UnaryExpressionAst(GlobalRef<const Token_t> op, GlobalRef<ExpressionAst> operand)
+		: m_Operator(op), m_Operand(operand) {}
 
-	AstKind LiteralExpressionAst::GetKind() const
-	{ return AstKind::LiteralExpression; }
+	AstKind UnaryExpressionAst::GetKind() const
+	{ return AstKind::UnaryExpression; }
 
-	WeakRef<const Token_t> LiteralExpressionAst::GetToken() const
-	{ return m_Literal; }
+	WeakRef<const Token_t> UnaryExpressionAst::GetToken() const
+	{ return m_Operator; }
 
-	GlobalRef<const Token_t> LiteralExpressionAst::GetLiteral() const
-	{ return m_Literal; }
+	GlobalRef<const Token_t> UnaryExpressionAst::GetOperator() const
+	{ return m_Operator; }
 
-	void LiteralExpressionAst::Print(std::ostream &os, std::string indent, std::string_view label, bool last) const
+	GlobalRef<const ExpressionAst> UnaryExpressionAst::GetOperand() const
+	{ return m_Operand; }
+
+	void UnaryExpressionAst::Print(std::ostream &os, std::string indent, std::string_view label, bool last) const
 	{
 		PrintIndent(os, indent, label, last);
 		PrintKind(os);
 
 		indent += GetAddIndent(last);
-		m_Literal->Print(os << '\n', indent, "Literal = ");
+		m_Operator->Print(os << '\n', indent, "Operator = ", false);
+		m_Operand->Print(os << '\n', indent, "Operand = ");
 	}
 
 
@@ -57,5 +61,27 @@ namespace Symple::Code
 		m_Operator->Print(os << '\n', indent, "Operator = ", false);
 		m_Left->Print(os << '\n', indent, "Left = ", false);
 		m_Right->Print(os << '\n', indent, "Right = ");
+	}
+
+
+	LiteralExpressionAst::LiteralExpressionAst(GlobalRef<const Token_t> literal)
+		: m_Literal(literal) {}
+
+	AstKind LiteralExpressionAst::GetKind() const
+	{ return AstKind::LiteralExpression; }
+
+	WeakRef<const Token_t> LiteralExpressionAst::GetToken() const
+	{ return m_Literal; }
+
+	GlobalRef<const Token_t> LiteralExpressionAst::GetLiteral() const
+	{ return m_Literal; }
+
+	void LiteralExpressionAst::Print(std::ostream &os, std::string indent, std::string_view label, bool last) const
+	{
+		PrintIndent(os, indent, label, last);
+		PrintKind(os);
+
+		indent += GetAddIndent(last);
+		m_Literal->Print(os << '\n', indent, "Literal = ");
 	}
 }

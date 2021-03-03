@@ -65,16 +65,30 @@ namespace Symple::Code
 	GlobalRef<ExpressionAst> Parser::ParseExpression()
 	{ return ParseBinaryExpression(); }
 
+	GlobalRef<ExpressionAst> Parser::ParseUnaryExpression(uint32 parentPrecedence)
+	{
+		uint32 precedence = Precedence::Unary(Current->Kind);
+		if (precedence && precedence >= parentPrecedence)
+		{
+			auto op = Next();
+			auto operand = ParseBinaryExpression(precedence);
+
+			return MakeRef<UnaryExpressionAst>(op, operand);
+		}
+		else
+			return ParsePrimaryExpression();
+	}
+
 	GlobalRef<ExpressionAst> Parser::ParseBinaryExpression(uint32 parentPrecedence)
 	{
-		auto left = ParsePrimaryExpression();
+		auto left = ParseUnaryExpression();
 		while (true)
 		{
 			uint32 precedence = Precedence::Binary(Current->Kind);
-			if (precedence <= parentPrecedence)
+			if (!precedence || precedence <= parentPrecedence)
 				return left;
 			auto op = Next();
-			auto right = ParseBinaryExpression();
+			auto right = ParseUnaryExpression(precedence);
 			left = MakeRef<BinaryExpressionAst>(op, left, right);
 		}
 	}

@@ -16,6 +16,8 @@ namespace Symple::Code
 	class SYC_API ExpressionStatementAst;
 
 	class SYC_API ExpressionAst;
+	class SYC_API BinaryExpressionAst;
+	class SYC_API LiteralExpressionAst;
 
 	using MemberList = std::vector<GlobalRef<MemberAst>>;
 	using ConstMemberList = std::vector<GlobalRef<const MemberAst>>;
@@ -36,6 +38,7 @@ namespace Symple::Code
 
 		// Expressions
 		Expression,
+		UnaryExpression,
 		BinaryExpression,
 		LiteralExpression,
 
@@ -58,6 +61,7 @@ namespace Symple::Code
 
 
 		"Expression",
+		"UnaryExpression",
 		"BinaryExpression",
 		"LiteralExpression",
 	};

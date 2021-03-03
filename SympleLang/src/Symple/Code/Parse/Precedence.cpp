@@ -8,6 +8,9 @@ namespace Symple::Code
 		{
 		default:
 			return 0;
+		case TokenKind::Plus:
+		case TokenKind::Minus:
+			return 3;
 		}
 	}
 
