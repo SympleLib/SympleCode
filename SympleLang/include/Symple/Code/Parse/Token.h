@@ -109,7 +109,7 @@ namespace Symple::Code
 		uint32 GetDisplayLine() const;
 		uint32 GetColumn() const;
 
-		__declspec(property(get = GetKind)) TokenKind Kind;
+		SY_PROPERTY_GET(GetKind) TokenKind Kind;
 		SY_PROPERTY_GET(GetText) std::string_view Text;
 
 		SY_PROPERTY_GET(GetFile) GlobalRef<const File> File;

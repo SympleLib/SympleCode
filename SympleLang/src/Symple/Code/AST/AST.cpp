@@ -5,7 +5,7 @@ namespace Symple::Code
 	using Token_t = Ast::Token_t;
 
 	SYC_API std::ostream &operator <<(std::ostream &os, AstKind kind)
-	{ return os << TokenKindNames[(uint32)kind]; }
+	{ return os << AstKindNames[(uint32)kind]; }
 
 
 	AstKind Ast::GetKind() const

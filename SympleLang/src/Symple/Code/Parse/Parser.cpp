@@ -2,6 +2,8 @@
 
 #include <iostream>
 
+#include "Symple/Code/Parse/Precedence.h"
+
 namespace Symple::Code
 {
 	Parser::Parser(const TokenList &toks)
@@ -61,12 +63,35 @@ namespace Symple::Code
 
 
 	GlobalRef<ExpressionAst> Parser::ParseExpression()
-	{ return ParseLiteralExpression(); }
+	{ return ParseBinaryExpression(); }
+
+	GlobalRef<ExpressionAst> Parser::ParseBinaryExpression(uint32 parentPrecedence)
+	{
+		auto left = ParsePrimaryExpression();
+		while (true)
+		{
+			uint32 precedence = Precedence::Binary(Current->Kind);
+			if (precedence <= parentPrecedence)
+				return left;
+			auto op = Next();
+			auto right = ParseBinaryExpression();
+			left = MakeRef<BinaryExpressionAst>(op, left, right);
+		}
+	}
 
 	GlobalRef<LiteralExpressionAst> Parser::ParseLiteralExpression()
 	{
 		auto literal = Next();
 		return MakeRef<LiteralExpressionAst>(literal);
+	}
+
+	GlobalRef<ExpressionAst> Parser::ParsePrimaryExpression()
+	{
+		switch (Current->Kind)
+		{
+		case TokenKind::Number:
+			return ParseLiteralExpression();
+		}
 	}
 
 

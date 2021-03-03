@@ -36,6 +36,7 @@ namespace Symple::Code
 
 		// Expressions
 		Expression,
+		BinaryExpression,
 		LiteralExpression,
 
 		Count, // Count of ast kinds
@@ -57,6 +58,7 @@ namespace Symple::Code
 
 
 		"Expression",
+		"BinaryExpression",
 		"LiteralExpression",
 	};
 
