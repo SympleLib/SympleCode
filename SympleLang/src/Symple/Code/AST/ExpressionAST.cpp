@@ -84,4 +84,34 @@ namespace Symple::Code
 		indent += GetAddIndent(last);
 		m_Literal->Print(os << '\n', indent, "Literal = ");
 	}
+
+
+	ParenthasizedExpressionAst::ParenthasizedExpressionAst(GlobalRef<const Token_t> open, GlobalRef<ExpressionAst> expr, GlobalRef<const Token_t> close)
+		: m_Open(open), m_Expr(expr), m_Close(close) {}
+
+	AstKind ParenthasizedExpressionAst::GetKind() const
+	{ return AstKind::ParenthasizedExpression; }
+
+	WeakRef<const Token_t> ParenthasizedExpressionAst::GetToken() const
+	{ return m_Open; }
+
+	GlobalRef<const Token_t> ParenthasizedExpressionAst::GetOpen() const
+	{ return m_Open; }
+
+	GlobalRef<const ExpressionAst> ParenthasizedExpressionAst::GetExpression() const
+	{ return m_Expr; }
+
+	GlobalRef<const Token_t> ParenthasizedExpressionAst::GetClose() const
+	{ return m_Close; }
+
+	void ParenthasizedExpressionAst::Print(std::ostream &os, std::string indent, std::string_view label, bool last) const
+	{
+		PrintIndent(os, indent, label, last);
+		PrintKind(os);
+
+		indent += GetAddIndent(last);
+		m_Open->Print(os << '\n', indent, "Open = ", false);
+		m_Expr->Print(os << '\n', indent, "Expression = ", false);
+		m_Close->Print(os << '\n', indent, "Close = ");
+	}
 }

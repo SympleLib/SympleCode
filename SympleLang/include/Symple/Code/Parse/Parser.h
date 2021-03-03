@@ -27,6 +27,7 @@ namespace Symple::Code
 
 		GlobalRef<ExpressionAst> ParsePrimaryExpression();
 		GlobalRef<LiteralExpressionAst> ParseLiteralExpression();
+		GlobalRef<ParenthasizedExpressionAst> ParseParenthasizedExpression();
 
 		GlobalRef<const Token> Peek();
 		GlobalRef<const Token> Peek(uint32 offset);

@@ -99,12 +99,22 @@ namespace Symple::Code
 		return MakeRef<LiteralExpressionAst>(literal);
 	}
 
+	GlobalRef<ParenthasizedExpressionAst> Parser::ParseParenthasizedExpression()
+	{
+		auto open = Match(TokenKind::OpenParen);
+		auto expr = ParseExpression();
+		auto close = Match(TokenKind::CloseParen);
+		return MakeRef<ParenthasizedExpressionAst>(open, expr, close);
+	}
+
 	GlobalRef<ExpressionAst> Parser::ParsePrimaryExpression()
 	{
 		switch (Current->Kind)
 		{
 		case TokenKind::Number:
 			return ParseLiteralExpression();
+		case TokenKind::OpenParen:
+			return ParseParenthasizedExpression();
 		}
 	}
 

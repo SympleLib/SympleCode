@@ -41,6 +41,7 @@ namespace Symple::Code
 		UnaryExpression,
 		BinaryExpression,
 		LiteralExpression,
+		ParenthasizedExpression,
 
 		Count, // Count of ast kinds
 	};
@@ -64,6 +65,7 @@ namespace Symple::Code
 		"UnaryExpression",
 		"BinaryExpression",
 		"LiteralExpression",
+		"ParenthasizedExpression",
 	};
 
 	SYC_API std::ostream &operator <<(std::ostream &, AstKind);
