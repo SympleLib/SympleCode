@@ -3,6 +3,7 @@
 #include "Symple/Code/Util/File.h"
 #include "Symple/Code/Memory.h"
 #include "Symple/Code/Parse/Lexer.h"
+#include "Symple/Code/Parse/Parser.h"
 
 using namespace Symple::Code;
 
@@ -47,6 +48,10 @@ int main()
 		pcol = tok->Column + tok->Text.length() - 1;
 	}
 	std::cout << '\n';
+
+	Parser parser(tokens);
+	auto unit = parser.Parse();
+	std::cout << ASTKindNames[(uint32)unit->Kind] << '\n';
 
 	//Console.Color = ConsoleColor::Yellow;
 	//std::cout << "Tokens:\n";
