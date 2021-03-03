@@ -34,7 +34,23 @@ namespace Symple::Code
 
 
 	GlobalRef<StatementAST> Parser::ParseStatement()
-	{ return ParseExpressionStatement(); }
+	{
+		switch (Current->Kind)
+		{
+		case TokenKind::ReturnKeyword:
+			return ParseReturnStatement();
+		default:
+			return ParseExpressionStatement();
+		}
+	}
+
+	GlobalRef<ReturnStatementAST> Parser::ParseReturnStatement()
+	{
+		auto keyword = Match(TokenKind::ReturnKeyword);
+		auto expr = ParseExpression();
+		Match(TokenKind::Semicolon);
+		return MakeRef<ReturnStatementAST>(keyword, expr);
+	}
 
 	GlobalRef<ExpressionStatementAST> Parser::ParseExpressionStatement()
 	{

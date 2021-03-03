@@ -18,6 +18,7 @@ namespace Symple::Code
 		GlobalRef<FunctionAST> ParseFunction();
 
 		GlobalRef<StatementAST> ParseStatement();
+		GlobalRef<ReturnStatementAST> ParseReturnStatement();
 		GlobalRef<ExpressionStatementAST> ParseExpressionStatement();
 
 		GlobalRef<ExpressionAST> ParseExpression();

@@ -12,6 +12,8 @@ namespace Symple::Code
 	class SYC_API FunctionAST;
 
 	class SYC_API StatementAST;
+	class SYC_API ReturnStatementAST;
+	class SYC_API ExpressionStatementAST;
 
 	class SYC_API ExpressionAST;
 
@@ -29,6 +31,7 @@ namespace Symple::Code
 
 		// Statements
 		Statement,
+		ReturnStatement,
 		ExpressionStatement,
 
 		// Expressions
@@ -49,6 +52,7 @@ namespace Symple::Code
 
 
 		"Statement",
+		"ReturnStatement",
 		"ExpressionStatement",
 
 

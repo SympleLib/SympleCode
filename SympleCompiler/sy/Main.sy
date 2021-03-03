@@ -1,2 +1,2 @@
 int main() =>
-  5;
+  ret 0;
