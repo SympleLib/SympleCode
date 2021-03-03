@@ -32,14 +32,14 @@ namespace Symple::Code
 			return result;
 		}
 		else
-			return Scope<To>(nullptr);
+			return Scope<To>();
 	}
 
 	template<typename To, typename From>
 	inline GlobalRef<To> Cast(GlobalRef<From>&& ref)
-	{ return std::dynamic_pointer_cast(ref); }
+	{ return std::dynamic_pointer_cast<To>(std::move(ref)); }
 
 	template<typename To, typename From>
 	inline GlobalRef<To> Cast(const GlobalRef<From>& ref)
-	{ return std::dynamic_pointer_cast(ref); }
+	{ return std::dynamic_pointer_cast<To>(ref); }
 }

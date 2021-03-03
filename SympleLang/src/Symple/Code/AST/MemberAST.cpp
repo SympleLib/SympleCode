@@ -19,6 +19,9 @@ namespace Symple::Code
 	{ return m_Name; }
 
 
+	GlobalRef<const Token_t> FunctionAST::GetType() const
+	{ return m_Type; }
+
 	GlobalRef<const Token_t> FunctionAST::GetName() const
 	{ return m_Name; }
 

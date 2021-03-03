@@ -22,12 +22,12 @@ namespace Symple::Code
 
 	GlobalRef<FunctionAST> Parser::ParseFunction()
 	{
-		auto ty = Next();
+		auto ty = Match(TokenKind::IntKeyword);
 		auto name = Match(TokenKind::Identifier);
 		auto open = Match(TokenKind::OpenParen);
 		auto close = Match(TokenKind::CloseParen);
 		Match(TokenKind::EqualArrow);
-		Match(TokenKind::Identifier);
+		Match(TokenKind::ReturnKeyword);
 		Match(TokenKind::Number);
 		Match(TokenKind::Semicolon);
 		auto body = MakeRef<StatementAST>();
