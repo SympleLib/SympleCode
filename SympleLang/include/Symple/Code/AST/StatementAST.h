@@ -19,6 +19,7 @@ namespace Symple::Code
 
 		virtual ASTKind GetKind() const override;
 		virtual WeakRef<const Token_t> GetToken() const override;
+		virtual void Print(std::ostream &, std::string indent = "", std::string_view label = "", bool last = true) const override;
 
 		GlobalRef<const ExpressionAST> GetExpression() const;
 

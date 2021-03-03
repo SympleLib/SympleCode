@@ -60,7 +60,7 @@ int main()
 	Console.Color = ConsoleColor::Yellow;
 	std::cout << "AST:\n";
 	Console.Color = ConsoleColor::Cyan;
-	std::cout << (GlobalRef<AST>)unit;
+	unit->Print(std::cout);
 
 	std::cout.flush();
 	std::cin.get();

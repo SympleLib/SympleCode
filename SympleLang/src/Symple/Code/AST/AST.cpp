@@ -10,22 +10,15 @@ namespace Symple::Code
 	WeakRef<const Token_t> AST::GetToken() const
 	{ return std::move(WeakRef<const Token_t>()); }
 
-	std::ostream &operator <<(std::ostream &os, const AST &ast)
-	{ return os << ASTKindNames[(uint32)ast.Kind] << "Ast [Token]: " << ast.Token; }
 
-	std::ostream &operator <<(std::ostream &os, const GlobalRef<AST> &ast)
+	void AST::PrintKind(std::ostream &os) const
+	{ os << ASTKindNames[(uint32)Kind] << "AST"; }
+
+	void AST::Print(std::ostream &os, std::string indent, std::string_view label, bool last) const
 	{
-		if (ast.get())
-			return os << *ast.get();
-		else
-			return os << "Null ast";
+		PrintIndent(os, indent, label, last);
+		PrintKind(os);
 	}
-
-	std::ostream &operator <<(std::ostream &os, const WeakRef<AST> &ast)
-	{ return os << ast; }
-
-	std::ostream &operator <<(std::ostream &os, const Scope<AST> &ast)
-	{ return os << *ast.get(); }
 
 
 	CompilationUnitAST::CompilationUnitAST(const MemberList &members, const WeakRef<const Token_t> &eof)
@@ -43,4 +36,15 @@ namespace Symple::Code
 
 	WeakRef<const Token_t> CompilationUnitAST::GetEndOfFile() const
 	{ return m_EndOfFile; }
+
+	void CompilationUnitAST::Print(std::ostream &os, std::string indent, std::string_view label, bool last) const
+	{
+		PrintIndent(os, indent, label, last);
+		PrintKind(os);
+
+		indent += GetAddIndent(last);
+
+		for (auto member : m_Members)
+			member->Print(os << '\n', indent, "", member == m_Members.back());
+	}
 }

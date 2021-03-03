@@ -19,4 +19,13 @@ namespace Symple::Code
 
 	GlobalRef<const Token> LiteralExpressionAST::GetLiteral() const
 	{ return m_Literal; }
+
+	void LiteralExpressionAST::Print(std::ostream &os, std::string indent, std::string_view label, bool last) const
+	{
+		PrintIndent(os, indent, label, last);
+		PrintKind(os);
+
+		indent += GetAddIndent(last);
+		m_Literal->Print(os << '\n', indent, "Literal = ");
+	}
 }

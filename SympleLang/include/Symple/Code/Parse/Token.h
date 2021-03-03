@@ -1,5 +1,6 @@
 #pragma once
 
+#include "Symple/Code/Util/Printable.h"
 #include "Symple/Code/Util/File.h"
 #include "Symple/Code/Memory.h"
 
@@ -79,7 +80,7 @@ namespace Symple::Code
 		"ReturnKeyword",
 	};
 
-	class SYC_API Token
+	class SYC_API Token: public Printable
 	{
 	private:
 		TokenKind m_Kind;
@@ -96,11 +97,7 @@ namespace Symple::Code
 		bool Is(TokenKind kind, Args&&... kinds) const
 		{ return Is(kind) || Is(kinds...); }
 
-		friend std::ostream &operator <<(std::ostream &, const Token &);
-
-		friend std::ostream &operator <<(std::ostream &, const GlobalRef<const Token> &);
-		friend std::ostream &operator <<(std::ostream &, const WeakRef<const Token> &);
-		friend std::ostream &operator <<(std::ostream &, const Scope<const Token> &);
+		virtual void Print(std::ostream &, std::string indent = "", std::string_view label = "", bool last = true) const override;
 
 		TokenKind GetKind() const;
 		std::string_view GetText() const;

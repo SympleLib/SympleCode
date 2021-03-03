@@ -18,7 +18,6 @@ namespace Symple::Code
 	WeakRef<const Token_t> FunctionAST::GetToken() const
 	{ return m_Name; }
 
-
 	GlobalRef<const Token_t> FunctionAST::GetType() const
 	{ return m_Type; }
 
@@ -34,4 +33,13 @@ namespace Symple::Code
 
 	GlobalRef<const StatementAST> FunctionAST::GetBody() const
 	{ return m_Body; }
+	
+	void FunctionAST::Print(std::ostream & os, std::string indent, std::string_view label, bool last) const
+	{
+		PrintIndent(os, indent, label, last);
+		PrintKind(os);
+
+		indent += GetAddIndent(last);
+		m_Body->Print(os << '\n', indent, "Body = ");
+	}
 }

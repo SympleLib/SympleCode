@@ -19,4 +19,13 @@ namespace Symple::Code
 
 	GlobalRef<const ExpressionAST> ExpressionStatementAST::GetExpression() const
 	{ return m_Expr; }
+
+	void ExpressionStatementAST::Print(std::ostream & os, std::string indent, std::string_view label, bool last) const
+	{
+		PrintIndent(os, indent, label, last);
+		PrintKind(os);
+
+		indent += GetAddIndent(last);
+		m_Expr->Print(os << '\n', indent, "Expression = ");
+	}
 }

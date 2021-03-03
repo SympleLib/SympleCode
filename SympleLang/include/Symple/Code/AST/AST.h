@@ -1,6 +1,7 @@
 #pragma once
 
 #include "Symple/Code/Parse/Token.h"
+#include "Symple/Code/Util/Printable.h"
 
 namespace Symple::Code
 {
@@ -55,18 +56,16 @@ namespace Symple::Code
 		"LiteralExpression",
 	};
 
-	class SYC_API AST
+	class SYC_API AST: public Printable
 	{
+	protected:
+		void PrintKind(std::ostream &) const;
 	public:
 		using Token_t = Token;
 	public:
 		virtual ASTKind GetKind() const;
 		virtual WeakRef<const Token_t> GetToken() const;
-		friend std::ostream &operator <<(std::ostream &, const AST &);
-
-		friend std::ostream &operator <<(std::ostream &, const GlobalRef<AST> &);
-		friend std::ostream &operator <<(std::ostream &, const WeakRef<AST> &);
-		friend std::ostream &operator <<(std::ostream &, const Scope<AST> &);
+		virtual void Print(std::ostream &, std::string indent = "", std::string_view label = "", bool last = true) const override;
 
 		SY_PROPERTY_GET(GetKind) ASTKind Kind;
 		SY_PROPERTY_GET(GetToken) WeakRef<const Token_t> Token;
@@ -82,7 +81,7 @@ namespace Symple::Code
 
 		virtual ASTKind GetKind() const override;
 		virtual WeakRef<const Token_t> GetToken() const override;
-
+		virtual void Print(std::ostream &, std::string indent = "", std::string_view label = "", bool last = true) const override;
 
 		const MemberList &GetMembers() const;
 		WeakRef<const Token_t> GetEndOfFile() const;

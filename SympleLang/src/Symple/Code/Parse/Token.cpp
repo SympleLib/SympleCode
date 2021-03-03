@@ -10,6 +10,12 @@ namespace Symple::Code
 	{ return m_Kind == k; }
 
 
+	void Token::Print(std::ostream &os, std::string indent, std::string_view label, bool last) const
+	{
+		PrintIndent(os, indent, label, last);
+		os << '\"' << m_File->Name << "\" (" << m_DisplayLine << ':' << m_Column << ") [" << TokenKindNames[(uint32)m_Kind] << "] \'" << m_Text << '\'';
+	}
+
 	std::ostream &operator <<(std::ostream &os, const Token &tok)
 	{ return os << '"' << tok.File->Name << "\" (" << tok.DisplayLine << ':' << tok.Column << ") [" << TokenKindNames[(uint32)tok.Kind] << "] '" << tok.Text << '\''; }
 
