@@ -27,6 +27,9 @@ namespace Symple::Code
 	using StatementList = std::vector<GlobalRef<StatementAst>>;
 	using ConstStatementList = std::vector<GlobalRef<const StatementAst>>;
 
+	using ExpressionList = std::vector<GlobalRef<ExpressionAst>>;
+	using ConstExpressionList = std::vector<GlobalRef<const ExpressionAst>>;
+
 	enum class SYC_API AstKind
 	{
 		Unknown,
@@ -44,6 +47,7 @@ namespace Symple::Code
 
 		// Expressions
 		Expression,
+		CallExpression,
 		UnaryExpression,
 		BinaryExpression,
 		LiteralExpression,
@@ -69,6 +73,7 @@ namespace Symple::Code
 
 
 		"Expression",
+		"CallExpression",
 		"UnaryExpression",
 		"BinaryExpression",
 		"LiteralExpression",

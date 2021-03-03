@@ -107,6 +107,36 @@ namespace Symple::Code
 		}
 	}
 
+	GlobalRef<ExpressionAst> Parser::ParsePrimaryExpression()
+	{
+		switch (Current->Kind)
+		{
+		case TokenKind::Identifier:
+			return ParseCallExpression();
+		case TokenKind::Number:
+			return ParseLiteralExpression();
+		case TokenKind::OpenParen:
+			return ParseParenthasizedExpression();
+		}
+	}
+
+	GlobalRef<CallExpressionAst> Parser::ParseCallExpression()
+	{
+		auto name = Match(TokenKind::Identifier);
+		auto open = Match(TokenKind::OpenParen);
+		ExpressionList params;
+		if (!Current->Is(TokenKind::CloseParen))
+			params.push_back(ParseExpression());
+		while (!Current->Is(TokenKind::CloseParen))
+		{
+			Match(TokenKind::Comma);
+			params.push_back(ParseExpression());
+		}
+		auto close = Next();
+
+		return MakeRef<CallExpressionAst>(name, open, params, close);
+	}
+
 	GlobalRef<LiteralExpressionAst> Parser::ParseLiteralExpression()
 	{
 		auto literal = Next();
@@ -119,17 +149,6 @@ namespace Symple::Code
 		auto expr = ParseExpression();
 		auto close = Match(TokenKind::CloseParen);
 		return MakeRef<ParenthasizedExpressionAst>(open, expr, close);
-	}
-
-	GlobalRef<ExpressionAst> Parser::ParsePrimaryExpression()
-	{
-		switch (Current->Kind)
-		{
-		case TokenKind::Number:
-			return ParseLiteralExpression();
-		case TokenKind::OpenParen:
-			return ParseParenthasizedExpression();
-		}
 	}
 
 

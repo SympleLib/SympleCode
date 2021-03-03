@@ -29,6 +29,7 @@ namespace Symple::Code
 		OpenBrace,
 		CloseBrace,
 
+		Comma,
 		Semicolon,
 
 		// Keywords
@@ -69,7 +70,10 @@ namespace Symple::Code
 
 		"OpenParen",
 		"CloseParen",
+		"OpenBrace",
+		"CloseBrace",
 
+		"Comma",
 		"Semicolon",
 
 
