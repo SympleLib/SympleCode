@@ -12,15 +12,20 @@ namespace Symple::Code
 	class SYC_API FunctionAst;
 
 	class SYC_API StatementAst;
+	class SYC_API BlockStatementAst;
 	class SYC_API ReturnStatementAst;
 	class SYC_API ExpressionStatementAst;
 
 	class SYC_API ExpressionAst;
 	class SYC_API BinaryExpressionAst;
 	class SYC_API LiteralExpressionAst;
+	class SYC_API ParenthasizedExpressionAst;
 
 	using MemberList = std::vector<GlobalRef<MemberAst>>;
 	using ConstMemberList = std::vector<GlobalRef<const MemberAst>>;
+
+	using StatementList = std::vector<GlobalRef<StatementAst>>;
+	using ConstStatementList = std::vector<GlobalRef<const StatementAst>>;
 
 	enum class SYC_API AstKind
 	{
@@ -33,6 +38,7 @@ namespace Symple::Code
 
 		// Statements
 		Statement,
+		BlockStatement,
 		ReturnStatement,
 		ExpressionStatement,
 
@@ -57,6 +63,7 @@ namespace Symple::Code
 
 
 		"Statement",
+		"BlockStatement",
 		"ReturnStatement",
 		"ExpressionStatement",
 
@@ -88,7 +95,7 @@ namespace Symple::Code
 	class SYC_API CompilationUnitAst: public Ast
 	{
 	private:
-		const MemberList m_Members;
+		MemberList m_Members;
 		WeakRef<const Token_t> m_EndOfFile;
 	public:
 		CompilationUnitAst(const MemberList &members, const WeakRef<const Token_t> &endOfFile);

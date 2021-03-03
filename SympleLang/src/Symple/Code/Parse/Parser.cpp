@@ -28,7 +28,8 @@ namespace Symple::Code
 		auto name = Match(TokenKind::Identifier);
 		auto open = Match(TokenKind::OpenParen);
 		auto close = Match(TokenKind::CloseParen);
-		Match(TokenKind::EqualArrow);
+		if (Current->Is(TokenKind::EqualArrow))
+			Next();
 		auto body = ParseStatement();
 
 		return MakeRef<FunctionAst>(ty, name, open, close, body);
@@ -39,11 +40,24 @@ namespace Symple::Code
 	{
 		switch (Current->Kind)
 		{
+		case TokenKind::OpenBrace:
+			return ParseBlockStatement();
 		case TokenKind::ReturnKeyword:
 			return ParseReturnStatement();
 		default:
 			return ParseExpressionStatement();
 		}
+	}
+
+	GlobalRef<BlockStatementAst> Parser::ParseBlockStatement()
+	{
+		auto open = Match(TokenKind::OpenBrace);
+		StatementList stmts;
+		while (!Current->Is(TokenKind::CloseBrace))
+			stmts.push_back(ParseStatement());
+		auto close = Next();
+
+		return MakeRef<BlockStatementAst>(open, stmts, close);
 	}
 
 	GlobalRef<ReturnStatementAst> Parser::ParseReturnStatement()

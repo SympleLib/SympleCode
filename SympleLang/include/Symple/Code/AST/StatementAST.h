@@ -10,6 +10,26 @@ namespace Symple::Code
 		virtual AstKind GetKind() const override;
 	};
 
+	class SYC_API BlockStatementAst: public StatementAst
+	{
+	private:
+		WeakRef<const Token_t> m_Open;
+		StatementList m_Stmts;
+		WeakRef<const Token_t> m_Close;
+	public:
+		BlockStatementAst(WeakRef<const Token_t> open, StatementList statements, WeakRef<const Token_t> close);
+
+		virtual AstKind GetKind() const override;
+		virtual WeakRef<const Token_t> GetToken() const override;
+		virtual void Print(std::ostream &, std::string indent = "", std::string_view label = "", bool last = true) const override;
+
+		WeakRef<const Token_t> GetOpen() const;
+		StatementList GetStatements() const;
+		WeakRef<const Token_t> GetClose() const;
+
+		SY_PROPERTY_GET(GetStatements) StatementList Statements;
+	};
+
 	class SYC_API ExpressionStatementAst: public StatementAst
 	{
 	private:

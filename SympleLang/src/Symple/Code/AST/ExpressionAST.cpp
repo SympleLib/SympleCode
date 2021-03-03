@@ -86,7 +86,7 @@ namespace Symple::Code
 	}
 
 
-	ParenthasizedExpressionAst::ParenthasizedExpressionAst(GlobalRef<const Token_t> open, GlobalRef<ExpressionAst> expr, GlobalRef<const Token_t> close)
+	ParenthasizedExpressionAst::ParenthasizedExpressionAst(WeakRef<const Token_t> open, GlobalRef<ExpressionAst> expr, WeakRef<const Token_t> close)
 		: m_Open(open), m_Expr(expr), m_Close(close) {}
 
 	AstKind ParenthasizedExpressionAst::GetKind() const
@@ -95,13 +95,13 @@ namespace Symple::Code
 	WeakRef<const Token_t> ParenthasizedExpressionAst::GetToken() const
 	{ return m_Open; }
 
-	GlobalRef<const Token_t> ParenthasizedExpressionAst::GetOpen() const
+	WeakRef<const Token_t> ParenthasizedExpressionAst::GetOpen() const
 	{ return m_Open; }
 
 	GlobalRef<const ExpressionAst> ParenthasizedExpressionAst::GetExpression() const
 	{ return m_Expr; }
 
-	GlobalRef<const Token_t> ParenthasizedExpressionAst::GetClose() const
+	WeakRef<const Token_t> ParenthasizedExpressionAst::GetClose() const
 	{ return m_Close; }
 
 	void ParenthasizedExpressionAst::Print(std::ostream &os, std::string indent, std::string_view label, bool last) const
@@ -110,8 +110,10 @@ namespace Symple::Code
 		PrintKind(os);
 
 		indent += GetAddIndent(last);
-		m_Open->Print(os << '\n', indent, "Open = ", false);
+		if (!m_Open.expired())
+			m_Open.lock()->Print(os << '\n', indent, "Open = ", false);
 		m_Expr->Print(os << '\n', indent, "Expression = ", false);
-		m_Close->Print(os << '\n', indent, "Close = ");
+		if (!m_Close.expired())
+			m_Close.lock()->Print(os << '\n', indent, "Close = ");
 	}
 }

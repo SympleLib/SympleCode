@@ -1,2 +1,6 @@
-int main() =>
-  ret -(6 * 9);
+int main()
+{
+	-45 + 3;
+
+	ret 5 + 4;
+}

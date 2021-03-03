@@ -69,22 +69,22 @@ namespace Symple::Code
 	class SYC_API ParenthasizedExpressionAst: public ExpressionAst
 	{
 	private:
-		GlobalRef<const Token_t> m_Open;
+		WeakRef<const Token_t> m_Open;
 		GlobalRef<ExpressionAst> m_Expr;
-		GlobalRef<const Token_t> m_Close;
+		WeakRef<const Token_t> m_Close;
 	public:
-		ParenthasizedExpressionAst(GlobalRef<const Token_t> open, GlobalRef<ExpressionAst> expression, GlobalRef<const Token_t> close);
+		ParenthasizedExpressionAst(WeakRef<const Token_t> open, GlobalRef<ExpressionAst> expression, WeakRef<const Token_t> close);
 
 		virtual AstKind GetKind() const override;
 		virtual WeakRef<const Token_t> GetToken() const override;
 		virtual void Print(std::ostream &, std::string indent = "", std::string_view label = "", bool last = true) const override;
 
-		GlobalRef<const Token_t> GetOpen() const;
+		WeakRef<const Token_t> GetOpen() const;
 		GlobalRef<const ExpressionAst> GetExpression() const;
-		GlobalRef<const Token_t> GetClose() const;
+		WeakRef<const Token_t> GetClose() const;
 
-		SY_PROPERTY_GET(GetOpen) GlobalRef<const Token_t> Open;
+		SY_PROPERTY_GET(GetOpen) WeakRef<const Token_t> Open;
 		SY_PROPERTY_GET(GetExpression) GlobalRef<const ExpressionAst> Expression;
-		SY_PROPERTY_GET(GetClose) GlobalRef<const Token_t> Close;
+		SY_PROPERTY_GET(GetClose) WeakRef<const Token_t> Close;
 	};
 }

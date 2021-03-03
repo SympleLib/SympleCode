@@ -26,6 +26,8 @@ namespace Symple::Code
 
 		OpenParen,
 		CloseParen,
+		OpenBrace,
+		CloseBrace,
 
 		Semicolon,
 
