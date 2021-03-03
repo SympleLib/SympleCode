@@ -12,6 +12,8 @@ namespace Symple::Code
 
 	class SYC_API StatementAST;
 
+	class SYC_API ExpressionAST;
+
 	using MemberList = std::vector<GlobalRef<MemberAST>>;
 	using ConstMemberList = std::vector<GlobalRef<const MemberAST>>;
 
@@ -24,6 +26,14 @@ namespace Symple::Code
 		Member,
 		Function,
 
+		// Statements
+		Statement,
+		ExpressionStatement,
+
+		// Expressions
+		Expression,
+		LiteralExpression,
+
 		Count, // Count of ast kinds
 	};
 
@@ -35,6 +45,14 @@ namespace Symple::Code
 
 		"Member",
 		"Function",
+
+
+		"Statement",
+		"ExpressionStatement",
+
+
+		"Expression",
+		"LiteralExpression",
 	};
 
 	class SYC_API AST
@@ -71,3 +89,4 @@ namespace Symple::Code
 
 #include "Symple/Code/AST/MemberAST.h"
 #include "Symple/Code/AST/StatementAST.h"
+#include "Symple/Code/AST/ExpressionAST.h"
