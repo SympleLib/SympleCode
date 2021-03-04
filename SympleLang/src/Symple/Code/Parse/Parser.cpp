@@ -16,7 +16,7 @@ namespace Symple::Code
 		while (!Current->Is(TokenKind::EndOfFile))
 			members.push_back(ParseMember());
 		auto eof = Match(TokenKind::EndOfFile);
-		return MakeRef<CompilationUnitAst>(ToConst(members), eof);
+		return MakeRef<CompilationUnitAst>(members, eof);
 	}
 
 	GlobalRef<MemberAst> Parser::ParseMember()
