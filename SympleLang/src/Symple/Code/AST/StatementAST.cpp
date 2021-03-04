@@ -8,6 +8,29 @@ namespace Symple::Code
 	{ return AstKind::Statement; }
 
 
+	EmptyStatementAst::EmptyStatementAst(WeakRef<const Token_t> semi)
+		: m_Semi(semi) {}
+
+	AstKind EmptyStatementAst::GetKind() const
+	{ return AstKind::EmptyStatement; }
+
+	WeakRef<const Token_t> EmptyStatementAst::GetToken() const
+	{ return m_Semi; }
+
+	WeakRef<const Token_t> EmptyStatementAst::GetSemicolon() const
+	{ return m_Semi; }
+
+	void EmptyStatementAst::Print(std::ostream & os, std::string indent, std::string_view label, bool last) const
+	{
+		PrintIndent(os, indent, label, last);
+		PrintKind(os);
+
+		indent += GetAddIndent(last);
+		if (!m_Semi.expired())
+			m_Semi.lock()->Print(os << '\n', indent, "Semicolon = ");
+	}
+
+
 	BlockStatementAst::BlockStatementAst(WeakRef<const Token_t> open, StatementList stmts, WeakRef<const Token_t> close)
 		: m_Open(open), m_Stmts(stmts), m_Close(close) {}
 

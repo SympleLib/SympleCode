@@ -1,2 +1,4 @@
 int main()
   ret add(5, 4);
+
+int add();

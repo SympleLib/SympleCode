@@ -10,6 +10,22 @@ namespace Symple::Code
 		virtual AstKind GetKind() const override;
 	};
 
+	class SYC_API EmptyStatementAst: public StatementAst
+	{
+	private:
+		WeakRef<const Token_t> m_Semi;
+	public:
+		EmptyStatementAst(WeakRef<const Token_t> semicolon);
+
+		virtual AstKind GetKind() const override;
+		virtual WeakRef<const Token_t> GetToken() const override;
+		virtual void Print(std::ostream &, std::string indent = "", std::string_view label = "", bool last = true) const override;
+
+		WeakRef<const Token_t> GetSemicolon() const;
+
+		SY_PROPERTY_GET(GetSemicolon) WeakRef<const Token_t> Semicolon;
+	};
+
 	class SYC_API BlockStatementAst: public StatementAst
 	{
 	private:

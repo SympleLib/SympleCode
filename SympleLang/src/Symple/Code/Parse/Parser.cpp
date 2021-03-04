@@ -40,6 +40,8 @@ namespace Symple::Code
 	{
 		switch (Current->Kind)
 		{
+		case TokenKind::Semicolon:
+			return MakeRef<EmptyStatementAst>(Next());
 		case TokenKind::OpenBrace:
 			return ParseBlockStatement();
 		case TokenKind::ReturnKeyword:

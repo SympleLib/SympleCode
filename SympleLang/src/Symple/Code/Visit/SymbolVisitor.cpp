@@ -44,7 +44,7 @@ namespace Symple::Code
 			bool valid = false;
 			for (auto member : m_Unit->m_Members)
 				if (member->Kind == AstKind::Function)
-					if (Cast<FunctionAst>(member)->m_Name == callExpr->m_Name)
+					if (Cast<FunctionAst>(member)->m_Name->Text == callExpr->m_Name->Text)
 					{
 						valid = true;
 						break;

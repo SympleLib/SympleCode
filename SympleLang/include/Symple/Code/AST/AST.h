@@ -12,6 +12,7 @@ namespace Symple::Code
 	class SYC_API FunctionAst;
 
 	class SYC_API StatementAst;
+	class SYC_API EmptyStatementAst;
 	class SYC_API BlockStatementAst;
 	class SYC_API ReturnStatementAst;
 	class SYC_API ExpressionStatementAst;
@@ -41,6 +42,7 @@ namespace Symple::Code
 
 		// Statements
 		Statement,
+		EmptyStatement,
 		BlockStatement,
 		ReturnStatement,
 		ExpressionStatement,

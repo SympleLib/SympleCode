@@ -40,6 +40,12 @@ namespace Symple::Code
 		PrintKind(os);
 
 		indent += GetAddIndent(last);
+		m_Type->Print(os << '\n', indent, "Type = ", false);
+		m_Name->Print(os << '\n', indent, "Name = ", false);
+		if (!m_Open.expired())
+			m_Open.lock()->Print(os << '\n', indent, "Open = ", false);
+		if (!m_Close.expired())
+			m_Close.lock()->Print(os << '\n', indent, "Close = ", false);
 		m_Body->Print(os << '\n', indent, "Body = ");
 	}
 }
