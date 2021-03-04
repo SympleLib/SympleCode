@@ -17,6 +17,8 @@ namespace Symple::Code
 		WeakRef<const Token_t> m_Open;
 		ExpressionList m_Params;
 		WeakRef<const Token_t> m_Close;
+
+		friend class SymbolVisitor;
 	public:
 		CallExpressionAst(GlobalRef<const Token_t> name, WeakRef<const Token_t> open, ExpressionList parameters, WeakRef<const Token_t> close);
 
@@ -40,6 +42,8 @@ namespace Symple::Code
 	private:
 		GlobalRef<const Token_t> m_Operator;
 		GlobalRef<ExpressionAst> m_Operand;
+
+		friend class SymbolVisitor;
 	public:
 		UnaryExpressionAst(GlobalRef<const Token_t> oqerator, GlobalRef<ExpressionAst> operand);
 
@@ -59,6 +63,8 @@ namespace Symple::Code
 	private:
 		GlobalRef<const Token_t> m_Operator;
 		GlobalRef<ExpressionAst> m_Left, m_Right;
+	
+		friend class SymbolVisitor;
 	public:
 		BinaryExpressionAst(GlobalRef<const Token_t> oqerator, GlobalRef<ExpressionAst> left, GlobalRef<ExpressionAst> right);
 

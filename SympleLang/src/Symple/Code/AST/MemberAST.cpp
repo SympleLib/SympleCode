@@ -9,7 +9,7 @@ namespace Symple::Code
 
 
 	FunctionAst::FunctionAst(const GlobalRef<const Token_t> &type, const GlobalRef<const Token_t> &name,
-		const WeakRef<const Token_t> &open, const WeakRef<const Token_t> &close, const GlobalRef<const StatementAst> &body)
+		const WeakRef<const Token_t> &open, const WeakRef<const Token_t> &close, const GlobalRef<StatementAst> &body)
 		: m_Type(type), m_Name(name), m_Open(open), m_Close(close), m_Body(body) {}
 
 	AstKind FunctionAst::GetKind() const

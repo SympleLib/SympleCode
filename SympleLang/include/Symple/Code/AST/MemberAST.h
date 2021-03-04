@@ -17,10 +17,12 @@ namespace Symple::Code
 		GlobalRef<const Token_t> m_Name;
 		WeakRef<const Token_t> m_Open;
 		WeakRef<const Token_t> m_Close;
-		GlobalRef<const StatementAst> m_Body;
+		GlobalRef<StatementAst> m_Body;
+
+		friend class SymbolVisitor;
 	public:
 		FunctionAst(const GlobalRef<const Token_t> &type, const GlobalRef<const Token_t> &name,
-			const WeakRef<const Token_t> &open, const WeakRef<const Token_t> &close, const GlobalRef<const StatementAst> &body);
+			const WeakRef<const Token_t> &open, const WeakRef<const Token_t> &close, const GlobalRef<StatementAst> &body);
 
 		virtual AstKind GetKind() const override;
 		virtual WeakRef<const Token_t> GetToken() const override;

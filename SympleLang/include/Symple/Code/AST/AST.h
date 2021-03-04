@@ -102,6 +102,8 @@ namespace Symple::Code
 	private:
 		MemberList m_Members;
 		WeakRef<const Token_t> m_EndOfFile;
+
+		friend class SymbolVisitor;
 	public:
 		CompilationUnitAst(const MemberList &members, const WeakRef<const Token_t> &endOfFile);
 

@@ -13,5 +13,8 @@ namespace Symple::Code
 	public:
 		SymbolVisitor(GlobalRef<CompilationUnitAst> compilationUnit);
 		void Visit();
+	private:
+		void Visit(GlobalRef<StatementAst> statement);
+		void Visit(GlobalRef<ExpressionAst> expression);
 	};
 }

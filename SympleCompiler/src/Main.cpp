@@ -4,6 +4,7 @@
 #include "Symple/Code/Memory.h"
 #include "Symple/Code/Parse/Lexer.h"
 #include "Symple/Code/Parse/Parser.h"
+#include "Symple/Code/Visit/Visitor.h"
 
 using namespace Symple::Code;
 
@@ -61,6 +62,11 @@ int main()
 	std::cout << "Ast:\n";
 	Console.Color = ConsoleColor::Cyan;
 	unit->Print(std::cout);
+	std::cout << '\n';
+
+	SymbolVisitor symbolVisit(unit);
+	Console.Color = ConsoleColor::Red;
+	symbolVisit.Visit();
 
 	std::cout.flush();
 	std::cin.get();
