@@ -8,7 +8,7 @@ namespace Symple::Code
 	{ return AstKind::Expression; }
 
 
-	CallExpressionAst::CallExpressionAst(GlobalRef<const Token_t> name, WeakRef<const Token_t> open, ExpressionList params, WeakRef<const Token_t> close)
+	CallExpressionAst::CallExpressionAst(GlobalRef<const Token_t> name, WeakRef<const Token_t> open, const ExpressionList &params, WeakRef<const Token_t> close)
 		: m_Name(name), m_Open(open), m_Params(params), m_Close(close) {}
 
 	AstKind CallExpressionAst::GetKind() const
@@ -23,7 +23,7 @@ namespace Symple::Code
 	WeakRef<const Token_t> CallExpressionAst::GetOpen() const
 	{ return m_Open; }
 
-	ExpressionList CallExpressionAst::GetParameters() const
+	const ExpressionList &CallExpressionAst::GetParameters() const
 	{ return m_Params; }
 
 	WeakRef<const Token_t> CallExpressionAst::GetClose() const

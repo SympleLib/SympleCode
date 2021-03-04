@@ -2,7 +2,7 @@
 
 #include "Symple/Code/Util/Printable.h"
 #include "Symple/Code/Util/File.h"
-#include "Symple/Code/Memory.h"
+#include "Symple/Code/Util/Memory.h"
 
 namespace Symple::Code
 {
@@ -126,5 +126,6 @@ namespace Symple::Code
 
 	using TokenList = std::vector<GlobalRef<Token>>;
 	using WeakTokenList = std::vector<WeakRef<Token>>;
+	using ConstWeakTokenList = std::vector<WeakRef<const Token>>;
 	using ConstTokenList = std::vector<GlobalRef<const Token>>;
 }

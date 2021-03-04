@@ -128,7 +128,7 @@ namespace Symple::Code
 		const MemberList &GetMembers() const;
 		WeakRef<const Token_t> GetEndOfFile() const;
 
-		SY_PROPERTY_GET(GetMembers) const MemberList Members;
+		SY_PROPERTY_GET(GetMembers) const MemberList &Members;
 		SY_PROPERTY_GET(GetEndOfFile) WeakRef<const Token_t> EndOfFile;
 	};
 }

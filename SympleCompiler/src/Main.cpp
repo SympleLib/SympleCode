@@ -1,7 +1,6 @@
 #include <iostream>
 #include "Symple/Code/Util/Console.h"
 #include "Symple/Code/Util/File.h"
-#include "Symple/Code/Memory.h"
 #include "Symple/Code/Parse/Lexer.h"
 #include "Symple/Code/Parse/Parser.h"
 #include "Symple/Code/Visit/Visitor.h"
