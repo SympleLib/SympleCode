@@ -4,12 +4,14 @@
 
 namespace Symple::Code
 {
-	class SYC_API Visitor;
+	class SYC_API Visitor {};
 
-	class SYC_API Visitor
+	class SYC_API SymbolVisitor: public Visitor
 	{
 	private:
+		GlobalRef<CompilationUnitAst> m_Unit;
 	public:
-		void Visit(const Ast&);
+		SymbolVisitor(GlobalRef<CompilationUnitAst> compilationUnit);
+		void Visit();
 	};
 }
