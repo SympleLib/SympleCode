@@ -17,4 +17,16 @@ namespace Symple::Code
 		void Visit(GlobalRef<StatementAst> statement);
 		void Visit(GlobalRef<ExpressionAst> expression);
 	};
+
+	class SYC_API TypeVisitor: public Visitor
+	{
+	private:
+		GlobalRef<CompilationUnitAst> m_Unit;
+	public:
+		TypeVisitor(GlobalRef<CompilationUnitAst> compilationUnit);
+		void Visit();
+	private:
+		void Visit(GlobalRef<StatementAst> statement);
+		void Visit(GlobalRef<ExpressionAst> expression);
+	};
 }
