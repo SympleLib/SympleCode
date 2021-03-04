@@ -125,5 +125,6 @@ namespace Symple::Code
 	};
 
 	using TokenList = std::vector<GlobalRef<Token>>;
+	using WeakTokenList = std::vector<WeakRef<Token>>;
 	using ConstTokenList = std::vector<GlobalRef<const Token>>;
 }

@@ -6,6 +6,7 @@
 namespace Symple::Code
 {
 	class SYC_API Ast;
+	class SYC_API TypeAst;
 	class SYC_API CompilationUnitAst;
 
 	class SYC_API MemberAst;
@@ -34,6 +35,7 @@ namespace Symple::Code
 	enum class SYC_API AstKind
 	{
 		Unknown,
+		Type,
 		CompilationUnit,
 
 		// Members
@@ -61,6 +63,7 @@ namespace Symple::Code
 	constexpr const char *const AstKindNames[(uint32)AstKind::Count] =
 	{
 		"Unknown",
+		"Type",
 		"CompilationUnit",
 
 
@@ -97,6 +100,15 @@ namespace Symple::Code
 
 		SY_PROPERTY_GET(GetKind) AstKind Kind;
 		SY_PROPERTY_GET(GetToken) WeakRef<const Token_t> Token;
+	};
+
+	class SYC_API TypeAst: public Ast
+	{
+	private:
+		WeakRef<const Token_t> m_Base;
+		WeakTokenList m_Addons;
+	public:
+		TypeAst(GlobalRef<const Token_t> base, const TokenList &addons);
 	};
 
 	class SYC_API CompilationUnitAst: public Ast
