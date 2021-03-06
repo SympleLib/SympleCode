@@ -1,5 +1,6 @@
 #pragma once
 
+#include "Symple/Code/Type.h"
 #include "Symple/Code/Parse/Token.h"
 #include "Symple/Code/Util/Printable.h"
 
@@ -104,11 +105,28 @@ namespace Symple::Code
 
 	class SYC_API TypeAst: public Ast
 	{
+	public:
+		using Type_t = Type;
 	private:
 		WeakRef<const Token_t> m_Base;
 		WeakTokenList m_Addons;
+
+		GlobalRef<Type_t> m_Type;
 	public:
-		TypeAst(GlobalRef<const Token_t> base, const TokenList &addons);
+		TypeAst(GlobalRef<const Token_t> base, const WeakTokenList &addons, GlobalRef<Type_t> type);
+
+		virtual AstKind GetKind() const;
+		virtual WeakRef<const Token_t> GetToken() const;
+		virtual void Print(std::ostream &, std::string indent = "", std::string_view label = "", bool last = true) const override;
+
+		WeakRef<const Token_t> GetBase() const;
+		const WeakTokenList &GetAddons() const;
+
+		GlobalRef<const Type_t> GetType() const;
+
+		SY_PROPERTY_GET(GetBase) WeakRef<const Token_t> Base;
+		SY_PROPERTY_GET(GetBase) const WeakTokenList &Addons;
+		SY_PROPERTY_GET(GetBase) GlobalRef<const Type_t> Type;
 	};
 
 	class SYC_API CompilationUnitAst: public Ast
