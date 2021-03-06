@@ -31,6 +31,8 @@ namespace Symple::Code
 		GlobalRef<LiteralExpressionAst> ParseLiteralExpression();
 		GlobalRef<ParenthasizedExpressionAst> ParseParenthasizedExpression();
 
+		GlobalRef<TypeAst> ParseType();
+
 		GlobalRef<const Token> Peek();
 		GlobalRef<const Token> Peek(uint32 offset);
 		GlobalRef<const Token> Next();

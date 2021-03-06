@@ -35,6 +35,7 @@ namespace Symple::Code
 		static constexpr const char *const s_Punctuators[] =
 		{
 			"+", "-", "*", "/", "%",
+			"&",
 			"=", "=>",
 			"(", ")", "{", "}",
 			",", ";",

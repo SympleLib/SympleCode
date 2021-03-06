@@ -3,7 +3,7 @@
 #include <iostream>
 
 #include "Symple/Code/Util/Conversions.h"
-#include "Symple/Code/Parse/Precedence.h"
+#include "Symple/Code/Parse/Facts.h"
 
 namespace Symple::Code
 {
@@ -20,11 +20,16 @@ namespace Symple::Code
 	}
 
 	GlobalRef<MemberAst> Parser::ParseMember()
-	{ return ParseFunction(); }
+	{
+		if (TokenFacts::IsTypeBase(Current->Kind))
+			return ParseFunction();
+		else
+			throw std::exception("Must be function declaration!");
+	}
 
 	GlobalRef<FunctionAst> Parser::ParseFunction()
 	{
-		auto ty = Match(TokenKind::IntKeyword);
+		auto ty = ParseType();
 		auto name = Match(TokenKind::Identifier);
 		auto open = Match(TokenKind::OpenParen);
 		auto close = Match(TokenKind::CloseParen);
@@ -151,6 +156,27 @@ namespace Symple::Code
 		auto expr = ParseExpression();
 		auto close = Match(TokenKind::CloseParen);
 		return MakeRef<ParenthasizedExpressionAst>(open, expr, close);
+	}
+
+
+	GlobalRef<TypeAst> Parser::ParseType()
+	{
+		auto base = Next();
+		assert(TokenFacts::IsTypeBase(base->Kind));
+		ConstWeakTokenList addons;
+		while (TokenFacts::IsTypePointer(Current->Kind))
+			addons.push_back(Next());
+		bool isRef = false;
+		if (TokenFacts::IsTypeRef(Current->Kind))
+		{
+			addons.push_back(Next());
+			isRef = true;
+		}
+
+		auto tyKind = TokenFacts::ToType(base->Kind);
+		GlobalRef<Type> ty = MakeRef<Type>(tyKind, addons.size() - isRef, isRef);
+
+		return MakeRef<TypeAst>(base, addons, ty);
 	}
 
 

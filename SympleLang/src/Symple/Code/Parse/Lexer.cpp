@@ -67,6 +67,15 @@ namespace Symple::Code
 		KEYWORD(int, Int);
 		KEYWORD(long, Long);
 
+		KEYWORD(float, Float);
+		KEYWORD(double, Double);
+		KEYWORD(triple, Triple);
+
+		KEYWORD(char, Char);
+		KEYWORD(wchar, WChar);
+		KEYWORD(_Bool, Bool);
+		KEYWORD(bool, Bool);
+
 		KEYWORD(ret, Return);
 		KEYWORD(return, Return);
 		

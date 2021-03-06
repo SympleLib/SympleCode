@@ -26,7 +26,7 @@ namespace Symple::Code
 	}
 
 
-	TypeAst::TypeAst(GlobalRef<const Token_t> base, const WeakTokenList &addons, GlobalRef<Type_t> ty)
+	TypeAst::TypeAst(GlobalRef<const Token_t> base, const ConstWeakTokenList &addons, GlobalRef<Type_t> ty)
 		: m_Base(base), m_Addons(addons), m_Type(ty) {}
 
 	AstKind TypeAst::GetKind() const
@@ -42,17 +42,17 @@ namespace Symple::Code
 
 		indent += GetAddIndent(last);
 		if (!m_Base.expired())
-			m_Base.lock()->Print(os, indent, label, false);
+			m_Base.lock()->Print(os << '\n', indent, "Base = ", false);
 		for (auto addon : m_Addons)
 			if (!addon.expired())
-				addon.lock()->Print(os, indent, label, false);
-		m_Type->Print(os, indent, label);
+				addon.lock()->Print(os << '\n', indent, "[Addon] ", false);
+		m_Type->Print(os << '\n', indent, "Type = ");
 	}
 
 	WeakRef<const Token_t> TypeAst::GetBase() const
 	{ return m_Base; }
 
-	const WeakTokenList &TypeAst::GetAddons() const
+	const ConstWeakTokenList &TypeAst::GetAddons() const
 	{ return m_Addons; }
 
 	GlobalRef<const Type_t> TypeAst::GetType() const

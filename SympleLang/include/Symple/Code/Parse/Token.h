@@ -21,6 +21,8 @@ namespace Symple::Code
 		Slash,
 		Percent,
 
+		And,
+
 		Equal,
 		EqualArrow,
 
@@ -38,6 +40,14 @@ namespace Symple::Code
 		ShortKeyword,
 		IntKeyword,
 		LongKeyword,
+
+		FloatKeyword,
+		DoubleKeyword,
+		TripleKeyword,
+
+		CharKeyword,
+		WCharKeyword,
+		BoolKeyword,
 
 		ReturnKeyword,
 
@@ -65,6 +75,8 @@ namespace Symple::Code
 		"Slash",
 		"Percent",
 
+		"And",
+
 		"Equal",
 		"EqualArrow",
 
@@ -82,6 +94,14 @@ namespace Symple::Code
 		"ShortKeyword",
 		"IntKeyword",
 		"LongKeyword",
+
+		"FloatKeyword",
+		"DoubleKeyword",
+		"TripleKeyword",
+
+		"CharKeyword",
+		"WCharKeyword",
+		"BoolKeyword",
 
 		"ReturnKeyword",
 	};
