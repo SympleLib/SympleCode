@@ -1,4 +1,4 @@
-#include "Symple/Code/Type.h"
+#include "Symple/Code/Type/Type.h"
 
 namespace Symple::Code
 {
