@@ -31,7 +31,7 @@ namespace Symple::Code
 
 	SYC_API std::ostream &operator <<(std::ostream &os, RegKind);
 
-	class Register: public Printable
+	class SYC_API Register: public Printable
 	{
 	public:
 		using Type_t = Type;
@@ -46,6 +46,6 @@ namespace Symple::Code
 		GlobalRef<const Type_t> GetType() const;
 
 		SY_PROPERTY_GET(GetKind) RegKind Kind;
-		SY_PROPERTY_GET(GetType) Type_t Type;
+		SY_PROPERTY_GET(GetType) GlobalRef<const Type_t> Type;
 	};
 }

@@ -6,6 +6,7 @@ namespace Symple::Code
 {
 	enum class SYC_API FilePermissions: uint8
 	{
+		None,
 		Read   = 1 << 0,
 		Write  = 1 << 1,
 		Append = 1 << 2,
@@ -17,18 +18,18 @@ namespace Symple::Code
 	class SYC_API File
 	{
 	private:
-		const FilePermissions m_Perms;
-		mutable std::FILE *m_Stream;
+		const FilePermissions m_Perms = FilePermissions::None;
+		mutable std::FILE *m_Stream = nullptr;
 		std::string m_Name;
 		std::string m_Source;
-		bool m_Open;
+		bool m_Open = false;
 
-		uint32 m_Num;
+		uint32 m_Num = -1;
 
 		static uint32 s_NextNum;
 	private:
-		std::FILE *GetStream() const;
 	public:
+		File() = default;
 		File(const std::string &name, FilePermissions);
 		~File();
 
@@ -38,6 +39,7 @@ namespace Symple::Code
 		// Returns false if cannot read
 		bool Seek(uint32 offset, int32 origin);
 
+		std::FILE *GetStream() const;
 		const std::string &GetName() const;
 		const std::string &GetSource() const;
 		bool GetIsOpen() const;

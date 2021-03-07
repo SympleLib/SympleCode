@@ -4,6 +4,7 @@
 #include "Symple/Code/Parse/Lexer.h"
 #include "Symple/Code/Parse/Parser.h"
 #include "Symple/Code/Visit/Visitor.h"
+#include "Symple/Code/Emit/Emitter.h"
 
 using namespace Symple::Code;
 
@@ -66,6 +67,9 @@ int main()
 	SymbolVisitor symbolVisit(unit);
 	Console.Color = ConsoleColor::Red;
 	symbolVisit.Visit();
+
+	Emitter emmiter(unit);
+	emmiter.Emit();
 
 	std::cout.flush();
 	std::cin.get();

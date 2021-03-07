@@ -1,6 +1,6 @@
 #pragma once
 
-#include "Symple/Code/Type.h"
+#include "Symple/Code/Type/Type.h"
 #include "Symple/Code/Parse/Token.h"
 
 namespace Symple::Code
