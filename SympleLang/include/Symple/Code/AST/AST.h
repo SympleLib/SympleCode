@@ -112,6 +112,8 @@ namespace Symple::Code
 		ConstWeakTokenList m_Addons;
 
 		GlobalRef<Type_t> m_Type;
+
+		friend class TypeVisitor;
 	public:
 		TypeAst(GlobalRef<const Token_t> base, const ConstWeakTokenList &addons, GlobalRef<Type_t> type);
 

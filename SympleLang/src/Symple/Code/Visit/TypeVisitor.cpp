@@ -36,16 +36,18 @@ namespace Symple::Code
 		switch (expr->Kind)
 		{
 		case AstKind::CallExpression:
-			Cast<CallExpressionAst>(expr)->m_Type = Cast<CallExpressionAst>(expr)->m_Func->Type;
+			expr->m_Type = Cast<CallExpressionAst>(expr)->m_Func->m_Type->m_Type;
 			break;
 		case AstKind::UnaryExpression:
 			Visit(Cast<UnaryExpressionAst>(expr)->m_Operand);
+			expr->m_Type = Cast<UnaryExpressionAst>(expr)->m_Operand->m_Type;
 			break;
 		case AstKind::BinaryExpression:
 		{
 			auto binExpr = Cast<BinaryExpressionAst>(expr);
 			Visit(binExpr->m_Left);
 			Visit(binExpr->m_Right);
+			binExpr->m_Type = binExpr->m_Left->m_Type;
 			break;
 		}
 		}

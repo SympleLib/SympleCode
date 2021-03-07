@@ -56,50 +56,50 @@ namespace Symple::Code
 	}
 
 
-	GlobalRef<const Type> Emitter::Emit(const GlobalRef<const ExpressionAst> &expr)
+	void Emitter::Emit(const GlobalRef<const ExpressionAst> &expr)
 	{
 		switch (expr->Kind)
 		{
 		case AstKind::CallExpression:
-			return Emit(Cast<const CallExpressionAst>(expr));
+			Emit(Cast<const CallExpressionAst>(expr));
+			break;
 		case AstKind::BinaryExpression:
-			return Emit(Cast<const BinaryExpressionAst>(expr));
+			Emit(Cast<const BinaryExpressionAst>(expr));
+			break;
 		case AstKind::LiteralExpression:
 		{
 			auto literal = expr->Token.lock()->Text;
 			Emit("\tmov $%.*s, %s", literal.length(), literal.data(), Reg(RegKind::Ax));
-			return Type::Default;
+			break;
 		}
 
 		default:
 			Emit("\txor %s, %s # Empty expr", Reg(RegKind::Ax), Reg(RegKind::Ax));
-			return Type::Default;
+			break;
 		}
 	}
 
-	GlobalRef<const Type> Emitter::Emit(const GlobalRef<const CallExpressionAst> &call)
+	void Emitter::Emit(const GlobalRef<const CallExpressionAst> &call)
 	{
 		auto name = call->Name->Text;
 
 		uint32 off = call->Parameters.size() * 4;
 		for (auto param : call->Parameters)
 		{
-			auto reg = Emit(param);
+			Emit(param);
 			Emit("\tmov %s, %u(%s)", Reg(RegKind::Ax), off, Reg(RegKind::Sp));
 			off -= 4;
 		}
 		Emit("\tsub $%i, %s", call->Parameters.size() * 4, Reg(RegKind::Sp));
 		Emit("\tcall _%.*s", name.length(), name.data());
 		Emit("\tadd $%i, %s", call->Parameters.size() * 4, Reg(RegKind::Sp));
-
-		return Type::Default;
 	}
 
-	GlobalRef<const Type> Emitter::Emit(const GlobalRef<const BinaryExpressionAst> &expr)
+	void Emitter::Emit(const GlobalRef<const BinaryExpressionAst> &expr)
 	{
-		auto right = Emit(expr->Right);
+		Emit(expr->Right);
 		Emit("\tpush %s", Reg(RegKind::Ax));
-		auto left = Emit(expr->Left);
+		Emit(expr->Left);
 		Emit("\tpop %s", Reg(RegKind::Bx));
 
 		switch (expr->Operator->Kind)
@@ -107,9 +107,13 @@ namespace Symple::Code
 		case TokenKind::Plus:
 			Emit("\tadd %s, %s", Reg(RegKind::Bx), Reg(RegKind::Ax));
 			break;
+		case TokenKind::Minus:
+			Emit("\tsub %s, %s", Reg(RegKind::Bx), Reg(RegKind::Ax));
+			break;
+		case TokenKind::Star:
+			Emit("\timul %s, %s", Reg(RegKind::Bx), Reg(RegKind::Ax));
+			break;
 		}
-
-		return Type::Default;
 	}
 
 

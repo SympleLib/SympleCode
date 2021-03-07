@@ -19,9 +19,9 @@ namespace Symple::Code
 
 		void Emit(const GlobalRef<const StatementAst> &statement);
 
-		GlobalRef<const Type> Emit(const GlobalRef<const ExpressionAst> &expression);
-		GlobalRef<const Type> Emit(const GlobalRef<const CallExpressionAst> &call);
-		GlobalRef<const Type> Emit(const GlobalRef<const BinaryExpressionAst> &expression);
+		void Emit(const GlobalRef<const ExpressionAst> &expression);
+		void Emit(const GlobalRef<const CallExpressionAst> &call);
+		void Emit(const GlobalRef<const BinaryExpressionAst> &expression);
 	private:
 		template<typename... Args>
 		void Emit(const char *fmt, Args&&... args);

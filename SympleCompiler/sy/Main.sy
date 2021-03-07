@@ -1,2 +1,2 @@
 int main()
-  ret 69;
+  ret 6 * 9;
