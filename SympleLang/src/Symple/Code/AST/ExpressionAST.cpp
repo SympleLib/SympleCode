@@ -3,9 +3,13 @@
 namespace Symple::Code
 {
 	using Token_t = Ast::Token_t;
+	using Type_t = ExpressionAst::Type_t;
 
 	AstKind ExpressionAst::GetKind() const
 	{ return AstKind::Expression; }
+
+	GlobalRef<const Type_t> ExpressionAst::GetType() const
+	{ return m_Type; }
 
 
 	CallExpressionAst::CallExpressionAst(GlobalRef<const Token_t> name, WeakRef<const Token_t> open, const ExpressionList &params, WeakRef<const Token_t> close)

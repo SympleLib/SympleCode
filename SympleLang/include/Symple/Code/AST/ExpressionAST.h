@@ -7,7 +7,15 @@ namespace Symple::Code
 	class SYC_API ExpressionAst: public Ast
 	{
 	public:
+		using Type_t = Type;
+	protected:
+		GlobalRef<const Type_t> m_Type = Type_t::Default;
+	public:
 		virtual AstKind GetKind() const override;
+
+		GlobalRef<const Type_t> GetType() const;
+
+		SY_PROPERTY_GET(GetType) GlobalRef<const Type_t> Type;
 	};
 
 	class SYC_API CallExpressionAst: public ExpressionAst
