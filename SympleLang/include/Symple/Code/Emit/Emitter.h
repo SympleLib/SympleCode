@@ -16,10 +16,15 @@ namespace Symple::Code
 		void Emit();
 	private:
 		void Emit(const GlobalRef<const FunctionAst> &function);
+
+		void Emit(const GlobalRef<const StatementAst> &statement);
+
+		Register Emit(const GlobalRef<const ExpressionAst> &expression);
+		Register Emit(const GlobalRef<const CallExpressionAst> &call);
 	private:
 		template<typename... Args>
 		void Emit(const char *fmt, Args&&... args);
 
-		const char *Reg(RegKind, uint32 size = 4);
+		constexpr const char *Reg(RegKind, uint32 size = 4);
 	};
 }

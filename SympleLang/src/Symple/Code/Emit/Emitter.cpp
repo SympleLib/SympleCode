@@ -21,16 +21,67 @@ namespace Symple::Code
 
 	void Emitter::Emit(const GlobalRef<const FunctionAst> &fn)
 	{
-		std::string name(fn->Name->Text);
+		auto name = fn->Name->Text;
 
-		Emit(".global %s", name.c_str());
-		Emit("%s:", name.c_str());
+		Emit(".global %.*s", name.length(), name.data());
+		Emit("%.*s:", name.length(), name.data());
 		Emit("\tpush %s", Reg(RegKind::Bp));
 		Emit("\tmov %s, %s", Reg(RegKind::Sp), Reg(RegKind::Bp));
-		Emit("# Function body...");
+		Emit("");
+
+		Emit(fn->Body);
+
+		Emit("");
 		Emit("\tmov %s, %s", Reg(RegKind::Bp), Reg(RegKind::Sp));
 		Emit("\tpop %s", Reg(RegKind::Bp));
 		Emit("\tret");
+	}
+
+
+	void Emitter::Emit(const GlobalRef<const StatementAst> &stmt)
+	{
+		switch (stmt->Kind)
+		{
+		case AstKind::BlockStatement:
+			for (auto piece : Cast<const BlockStatementAst>(stmt)->Statements)
+				Emit(piece);
+			break;
+		case AstKind::ReturnStatement:
+			Emit(Cast<const ReturnStatementAst>(stmt)->Value);
+			break;
+		case AstKind::ExpressionStatement:
+			Emit(Cast<const ExpressionStatementAst>(stmt)->Expression);
+			break;
+		}
+	}
+
+
+	Register Emitter::Emit(const GlobalRef<const ExpressionAst> &expr)
+	{
+		switch (expr->Kind)
+		{
+		case AstKind::CallExpression:
+			return Emit(Cast<const CallExpressionAst>(expr));
+		case AstKind::LiteralExpression:
+		{
+			auto literal = expr->Token.lock()->Text;
+			Emit("\tmov $%.*s, %s", literal.length(), literal.data(), Reg(RegKind::Ax));
+			return { RegKind::Ax, nullptr };
+		}
+
+		default:
+			Emit("\txor %s, %s # Empty expr", Reg(RegKind::Ax), Reg(RegKind::Ax));
+			return { RegKind::Ax, nullptr };
+		}
+	}
+
+	Register Emitter::Emit(const GlobalRef<const CallExpressionAst> &call)
+	{
+		auto name = call->Name->Text;
+
+		Emit("\tcall %.*s", name.length(), name.size());
+
+		return { RegKind::Ax, nullptr };
 	}
 
 
@@ -41,7 +92,7 @@ namespace Symple::Code
 		std::fputc('\n', m_File.Stream);
 	}
 
-	const char *Emitter::Reg(RegKind kind, uint32 sz)
+	constexpr const char *Emitter::Reg(RegKind kind, uint32 sz)
 	{
 		switch (kind)
 		{

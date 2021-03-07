@@ -1,4 +1,7 @@
 int main()
+{
+  69;
   ret add(5, 4);
+}
 
 int add();
