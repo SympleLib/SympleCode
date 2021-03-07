@@ -33,6 +33,9 @@ namespace Symple::Code
 	bool Type::GetIsRef() const
 	{ return m_Ref; }
 
+	bool Type::GetIsFloat() const
+	{ return m_Kind == TypeKind::Float /* || m_Kind == TypeKind::Double || m_Kind == TypeKind::Triple */; }
+
 	uint32 Type::GetSize() const
 	{
 		if (m_PtrCount)

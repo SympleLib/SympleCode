@@ -71,11 +71,11 @@ int main()
 	Emitter emmiter(unit);
 	emmiter.Emit();
 
-	system("clang -m32 sy/Out.S -o sy/Out.exe");
+	system("clang -m32 bin/Out.S -o bin/Out.exe");
 	Console.Color = ConsoleColor::Yellow;
 	puts("Starting program...");
 	Console.Color = ConsoleColor::Reset;
-	int ec = system("sy\\Out.exe");
+	int ec = system("bin\\Out.exe");
 	Console.Color = ConsoleColor::Yellow;
 	printf("\nProgram exited with code %i (0x%x)", ec, ec);
 

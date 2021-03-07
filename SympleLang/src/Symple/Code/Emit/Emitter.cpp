@@ -3,7 +3,7 @@
 namespace Symple::Code
 {
 	Emitter::Emitter(const GlobalRef<const CompilationUnitAst> &unit)
-		: m_Unit(unit), m_File("sy/Out.S", FilePermissions::Write) {}
+		: m_Unit(unit), m_File("bin/Out.S", FilePermissions::Write) {}
 
 	void Emitter::Emit()
 	{
@@ -56,7 +56,7 @@ namespace Symple::Code
 	}
 
 
-	Register Emitter::Emit(const GlobalRef<const ExpressionAst> &expr)
+	GlobalRef<const Type> Emitter::Emit(const GlobalRef<const ExpressionAst> &expr)
 	{
 		switch (expr->Kind)
 		{
@@ -68,16 +68,16 @@ namespace Symple::Code
 		{
 			auto literal = expr->Token.lock()->Text;
 			Emit("\tmov $%.*s, %s", literal.length(), literal.data(), Reg(RegKind::Ax));
-			return { RegKind::Ax, Type::Default };
+			return Type::Default;
 		}
 
 		default:
 			Emit("\txor %s, %s # Empty expr", Reg(RegKind::Ax), Reg(RegKind::Ax));
-			return { RegKind::Ax, Type::Default };
+			return Type::Default;
 		}
 	}
 
-	Register Emitter::Emit(const GlobalRef<const CallExpressionAst> &call)
+	GlobalRef<const Type> Emitter::Emit(const GlobalRef<const CallExpressionAst> &call)
 	{
 		auto name = call->Name->Text;
 
@@ -85,17 +85,17 @@ namespace Symple::Code
 		for (auto param : call->Parameters)
 		{
 			auto reg = Emit(param);
-			Emit("\tmov %s, %u(%s)", Reg(reg.Kind), off, Reg(RegKind::Sp));
+			Emit("\tmov %s, %u(%s)", Reg(RegKind::Ax), off, Reg(RegKind::Sp));
 			off -= 4;
 		}
 		Emit("\tsub $%i, %s", call->Parameters.size() * 4, Reg(RegKind::Sp));
 		Emit("\tcall _%.*s", name.length(), name.data());
 		Emit("\tadd $%i, %s", call->Parameters.size() * 4, Reg(RegKind::Sp));
 
-		return { RegKind::Ax, Type::Default };
+		return Type::Default;
 	}
 
-	Register Emitter::Emit(const GlobalRef<const BinaryExpressionAst> &expr)
+	GlobalRef<const Type> Emitter::Emit(const GlobalRef<const BinaryExpressionAst> &expr)
 	{
 		auto right = Emit(expr->Right);
 		Emit("\tpush %s", Reg(RegKind::Ax));
@@ -109,7 +109,7 @@ namespace Symple::Code
 			break;
 		}
 
-		return { RegKind::Ax, Type::Default };
+		return Type::Default;
 	}
 
 

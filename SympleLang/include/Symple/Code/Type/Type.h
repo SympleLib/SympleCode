@@ -61,11 +61,13 @@ namespace Symple::Code
 		TypeKind GetKind() const;
 		uint32 GetPointerCount() const;
 		bool GetIsRef() const;
+		bool GetIsFloat() const;
 		uint32 GetSize() const;
 
 		SY_PROPERTY_GET(GetKind) TypeKind Kind;
 		SY_PROPERTY_GET(GetPointerCount) uint32 PointerCount;
 		SY_PROPERTY_GET(GetIsRef) bool IsRef;
+		SY_PROPERTY_GET(GetIsFloat) bool IsFloat;
 		SY_PROPERTY_GET(GetSize) uint32 Size;
 	};
 }
