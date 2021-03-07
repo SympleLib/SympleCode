@@ -2,6 +2,8 @@
 
 namespace Symple::Code
 {
+	SYC_API const GlobalRef<const Type> Type::Default = MakeRef<const Type>(TypeKind::Int, 0, false);
+
 	SYC_API std::ostream &operator <<(std::ostream &os, TypeKind kind)
 	{ return os << TypeKindNames[(uint32)kind] << "Type"; }
 
@@ -30,4 +32,31 @@ namespace Symple::Code
 
 	bool Type::GetIsRef() const
 	{ return m_Ref; }
+
+	uint32 Type::GetSize() const
+	{
+		if (m_PtrCount)
+			return 4;
+
+		switch (m_Kind)
+		{
+		case TypeKind::Void:
+			return 0;
+		case TypeKind::Byte:
+		case TypeKind::Char:
+		case TypeKind::WChar:
+		case TypeKind::Bool:
+			return 1;
+		case TypeKind::Short:
+			return 2;
+		case TypeKind::Int:
+		case TypeKind::Float:
+			return 4;
+		//case TypeKind::Long:
+		//case TypeKind::Double:
+		//	return 8;
+		//case TypeKind::Triple:
+		//	return 16;
+		}
+	}
 }

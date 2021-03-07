@@ -12,8 +12,11 @@ namespace Symple::Code
 		Byte,
 		Short,
 		Int,
+		//Long,
 
 		Float,
+		//Double,
+		//Triple,
 
 		Char,
 		WChar,
@@ -28,8 +31,11 @@ namespace Symple::Code
 		"Byte",
 		"Short",
 		"Int",
+		//"Long",
 
 		"Float",
+		//"Double",
+		//"Triple",
 
 		"Char",
 		"WChar",
@@ -50,12 +56,16 @@ namespace Symple::Code
 
 		virtual void Print(std::ostream &, std::string indent = "", std::string_view label = "", bool last = true) const override;
 
+		static const GlobalRef<const Type> Default;
+
 		TypeKind GetKind() const;
 		uint32 GetPointerCount() const;
 		bool GetIsRef() const;
+		uint32 GetSize() const;
 
 		SY_PROPERTY_GET(GetKind) TypeKind Kind;
 		SY_PROPERTY_GET(GetPointerCount) uint32 PointerCount;
 		SY_PROPERTY_GET(GetIsRef) bool IsRef;
+		SY_PROPERTY_GET(GetSize) uint32 Size;
 	};
 }
