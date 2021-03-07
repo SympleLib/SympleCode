@@ -20,6 +20,7 @@ namespace Symple::Code
 		GlobalRef<StatementAst> m_Body;
 
 		friend class SymbolVisitor;
+		friend class TypeVisitor;
 	public:
 		FunctionAst(const GlobalRef<TypeAst> &type, const GlobalRef<const Token_t> &name,
 			const WeakRef<const Token_t> &open, const WeakRef<const Token_t> &close, const GlobalRef<StatementAst> &body);

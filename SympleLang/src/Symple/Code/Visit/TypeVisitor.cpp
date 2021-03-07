@@ -1,13 +1,11 @@
 #include "Symple/Code/Visit/Visitor.h"
 
-#include <iostream>
-
 namespace Symple::Code
 {
-	SymbolVisitor::SymbolVisitor(GlobalRef<CompilationUnitAst> unit)
+	TypeVisitor::TypeVisitor(GlobalRef<CompilationUnitAst> unit)
 		: m_Unit(unit) {}
 
-	void SymbolVisitor::Visit()
+	void TypeVisitor::Visit()
 	{
 		for (auto member : m_Unit->m_Members)
 		{
@@ -16,7 +14,7 @@ namespace Symple::Code
 		}
 	}
 
-	void SymbolVisitor::Visit(GlobalRef<StatementAst> stmt)
+	void TypeVisitor::Visit(GlobalRef<StatementAst> stmt)
 	{
 		switch (stmt->Kind)
 		{
@@ -33,27 +31,13 @@ namespace Symple::Code
 		}
 	}
 
-	void SymbolVisitor::Visit(GlobalRef<ExpressionAst> expr)
+	void TypeVisitor::Visit(GlobalRef<ExpressionAst> expr)
 	{
 		switch (expr->Kind)
 		{
 		case AstKind::CallExpression:
-		{
-			auto callExpr = Cast<CallExpressionAst>(expr);
-
-			bool valid = false;
-			for (auto member : m_Unit->m_Members)
-				if (member->Kind == AstKind::Function)
-					if (Cast<FunctionAst>(member)->m_Name->Text == callExpr->m_Name->Text)
-					{
-						callExpr->m_Func = Cast<FunctionAst>(member);
-						valid = true;
-						break;
-					}
-			if (!valid)
-				std::cerr << "Symbol '" << callExpr->m_Name->Text << "' does not exist!\n";
+			Cast<CallExpressionAst>(expr)->m_Type = Cast<CallExpressionAst>(expr)->m_Func->Type;
 			break;
-		}
 		case AstKind::UnaryExpression:
 			Visit(Cast<UnaryExpressionAst>(expr)->m_Operand);
 			break;

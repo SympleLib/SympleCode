@@ -10,6 +10,7 @@ namespace Symple::Code
 		using Type_t = Type;
 	protected:
 		GlobalRef<const Type_t> m_Type = Type_t::Default;
+		friend class TypeVisitor;
 	public:
 		virtual AstKind GetKind() const override;
 
@@ -26,7 +27,10 @@ namespace Symple::Code
 		ExpressionList m_Params;
 		WeakRef<const Token_t> m_Close;
 
+		GlobalRef<FunctionAst> m_Func;
+
 		friend class SymbolVisitor;
+		friend class TypeVisitor;
 	public:
 		CallExpressionAst(GlobalRef<const Token_t> name, WeakRef<const Token_t> open, const ExpressionList &parameters, WeakRef<const Token_t> close);
 
@@ -39,10 +43,14 @@ namespace Symple::Code
 		const ExpressionList &GetParameters() const;
 		WeakRef<const Token_t> GetClose() const;
 
+		GlobalRef<const FunctionAst> GetFunction() const;
+
 		SY_PROPERTY_GET(GetName) GlobalRef<const Token_t> Name;
 		SY_PROPERTY_GET(GetOpen) WeakRef<const Token_t> Open;
 		SY_PROPERTY_GET(GetParameters) const ExpressionList &Parameters;
 		SY_PROPERTY_GET(GetClose) WeakRef<const Token_t> Close;
+
+		SY_PROPERTY_GET(GetFunction) GlobalRef<const FunctionAst> Function;
 	};
 
 	class SYC_API UnaryExpressionAst: public ExpressionAst
@@ -52,6 +60,7 @@ namespace Symple::Code
 		GlobalRef<ExpressionAst> m_Operand;
 
 		friend class SymbolVisitor;
+		friend class TypeVisitor;
 	public:
 		UnaryExpressionAst(GlobalRef<const Token_t> oqerator, GlobalRef<ExpressionAst> operand);
 
@@ -73,6 +82,7 @@ namespace Symple::Code
 		GlobalRef<ExpressionAst> m_Left, m_Right;
 	
 		friend class SymbolVisitor;
+		friend class TypeVisitor;
 	public:
 		BinaryExpressionAst(GlobalRef<const Token_t> oqerator, GlobalRef<ExpressionAst> left, GlobalRef<ExpressionAst> right);
 
@@ -93,6 +103,8 @@ namespace Symple::Code
 	{
 	private:
 		GlobalRef<const Token_t> m_Literal;
+
+		friend class TypeVisitor;
 	public:
 		LiteralExpressionAst(GlobalRef<const Token_t> literal);
 
@@ -111,6 +123,8 @@ namespace Symple::Code
 		WeakRef<const Token_t> m_Open;
 		GlobalRef<ExpressionAst> m_Expr;
 		WeakRef<const Token_t> m_Close;
+
+		friend class TypeVisitor;
 	public:
 		ParenthasizedExpressionAst(WeakRef<const Token_t> open, GlobalRef<ExpressionAst> expression, WeakRef<const Token_t> close);
 

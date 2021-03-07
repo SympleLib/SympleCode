@@ -33,6 +33,10 @@ namespace Symple::Code
 	WeakRef<const Token_t> CallExpressionAst::GetClose() const
 	{ return m_Close; }
 
+
+	GlobalRef<const FunctionAst> CallExpressionAst::GetFunction() const
+	{ return m_Func; }
+
 	void CallExpressionAst::Print(std::ostream &os, std::string indent, std::string_view label, bool last) const
 	{
 		PrintIndent(os, indent, label, last);

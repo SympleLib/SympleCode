@@ -34,6 +34,7 @@ namespace Symple::Code
 		WeakRef<const Token_t> m_Close;
 
 		friend class SymbolVisitor;
+		friend class TypeVisitor;
 	public:
 		BlockStatementAst(WeakRef<const Token_t> open, StatementList statements, WeakRef<const Token_t> close);
 
@@ -54,6 +55,7 @@ namespace Symple::Code
 		GlobalRef<ExpressionAst> m_Expr;
 
 		friend class SymbolVisitor;
+		friend class TypeVisitor;
 	public:
 		ExpressionStatementAst(GlobalRef<ExpressionAst> expression);
 
@@ -73,6 +75,7 @@ namespace Symple::Code
 		GlobalRef<ExpressionAst> m_Value;
 
 		friend class SymbolVisitor;
+		friend class TypeVisitor;
 	public:
 		ReturnStatementAst(WeakRef<const Token_t> keyword, GlobalRef<ExpressionAst> value);
 
