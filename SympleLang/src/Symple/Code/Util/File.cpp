@@ -52,7 +52,7 @@ namespace Symple::Code
 	File::~File()
 	{ Close(); }
 
-	std::FILE *File::GetStream() const
+	std::FILE *File::GetStream()
 	{ return m_Stream; }
 
 

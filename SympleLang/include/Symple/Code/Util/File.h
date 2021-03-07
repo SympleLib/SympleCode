@@ -39,7 +39,7 @@ namespace Symple::Code
 		// Returns false if cannot read
 		bool Seek(uint32 offset, int32 origin);
 
-		std::FILE *GetStream() const;
+		std::FILE *GetStream();
 		const std::string &GetName() const;
 		const std::string &GetSource() const;
 		bool GetIsOpen() const;
