@@ -58,11 +58,6 @@ int main()
 
 	Parser parser(tokens);
 	auto unit = parser.Parse();
-	Console.Color = ConsoleColor::Yellow;
-	std::cout << "Ast:\n";
-	Console.Color = ConsoleColor::Cyan;
-	unit->Print(std::cout);
-	std::cout << '\n';
 
 	SymbolVisitor symbolVisit(unit);
 	Console.Color = ConsoleColor::Red;
@@ -71,6 +66,12 @@ int main()
 	TypeVisitor typeVisit(unit);
 	Console.Color = ConsoleColor::Red;
 	typeVisit.Visit();
+
+	Console.Color = ConsoleColor::Yellow;
+	std::cout << "Ast:\n";
+	Console.Color = ConsoleColor::Cyan;
+	unit->Print(std::cout);
+	std::cout << '\n';
 
 	Emitter emmiter(unit);
 	emmiter.Emit();

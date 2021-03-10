@@ -21,6 +21,7 @@ namespace Symple::Code
 	class SYC_API TypeVisitor: public Visitor
 	{
 	private:
+		GlobalRef<FunctionAst> m_Func;
 		GlobalRef<CompilationUnitAst> m_Unit;
 	public:
 		TypeVisitor(GlobalRef<CompilationUnitAst> compilationUnit);

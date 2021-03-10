@@ -26,7 +26,7 @@ namespace Symple::Code
 	}
 
 
-	TypeAst::TypeAst(GlobalRef<const Token_t> base, const ConstWeakTokenList &addons, GlobalRef<Type_t> ty)
+	TypeAst::TypeAst(WeakRef<const Token_t> base, const ConstWeakTokenList &addons, GlobalRef<Type_t> ty)
 		: m_Base(base), m_Addons(addons), m_Type(ty) {}
 
 	AstKind TypeAst::GetKind() const

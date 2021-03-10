@@ -10,7 +10,10 @@ namespace Symple::Code
 		for (auto member : m_Unit->m_Members)
 		{
 			if (member->Kind == AstKind::Function)
-				Visit(Cast<FunctionAst>(member)->m_Body);
+			{
+				m_Func = Cast<FunctionAst>(member);
+				Visit(m_Func->m_Body);
+			}
 		}
 	}
 
@@ -23,8 +26,16 @@ namespace Symple::Code
 				Visit(piece);
 			break;
 		case AstKind::ReturnStatement:
-			Visit(Cast<ReturnStatementAst>(stmt)->m_Value);
+		{
+			auto RetStmt = Cast<ReturnStatementAst>(stmt);
+			auto val = RetStmt->m_Value;
+			Visit(val);
+
+			auto cast = MakeRef<CastExpressionAst>(WeakRef<Token>(), m_Func->m_Type, WeakRef<Token>(), val);
+			cast->m_Type = cast->m_TypeAst->m_Type;
+			RetStmt->m_Value = cast;
 			break;
+		}
 		case AstKind::ExpressionStatement:
 			Visit(Cast<ExpressionStatementAst>(stmt)->m_Expr);
 			break;

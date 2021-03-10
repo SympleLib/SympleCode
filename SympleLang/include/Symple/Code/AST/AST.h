@@ -120,7 +120,7 @@ namespace Symple::Code
 
 		friend class TypeVisitor;
 	public:
-		TypeAst(GlobalRef<const Token_t> base, const ConstWeakTokenList &addons, GlobalRef<Type_t> type);
+		TypeAst(WeakRef<const Token_t> base, const ConstWeakTokenList &addons, GlobalRef<Type_t> type);
 
 		virtual AstKind GetKind() const;
 		virtual WeakRef<const Token_t> GetToken() const;
