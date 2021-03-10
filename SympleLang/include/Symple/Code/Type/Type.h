@@ -58,6 +58,16 @@ namespace Symple::Code
 
 		static const GlobalRef<const Type> Default;
 
+		bool Is(TypeKind) const;
+		template<typename... Args>
+		bool Is(TypeKind kind, Args&&... kinds) const
+		{ return Is(Kind) || Is(std::forward(kinds)...); }
+
+		bool Is(GlobalRef<const Type>) const;
+		template<typename... Args>
+		bool Is(GlobalRef<const Type> type, Args&&... types) const
+		{ return Is(type) || Is(std::forward(types)...); }
+
 		TypeKind GetKind() const;
 		uint32 GetPointerCount() const;
 		bool GetIsRef() const;

@@ -60,6 +60,9 @@ namespace Symple::Code
 	{
 		switch (expr->Kind)
 		{
+		case AstKind::CastExpression:
+			Emit(Cast<const CastExpressionAst>(expr));
+			break;
 		case AstKind::CallExpression:
 			Emit(Cast<const CallExpressionAst>(expr));
 			break;
@@ -72,10 +75,31 @@ namespace Symple::Code
 			Emit("\tmov $%.*s, %s", literal.length(), literal.data(), Reg(RegKind::Ax));
 			break;
 		}
+		case AstKind::ParenthasizedExpression:
+			Emit(Cast<const ParenthasizedExpressionAst>(expr)->Expression);
+			break;
 
 		default:
 			Emit("\txor %s, %s # Empty expr", Reg(RegKind::Ax), Reg(RegKind::Ax));
 			break;
+		}
+	}
+
+	void Emitter::Emit(const GlobalRef<const CastExpressionAst> &cast)
+	{
+		Emit(cast->Value);
+
+		if (cast->Type->Is(cast->Value->Type));
+		else if (cast->Type->Is(TypeKind::Bool))
+		{
+			Emit("\ttest %s, %s", Reg(RegKind::Ax), Reg(RegKind::Ax));
+			Emit("\tsetne %s", Reg(RegKind::Ax, 1));
+			Emit("\tmovz%c%c %s, %s", Suf(1), Suf(), Reg(RegKind::Ax, 1), Reg(RegKind::Ax));
+		}
+		else if (cast->Type->Size != cast->Value->Type->Size)
+		{
+			uint32 min = std::min(cast->Type->Size, cast->Value->Type->Size);
+			Emit("\tmovz%c%c %s, %s", Suf(min), Suf(), Reg(RegKind::Ax, min), Reg(RegKind::Ax));
 		}
 	}
 
@@ -122,6 +146,16 @@ namespace Symple::Code
 	{
 		std::fprintf(m_File.Stream, fmt, args...);
 		std::fputc('\n', m_File.Stream);
+	}
+
+	constexpr const char Emitter::Suf(uint32 sz)
+	{
+		if (sz <= 1)
+			return 'b';
+		if (sz <= 2)
+			return 'w';
+		if (sz <= 4)
+			return 'l';
 	}
 
 	constexpr const char *Emitter::Reg(RegKind kind, uint32 sz)

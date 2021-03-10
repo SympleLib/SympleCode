@@ -1,2 +1,2 @@
 int main()
-  ret (bool *)(6 * 9);
+  ret (bool)(6 * 9);

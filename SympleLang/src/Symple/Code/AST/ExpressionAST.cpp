@@ -4,48 +4,13 @@ namespace Symple::Code
 {
 	using Token_t = Ast::Token_t;
 	using Type_t = ExpressionAst::Type_t;
+	using TypeAst_t = CastExpressionAst::TypeAst_t;
 
 	AstKind ExpressionAst::GetKind() const
 	{ return AstKind::Expression; }
 
 	GlobalRef<const Type_t> ExpressionAst::GetType() const
 	{ return m_Type; }
-
-
-	CastExpressionAst::CastExpressionAst(WeakRef<const Token_t> open, GlobalRef<TypeAst> ty, WeakRef<const Token_t> close, GlobalRef<ExpressionAst> val)
-		: m_Open(open), m_Type(ty), m_Close(close), m_Value(val) {}
-
-	AstKind CastExpressionAst::GetKind() const
-	{ return AstKind::CastExpression; }
-
-	WeakRef<const Token_t> CastExpressionAst::GetToken() const
-	{ return m_Close; }
-
-	WeakRef<const Token_t> CastExpressionAst::GetOpen() const
-	{ return m_Open; }
-
-	GlobalRef<const TypeAst> CastExpressionAst::GetType() const
-	{ return m_Type; }
-
-	WeakRef<const Token_t> CastExpressionAst::GetClose() const
-	{ return m_Close; }
-
-	GlobalRef<const ExpressionAst> CastExpressionAst::GetValue() const
-	{ return m_Value; }
-
-	void CastExpressionAst::Print(std::ostream & os, std::string indent, std::string_view label, bool last) const
-	{
-		PrintIndent(os, indent, label, last);
-		PrintKind(os);
-
-		indent += GetAddIndent(last);
-		if (!m_Open.expired())
-			m_Open.lock()->Print(os << '\n', indent, "Open = ", false);
-		m_Type->Print(os << '\n', indent, "Type = ", false);
-		if (!m_Close.expired())
-			m_Close.lock()->Print(os << '\n', indent, "Close = ", false);
-		m_Value->Print(os << '\n', indent, "Value = ");
-	}
 
 
 	CallExpressionAst::CallExpressionAst(GlobalRef<const Token_t> name, WeakRef<const Token_t> open, const ExpressionList &params, WeakRef<const Token_t> close)
@@ -86,6 +51,42 @@ namespace Symple::Code
 			param->Print(os << '\n', indent, "[Param] ", m_Close.expired());
 		if (!m_Close.expired())
 			m_Close.lock()->Print(os << '\n', indent, "Close = ");
+	}
+
+
+	CastExpressionAst::CastExpressionAst(WeakRef<const Token_t> open, GlobalRef<TypeAst_t> ty, WeakRef<const Token_t> close, GlobalRef<ExpressionAst> val)
+		: m_Open(open), m_TypeAst(ty), m_Close(close), m_Value(val) {}
+
+	AstKind CastExpressionAst::GetKind() const
+	{ return AstKind::CastExpression; }
+
+	WeakRef<const Token_t> CastExpressionAst::GetToken() const
+	{ return m_Close; }
+
+	WeakRef<const Token_t> CastExpressionAst::GetOpen() const
+	{ return m_Open; }
+
+	GlobalRef<const TypeAst_t> CastExpressionAst::GetTypeAst() const
+	{ return m_TypeAst; }
+
+	WeakRef<const Token_t> CastExpressionAst::GetClose() const
+	{ return m_Close; }
+
+	GlobalRef<const ExpressionAst> CastExpressionAst::GetValue() const
+	{ return m_Value; }
+
+	void CastExpressionAst::Print(std::ostream &os, std::string indent, std::string_view label, bool last) const
+	{
+		PrintIndent(os, indent, label, last);
+		PrintKind(os);
+
+		indent += GetAddIndent(last);
+		if (!m_Open.expired())
+			m_Open.lock()->Print(os << '\n', indent, "Open = ", false);
+		m_TypeAst->Print(os << '\n', indent, "TypeAst = ", false);
+		if (!m_Close.expired())
+			m_Close.lock()->Print(os << '\n', indent, "Close = ", false);
+		m_Value->Print(os << '\n', indent, "Value = ");
 	}
 
 

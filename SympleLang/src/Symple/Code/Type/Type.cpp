@@ -24,6 +24,12 @@ namespace Symple::Code
 			os << '&';
 	}
 
+	bool Type::Is(TypeKind kind) const
+	{ return m_Kind == kind; }
+
+	bool Type::Is(GlobalRef<const Type> ty) const
+	{ return Is(ty->m_Kind) && m_PtrCount == ty->m_PtrCount; }
+
 	TypeKind Type::GetKind() const
 	{ return m_Kind; }
 
@@ -34,7 +40,7 @@ namespace Symple::Code
 	{ return m_Ref; }
 
 	bool Type::GetIsFloat() const
-	{ return m_Kind == TypeKind::Float /* || m_Kind == TypeKind::Double || m_Kind == TypeKind::Triple */; }
+	{ return (m_Kind == TypeKind::Float /* || m_Kind == TypeKind::Double || m_Kind == TypeKind::Triple */) && !m_PtrCount; }
 
 	uint32 Type::GetSize() const
 	{

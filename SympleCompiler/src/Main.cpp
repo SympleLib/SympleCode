@@ -68,6 +68,10 @@ int main()
 	Console.Color = ConsoleColor::Red;
 	symbolVisit.Visit();
 
+	TypeVisitor typeVisit(unit);
+	Console.Color = ConsoleColor::Red;
+	typeVisit.Visit();
+
 	Emitter emmiter(unit);
 	emmiter.Emit();
 

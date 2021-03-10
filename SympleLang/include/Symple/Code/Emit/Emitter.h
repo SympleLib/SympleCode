@@ -20,12 +20,14 @@ namespace Symple::Code
 		void Emit(const GlobalRef<const StatementAst> &statement);
 
 		void Emit(const GlobalRef<const ExpressionAst> &expression);
+		void Emit(const GlobalRef<const CastExpressionAst> &cast);
 		void Emit(const GlobalRef<const CallExpressionAst> &call);
 		void Emit(const GlobalRef<const BinaryExpressionAst> &expression);
 	private:
 		template<typename... Args>
 		void Emit(const char *fmt, Args&&... args);
 
+		constexpr const char Suf(uint32 size = 4);
 		constexpr const char *Reg(RegKind, uint32 size = 4);
 	};
 }

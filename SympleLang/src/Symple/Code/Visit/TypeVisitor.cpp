@@ -35,6 +35,9 @@ namespace Symple::Code
 	{
 		switch (expr->Kind)
 		{
+		case AstKind::CastExpression:
+			expr->m_Type = Cast<CastExpressionAst>(expr)->m_TypeAst->m_Type;
+			break;
 		case AstKind::CallExpression:
 			expr->m_Type = Cast<CallExpressionAst>(expr)->m_Func->m_Type->m_Type;
 			break;
