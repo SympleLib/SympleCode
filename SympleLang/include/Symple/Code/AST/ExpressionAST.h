@@ -53,6 +53,44 @@ namespace Symple::Code
 		SY_PROPERTY_GET(GetFunction) GlobalRef<const FunctionAst> Function;
 	};
 
+	class SYC_API CastExpressionAst: public ExpressionAst
+	{
+	private:
+		WeakRef<const Token_t> m_Open; // Used for '(y)x'
+		GlobalRef<TypeAst> m_Type;
+		union
+		{
+			WeakRef<const Token_t> m_Close; // Used for '(y)x'
+			WeakRef<const Token_t> m_Keyword; // Used for 'x as y'
+			WeakRef<const Token_t> m_CloseOrKeyword;
+		};
+		GlobalRef<ExpressionAst> m_Value;
+
+		friend class SymbolVisitor;
+		friend class TypeVisitor;
+	public:
+		CastExpressionAst(WeakRef<const Token_t> open, GlobalRef<TypeAst> type, WeakRef<const Token_t> closeOrKeyword, GlobalRef<ExpressionAst> value);
+		~CastExpressionAst() {}
+
+		virtual AstKind GetKind() const override;
+		virtual WeakRef<const Token_t> GetToken() const override;
+		virtual void Print(std::ostream &, std::string indent = "", std::string_view label = "", bool last = true) const override;
+
+		WeakRef<const Token_t> GetOpen() const;
+		GlobalRef<const TypeAst> GetType() const;
+		WeakRef<const Token_t> GetClose() const;
+		WeakRef<const Token_t> GetKeyword() const;
+		WeakRef<const Token_t> GetCloseOrKeyword() const;
+		GlobalRef<const ExpressionAst> GetValue() const;
+
+		SY_PROPERTY_GET(GetOpen) WeakRef<const Token_t> Open;
+		SY_PROPERTY_GET(GetType) GlobalRef<const TypeAst> Type;
+		SY_PROPERTY_GET(GetClose) WeakRef<const Token_t> Close;
+		SY_PROPERTY_GET(GetKeyword) WeakRef<const Token_t> Keyword;
+		SY_PROPERTY_GET(GetCloseOrKeyword) WeakRef<const Token_t> CloseOrKeyword;
+		SY_PROPERTY_GET(GetValue) GlobalRef<const ExpressionAst> Value;
+	};
+
 	class SYC_API UnaryExpressionAst: public ExpressionAst
 	{
 	private:

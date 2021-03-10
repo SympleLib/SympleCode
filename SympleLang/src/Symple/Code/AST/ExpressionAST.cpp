@@ -12,6 +12,59 @@ namespace Symple::Code
 	{ return m_Type; }
 
 
+	CastExpressionAst::CastExpressionAst(WeakRef<const Token_t> open, GlobalRef<TypeAst> ty, WeakRef<const Token_t> closeOrKey, GlobalRef<ExpressionAst> val)
+		: m_Open(open), m_Type(ty), m_Keyword(closeOrKey), m_Value(val) {}
+
+	AstKind CastExpressionAst::GetKind() const
+	{ return AstKind::CastExpression; }
+
+	WeakRef<const Token_t> CastExpressionAst::GetToken() const
+	{ return m_CloseOrKeyword; }
+
+	WeakRef<const Token_t> CastExpressionAst::GetOpen() const
+	{ return m_Open; }
+
+	GlobalRef<const TypeAst> CastExpressionAst::GetType() const
+	{ return m_Type; }
+
+	WeakRef<const Token_t> CastExpressionAst::GetClose() const
+	{ return m_Close; }
+
+	WeakRef<const Token_t> CastExpressionAst::GetKeyword() const
+	{ return m_Keyword; }
+
+	WeakRef<const Token_t> CastExpressionAst::GetCloseOrKeyword() const
+	{ return m_CloseOrKeyword; }
+
+	GlobalRef<const ExpressionAst> CastExpressionAst::GetValue() const
+	{ return m_Value; }
+
+	void CastExpressionAst::Print(std::ostream & os, std::string indent, std::string_view label, bool last) const
+	{
+		PrintIndent(os, indent, label, last);
+		PrintKind(os);
+
+		indent += GetAddIndent(last);
+		if (!m_Open.expired())
+			m_Open.lock()->Print(os << '\n', indent, "Open = ", false);
+		// If using as keyword
+		if (IsEmpty(m_Open))
+		{
+			m_Value->Print(os << '\n', indent, "Value = ", false);
+			if (!m_Keyword.expired())
+				m_Keyword.lock()->Print(os << '\n', indent, "Keyword = ", false);
+			m_Type->Print(os << '\n', indent, "Type = ");
+		}
+		else
+		{
+			m_Type->Print(os << '\n', indent, "Type = ", false);
+			if (!m_Close.expired())
+				m_Close.lock()->Print(os << '\n', indent, "Close = ", false);
+			m_Value->Print(os << '\n', indent, "Value = ");
+		}
+	}
+
+
 	CallExpressionAst::CallExpressionAst(GlobalRef<const Token_t> name, WeakRef<const Token_t> open, const ExpressionList &params, WeakRef<const Token_t> close)
 		: m_Name(name), m_Open(open), m_Params(params), m_Close(close) {}
 

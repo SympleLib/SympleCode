@@ -123,8 +123,25 @@ namespace Symple::Code
 		case TokenKind::Number:
 			return ParseLiteralExpression();
 		case TokenKind::OpenParen:
-			return ParseParenthasizedExpression();
+		{
+			auto open = Next();
+			if (TokenFacts::IsTypeBase(Current->Kind))
+				return ParseCastExpression(open);
+			else
+				return ParseParenthasizedExpression(open);
 		}
+		}
+	}
+
+	GlobalRef<CastExpressionAst> Parser::ParseCastExpression(GlobalRef<const Token> open)
+	{
+		if (!open)
+			open = Match(TokenKind::OpenParen);
+		auto ty = ParseType();
+		auto close = Match(TokenKind::CloseParen);
+		auto val = ParseExpression();
+
+		return MakeRef<CastExpressionAst>(open, ty, close, val);
 	}
 
 	GlobalRef<CallExpressionAst> Parser::ParseCallExpression()
@@ -150,9 +167,10 @@ namespace Symple::Code
 		return MakeRef<LiteralExpressionAst>(literal);
 	}
 
-	GlobalRef<ParenthasizedExpressionAst> Parser::ParseParenthasizedExpression()
+	GlobalRef<ParenthasizedExpressionAst> Parser::ParseParenthasizedExpression(GlobalRef<const Token> open)
 	{
-		auto open = Match(TokenKind::OpenParen);
+		if (!open)
+			open = Match(TokenKind::OpenParen);
 		auto expr = ParseExpression();
 		auto close = Match(TokenKind::CloseParen);
 		return MakeRef<ParenthasizedExpressionAst>(open, expr, close);

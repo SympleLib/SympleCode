@@ -20,6 +20,8 @@ namespace Symple::Code
 	class SYC_API ExpressionStatementAst;
 
 	class SYC_API ExpressionAst;
+	class SYC_API CastExpressionAst;
+	class SYC_API CallExpressionAst;
 	class SYC_API BinaryExpressionAst;
 	class SYC_API LiteralExpressionAst;
 	class SYC_API ParenthasizedExpressionAst;
@@ -52,6 +54,7 @@ namespace Symple::Code
 
 		// Expressions
 		Expression,
+		CastExpression,
 		CallExpression,
 		UnaryExpression,
 		BinaryExpression,
@@ -73,12 +76,14 @@ namespace Symple::Code
 
 
 		"Statement",
+		"EmptyStatement",
 		"BlockStatement",
 		"ReturnStatement",
 		"ExpressionStatement",
 
 
 		"Expression",
+		"CastExpression",
 		"CallExpression",
 		"UnaryExpression",
 		"BinaryExpression",

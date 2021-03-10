@@ -42,4 +42,8 @@ namespace Symple::Code
 	template<typename To, typename From>
 	inline GlobalRef<To> Cast(const GlobalRef<From>& ref)
 	{ return std::dynamic_pointer_cast<To>(ref); }
+
+	template <typename T>
+	bool IsEmpty(const WeakRef<T> &ptr)
+	{ return !ptr.owner_before(WeakRef<T>()) && !WeakRef<T>().owner_before(ptr); }
 }

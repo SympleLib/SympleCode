@@ -27,9 +27,10 @@ namespace Symple::Code
 		GlobalRef<ExpressionAst> ParseBinaryExpression(uint32 parentPrecedence = 0);
 
 		GlobalRef<ExpressionAst> ParsePrimaryExpression();
+		GlobalRef<CastExpressionAst> ParseCastExpression(GlobalRef<const Token> open = nullptr);
 		GlobalRef<CallExpressionAst> ParseCallExpression();
 		GlobalRef<LiteralExpressionAst> ParseLiteralExpression();
-		GlobalRef<ParenthasizedExpressionAst> ParseParenthasizedExpression();
+		GlobalRef<ParenthasizedExpressionAst> ParseParenthasizedExpression(GlobalRef<const Token> open = nullptr);
 
 		GlobalRef<TypeAst> ParseType();
 
