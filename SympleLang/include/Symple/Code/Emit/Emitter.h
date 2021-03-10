@@ -25,7 +25,7 @@ namespace Symple::Code
 		void Emit(const GlobalRef<const BinaryExpressionAst> &expression);
 	private:
 		template<typename... Args>
-		void Emit(const char *fmt, Args&&... args);
+		void Emit(_Printf_format_string_ const char *fmt, Args&&... args);
 
 		constexpr const char Suf(uint32 size = 4);
 		constexpr const char *Reg(RegKind, uint32 size = 4);

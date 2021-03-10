@@ -1,2 +1,2 @@
-int main()
+float main()
   ret 9 % 6;

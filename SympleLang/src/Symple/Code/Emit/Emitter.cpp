@@ -96,6 +96,18 @@ namespace Symple::Code
 			Emit("\tsetne %s", Reg(RegKind::Ax, 1));
 			Emit("\tmovz%c%c %s, %s", Suf(1), Suf(), Reg(RegKind::Ax, 1), Reg(RegKind::Ax));
 		}
+		else if (cast->Type->IsFloat && !cast->Value->Type->IsFloat)
+		{
+			Emit("\tmov %s, -4(%s)", Reg(RegKind::Ax), Reg(RegKind::Sp));
+			Emit("\tfildl -4(%s)", Reg(RegKind::Sp));
+			Emit("\tfsts -4(%s)", Reg(RegKind::Sp));
+			Emit("\tmov -4(%s), %s", Reg(RegKind::Sp), Reg(RegKind::Ax));
+		}
+		else if (!cast->Type->IsFloat && cast->Value->Type->IsFloat)
+		{
+			Emit("\tfsts -4(%s)", Reg(RegKind::Sp));
+			Emit("\cvttsd2si -4(%s), %s", Reg(RegKind::Sp), Reg(RegKind::Ax));
+		}
 		else if (cast->Type->Size != cast->Value->Type->Size)
 		{
 			uint32 min = std::min(cast->Type->Size, cast->Value->Type->Size);
@@ -153,7 +165,7 @@ namespace Symple::Code
 
 
 	template<typename... Args>
-	void Emitter::Emit(const char *fmt, Args&&... args)
+	void Emitter::Emit(_Printf_format_string_ const char *fmt, Args&&... args)
 	{
 		std::fprintf(m_File.Stream, fmt, args...);
 		std::fputc('\n', m_File.Stream);

@@ -82,7 +82,7 @@ int main()
 	Console.Color = ConsoleColor::Reset;
 	int ec = system("bin\\Out.exe");
 	Console.Color = ConsoleColor::Yellow;
-	printf("\nProgram exited with code %i (0x%x)", ec, ec);
+	printf("\nProgram exited with code %i (0x%x) [%f]", ec, ec, *(float *)&ec);
 
 	std::cout.flush();
 	std::cin.get();
