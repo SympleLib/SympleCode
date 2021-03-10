@@ -12,14 +12,14 @@ namespace Symple::Code
 	{ return m_Type; }
 
 
-	CastExpressionAst::CastExpressionAst(WeakRef<const Token_t> open, GlobalRef<TypeAst> ty, WeakRef<const Token_t> closeOrKey, GlobalRef<ExpressionAst> val)
-		: m_Open(open), m_Type(ty), m_Keyword(closeOrKey), m_Value(val) {}
+	CastExpressionAst::CastExpressionAst(WeakRef<const Token_t> open, GlobalRef<TypeAst> ty, WeakRef<const Token_t> close, GlobalRef<ExpressionAst> val)
+		: m_Open(open), m_Type(ty), m_Close(close), m_Value(val) {}
 
 	AstKind CastExpressionAst::GetKind() const
 	{ return AstKind::CastExpression; }
 
 	WeakRef<const Token_t> CastExpressionAst::GetToken() const
-	{ return m_CloseOrKeyword; }
+	{ return m_Close; }
 
 	WeakRef<const Token_t> CastExpressionAst::GetOpen() const
 	{ return m_Open; }
@@ -29,12 +29,6 @@ namespace Symple::Code
 
 	WeakRef<const Token_t> CastExpressionAst::GetClose() const
 	{ return m_Close; }
-
-	WeakRef<const Token_t> CastExpressionAst::GetKeyword() const
-	{ return m_Keyword; }
-
-	WeakRef<const Token_t> CastExpressionAst::GetCloseOrKeyword() const
-	{ return m_CloseOrKeyword; }
 
 	GlobalRef<const ExpressionAst> CastExpressionAst::GetValue() const
 	{ return m_Value; }
@@ -47,21 +41,10 @@ namespace Symple::Code
 		indent += GetAddIndent(last);
 		if (!m_Open.expired())
 			m_Open.lock()->Print(os << '\n', indent, "Open = ", false);
-		// If using as keyword
-		if (IsEmpty(m_Open))
-		{
-			m_Value->Print(os << '\n', indent, "Value = ", false);
-			if (!m_Keyword.expired())
-				m_Keyword.lock()->Print(os << '\n', indent, "Keyword = ", false);
-			m_Type->Print(os << '\n', indent, "Type = ");
-		}
-		else
-		{
-			m_Type->Print(os << '\n', indent, "Type = ", false);
-			if (!m_Close.expired())
-				m_Close.lock()->Print(os << '\n', indent, "Close = ", false);
-			m_Value->Print(os << '\n', indent, "Value = ");
-		}
+		m_Type->Print(os << '\n', indent, "Type = ", false);
+		if (!m_Close.expired())
+			m_Close.lock()->Print(os << '\n', indent, "Close = ", false);
+		m_Value->Print(os << '\n', indent, "Value = ");
 	}
 
 
