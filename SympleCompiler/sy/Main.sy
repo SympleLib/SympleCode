@@ -1,2 +1,2 @@
-bool main()
-  ret 6 * 9;
+int main()
+  ret 9 % 6;

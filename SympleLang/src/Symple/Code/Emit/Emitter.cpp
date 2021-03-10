@@ -137,6 +137,17 @@ namespace Symple::Code
 		case TokenKind::Star:
 			Emit("\timul %s, %s", Reg(RegKind::Bx), Reg(RegKind::Ax));
 			break;
+		case TokenKind::Slash:
+			Emit("\tmov %s, %s", Reg(RegKind::Bx), Reg(RegKind::Cx));
+			Emit("\tcltd");
+			Emit("\tidiv %s", Reg(RegKind::Cx));
+			break;
+		case TokenKind::Percent:
+			Emit("\tmov %s, %s", Reg(RegKind::Bx), Reg(RegKind::Cx));
+			Emit("\tcltd");
+			Emit("\tidiv %s", Reg(RegKind::Cx));
+			Emit("\tmov %s, %s", Reg(RegKind::Dx), Reg(RegKind::Ax));
+			break;
 		}
 	}
 

@@ -25,6 +25,7 @@ namespace Symple::Code
 			return 1;
 		case TokenKind::Star:
 		case TokenKind::Slash:
+		case TokenKind::Percent:
 			return 2;
 		}
 	}
