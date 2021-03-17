@@ -1,0 +1,35 @@
+CALL = 'Sy' by default or if has '__sycall'; 'Syc' if has '__syccall'
+NAME = namespaces/classes/structs/impls then name with '$$' in between
+PARAM_TYPE = namespaces/classes/structs/impls then name with '$$' in between [NOTE: ignore if not function]
+PARAM_TYPES = all params listed as '{PARAM_TYPE}' with '$' in between
+TYPE = 'Var' for static (class/struct) or variable, 'Fild' for field, 'Func' for static (class/struct) or function, 'MFun' for member functions, 'PGet' for property getter, 'PSet' for property setter
+
+_{CALL}${NAME}${PARAM_TYPES}${TYPE}
+
+Example:
+	--- Syc
+	..float ..Symple.Code.StdLib.Mathf.Pow(in ..float, in ..float) __sycall;
+	--- Asm
+	_Sy$Symple$$Code$$StdLib$$Mathf$$Pow$float$float$Func
+	---
+	
+	--- Syc
+	..Symple.Win32.LResult ..MyWin32App.MyWinProc(in ..Symple.Win32.HWindow, in ..uint32, in ..Symple.Win32.WParam, in ..Symple.Win32.LParam) __syccall;
+	--- Asm
+	_Syc$MyWin32App$$MyWinProc$Symple$$Win32$$HWindow$uint32$Symple$$Win32$$HWindow$Symple$$Win32$$WParam$Symple$$Win32$$LParam$Func
+	---
+	
+	--- Syc
+	namespace ..Symple.DateAndTime
+	{
+		public class .Time
+		{
+			public static ..C.Time .CTime { get = .GetCTime } __sycall;
+			
+			// ..
+		}
+	}
+	--- Asm
+	_Sy$Symple$$DateAndTime$$Time$$CTime$PGet
+	_Sy$Symple$$DateAndTime$$Time$$CTime$PSet
+	---
