@@ -6,6 +6,16 @@
 
 namespace Symple::Code
 {
+	class SYC_API Symbol
+	{
+	protected:
+		std::string m_MangledName;
+	public:
+		const std::string &GetMangledName() const;
+
+		SY_PROPERTY_GET(GetMangledName) const std::string &MangledName;
+	};
+
 	class SYC_API Ast;
 	class SYC_API TypeAst;
 	class SYC_API CompilationUnitAst;
@@ -108,7 +118,7 @@ namespace Symple::Code
 		SY_PROPERTY_GET(GetToken) WeakRef<const Token_t> Token;
 	};
 
-	class SYC_API TypeAst: public Ast
+	class SYC_API TypeAst: public Ast, public Symbol
 	{
 	public:
 		using Type_t = Type;

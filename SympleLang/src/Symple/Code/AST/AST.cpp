@@ -85,4 +85,8 @@ namespace Symple::Code
 		for (auto member : m_Members)
 			member->Print(os << '\n', indent, "", member == m_Members.back());
 	}
+
+
+	const std::string &Symbol::GetMangledName() const
+	{ return m_MangledName; }
 }

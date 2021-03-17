@@ -10,7 +10,7 @@ namespace Symple::Code
 		virtual AstKind GetKind() const override;
 	};
 
-	class SYC_API FunctionAst: public MemberAst
+	class SYC_API FunctionAst: public MemberAst, public Symbol
 	{
 	private:
 		GlobalRef<TypeAst> m_Type;

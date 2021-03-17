@@ -12,7 +12,13 @@ namespace Symple::Code
 		for (auto member : m_Unit->m_Members)
 		{
 			if (member->Kind == AstKind::Function)
-				Visit(Cast<FunctionAst>(member)->m_Body);
+			{
+				auto fn = Cast<FunctionAst>(member);
+				Visit(fn->m_Body);
+				std::stringstream ss;
+				ss << "_Sy$" << fn->m_Name->Text << "$Func";
+				fn->m_MangledName = std::move(ss.str());
+			}
 		}
 	}
 

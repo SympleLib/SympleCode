@@ -7,6 +7,12 @@ namespace Symple::Code
 
 	void Emitter::Emit()
 	{
+		Emit(".global _main");
+		Emit("_main:");
+		Emit("\txor %s, %s", Reg(RegKind::Ax), Reg(RegKind::Ax));
+		Emit("\tcall _Sy$Main$Func");
+		Emit("\tret");
+
 		for (auto member : m_Unit->Members)
 			switch (member->Kind)
 			{
@@ -21,10 +27,10 @@ namespace Symple::Code
 
 	void Emitter::Emit(const GlobalRef<const FunctionAst> &fn)
 	{
-		auto name = fn->Name->Text;
+		decltype(auto) name = fn->MangledName;
 
-		Emit(".global _%.*s", name.length(), name.data());
-		Emit("_%.*s:", name.length(), name.data());
+		Emit(".global %s", name.c_str());
+		Emit("%s:", name.c_str());
 		Emit("\tpush %s", Reg(RegKind::Bp));
 		Emit("\tmov %s, %s", Reg(RegKind::Sp), Reg(RegKind::Bp));
 		Emit("");
