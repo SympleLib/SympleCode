@@ -18,6 +18,7 @@ namespace Symple::Code
 
 	class SYC_API Ast;
 	class SYC_API TypeAst;
+	class SYC_API ParameterAst;
 	class SYC_API CompilationUnitAst;
 
 	class SYC_API MemberAst;
@@ -49,6 +50,7 @@ namespace Symple::Code
 	{
 		Unknown,
 		Type,
+		Parameter,
 		CompilationUnit,
 
 		// Members
@@ -78,6 +80,7 @@ namespace Symple::Code
 	{
 		"Unknown",
 		"Type",
+		"Parameter",
 		"CompilationUnit",
 
 
@@ -144,6 +147,26 @@ namespace Symple::Code
 		SY_PROPERTY_GET(GetBase) WeakRef<const Token_t> Base;
 		SY_PROPERTY_GET(GetAddons) const ConstWeakTokenList &Addons;
 		SY_PROPERTY_GET(GetType) GlobalRef<const Type_t> Type;
+	};
+
+
+	class SYC_API ParameterAst: public Ast
+	{
+	private:
+		GlobalRef<TypeAst> m_Type;
+		GlobalRef<const Token_t> m_Name;
+	public:
+		ParameterAst(const GlobalRef<TypeAst> &type, const GlobalRef<const Token_t> &name);
+
+		virtual AstKind GetKind() const;
+		virtual WeakRef<const Token_t> GetToken() const;
+		virtual void Print(std::ostream &, std::string indent = "", std::string_view label = "", bool last = true) const override;
+
+		GlobalRef<const TypeAst> GetType() const;
+		GlobalRef<const Token_t> GetName() const;
+
+		SY_PROPERTY_GET(GetType) GlobalRef<const TypeAst> Type;
+		SY_PROPERTY_GET(GetName) GlobalRef<const Token_t> Name;
 	};
 
 	class SYC_API CompilationUnitAst: public Ast

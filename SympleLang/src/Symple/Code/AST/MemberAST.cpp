@@ -9,8 +9,8 @@ namespace Symple::Code
 
 
 	FunctionAst::FunctionAst(const GlobalRef<TypeAst> &type, const GlobalRef<const Token_t> &name,
-		const WeakRef<const Token_t> &open, const WeakRef<const Token_t> &close, const GlobalRef<StatementAst> &body)
-		: m_Type(type), m_Name(name), m_Open(open), m_Close(close), m_Body(body) {}
+		const WeakRef<const Token_t> &open, const std::vector<GlobalRef<ParameterAst>> &params, const WeakRef<const Token_t> &close, const GlobalRef<StatementAst> &body)
+		: m_Type(type), m_Name(name), m_Params(params), m_Open(open), m_Close(close), m_Body(body) {}
 
 	AstKind FunctionAst::GetKind() const
 	{ return AstKind::Function; }
@@ -27,6 +27,9 @@ namespace Symple::Code
 
 	WeakRef<const Token_t> FunctionAst::GetOpen() const
 	{ return m_Open; }
+
+	const std::vector<GlobalRef<ParameterAst>> &FunctionAst::GetParameters() const
+	{ return m_Params; }
 
 	WeakRef<const Token_t> FunctionAst::GetClose() const
 	{ return m_Close; }

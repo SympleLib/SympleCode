@@ -59,6 +59,26 @@ namespace Symple::Code
 	{ return m_Type; }
 
 
+	ParameterAst::ParameterAst(const GlobalRef<TypeAst> &ty, const GlobalRef<const Token_t> &name)
+		: m_Type(ty), m_Name(name) {}
+
+	AstKind ParameterAst::GetKind() const
+	{ return AstKind::Parameter; }
+
+	WeakRef<const Token_t> ParameterAst::GetToken() const
+	{ return m_Name; }
+
+	void ParameterAst::Print(std::ostream &os, std::string indent, std::string_view label, bool last) const
+	{
+		PrintIndent(os, indent, label, last);
+		PrintKind(os);
+
+		indent += GetAddIndent(last);
+		m_Type->Print(os << '\n', indent, "Type = ", false);
+		m_Name->Print(os << '\n', indent, "Name = ");
+	}
+	
+
 	CompilationUnitAst::CompilationUnitAst(const MemberList &members, const WeakRef<const Token_t> &eof)
 		: m_Members(members), m_EndOfFile(eof) {}
 
