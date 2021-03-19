@@ -16,7 +16,7 @@ namespace Symple::Code
 		GlobalRef<TypeAst> m_Type;
 		GlobalRef<const Token_t> m_Name;
 		WeakRef<const Token_t> m_Open;
-		std::vector<GlobalRef<ParameterAst>> m_Params;
+		ParameterList m_Params;
 		WeakRef<const Token_t> m_Close;
 		GlobalRef<StatementAst> m_Body;
 
@@ -24,7 +24,7 @@ namespace Symple::Code
 		friend class TypeVisitor;
 	public:
 		FunctionAst(const GlobalRef<TypeAst> &type, const GlobalRef<const Token_t> &name,
-			const WeakRef<const Token_t> &open, const std::vector<GlobalRef<ParameterAst>> &parameters, const WeakRef<const Token_t> &close, const GlobalRef<StatementAst> &body);
+			const WeakRef<const Token_t> &open, const ParameterList &parameters, const WeakRef<const Token_t> &close, const GlobalRef<StatementAst> &body);
 
 		virtual AstKind GetKind() const override;
 		virtual WeakRef<const Token_t> GetToken() const override;
@@ -33,14 +33,14 @@ namespace Symple::Code
 		GlobalRef<TypeAst> GetType() const;
 		GlobalRef<const Token_t> GetName() const;
 		WeakRef<const Token_t> GetOpen() const;
-		const std::vector<GlobalRef<ParameterAst>> &GetParameters() const;
+		const ParameterList &GetParameters() const;
 		WeakRef<const Token_t> GetClose() const;
 		GlobalRef<const StatementAst> GetBody() const;
 
 		SY_PROPERTY_GET(GetType) GlobalRef<TypeAst> Type;
 		SY_PROPERTY_GET(GetName) GlobalRef<const Token_t> Name;
 		SY_PROPERTY_GET(GetOpen) WeakRef<const Token_t> Open;
-		SY_PROPERTY_GET(GetParameters) const std::vector<GlobalRef<ParameterAst>> &Parameters;
+		SY_PROPERTY_GET(GetParameters) const ParameterList &Parameters;
 		SY_PROPERTY_GET(GetClose) WeakRef<const Token_t> Close;
 		SY_PROPERTY_GET(GetBody) GlobalRef<const StatementAst> Body;
 	};

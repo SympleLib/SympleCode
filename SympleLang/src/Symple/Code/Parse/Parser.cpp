@@ -32,12 +32,13 @@ namespace Symple::Code
 		auto ty = ParseType();
 		auto name = Match(TokenKind::Identifier);
 		auto open = Match(TokenKind::OpenParen);
+		auto params = ParseParameters();
 		auto close = Match(TokenKind::CloseParen);
 		if (Current->Is(TokenKind::EqualArrow))
 			Next();
 		auto body = ParseStatement();
 
-		return MakeRef<FunctionAst>(ty, name, open, close, body);
+		return MakeRef<FunctionAst>(ty, name, open, params, close, body);
 	}
 
 
@@ -148,17 +149,17 @@ namespace Symple::Code
 	{
 		auto name = Match(TokenKind::Identifier);
 		auto open = Match(TokenKind::OpenParen);
-		ExpressionList params;
+		ExpressionList args;
 		if (!Current->Is(TokenKind::CloseParen))
-			params.push_back(ParseExpression());
+			args.push_back(ParseExpression());
 		while (!Current->Is(TokenKind::CloseParen))
 		{
 			Match(TokenKind::Comma);
-			params.push_back(ParseExpression());
+			args.push_back(ParseExpression());
 		}
 		auto close = Next();
 
-		return MakeRef<CallExpressionAst>(name, open, params, close);
+		return MakeRef<CallExpressionAst>(name, open, args, close);
 	}
 
 	GlobalRef<LiteralExpressionAst> Parser::ParseLiteralExpression()
@@ -195,6 +196,36 @@ namespace Symple::Code
 		GlobalRef<Type> ty = MakeRef<Type>(tyKind, addons.size() - isRef, isRef);
 
 		return MakeRef<TypeAst>(base, addons, ty);
+	}
+
+	ParameterList Parser::ParseParameters()
+	{
+		GlobalRef<TypeAst> ty;
+		ParameterList params;
+		if (!Current->Is(TokenKind::CloseParen))
+		{
+			auto param = ParseParameter(ty);
+			ty = param->m_Type;
+			params.push_back(param);
+		}
+		while (!Current->Is(TokenKind::CloseParen))
+		{
+			Match(TokenKind::Comma);
+			auto param = ParseParameter(ty);
+			ty = param->m_Type;
+			params.push_back(param);
+		}
+
+		return params;
+	}
+
+	GlobalRef<ParameterAst> Parser::ParseParameter(GlobalRef<TypeAst> ty)
+	{
+		if (!ty || TokenFacts::IsTypeBase(Current->Kind))
+			ty = ParseType();
+		auto name = Match(TokenKind::Identifier);
+
+		return MakeRef<ParameterAst>(ty, name);
 	}
 
 

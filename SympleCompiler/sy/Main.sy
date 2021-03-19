@@ -1,1 +1,1 @@
-void Main();
+void Main(int argc, char *arcv);

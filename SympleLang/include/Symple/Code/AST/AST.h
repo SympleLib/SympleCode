@@ -37,6 +37,9 @@ namespace Symple::Code
 	class SYC_API LiteralExpressionAst;
 	class SYC_API ParenthasizedExpressionAst;
 
+	using ParameterList = std::vector<GlobalRef<ParameterAst>>;
+	using ConstParameterList = std::vector<GlobalRef<const ParameterAst>>;
+
 	using MemberList = std::vector<GlobalRef<MemberAst>>;
 	using ConstMemberList = std::vector<GlobalRef<const MemberAst>>;
 
@@ -155,6 +158,8 @@ namespace Symple::Code
 	private:
 		GlobalRef<TypeAst> m_Type;
 		GlobalRef<const Token_t> m_Name;
+
+		friend class Parser;
 	public:
 		ParameterAst(const GlobalRef<TypeAst> &type, const GlobalRef<const Token_t> &name);
 

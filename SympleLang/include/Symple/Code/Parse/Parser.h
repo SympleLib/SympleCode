@@ -33,6 +33,8 @@ namespace Symple::Code
 		GlobalRef<ParenthasizedExpressionAst> ParseParenthasizedExpression(GlobalRef<const Token> open = nullptr);
 
 		GlobalRef<TypeAst> ParseType();
+		ParameterList ParseParameters();
+		GlobalRef<ParameterAst> ParseParameter(GlobalRef<TypeAst> type = nullptr);
 
 		GlobalRef<const Token> Peek();
 		GlobalRef<const Token> Peek(uint32 offset);
