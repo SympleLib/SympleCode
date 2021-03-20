@@ -76,11 +76,8 @@ namespace Symple::Code
 			Emit(Cast<const BinaryExpressionAst>(expr));
 			break;
 		case AstKind::LiteralExpression:
-		{
-			auto literal = expr->Token.lock()->Text;
-			Emit("\tmov $%.*s, %s", literal.length(), literal.data(), Reg(RegKind::Ax));
+			Emit(Cast<const LiteralExpressionAst>(expr));
 			break;
-		}
 		case AstKind::ParenthasizedExpression:
 			Emit(Cast<const ParenthasizedExpressionAst>(expr)->Expression);
 			break;
@@ -167,6 +164,12 @@ namespace Symple::Code
 			Emit("\tmov %s, %s", Reg(RegKind::Dx), Reg(RegKind::Ax));
 			break;
 		}
+	}
+
+	void Emitter::Emit(const GlobalRef<const LiteralExpressionAst> &expr)
+	{
+		auto literal = expr->Literal->Text;
+		Emit("\tmov $%.*s, %s", literal.length(), literal.data(), Reg(RegKind::Ax));
 	}
 
 

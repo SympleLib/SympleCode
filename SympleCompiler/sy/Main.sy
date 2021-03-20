@@ -1,1 +1,4 @@
-void Main(int argc, char *arcv);
+int Main(int argc, char *arcv)
+{
+	ret argc;
+}

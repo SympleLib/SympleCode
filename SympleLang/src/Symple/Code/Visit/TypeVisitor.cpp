@@ -11,6 +11,7 @@ namespace Symple::Code
 		{
 			if (member->Kind == AstKind::Function)
 			{
+				m_Depths.push_back(m_Names.size());
 				m_Func = Cast<FunctionAst>(member);
 				Visit(m_Func->m_Body);
 			}
@@ -22,6 +23,7 @@ namespace Symple::Code
 		switch (stmt->Kind)
 		{
 		case AstKind::BlockStatement:
+			m_Depths.push_back(m_Names.size());
 			for (auto piece : Cast<BlockStatementAst>(stmt)->m_Stmts)
 				Visit(piece);
 			break;
@@ -46,6 +48,16 @@ namespace Symple::Code
 	{
 		switch (expr->Kind)
 		{
+		case AstKind::ParenthasizedExpression:
+		{
+			auto parenExpr = Cast<ParenthasizedExpressionAst>(expr);
+			Visit(parenExpr->m_Expr);
+			expr->m_Type = parenExpr->m_Expr->m_Type;
+			break;
+		}
+		case AstKind::NameExpression:
+
+			break;
 		case AstKind::CastExpression:
 			expr->m_Type = Cast<CastExpressionAst>(expr)->m_TypeAst->m_Type;
 			break;
@@ -53,9 +65,12 @@ namespace Symple::Code
 			expr->m_Type = Cast<CallExpressionAst>(expr)->m_Func->m_Type->m_Type;
 			break;
 		case AstKind::UnaryExpression:
-			Visit(Cast<UnaryExpressionAst>(expr)->m_Operand);
-			expr->m_Type = Cast<UnaryExpressionAst>(expr)->m_Operand->m_Type;
+		{
+			auto unExpr = Cast<UnaryExpressionAst>(expr);
+			Visit(unExpr->m_Operand);
+			expr->m_Type = unExpr->m_Operand->m_Type;
 			break;
+		}
 		case AstKind::BinaryExpression:
 		{
 			auto binExpr = Cast<BinaryExpressionAst>(expr);

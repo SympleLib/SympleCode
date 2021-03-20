@@ -129,6 +129,28 @@ namespace Symple::Code
 		SY_PROPERTY_GET(GetRight) GlobalRef<const ExpressionAst> Right;
 	};
 
+	class SYC_API NameExpressionAst: public ExpressionAst
+	{
+	private:
+		uint32 m_Depth;
+		GlobalRef<const Token_t> m_Name;
+
+		friend class SymbolVisitor;
+		friend class TypeVisitor;
+	public:
+		NameExpressionAst(GlobalRef<const Token_t> name);
+
+		virtual AstKind GetKind() const override;
+		virtual WeakRef<const Token_t> GetToken() const override;
+		virtual void Print(std::ostream &, std::string indent = "", std::string_view label = "", bool last = true) const override;
+
+		uint32 GetDepth() const;
+		GlobalRef<const Token_t> GetName() const;
+
+		SY_PROPERTY_GET(GetDepth) uint32 Depth;
+		SY_PROPERTY_GET(GetName) GlobalRef<const Token_t> Name;
+	};
+
 	class SYC_API LiteralExpressionAst: public ExpressionAst
 	{
 	private:
@@ -154,6 +176,7 @@ namespace Symple::Code
 		GlobalRef<ExpressionAst> m_Expr;
 		WeakRef<const Token_t> m_Close;
 
+		friend class SymbolVisitor;
 		friend class TypeVisitor;
 	public:
 		ParenthasizedExpressionAst(WeakRef<const Token_t> open, GlobalRef<ExpressionAst> expression, WeakRef<const Token_t> close);

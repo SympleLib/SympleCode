@@ -23,6 +23,7 @@ namespace Symple::Code
 		void Emit(const GlobalRef<const CastExpressionAst> &cast);
 		void Emit(const GlobalRef<const CallExpressionAst> &call);
 		void Emit(const GlobalRef<const BinaryExpressionAst> &expression);
+		void Emit(const GlobalRef<const LiteralExpressionAst> &literal);
 	private:
 		template<typename... Args>
 		void Emit(_Printf_format_string_ const char *fmt, Args&&... args);

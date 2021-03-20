@@ -120,7 +120,10 @@ namespace Symple::Code
 		switch (Current->Kind)
 		{
 		case TokenKind::Identifier:
-			return ParseCallExpression();
+			if (Peek(1)->Is(TokenKind::OpenParen))
+				return ParseCallExpression();
+			else
+				return ParseNameExpression();
 		case TokenKind::Number:
 			return ParseLiteralExpression();
 		case TokenKind::OpenParen:
@@ -160,6 +163,12 @@ namespace Symple::Code
 		auto close = Next();
 
 		return MakeRef<CallExpressionAst>(name, open, args, close);
+	}
+
+	GlobalRef<NameExpressionAst> Parser::ParseNameExpression()
+	{
+		auto name = Match(TokenKind::Identifier);
+		return MakeRef<NameExpressionAst>(name);
 	}
 
 	GlobalRef<LiteralExpressionAst> Parser::ParseLiteralExpression()

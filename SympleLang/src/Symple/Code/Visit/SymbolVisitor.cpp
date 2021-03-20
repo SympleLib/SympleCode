@@ -13,11 +13,13 @@ namespace Symple::Code
 		{
 			if (member->Kind == AstKind::Function)
 			{
+				m_Depths.push_back(m_Names.size());
 				auto fn = Cast<FunctionAst>(member);
 				Visit(fn->m_Body);
 				std::stringstream ss;
 				ss << "_Sy$" << fn->m_Name->Text << "$Func";
 				fn->m_MangledName = std::move(ss.str());
+				m_Depths.pop_back();
 			}
 		}
 	}
@@ -27,8 +29,10 @@ namespace Symple::Code
 		switch (stmt->Kind)
 		{
 		case AstKind::BlockStatement:
+			m_Depths.push_back(m_Names.size());
 			for (auto piece : Cast<BlockStatementAst>(stmt)->m_Stmts)
 				Visit(piece);
+			m_Depths.pop_back();
 			break;
 		case AstKind::ReturnStatement:
 			Visit(Cast<ReturnStatementAst>(stmt)->m_Value);
@@ -60,6 +64,22 @@ namespace Symple::Code
 				std::cerr << "Symbol '" << callExpr->m_Name->Text << "' does not exist!\n";
 			break;
 		}
+		case AstKind::NameExpression:
+		{
+			auto nameExpr = Cast<NameExpressionAst>(expr);
+			for (uint32 i = m_Names.size(); i; i--)
+				if (m_Names[i - 1]->Text == nameExpr->m_Name->Text)
+				{
+					for (uint32 depth = 0; depth < m_Depths.size(); depth++)
+						if (m_Depths[depth] >= i)
+							nameExpr->m_Depth = depth + 1;
+					break;
+				}
+			break;
+		}
+		case AstKind::ParenthasizedExpression:
+			Visit(Cast<ParenthasizedExpressionAst>(expr)->m_Expr);
+			break;
 		case AstKind::UnaryExpression:
 			Visit(Cast<UnaryExpressionAst>(expr)->m_Operand);
 			break;
