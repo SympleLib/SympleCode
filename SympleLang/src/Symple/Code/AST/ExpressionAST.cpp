@@ -147,7 +147,7 @@ namespace Symple::Code
 
 
 	NameExpressionAst::NameExpressionAst(GlobalRef<const Token_t> name)
-		: m_Depth(), m_Name(name) {}
+		: m_Depth(), m_Name(name), m_Symbol() {}
 
 	AstKind NameExpressionAst::GetKind() const
 	{ return AstKind::NameExpression; }
@@ -156,10 +156,13 @@ namespace Symple::Code
 	{ return m_Name; }
 
 	uint32 NameExpressionAst::GetDepth() const
-	{ m_Depth; }
+	{ return m_Depth; }
 
 	GlobalRef<const Token_t> NameExpressionAst::GetName() const
 	{ return m_Name; }
+
+	GlobalRef<const Symbol> NameExpressionAst::GetSymbol() const
+	{ return m_Symbol; }
 
 	void NameExpressionAst::Print(std::ostream &os, std::string indent, std::string_view label, bool last) const
 	{

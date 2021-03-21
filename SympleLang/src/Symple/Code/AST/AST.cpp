@@ -68,6 +68,12 @@ namespace Symple::Code
 	WeakRef<const Token_t> ParameterAst::GetToken() const
 	{ return m_Name; }
 
+	GlobalRef<const TypeAst> ParameterAst::GetType() const
+	{ return m_Type; }
+
+	GlobalRef<const Token_t> ParameterAst::GetName() const
+	{ return m_Name; }
+
 	void ParameterAst::Print(std::ostream &os, std::string indent, std::string_view label, bool last) const
 	{
 		PrintIndent(os, indent, label, last);
@@ -107,6 +113,12 @@ namespace Symple::Code
 	}
 
 
+	GlobalRef<const TypeAst> Symbol::GetType() const
+	{ return nullptr; }
+
+	GlobalRef<const Token> Symbol::GetName() const
+	{ return nullptr; }
+
 	const std::string &Symbol::GetMangledName() const
-	{ return m_MangledName; }
+	{ return nullptr; }
 }

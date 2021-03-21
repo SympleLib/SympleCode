@@ -134,6 +134,7 @@ namespace Symple::Code
 	private:
 		uint32 m_Depth;
 		GlobalRef<const Token_t> m_Name;
+		GlobalRef<const Symbol> m_Symbol;
 
 		friend class SymbolVisitor;
 		friend class TypeVisitor;
@@ -146,9 +147,11 @@ namespace Symple::Code
 
 		uint32 GetDepth() const;
 		GlobalRef<const Token_t> GetName() const;
+		GlobalRef<const Symbol> GetSymbol() const;
 
 		SY_PROPERTY_GET(GetDepth) uint32 Depth;
 		SY_PROPERTY_GET(GetName) GlobalRef<const Token_t> Name;
+		SY_PROPERTY_GET(GetSymbol) GlobalRef<const Symbol> Symbol;
 	};
 
 	class SYC_API LiteralExpressionAst: public ExpressionAst

@@ -18,7 +18,7 @@ namespace Symple::Code
 	WeakRef<const Token_t> FunctionAst::GetToken() const
 	{ return m_Name; }
 
-	GlobalRef<TypeAst> FunctionAst::GetType() const
+	GlobalRef<const TypeAst> FunctionAst::GetType() const
 	{ return m_Type; }
 
 	GlobalRef<const Token_t> FunctionAst::GetName() const
@@ -36,11 +36,15 @@ namespace Symple::Code
 
 	GlobalRef<const StatementAst> FunctionAst::GetBody() const
 	{ return m_Body; }
+
+	const std::string &FunctionAst::GetMangledName() const
+	{ return m_MangledName; }
 	
 	void FunctionAst::Print(std::ostream & os, std::string indent, std::string_view label, bool last) const
 	{
 		PrintIndent(os, indent, label, last);
 		PrintKind(os);
+		os << " (" << m_MangledName << ')';
 
 		indent += GetAddIndent(last);
 		m_Type->Print(os << '\n', indent, "Type = ", false);

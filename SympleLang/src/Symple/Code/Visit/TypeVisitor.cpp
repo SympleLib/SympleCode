@@ -11,7 +11,6 @@ namespace Symple::Code
 		{
 			if (member->Kind == AstKind::Function)
 			{
-				m_Depths.push_back(m_Names.size());
 				m_Func = Cast<FunctionAst>(member);
 				Visit(m_Func->m_Body);
 			}
@@ -23,7 +22,6 @@ namespace Symple::Code
 		switch (stmt->Kind)
 		{
 		case AstKind::BlockStatement:
-			m_Depths.push_back(m_Names.size());
 			for (auto piece : Cast<BlockStatementAst>(stmt)->m_Stmts)
 				Visit(piece);
 			break;
@@ -56,8 +54,11 @@ namespace Symple::Code
 			break;
 		}
 		case AstKind::NameExpression:
-
+		{
+			auto nameExpr = Cast<NameExpressionAst>(expr);
+			nameExpr->m_Type = nameExpr->m_Symbol->Type->Type;
 			break;
+		}
 		case AstKind::CastExpression:
 			expr->m_Type = Cast<CastExpressionAst>(expr)->m_TypeAst->m_Type;
 			break;

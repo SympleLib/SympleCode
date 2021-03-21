@@ -15,6 +15,10 @@ namespace Symple::Code
 			{
 				m_Depths.push_back(m_Names.size());
 				auto fn = Cast<FunctionAst>(member);
+				m_Names.push_back(fn);
+				for (auto param : fn->m_Params)
+					m_Names.push_back(param);
+
 				Visit(fn->m_Body);
 				std::stringstream ss;
 				ss << "_Sy$" << fn->m_Name->Text << "$Func";
@@ -68,8 +72,9 @@ namespace Symple::Code
 		{
 			auto nameExpr = Cast<NameExpressionAst>(expr);
 			for (uint32 i = m_Names.size(); i; i--)
-				if (m_Names[i - 1]->Text == nameExpr->m_Name->Text)
+				if (m_Names[i - 1]->Name->Text == nameExpr->m_Name->Text)
 				{
+					nameExpr->m_Symbol = m_Names[i];
 					for (uint32 depth = 0; depth < m_Depths.size(); depth++)
 						if (m_Depths[depth] >= i)
 							nameExpr->m_Depth = depth + 1;

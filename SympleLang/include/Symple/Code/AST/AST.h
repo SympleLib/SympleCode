@@ -6,16 +6,6 @@
 
 namespace Symple::Code
 {
-	class SYC_API Symbol
-	{
-	protected:
-		std::string m_MangledName;
-	public:
-		const std::string &GetMangledName() const;
-
-		SY_PROPERTY_GET(GetMangledName) const std::string &MangledName;
-	};
-
 	class SYC_API Ast;
 	class SYC_API TypeAst;
 	class SYC_API ParameterAst;
@@ -49,6 +39,19 @@ namespace Symple::Code
 
 	using ExpressionList = std::vector<GlobalRef<ExpressionAst>>;
 	using ConstExpressionList = std::vector<GlobalRef<const ExpressionAst>>;
+
+
+	class SYC_API Symbol
+	{
+	public:
+		virtual GlobalRef<const TypeAst> GetType() const;
+		virtual GlobalRef<const Token> GetName() const;
+		virtual const std::string &GetMangledName() const;
+
+		SY_PROPERTY_GET(GetType) GlobalRef<const TypeAst> Type;
+		SY_PROPERTY_GET(GetName) GlobalRef<const Token> Name;
+		SY_PROPERTY_GET(GetMangledName) const std::string &MangledName;
+	};
 
 	enum class SYC_API AstKind
 	{
@@ -127,10 +130,10 @@ namespace Symple::Code
 		SY_PROPERTY_GET(GetToken) WeakRef<const Token_t> Token;
 	};
 
-	class SYC_API TypeAst: public Ast, public Symbol
+	class SYC_API TypeAst: public Ast
 	{
 	public:
-		using Type_t = Type;
+		using Type_t = ::Symple::Code::Type;
 	private:
 		WeakRef<const Token_t> m_Base;
 		ConstWeakTokenList m_Addons;
@@ -156,7 +159,7 @@ namespace Symple::Code
 	};
 
 
-	class SYC_API ParameterAst: public Ast
+	class SYC_API ParameterAst: public Ast, public Symbol
 	{
 	private:
 		GlobalRef<TypeAst> m_Type;
@@ -170,11 +173,8 @@ namespace Symple::Code
 		virtual WeakRef<const Token_t> GetToken() const;
 		virtual void Print(std::ostream &, std::string indent = "", std::string_view label = "", bool last = true) const override;
 
-		GlobalRef<const TypeAst> GetType() const;
-		GlobalRef<const Token_t> GetName() const;
-
-		SY_PROPERTY_GET(GetType) GlobalRef<const TypeAst> Type;
-		SY_PROPERTY_GET(GetName) GlobalRef<const Token_t> Name;
+		GlobalRef<const TypeAst> GetType() const override;
+		GlobalRef<const Token_t> GetName() const override;
 	};
 
 	class SYC_API CompilationUnitAst: public Ast
