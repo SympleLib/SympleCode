@@ -1,4 +1,4 @@
 int Main(int argc, char *arcv)
 {
-	ret argc;
+	ret argc / argc;
 }
