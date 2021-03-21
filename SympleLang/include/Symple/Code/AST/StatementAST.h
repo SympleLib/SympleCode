@@ -49,6 +49,25 @@ namespace Symple::Code
 		SY_PROPERTY_GET(GetStatements) StatementList Statements;
 	};
 
+	class SYC_API VariableStatementAst: public StatementAst
+	{
+	private:
+		GlobalRef<ExpressionAst> m_Expr;
+
+		friend class SymbolVisitor;
+		friend class TypeVisitor;
+	public:
+		VariableStatementAst(GlobalRef<ExpressionAst> expression);
+
+		virtual AstKind GetKind() const override;
+		virtual WeakRef<const Token_t> GetToken() const override;
+		virtual void Print(std::ostream &, std::string indent = "", std::string_view label = "", bool last = true) const override;
+
+		GlobalRef<const ExpressionAst> GetExpression() const;
+
+		SY_PROPERTY_GET(GetExpression) GlobalRef<const ExpressionAst> Expression;
+	};
+
 	class SYC_API ExpressionStatementAst: public StatementAst
 	{
 	private:
