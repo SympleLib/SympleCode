@@ -52,20 +52,29 @@ namespace Symple::Code
 	class SYC_API VariableStatementAst: public StatementAst
 	{
 	private:
-		GlobalRef<ExpressionAst> m_Expr;
+		GlobalRef<TypeAst> m_Type;
+		GlobalRef<const Token_t> m_Name;
+		WeakRef<const Token_t> m_Equals;
+		GlobalRef<ExpressionAst> m_Init;
 
 		friend class SymbolVisitor;
 		friend class TypeVisitor;
 	public:
-		VariableStatementAst(GlobalRef<ExpressionAst> expression);
+		VariableStatementAst(GlobalRef<TypeAst> type, GlobalRef<const Token_t> name, WeakRef<const Token_t> equals = {}, GlobalRef<ExpressionAst> initializer = ExpressionAst::DefaultExpression);
 
 		virtual AstKind GetKind() const override;
 		virtual WeakRef<const Token_t> GetToken() const override;
 		virtual void Print(std::ostream &, std::string indent = "", std::string_view label = "", bool last = true) const override;
 
-		GlobalRef<const ExpressionAst> GetExpression() const;
+		GlobalRef<const TypeAst> GetType() const;
+		GlobalRef<const Token_t> GetName() const;
+		WeakRef<const Token_t> GetEquals() const;
+		GlobalRef<const ExpressionAst> GetInitializer() const;
 
-		SY_PROPERTY_GET(GetExpression) GlobalRef<const ExpressionAst> Expression;
+		SY_PROPERTY_GET(GetType) GlobalRef<const TypeAst> Type;
+		SY_PROPERTY_GET(GetName) GlobalRef<const Token_t> Name;
+		SY_PROPERTY_GET(GetEquals) WeakRef<const TypeAst> Equals;
+		SY_PROPERTY_GET(GetInitializer) GlobalRef<const ExpressionAst> Initializer;
 	};
 
 	class SYC_API ExpressionStatementAst: public StatementAst

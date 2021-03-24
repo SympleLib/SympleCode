@@ -64,6 +64,29 @@ namespace Symple::Code
 	}
 
 
+	VariableStatementAst::VariableStatementAst(GlobalRef<TypeAst> ty, GlobalRef<const Token_t> name, WeakRef<const Token_t> equals, GlobalRef<ExpressionAst> init)
+		: m_Type(ty), m_Name(name), m_Equals(equals), m_Init(init) {}
+
+	AstKind VariableStatementAst::GetKind() const
+	{ return AstKind::VariableStatement; }
+
+	WeakRef<const Token_t> VariableStatementAst::GetToken() const
+	{ return m_Name; }
+
+	void VariableStatementAst::Print(std::ostream & os, std::string indent, std::string_view label, bool last) const
+	{
+		PrintIndent(os, indent, label, last);
+		PrintKind(os);
+
+		indent += GetAddIndent(last);
+		m_Type->Print(os << '\n', indent, "Type = ", false);
+		m_Name->Print(os << '\n', indent, "Name = ", false);
+		if (!m_Equals.expired())
+			m_Equals.lock()->Print(os << '\n', indent, "Equals = ", false);
+		m_Init->Print(os << '\n', indent, "Initializer = ");
+	}
+
+
 	ExpressionStatementAst::ExpressionStatementAst(GlobalRef<ExpressionAst> expr)
 		: m_Expr(expr) {}
 

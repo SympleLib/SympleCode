@@ -17,6 +17,8 @@ namespace Symple::Code
 		GlobalRef<const Type_t> GetType() const;
 
 		SY_PROPERTY_GET(GetType) GlobalRef<const Type_t> Type;
+	public:
+		static GlobalRef<ExpressionAst> DefaultExpression;
 	};
 
 	class SYC_API CallExpressionAst: public ExpressionAst
