@@ -27,12 +27,14 @@ namespace Symple::Code
 
 	void Emitter::Emit(const GlobalRef<const FunctionAst> &fn)
 	{
+		m_Stack = m_StackSize = 0;
 		decltype(auto) name = fn->MangledName;
 
 		Emit(".global %s", name.c_str());
 		Emit("%s:", name.c_str());
 		Emit("\tpush %s", Reg(RegKind::Bp));
 		Emit("\tmov %s, %s", Reg(RegKind::Sp), Reg(RegKind::Bp));
+		Emit("\tsub $%s.StackSize, %s", name.c_str(), Reg(RegKind::Sp));
 		Emit("");
 
 		unsigned int stackPos = 4;
@@ -49,6 +51,8 @@ namespace Symple::Code
 		Emit("\tmov %s, %s", Reg(RegKind::Bp), Reg(RegKind::Sp));
 		Emit("\tpop %s", Reg(RegKind::Bp));
 		Emit("\tret");
+
+		Emit("%s.StackSize = %u", name.c_str(), m_StackSize);
 	}
 
 
@@ -57,9 +61,13 @@ namespace Symple::Code
 		switch (stmt->Kind)
 		{
 		case AstKind::BlockStatement:
+		{
+			uint32 pStack = m_Stack;
 			for (auto piece : Cast<const BlockStatementAst>(stmt)->Statements)
 				Emit(piece);
+			m_Stack = pStack;
 			break;
+		}
 		case AstKind::ReturnStatement:
 			Emit(Cast<const ReturnStatementAst>(stmt)->Value);
 			break;
@@ -78,7 +86,7 @@ namespace Symple::Code
 		uint32 sz = var->Type->Type->Size;
 		m_Stack += 4;
 		Emit("_%.*s$%u = -%u", name.length(), name.data(), var->Depth, m_Stack);
-		Emit("\tsub $%u, %s", sz, Reg(RegKind::Sp));
+		Stalloc(sz);
 		if (var->Initializer)
 		{
 			Emit(var->Initializer);
@@ -150,6 +158,7 @@ namespace Symple::Code
 	{
 		auto name = call->Name->Text;
 
+		uint32 sz = call->Parameters.size() * 4;
 		uint32 off = call->Parameters.size() * 4;
 		for (auto param : call->Parameters)
 		{
@@ -157,9 +166,9 @@ namespace Symple::Code
 			Emit("\tmov %s, %u(%s)", Reg(RegKind::Ax), off, Reg(RegKind::Sp));
 			off -= 4;
 		}
-		Emit("\tsub $%i, %s", call->Parameters.size() * 4, Reg(RegKind::Sp));
+		Stalloc(sz);
 		Emit("\tcall _%.*s", name.length(), name.data());
-		Emit("\tadd $%i, %s", call->Parameters.size() * 4, Reg(RegKind::Sp));
+		Staf(sz);
 	}
 
 	void Emitter::Emit(const GlobalRef<const NameExpressionAst> &name)
@@ -205,6 +214,17 @@ namespace Symple::Code
 		auto literal = expr->Literal->Text;
 		Emit("\tmov $%.*s, %s", literal.length(), literal.data(), Reg(RegKind::Ax));
 	}
+
+
+	void Emitter::Stalloc(uint32 bytes)
+	{
+		m_Stack += bytes;
+		if (m_Stack > m_StackSize)
+			m_StackSize = m_Stack;
+	}
+
+	void Emitter::Staf(uint32 bytes)
+	{ m_Stack -= bytes; }
 
 
 	template<typename... Args>

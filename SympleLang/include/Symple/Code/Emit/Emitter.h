@@ -10,7 +10,7 @@ namespace Symple::Code
 	private:
 		File m_File;
 
-		uint32 m_Stack = 0;
+		uint32 m_Stack = 0, m_StackSize;
 		GlobalRef<const CompilationUnitAst> m_Unit;
 	public:
 		Emitter(const GlobalRef<const CompilationUnitAst> &unit);
@@ -28,6 +28,9 @@ namespace Symple::Code
 		void Emit(const GlobalRef<const BinaryExpressionAst> &expression);
 		void Emit(const GlobalRef<const LiteralExpressionAst> &literal);
 	private:
+		void Stalloc(uint32 bytes = 4);
+		void Staf(uint32 bytes = 4);
+
 		template<typename... Args>
 		void Emit(_Printf_format_string_ const char *fmt, Args&&... args);
 
