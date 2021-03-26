@@ -1,5 +1,11 @@
 int Main(int argc, char *arcv)
 {
-	int num = 69;
-	ret num * (argc / argc);
+	{
+		int x = 5
+	}
+	{
+		int y = 6
+	}
+
+	ret 0
 }
