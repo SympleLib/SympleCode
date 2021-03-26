@@ -49,13 +49,15 @@ namespace Symple::Code
 		SY_PROPERTY_GET(GetStatements) StatementList Statements;
 	};
 
-	class SYC_API VariableStatementAst: public StatementAst
+	class SYC_API VariableStatementAst: public StatementAst, public Symbol
 	{
 	private:
 		GlobalRef<TypeAst> m_Type;
 		GlobalRef<const Token_t> m_Name;
 		WeakRef<const Token_t> m_Equals;
 		GlobalRef<ExpressionAst> m_Init;
+
+		uint32 m_Depth;
 
 		friend class SymbolVisitor;
 		friend class TypeVisitor;
@@ -66,15 +68,17 @@ namespace Symple::Code
 		virtual WeakRef<const Token_t> GetToken() const override;
 		virtual void Print(std::ostream &, std::string indent = "", std::string_view label = "", bool last = true) const override;
 
-		GlobalRef<const TypeAst> GetType() const;
-		GlobalRef<const Token_t> GetName() const;
+		GlobalRef<const TypeAst> GetType() const override;
+		GlobalRef<const Token_t> GetName() const override;
 		WeakRef<const Token_t> GetEquals() const;
 		GlobalRef<const ExpressionAst> GetInitializer() const;
 
-		SY_PROPERTY_GET(GetType) GlobalRef<const TypeAst> Type;
-		SY_PROPERTY_GET(GetName) GlobalRef<const Token_t> Name;
+		uint32 GetDepth() const;
+
 		SY_PROPERTY_GET(GetEquals) WeakRef<const Token_t> Equals;
 		SY_PROPERTY_GET(GetInitializer) GlobalRef<const ExpressionAst> Initializer;
+
+		SY_PROPERTY_GET(GetDepth) uint32 Depth;
 	};
 
 	class SYC_API ExpressionStatementAst: public StatementAst

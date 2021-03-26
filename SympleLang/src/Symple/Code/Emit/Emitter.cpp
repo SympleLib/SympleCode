@@ -40,7 +40,7 @@ namespace Symple::Code
 		{
 			stackPos += 4;
 			auto pname = param->Name->Text;
-			Emit("_%.*s$%i = %i", pname.length(), pname.data(), 2, stackPos);
+			Emit("_%.*s$%u = %u", pname.length(), pname.data(), 2, stackPos);
 		}
 
 		Emit(fn->Body);
@@ -75,7 +75,15 @@ namespace Symple::Code
 	void Emitter::Emit(const GlobalRef<const VariableStatementAst> &var)
 	{
 		auto name = var->Name->Text;
-		Emit("\t# var '%.*s'", name.length(), name.data());
+		uint32 sz = var->Type->Type->Size;
+		m_Stack += 4;
+		Emit("_%.*s$%u = -%u", name.length(), name.data(), var->Depth, m_Stack);
+		Emit("\tsub $%u, %s", sz, Reg(RegKind::Sp));
+		if (var->Initializer)
+		{
+			Emit(var->Initializer);
+			Emit("\tmov %s, _%.*s$%u(%s)", Reg(RegKind::Ax, sz), name.length(), name.data(), var->Depth, Reg(RegKind::Bp));
+		}
 	}
 
 
@@ -157,7 +165,7 @@ namespace Symple::Code
 	void Emitter::Emit(const GlobalRef<const NameExpressionAst> &name)
 	{
 		auto sname = name->Name->Text;
-		Emit("\tmov _%.*s$%i(%s), %s", sname.length(), sname.data(), name->Depth, Reg(RegKind::Bp), Reg(RegKind::Ax, name->Type->Size));
+		Emit("\tmov _%.*s$%u(%s), %s", sname.length(), sname.data(), name->Depth, Reg(RegKind::Bp), Reg(RegKind::Ax, name->Type->Size));
 	}
 
 	void Emitter::Emit(const GlobalRef<const BinaryExpressionAst> &expr)

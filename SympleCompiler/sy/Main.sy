@@ -1,5 +1,5 @@
 int Main(int argc, char *arcv)
 {
-	int num;
-	ret num / num;
+	int num = 69;
+	ret num * (argc / argc);
 }

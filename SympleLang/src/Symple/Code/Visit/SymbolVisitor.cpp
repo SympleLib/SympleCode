@@ -44,6 +44,13 @@ namespace Symple::Code
 		case AstKind::ExpressionStatement:
 			Visit(Cast<ExpressionStatementAst>(stmt)->m_Expr);
 			break;
+		case AstKind::VariableStatement:
+		{
+			auto var = Cast<VariableStatementAst>(stmt);
+			var->m_Depth = m_Depths.size();
+			m_Names.push_back(var);
+			break;
+		}
 		}
 	}
 
@@ -74,9 +81,9 @@ namespace Symple::Code
 			for (uint32 i = m_Names.size(); i; i--)
 				if (m_Names[i - 1]->Name->Text == nameExpr->m_Name->Text)
 				{
-					nameExpr->m_Symbol = m_Names[i];
+					nameExpr->m_Symbol = m_Names[i - 1];
 					for (uint32 depth = 0; depth < m_Depths.size(); depth++)
-						if (m_Depths[depth] >= i)
+						if (m_Depths[depth] >= i - 1)
 							nameExpr->m_Depth = depth + 1;
 					break;
 				}

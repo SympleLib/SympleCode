@@ -102,6 +102,7 @@ namespace Symple::Code
 		"EmptyStatement",
 		"BlockStatement",
 		"ReturnStatement",
+		"VariableStatement",
 		"ExpressionStatement",
 
 

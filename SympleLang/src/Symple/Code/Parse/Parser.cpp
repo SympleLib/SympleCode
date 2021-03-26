@@ -75,7 +75,6 @@ namespace Symple::Code
 	{
 		auto keyword = Match(TokenKind::ReturnKeyword);
 		auto expr = ParseExpression();
-		Match(TokenKind::Semicolon);
 		return MakeRef<ReturnStatementAst>(keyword, expr);
 	}
 
@@ -83,6 +82,12 @@ namespace Symple::Code
 	{
 		auto ty = ParseType();
 		auto name = Match(TokenKind::Identifier);
+		if (Current->Is(TokenKind::Equal))
+		{
+			auto equal = Next();
+			auto init = ParseExpression();
+			return MakeRef<VariableStatementAst>(ty, name, equal, init);
+		}
 		return MakeRef<VariableStatementAst>(ty, name);
 	}
 

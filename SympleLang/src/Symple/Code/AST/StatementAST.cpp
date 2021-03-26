@@ -85,10 +85,14 @@ namespace Symple::Code
 	GlobalRef<const ExpressionAst> VariableStatementAst::GetInitializer() const
 	{ return m_Init; }
 
+	uint32 VariableStatementAst::GetDepth() const
+	{ return m_Depth; }
+
 	void VariableStatementAst::Print(std::ostream & os, std::string indent, std::string_view label, bool last) const
 	{
 		PrintIndent(os, indent, label, last);
 		PrintKind(os);
+		os << " [Depth " << m_Depth << ']';
 
 		indent += GetAddIndent(last);
 		m_Type->Print(os << '\n', indent, "Type = ", false);

@@ -10,6 +10,7 @@ namespace Symple::Code
 	private:
 		File m_File;
 
+		uint32 m_Stack = 0;
 		GlobalRef<const CompilationUnitAst> m_Unit;
 	public:
 		Emitter(const GlobalRef<const CompilationUnitAst> &unit);
