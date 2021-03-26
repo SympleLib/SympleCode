@@ -73,6 +73,18 @@ namespace Symple::Code
 	WeakRef<const Token_t> VariableStatementAst::GetToken() const
 	{ return m_Name; }
 
+	GlobalRef<const TypeAst> VariableStatementAst::GetType() const
+	{ return m_Type; }
+
+	GlobalRef<const Token_t> VariableStatementAst::GetName() const
+	{ return m_Name; }
+
+	WeakRef<const Token_t> VariableStatementAst::GetEquals() const
+	{ return m_Equals; }
+
+	GlobalRef<const ExpressionAst> VariableStatementAst::GetInitializer() const
+	{ return m_Init; }
+
 	void VariableStatementAst::Print(std::ostream & os, std::string indent, std::string_view label, bool last) const
 	{
 		PrintIndent(os, indent, label, last);
@@ -80,10 +92,11 @@ namespace Symple::Code
 
 		indent += GetAddIndent(last);
 		m_Type->Print(os << '\n', indent, "Type = ", false);
-		m_Name->Print(os << '\n', indent, "Name = ", false);
+		m_Name->Print(os << '\n', indent, "Name = ", m_Equals.expired() && !m_Init);
 		if (!m_Equals.expired())
-			m_Equals.lock()->Print(os << '\n', indent, "Equals = ", false);
-		m_Init->Print(os << '\n', indent, "Initializer = ");
+			m_Equals.lock()->Print(os << '\n', indent, "Equals = ", !m_Init);
+		if (m_Init)
+			m_Init->Print(os << '\n', indent, "Initializer = ");
 	}
 
 

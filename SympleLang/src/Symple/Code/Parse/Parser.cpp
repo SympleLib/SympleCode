@@ -53,7 +53,10 @@ namespace Symple::Code
 		case TokenKind::ReturnKeyword:
 			return ParseReturnStatement();
 		default:
-			return ParseExpressionStatement();
+			if (TokenFacts::IsTypeBase(Current->Kind))
+				return ParseVariableStatement();
+			else
+				return ParseExpressionStatement();
 		}
 	}
 
@@ -74,6 +77,13 @@ namespace Symple::Code
 		auto expr = ParseExpression();
 		Match(TokenKind::Semicolon);
 		return MakeRef<ReturnStatementAst>(keyword, expr);
+	}
+
+	GlobalRef<VariableStatementAst> Parser::ParseVariableStatement()
+	{
+		auto ty = ParseType();
+		auto name = Match(TokenKind::Identifier);
+		return MakeRef<VariableStatementAst>(ty, name);
 	}
 
 	GlobalRef<ExpressionStatementAst> Parser::ParseExpressionStatement()

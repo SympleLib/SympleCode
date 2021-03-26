@@ -6,6 +6,8 @@ namespace Symple::Code
 	using Type_t = ExpressionAst::Type_t;
 	using TypeAst_t = CastExpressionAst::TypeAst_t;
 
+	const GlobalRef<ExpressionAst> ExpressionAst::DefaultExpression = MakeRef<ExpressionAst>();
+
 	AstKind ExpressionAst::GetKind() const
 	{ return AstKind::Expression; }
 

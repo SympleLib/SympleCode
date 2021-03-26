@@ -60,7 +60,7 @@ namespace Symple::Code
 		friend class SymbolVisitor;
 		friend class TypeVisitor;
 	public:
-		VariableStatementAst(GlobalRef<TypeAst> type, GlobalRef<const Token_t> name, WeakRef<const Token_t> equals = {}, GlobalRef<ExpressionAst> initializer = ExpressionAst::DefaultExpression);
+		VariableStatementAst(GlobalRef<TypeAst> type, GlobalRef<const Token_t> name, WeakRef<const Token_t> equals = {}, GlobalRef<ExpressionAst> initializer = nullptr);
 
 		virtual AstKind GetKind() const override;
 		virtual WeakRef<const Token_t> GetToken() const override;
@@ -73,7 +73,7 @@ namespace Symple::Code
 
 		SY_PROPERTY_GET(GetType) GlobalRef<const TypeAst> Type;
 		SY_PROPERTY_GET(GetName) GlobalRef<const Token_t> Name;
-		SY_PROPERTY_GET(GetEquals) WeakRef<const TypeAst> Equals;
+		SY_PROPERTY_GET(GetEquals) WeakRef<const Token_t> Equals;
 		SY_PROPERTY_GET(GetInitializer) GlobalRef<const ExpressionAst> Initializer;
 	};
 

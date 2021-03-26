@@ -66,7 +66,16 @@ namespace Symple::Code
 		case AstKind::ExpressionStatement:
 			Emit(Cast<const ExpressionStatementAst>(stmt)->Expression);
 			break;
+		case AstKind::VariableStatement:
+			Emit(Cast<const VariableStatementAst>(stmt));
+			break;
 		}
+	}
+
+	void Emitter::Emit(const GlobalRef<const VariableStatementAst> &var)
+	{
+		auto name = var->Name->Text;
+		Emit("\t# var '%.*s'", name.length(), name.data());
 	}
 
 

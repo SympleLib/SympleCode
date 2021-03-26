@@ -18,6 +18,7 @@ namespace Symple::Code
 		void Emit(const GlobalRef<const FunctionAst> &function);
 
 		void Emit(const GlobalRef<const StatementAst> &statement);
+		void Emit(const GlobalRef<const VariableStatementAst> &var);
 
 		void Emit(const GlobalRef<const ExpressionAst> &expression);
 		void Emit(const GlobalRef<const CastExpressionAst> &cast);
