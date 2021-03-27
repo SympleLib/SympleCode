@@ -45,6 +45,7 @@ namespace Symple::Code
 			auto val = var->m_Init;
 			if (val)
 			{
+				Visit(val);
 				auto cast = MakeRef<CastExpressionAst>(WeakRef<Token>(), var->m_Type, WeakRef<Token>(), val);
 				cast->m_Type = cast->m_TypeAst->m_Type;
 				var->m_Init = cast;

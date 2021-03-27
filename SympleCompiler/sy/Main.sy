@@ -1,6 +1,2 @@
-float Main(int argc, char *arcv)
-{
-	float x = 12431.3214;
-	float y = 9.123;
-	ret x % y;
-}
+float Main(int nArgs, char **args)
+	ret nArgs;

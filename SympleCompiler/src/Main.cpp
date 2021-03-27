@@ -80,7 +80,7 @@ int main()
 	Console.Color = ConsoleColor::Yellow;
 	puts("Starting program...");
 	Console.Color = ConsoleColor::Reset;
-	int ec = system("bin\\Out.exe");
+	int ec = system("bin\\Out.exe a8dhy893whar w8aihrp98eiwhar98p4 horiahnpbweir");
 	Console.Color = ConsoleColor::Yellow;
 	printf("\nProgram exited with code %i (0x%x) [%f]", ec, ec, *(float *)&ec);
 

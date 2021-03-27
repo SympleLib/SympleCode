@@ -10,7 +10,10 @@ namespace Symple::Code
 		Emit(".global _main");
 		Emit("_main:");
 		Emit("\txor %s, %s", Reg(RegKind::Ax), Reg(RegKind::Ax));
+		Emit("\tpush %u(%s)", 8, Reg(RegKind::Sp));
+		Emit("\tpush %u(%s)", 8, Reg(RegKind::Sp));
 		Emit("\tcall _Sy$Main$Func");
+		Emit("\tadd $%u, %s", 8, Reg(RegKind::Sp));
 		Emit("\tmovss %s, -%u(%s)", Reg(RegKind::Xmm0), 4, Reg(RegKind::Sp));
 		Emit("\tmov -%u(%s), %s", 4, Reg(RegKind::Sp), Reg(RegKind::Ax));
 		Emit("\tret");
@@ -44,7 +47,7 @@ namespace Symple::Code
 		{
 			stackPos += 4;
 			auto pname = param->Name->Text;
-			Emit("_%.*s$%u = %u", pname.length(), pname.data(), 2, stackPos);
+			Emit("_%.*s$%u = %u", pname.length(), pname.data(), 1, stackPos);
 		}
 
 		Emit(fn->Body);
@@ -280,7 +283,11 @@ namespace Symple::Code
 				int iVal;
 			} Val;
 			Val.fVal = strtod(literal.data(), nullptr);
-			Emit("\tmovss $0x%x, %s # Float %f", Val.iVal, Val.fVal, Reg(RegKind::Xmm0));
+			Stalloc();
+			uint32 pos = m_Stack;
+			Emit("\tmovl $0x%x, -%u(%s) # Float %f", Val.iVal, pos, Reg(RegKind::Bp), Val.fVal);
+			Emit("\tmovss -%u(%s), %s", pos, Reg(RegKind::Bp), Reg(RegKind::Xmm0));
+			Staf();
 		}
 		else
 			Emit("\tmov $%.*s, %s", literal.length(), literal.data(), Reg(RegKind::Ax));
