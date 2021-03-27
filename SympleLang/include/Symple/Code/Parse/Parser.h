@@ -17,7 +17,7 @@ namespace Symple::Code
 		GlobalRef<MemberAst> ParseMember();
 		GlobalRef<FunctionAst> ParseFunction();
 
-		GlobalRef<StatementAst> ParseStatement();
+		GlobalRef<StatementAst> ParseStatement(bool matchSemicolon = true);
 		GlobalRef<BlockStatementAst> ParseBlockStatement();
 		GlobalRef<ReturnStatementAst> ParseReturnStatement();
 		GlobalRef<VariableStatementAst> ParseVariableStatement();

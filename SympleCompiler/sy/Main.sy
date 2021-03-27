@@ -1,11 +1,11 @@
 int Main(int argc, char *arcv)
 {
 	{
-		int x = 5
+		int x = 5;
 	}
 	{
-		int y = 6
+		int y = 6;
 	}
 
-	ret 0
+	ret 0;
 }

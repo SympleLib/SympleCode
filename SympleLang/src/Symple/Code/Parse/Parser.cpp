@@ -42,8 +42,9 @@ namespace Symple::Code
 	}
 
 
-	GlobalRef<StatementAst> Parser::ParseStatement()
+	GlobalRef<StatementAst> Parser::ParseStatement(bool matchSemi)
 	{
+		GlobalRef<StatementAst> stmt;
 		switch (Current->Kind)
 		{
 		case TokenKind::Semicolon:
@@ -51,13 +52,19 @@ namespace Symple::Code
 		case TokenKind::OpenBrace:
 			return ParseBlockStatement();
 		case TokenKind::ReturnKeyword:
-			return ParseReturnStatement();
+			stmt = ParseReturnStatement();
+			break;
 		default:
 			if (TokenFacts::IsTypeBase(Current->Kind))
-				return ParseVariableStatement();
+				stmt = ParseVariableStatement();
 			else
-				return ParseExpressionStatement();
+				stmt = ParseExpressionStatement();
+			break;
 		}
+
+		if (matchSemi)
+			Match(TokenKind::Semicolon);
+		return stmt;
 	}
 
 	GlobalRef<BlockStatementAst> Parser::ParseBlockStatement()
