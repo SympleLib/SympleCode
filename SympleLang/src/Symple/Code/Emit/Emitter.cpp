@@ -101,7 +101,6 @@ namespace Symple::Code
 				Emit("\tmovss %s, _%.*s$%u(%s)", Reg(RegKind::Xmm0, sz), name.length(), name.data(), var->Depth, Reg(RegKind::Bp));
 			else
 				Emit("\tmov %s, _%.*s$%u(%s)", Reg(RegKind::Ax, sz), name.length(), name.data(), var->Depth, Reg(RegKind::Bp));
-
 		}
 	}
 
@@ -281,11 +280,11 @@ namespace Symple::Code
 			{
 				float fVal;
 				int iVal;
-			} Val;
-			Val.fVal = strtod(literal.data(), nullptr);
+			};
+			fVal = strtod(literal.data(), nullptr);
 			Stalloc();
 			uint32 pos = m_Stack;
-			Emit("\tmovl $0x%x, -%u(%s) # Float %f", Val.iVal, pos, Reg(RegKind::Bp), Val.fVal);
+			Emit("\tmovl $0x%x, -%u(%s) # Float %f", iVal, pos, Reg(RegKind::Bp), fVal);
 			Emit("\tmovss -%u(%s), %s", pos, Reg(RegKind::Bp), Reg(RegKind::Xmm0));
 			Staf();
 		}

@@ -85,7 +85,7 @@ namespace Symple::Code
 					nameExpr->m_Depth = m_Depths.size();
 					for (uint32 depth = 0; depth < m_Depths.size(); depth++)
 						if (m_Depths[depth] >= i - 1)
-							nameExpr->m_Depth = depth + 1;
+							nameExpr->m_Depth = depth;
 					break;
 				}
 			if (!nameExpr->m_Symbol)
