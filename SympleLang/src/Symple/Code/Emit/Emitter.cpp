@@ -86,9 +86,9 @@ namespace Symple::Code
 	{
 		auto name = var->Name->Text;
 		uint32 sz = var->Type->Type->Size;
-		m_Stack += 4;
-		Emit("_%.*s$%u = -%u", name.length(), name.data(), var->Depth, m_Stack);
 		Stalloc(sz);
+		uint32 pos = m_Stack;
+		Emit("_%.*s$%u = -%u", name.length(), name.data(), var->Depth, m_Stack);
 		if (var->Initializer)
 		{
 			Emit(var->Initializer);
@@ -143,13 +143,19 @@ namespace Symple::Code
 		}
 		else if (cast->Type->IsFloat && !cast->Value->Type->IsFloat)
 		{
-			Emit("\tmov %s, -4(%s)", Reg(RegKind::Ax), Reg(RegKind::Sp));
-			Emit("\tcvtsi2ssl -4(%s), %s", Reg(RegKind::Sp), Reg(RegKind::Xmm0));
+			Stalloc();
+			uint32 pos = m_Stack;
+			Emit("\tmov %s, -%u(%s)", Reg(RegKind::Ax), pos, Reg(RegKind::Bp));
+			Emit("\tcvtsi2ssl -%u(%s), %s", pos, Reg(RegKind::Bp), Reg(RegKind::Xmm0));
+			Staf();
 		}
 		else if (!cast->Type->IsFloat && cast->Value->Type->IsFloat)
 		{
-			Emit("\tmovsd %s, -8(%s)", Reg(RegKind::Xmm0), Reg(RegKind::Sp));
-			Emit("\tcvttss2si -8(%s), %s", Reg(RegKind::Sp), Reg(RegKind::Ax));
+			Stalloc();
+			uint32 pos = m_Stack;
+			Emit("\tmovss %s, -%u(%s)", Reg(RegKind::Xmm0), pos, Reg(RegKind::Bp));
+			Emit("\tcvttss2si -%u(%s), %s", pos, Reg(RegKind::Bp), Reg(RegKind::Ax));
+			Staf();
 		}
 		else if (cast->Type->Size != cast->Value->Type->Size)
 		{
@@ -189,8 +195,8 @@ namespace Symple::Code
 		if (expr->Type->IsFloat)
 		{
 			Emit(expr->Right);
-			uint32 pos = m_Stack;
 			Stalloc();
+			uint32 pos = m_Stack;
 			Emit("\tmovss %s, -%u(%s)", Reg(RegKind::Xmm0), pos, Reg(RegKind::Bp));
 			Emit(expr->Left);
 			Emit("\tmovss -%u(%s), %s", pos, Reg(RegKind::Bp), Reg(RegKind::Xmm1));
@@ -212,7 +218,14 @@ namespace Symple::Code
 				break;
 			case TokenKind::Percent:
 			{
-
+				Stalloc(8);
+				uint32 pos = m_Stack;
+				Emit("\tmovss %s, %u(%s)", Reg(RegKind::Xmm1), 0, Reg(RegKind::Sp));
+				Emit("\tmovss %s, %u(%s)", Reg(RegKind::Xmm0), 4, Reg(RegKind::Sp));
+				Emit("\tcall _fmodf");
+				Emit("\tfstps -%u(%s)", pos, Reg(RegKind::Bp));
+				Emit("\tmovss -%u(%s), %s", pos, Reg(RegKind::Bp), Reg(RegKind::Xmm0));
+				Staf(8);
 				break;
 			}
 			}
