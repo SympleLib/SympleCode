@@ -1,2 +1,2 @@
 float Main(int nArgs, char **args) =>
-	ret nArgs;
+	ret (float)3 ^^ (float)3;

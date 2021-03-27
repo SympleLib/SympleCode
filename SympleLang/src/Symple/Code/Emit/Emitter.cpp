@@ -232,6 +232,18 @@ namespace Symple::Code
 				Staf(8);
 				break;
 			}
+			case TokenKind::CarotCarot:
+			{
+				Stalloc(8);
+				uint32 pos = m_Stack;
+				Emit("\tmovss %s, %u(%s)", Reg(RegKind::Xmm0), 0, Reg(RegKind::Sp));
+				Emit("\tmovss %s, %u(%s)", Reg(RegKind::Xmm1), 4, Reg(RegKind::Sp));
+				Emit("\tcall _powf");
+				Emit("\tfstps -%u(%s)", pos, Reg(RegKind::Bp));
+				Emit("\tmovss -%u(%s), %s", pos, Reg(RegKind::Bp), Reg(RegKind::Xmm0));
+				Staf(8);
+				break;
+			}
 			}
 		}
 		else
@@ -265,6 +277,9 @@ namespace Symple::Code
 				Emit("\tcltd");
 				Emit("\tidiv %s", Reg(RegKind::Cx));
 				Emit("\tmov %s, %s", Reg(RegKind::Dx), Reg(RegKind::Ax));
+				break;
+			case TokenKind::Carot:
+				Emit("\txor %s, %s", Reg(RegKind::Bx), Reg(RegKind::Ax));
 				break;
 			}
 		}

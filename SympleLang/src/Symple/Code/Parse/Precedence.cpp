@@ -10,7 +10,7 @@ namespace Symple::Code
 			return 0;
 		case TokenKind::Plus:
 		case TokenKind::Minus:
-			return 3;
+			return 4;
 		}
 	}
 
@@ -27,6 +27,8 @@ namespace Symple::Code
 		case TokenKind::Slash:
 		case TokenKind::Percent:
 			return 2;
+		case TokenKind::CarotCarot:
+			return 3;
 		}
 	}
 }

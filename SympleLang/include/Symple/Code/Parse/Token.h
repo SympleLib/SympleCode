@@ -20,8 +20,11 @@ namespace Symple::Code
 		Star,
 		Slash,
 		Percent,
+		Carot,
 
 		And,
+
+		CarotCarot,
 
 		Equal,
 		EqualArrow,
@@ -74,8 +77,11 @@ namespace Symple::Code
 		"Star",
 		"Slash",
 		"Percent",
+		"Carot",
 
 		"And",
+
+		"CarotCarot",
 
 		"Equal",
 		"EqualArrow",
