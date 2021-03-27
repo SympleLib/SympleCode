@@ -165,7 +165,7 @@ namespace Symple::Code
 			open = Match(TokenKind::OpenParen);
 		auto ty = ParseType();
 		auto close = Match(TokenKind::CloseParen);
-		auto val = ParseExpression();
+		auto val = ParseUnaryExpression();
 
 		return MakeRef<CastExpressionAst>(open, ty, close, val);
 	}

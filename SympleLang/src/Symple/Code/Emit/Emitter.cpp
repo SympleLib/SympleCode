@@ -58,6 +58,8 @@ namespace Symple::Code
 
 	void Emitter::Emit(const GlobalRef<const StatementAst> &stmt)
 	{
+		Emit("");
+
 		switch (stmt->Kind)
 		{
 		case AstKind::BlockStatement:
@@ -90,7 +92,11 @@ namespace Symple::Code
 		if (var->Initializer)
 		{
 			Emit(var->Initializer);
-			Emit("\tmov %s, _%.*s$%u(%s)", Reg(RegKind::Ax, sz), name.length(), name.data(), var->Depth, Reg(RegKind::Bp));
+			if (var->Initializer->Type->IsFloat)
+				Emit("\tmovsd %s, _%.*s$%u(%s)", Reg(RegKind::Xmm0, sz), name.length(), name.data(), var->Depth, Reg(RegKind::Bp));
+			else
+				Emit("\tmov %s, _%.*s$%u(%s)", Reg(RegKind::Ax, sz), name.length(), name.data(), var->Depth, Reg(RegKind::Bp));
+
 		}
 	}
 
@@ -138,14 +144,12 @@ namespace Symple::Code
 		else if (cast->Type->IsFloat && !cast->Value->Type->IsFloat)
 		{
 			Emit("\tmov %s, -4(%s)", Reg(RegKind::Ax), Reg(RegKind::Sp));
-			Emit("\tfildl -4(%s)", Reg(RegKind::Sp));
-			Emit("\tfsts -4(%s)", Reg(RegKind::Sp));
-			Emit("\tmov -4(%s), %s", Reg(RegKind::Sp), Reg(RegKind::Ax));
+			Emit("\tcvtsi2sdl -4(%s), %s", Reg(RegKind::Sp), Reg(RegKind::Xmm0));
 		}
 		else if (!cast->Type->IsFloat && cast->Value->Type->IsFloat)
 		{
-			Emit("\tfistl -4(%s)", Reg(RegKind::Sp));
-			Emit("\tmov -4(%s), %s", Reg(RegKind::Sp), Reg(RegKind::Ax));
+			Emit("\tmovsd %s, -8(%s)", Reg(RegKind::Xmm0), Reg(RegKind::Sp));
+			Emit("\tcvttsd2si -8(%s), %s", Reg(RegKind::Sp), Reg(RegKind::Ax));
 		}
 		else if (cast->Type->Size != cast->Value->Type->Size)
 		{
@@ -174,7 +178,19 @@ namespace Symple::Code
 	void Emitter::Emit(const GlobalRef<const NameExpressionAst> &name)
 	{
 		auto sname = name->Name->Text;
-		Emit("\tmov _%.*s$%u(%s), %s", sname.length(), sname.data(), name->Depth, Reg(RegKind::Bp), Reg(RegKind::Ax, name->Type->Size));
+		if (name->Type->IsFloat)
+		{
+			if (name->Type->Size == 4)
+			{
+				Emit("\tmovss _%.*s$%u(%s), %s", sname.length(), sname.data(), name->Depth, Reg(RegKind::Bp), Reg(RegKind::Xmm0));
+				Emit("\tcvtss2sd %s, %s", Reg(RegKind::Xmm0), Reg(RegKind::Xmm0));
+			}
+			else
+				Emit("\tmovsd _%.*s$%u(%s), %s", sname.length(), sname.data(), name->Depth, Reg(RegKind::Bp), Reg(RegKind::Xmm0));
+
+		}
+		else
+			Emit("\tmov _%.*s$%u(%s), %s", sname.length(), sname.data(), name->Depth, Reg(RegKind::Bp), Reg(RegKind::Ax, name->Type->Size));
 	}
 
 	void Emitter::Emit(const GlobalRef<const BinaryExpressionAst> &expr)
@@ -184,18 +200,41 @@ namespace Symple::Code
 			Emit(expr->Right);
 			uint32 pos = m_Stack;
 			Stalloc(8);
-			Emit("\tmov %s, -%u(%s)", Reg(RegKind::Ax), pos, Reg(RegKind::Sp));
+			Emit("\tmovsd %s, -%u(%s)", Reg(RegKind::Xmm0), pos, Reg(RegKind::Bp));
 			Emit(expr->Left);
-			Emit("\tmov -%u(%s), %s", pos, Reg(RegKind::Sp), Reg(RegKind::Bx));
+			Emit("\tmovsd -%u(%s), %s", pos, Reg(RegKind::Bp), Reg(RegKind::Xmm1));
+			Staf(8);
+
+			switch (expr->Operator->Kind)
+			{
+			case TokenKind::Plus:
+				Emit("\taddsd %s, %s", Reg(RegKind::Xmm1), Reg(RegKind::Xmm0));
+				break;
+			case TokenKind::Minus:
+				Emit("\tsubsd %s, %s", Reg(RegKind::Xmm1), Reg(RegKind::Xmm0));
+				break;
+			case TokenKind::Star:
+				Emit("\tmulsd %s, %s", Reg(RegKind::Xmm1), Reg(RegKind::Xmm0));
+				break;
+			case TokenKind::Slash:
+				Emit("\tdivsd %s, %s", Reg(RegKind::Xmm1), Reg(RegKind::Xmm0));
+				break;
+			case TokenKind::Percent:
+			{
+
+				break;
+			}
+			}
 		}
 		else
 		{
 			Emit(expr->Right);
 			uint32 pos = m_Stack;
 			Stalloc();
-			Emit("\tmov %s, -%u(%s)", Reg(RegKind::Ax), pos, Reg(RegKind::Sp));
+			Emit("\tmov %s, -%u(%s)", Reg(RegKind::Ax), pos, Reg(RegKind::Bp));
 			Emit(expr->Left);
-			Emit("\tmov -%u(%s), %s", pos, Reg(RegKind::Sp), Reg(RegKind::Bx));
+			Emit("\tmov -%u(%s), %s", pos, Reg(RegKind::Bp), Reg(RegKind::Bx));
+			Staf();
 
 			switch (expr->Operator->Kind)
 			{
@@ -300,6 +339,23 @@ namespace Symple::Code
 				return "%esp";
 			case RegKind::Bp:
 				return "%ebp";
+
+			case RegKind::Xmm0:
+				return "%xmm0";
+			case RegKind::Xmm1:
+				return "%xmm1";
+			case RegKind::Xmm2:
+				return "%xmm2";
+			case RegKind::Xmm3:
+				return "%xmm3";
+			case RegKind::Xmm4:
+				return "%xmm4";
+			case RegKind::Xmm5:
+				return "%xmm5";
+			case RegKind::Xmm6:
+				return "%xmm6";
+			case RegKind::Xmm7:
+				return "%xmm7";
 			}
 
 		return nullptr;

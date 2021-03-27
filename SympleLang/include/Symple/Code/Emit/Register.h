@@ -14,8 +14,18 @@ namespace Symple::Code
 		Sp,
 		Bp,
 
+		Xmm0,
+		Xmm1,
+		Xmm2,
+		Xmm3,
+		Xmm4,
+		Xmm5,
+		Xmm6,
+		Xmm7,
+
 		Count, // Count of register kinds
 		LastX = Dx, // Last `free` register
+		LastXmm = Xmm7, // Last `free` float register
 	};
 
 	constexpr const char *const RegKindNames[(uint32)RegKind::Count] =

@@ -1,7 +1,5 @@
 int Main(int argc, char *arcv)
 {
 	float x = 5;
-	float y = 6;
-
-	ret x;
+	ret x * (float)4;
 }
