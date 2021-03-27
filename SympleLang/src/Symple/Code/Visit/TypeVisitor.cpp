@@ -58,6 +58,14 @@ namespace Symple::Code
 	{
 		switch (expr->Kind)
 		{
+		case AstKind::LiteralExpression:
+		{
+			auto litExpr = Cast<LiteralExpressionAst>(expr);
+			auto lit = litExpr->m_Literal->Text;
+			if (lit.find('.') != std::string_view::npos)
+				litExpr->m_Type = MakeRef<Type>(TypeKind::Float, 0, false);
+			break;
+		}
 		case AstKind::ParenthasizedExpression:
 		{
 			auto parenExpr = Cast<ParenthasizedExpressionAst>(expr);

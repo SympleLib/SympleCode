@@ -11,6 +11,8 @@ namespace Symple::Code
 		Emit("_main:");
 		Emit("\txor %s, %s", Reg(RegKind::Ax), Reg(RegKind::Ax));
 		Emit("\tcall _Sy$Main$Func");
+		Emit("\tmovss %s, -%u(%s)", Reg(RegKind::Xmm0), 4, Reg(RegKind::Sp));
+		Emit("\tmov -%u(%s), %s", 4, Reg(RegKind::Sp), Reg(RegKind::Ax));
 		Emit("\tret");
 
 		for (auto member : m_Unit->Members)
@@ -93,7 +95,7 @@ namespace Symple::Code
 		{
 			Emit(var->Initializer);
 			if (var->Initializer->Type->IsFloat)
-				Emit("\tmovsd %s, _%.*s$%u(%s)", Reg(RegKind::Xmm0, sz), name.length(), name.data(), var->Depth, Reg(RegKind::Bp));
+				Emit("\tmovss %s, _%.*s$%u(%s)", Reg(RegKind::Xmm0, sz), name.length(), name.data(), var->Depth, Reg(RegKind::Bp));
 			else
 				Emit("\tmov %s, _%.*s$%u(%s)", Reg(RegKind::Ax, sz), name.length(), name.data(), var->Depth, Reg(RegKind::Bp));
 
@@ -220,8 +222,8 @@ namespace Symple::Code
 			{
 				Stalloc(8);
 				uint32 pos = m_Stack;
-				Emit("\tmovss %s, %u(%s)", Reg(RegKind::Xmm1), 0, Reg(RegKind::Sp));
-				Emit("\tmovss %s, %u(%s)", Reg(RegKind::Xmm0), 4, Reg(RegKind::Sp));
+				Emit("\tmovss %s, %u(%s)", Reg(RegKind::Xmm0), 0, Reg(RegKind::Sp));
+				Emit("\tmovss %s, %u(%s)", Reg(RegKind::Xmm1), 4, Reg(RegKind::Sp));
 				Emit("\tcall _fmodf");
 				Emit("\tfstps -%u(%s)", pos, Reg(RegKind::Bp));
 				Emit("\tmovss -%u(%s), %s", pos, Reg(RegKind::Bp), Reg(RegKind::Xmm0));
@@ -269,7 +271,10 @@ namespace Symple::Code
 	void Emitter::Emit(const GlobalRef<const LiteralExpressionAst> &expr)
 	{
 		auto literal = expr->Literal->Text;
-		Emit("\tmov $%.*s, %s", literal.length(), literal.data(), Reg(RegKind::Ax));
+		if (expr->Type->IsFloat)
+			Emit("\tmovss $%.*s, %s", literal.length(), literal.data(), Reg(RegKind::Xmm0));
+		else
+			Emit("\tmov $%.*s, %s", literal.length(), literal.data(), Reg(RegKind::Ax));
 	}
 
 
