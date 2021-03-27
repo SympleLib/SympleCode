@@ -144,12 +144,12 @@ namespace Symple::Code
 		else if (cast->Type->IsFloat && !cast->Value->Type->IsFloat)
 		{
 			Emit("\tmov %s, -4(%s)", Reg(RegKind::Ax), Reg(RegKind::Sp));
-			Emit("\tcvtsi2sdl -4(%s), %s", Reg(RegKind::Sp), Reg(RegKind::Xmm0));
+			Emit("\tcvtsi2ssl -4(%s), %s", Reg(RegKind::Sp), Reg(RegKind::Xmm0));
 		}
 		else if (!cast->Type->IsFloat && cast->Value->Type->IsFloat)
 		{
 			Emit("\tmovsd %s, -8(%s)", Reg(RegKind::Xmm0), Reg(RegKind::Sp));
-			Emit("\tcvttsd2si -8(%s), %s", Reg(RegKind::Sp), Reg(RegKind::Ax));
+			Emit("\tcvttss2si -8(%s), %s", Reg(RegKind::Sp), Reg(RegKind::Ax));
 		}
 		else if (cast->Type->Size != cast->Value->Type->Size)
 		{
@@ -179,16 +179,7 @@ namespace Symple::Code
 	{
 		auto sname = name->Name->Text;
 		if (name->Type->IsFloat)
-		{
-			if (name->Type->Size == 4)
-			{
-				Emit("\tmovss _%.*s$%u(%s), %s", sname.length(), sname.data(), name->Depth, Reg(RegKind::Bp), Reg(RegKind::Xmm0));
-				Emit("\tcvtss2sd %s, %s", Reg(RegKind::Xmm0), Reg(RegKind::Xmm0));
-			}
-			else
-				Emit("\tmovsd _%.*s$%u(%s), %s", sname.length(), sname.data(), name->Depth, Reg(RegKind::Bp), Reg(RegKind::Xmm0));
-
-		}
+			Emit("\tmovss _%.*s$%u(%s), %s", sname.length(), sname.data(), name->Depth, Reg(RegKind::Bp), Reg(RegKind::Xmm0));
 		else
 			Emit("\tmov _%.*s$%u(%s), %s", sname.length(), sname.data(), name->Depth, Reg(RegKind::Bp), Reg(RegKind::Ax, name->Type->Size));
 	}
@@ -199,25 +190,25 @@ namespace Symple::Code
 		{
 			Emit(expr->Right);
 			uint32 pos = m_Stack;
-			Stalloc(8);
-			Emit("\tmovsd %s, -%u(%s)", Reg(RegKind::Xmm0), pos, Reg(RegKind::Bp));
+			Stalloc();
+			Emit("\tmovss %s, -%u(%s)", Reg(RegKind::Xmm0), pos, Reg(RegKind::Bp));
 			Emit(expr->Left);
-			Emit("\tmovsd -%u(%s), %s", pos, Reg(RegKind::Bp), Reg(RegKind::Xmm1));
-			Staf(8);
+			Emit("\tmovss -%u(%s), %s", pos, Reg(RegKind::Bp), Reg(RegKind::Xmm1));
+			Staf();
 
 			switch (expr->Operator->Kind)
 			{
 			case TokenKind::Plus:
-				Emit("\taddsd %s, %s", Reg(RegKind::Xmm1), Reg(RegKind::Xmm0));
+				Emit("\taddss %s, %s", Reg(RegKind::Xmm1), Reg(RegKind::Xmm0));
 				break;
 			case TokenKind::Minus:
-				Emit("\tsubsd %s, %s", Reg(RegKind::Xmm1), Reg(RegKind::Xmm0));
+				Emit("\tsubss %s, %s", Reg(RegKind::Xmm1), Reg(RegKind::Xmm0));
 				break;
 			case TokenKind::Star:
-				Emit("\tmulsd %s, %s", Reg(RegKind::Xmm1), Reg(RegKind::Xmm0));
+				Emit("\tmulss %s, %s", Reg(RegKind::Xmm1), Reg(RegKind::Xmm0));
 				break;
 			case TokenKind::Slash:
-				Emit("\tdivsd %s, %s", Reg(RegKind::Xmm1), Reg(RegKind::Xmm0));
+				Emit("\tdivss %s, %s", Reg(RegKind::Xmm1), Reg(RegKind::Xmm0));
 				break;
 			case TokenKind::Percent:
 			{
