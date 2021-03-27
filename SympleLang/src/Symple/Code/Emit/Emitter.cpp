@@ -144,8 +144,8 @@ namespace Symple::Code
 		}
 		else if (!cast->Type->IsFloat && cast->Value->Type->IsFloat)
 		{
-			Emit("\tfsts -4(%s)", Reg(RegKind::Sp));
-			Emit("\tcvttsd2si -4(%s), %s", Reg(RegKind::Sp), Reg(RegKind::Ax));
+			Emit("\tfistl -4(%s)", Reg(RegKind::Sp));
+			Emit("\tmov -4(%s), %s", Reg(RegKind::Sp), Reg(RegKind::Ax));
 		}
 		else if (cast->Type->Size != cast->Value->Type->Size)
 		{
@@ -179,33 +179,47 @@ namespace Symple::Code
 
 	void Emitter::Emit(const GlobalRef<const BinaryExpressionAst> &expr)
 	{
-		Emit(expr->Right);
-		Emit("\tpush %s", Reg(RegKind::Ax));
-		Emit(expr->Left);
-		Emit("\tpop %s", Reg(RegKind::Bx));
-
-		switch (expr->Operator->Kind)
+		if (expr->Type->IsFloat)
 		{
-		case TokenKind::Plus:
-			Emit("\tadd %s, %s", Reg(RegKind::Bx), Reg(RegKind::Ax));
-			break;
-		case TokenKind::Minus:
-			Emit("\tsub %s, %s", Reg(RegKind::Bx), Reg(RegKind::Ax));
-			break;
-		case TokenKind::Star:
-			Emit("\timul %s, %s", Reg(RegKind::Bx), Reg(RegKind::Ax));
-			break;
-		case TokenKind::Slash:
-			Emit("\tmov %s, %s", Reg(RegKind::Bx), Reg(RegKind::Cx));
-			Emit("\tcltd");
-			Emit("\tidiv %s", Reg(RegKind::Cx));
-			break;
-		case TokenKind::Percent:
-			Emit("\tmov %s, %s", Reg(RegKind::Bx), Reg(RegKind::Cx));
-			Emit("\tcltd");
-			Emit("\tidiv %s", Reg(RegKind::Cx));
-			Emit("\tmov %s, %s", Reg(RegKind::Dx), Reg(RegKind::Ax));
-			break;
+			Emit(expr->Right);
+			uint32 pos = m_Stack;
+			Stalloc(8);
+			Emit("\tmov %s, -%u(%s)", Reg(RegKind::Ax), pos, Reg(RegKind::Sp));
+			Emit(expr->Left);
+			Emit("\tmov -%u(%s), %s", pos, Reg(RegKind::Sp), Reg(RegKind::Bx));
+		}
+		else
+		{
+			Emit(expr->Right);
+			uint32 pos = m_Stack;
+			Stalloc();
+			Emit("\tmov %s, -%u(%s)", Reg(RegKind::Ax), pos, Reg(RegKind::Sp));
+			Emit(expr->Left);
+			Emit("\tmov -%u(%s), %s", pos, Reg(RegKind::Sp), Reg(RegKind::Bx));
+
+			switch (expr->Operator->Kind)
+			{
+			case TokenKind::Plus:
+				Emit("\tadd %s, %s", Reg(RegKind::Bx), Reg(RegKind::Ax));
+				break;
+			case TokenKind::Minus:
+				Emit("\tsub %s, %s", Reg(RegKind::Bx), Reg(RegKind::Ax));
+				break;
+			case TokenKind::Star:
+				Emit("\timul %s, %s", Reg(RegKind::Bx), Reg(RegKind::Ax));
+				break;
+			case TokenKind::Slash:
+				Emit("\tmov %s, %s", Reg(RegKind::Bx), Reg(RegKind::Cx));
+				Emit("\tcltd");
+				Emit("\tidiv %s", Reg(RegKind::Cx));
+				break;
+			case TokenKind::Percent:
+				Emit("\tmov %s, %s", Reg(RegKind::Bx), Reg(RegKind::Cx));
+				Emit("\tcltd");
+				Emit("\tidiv %s", Reg(RegKind::Cx));
+				Emit("\tmov %s, %s", Reg(RegKind::Dx), Reg(RegKind::Ax));
+				break;
+			}
 		}
 	}
 
