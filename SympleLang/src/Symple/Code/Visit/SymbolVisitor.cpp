@@ -82,11 +82,14 @@ namespace Symple::Code
 				if (m_Names[i - 1]->Name->Text == nameExpr->m_Name->Text)
 				{
 					nameExpr->m_Symbol = m_Names[i - 1];
+					nameExpr->m_Depth = m_Depths.size();
 					for (uint32 depth = 0; depth < m_Depths.size(); depth++)
 						if (m_Depths[depth] >= i - 1)
 							nameExpr->m_Depth = depth + 1;
 					break;
 				}
+			if (!nameExpr->m_Symbol)
+				std::cerr << "Symbol '" << nameExpr->m_Name->Text << "' does not exist!\n";
 			break;
 		}
 		case AstKind::ParenthasizedExpression:

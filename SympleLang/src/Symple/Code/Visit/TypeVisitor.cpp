@@ -39,6 +39,18 @@ namespace Symple::Code
 		case AstKind::ExpressionStatement:
 			Visit(Cast<ExpressionStatementAst>(stmt)->m_Expr);
 			break;
+		case AstKind::VariableStatement:
+		{
+			auto var = Cast<VariableStatementAst>(stmt);
+			auto val = var->m_Init;
+			if (val)
+			{
+				auto cast = MakeRef<CastExpressionAst>(WeakRef<Token>(), var->m_Type, WeakRef<Token>(), val);
+				cast->m_Type = cast->m_TypeAst->m_Type;
+				var->m_Init = cast;
+			}
+			break;
+		}
 		}
 	}
 

@@ -1,11 +1,7 @@
 int Main(int argc, char *arcv)
 {
-	{
-		int x = 5;
-	}
-	{
-		int y = 6;
-	}
+	float x = 5;
+	float y = 6;
 
-	ret 0;
+	ret x + y;
 }

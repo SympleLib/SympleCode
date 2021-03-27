@@ -145,7 +145,7 @@ namespace Symple::Code
 		else if (!cast->Type->IsFloat && cast->Value->Type->IsFloat)
 		{
 			Emit("\tfsts -4(%s)", Reg(RegKind::Sp));
-			Emit("\cvttsd2si -4(%s), %s", Reg(RegKind::Sp), Reg(RegKind::Ax));
+			Emit("\tcvttsd2si -4(%s), %s", Reg(RegKind::Sp), Reg(RegKind::Ax));
 		}
 		else if (cast->Type->Size != cast->Value->Type->Size)
 		{
