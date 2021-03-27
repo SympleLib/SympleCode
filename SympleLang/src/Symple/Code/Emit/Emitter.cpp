@@ -271,8 +271,17 @@ namespace Symple::Code
 	void Emitter::Emit(const GlobalRef<const LiteralExpressionAst> &expr)
 	{
 		auto literal = expr->Literal->Text;
+
 		if (expr->Type->IsFloat)
-			Emit("\tmovss $%.*s, %s", literal.length(), literal.data(), Reg(RegKind::Xmm0));
+		{
+			union
+			{
+				float fVal;
+				int iVal;
+			} Val;
+			Val.fVal = strtod(literal.data(), nullptr);
+			Emit("\tmovss $0x%x, %s # Float %f", Val.iVal, Val.fVal, Reg(RegKind::Xmm0));
+		}
 		else
 			Emit("\tmov $%.*s, %s", literal.length(), literal.data(), Reg(RegKind::Ax));
 	}
