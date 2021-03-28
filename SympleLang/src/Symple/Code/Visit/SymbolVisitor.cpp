@@ -61,23 +61,6 @@ namespace Symple::Code
 	{
 		switch (expr->Kind)
 		{
-		case AstKind::CallExpression:
-		{
-			auto callExpr = Cast<CallExpressionAst>(expr);
-
-			bool valid = false;
-			for (auto member : m_Unit->m_Members)
-				if (member->Kind == AstKind::Function)
-					if (Cast<FunctionAst>(member)->m_Name->Text == callExpr->m_Name->Text)
-					{
-						callExpr->m_Func = Cast<FunctionAst>(member);
-						valid = true;
-						break;
-					}
-			if (!valid)
-				std::cerr << "Symbol '" << callExpr->m_Name->Text << "' does not exist!\n";
-			break;
-		}
 		case AstKind::NameExpression:
 		{
 			auto nameExpr = Cast<NameExpressionAst>(expr);

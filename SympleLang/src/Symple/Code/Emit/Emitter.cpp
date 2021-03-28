@@ -170,9 +170,11 @@ namespace Symple::Code
 
 	void Emitter::Emit(const GlobalRef<const CallExpressionAst> &call)
 	{
-		auto name = call->Name->Text;
+		uint32 sz = call->Parameters.size() * 4 + 4;
+		Emit(call->Function);
+		Stalloc(sz);
+		Emit("mov %s, -%u(%s)", Reg(RegKind::Ax), m_Stack, Reg(RegKind::Bp));
 
-		uint32 sz = call->Parameters.size() * 4;
 		uint32 off = call->Parameters.size() * 4;
 		for (auto param : call->Parameters)
 		{
@@ -180,8 +182,8 @@ namespace Symple::Code
 			Emit("\tmov %s, %u(%s)", Reg(RegKind::Ax), off, Reg(RegKind::Sp));
 			off -= 4;
 		}
-		Stalloc(sz);
-		Emit("\tcall _%.*s", name.length(), name.data());
+		Emit("mov -%u(%s), %s", m_Stack, Reg(RegKind::Bp), Reg(RegKind::Ax));
+		Emit("\tcall *%s", Reg(RegKind::Ax));
 		Staf(sz);
 	}
 

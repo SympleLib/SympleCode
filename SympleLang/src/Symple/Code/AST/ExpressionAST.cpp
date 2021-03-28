@@ -15,17 +15,14 @@ namespace Symple::Code
 	{ return m_Type; }
 
 
-	CallExpressionAst::CallExpressionAst(GlobalRef<const Token_t> name, WeakRef<const Token_t> open, const ExpressionList &params, WeakRef<const Token_t> close)
-		: m_Name(name), m_Open(open), m_Params(params), m_Close(close) {}
+	CallExpressionAst::CallExpressionAst(GlobalRef<ExpressionAst> func, WeakRef<const Token_t> open, const ExpressionList &params, WeakRef<const Token_t> close)
+		: m_Func(func), m_Open(open), m_Params(params), m_Close(close) {}
 
 	AstKind CallExpressionAst::GetKind() const
 	{ return AstKind::CallExpression; }
 
 	WeakRef<const Token_t> CallExpressionAst::GetToken() const
 	{ return m_Open; }
-
-	GlobalRef<const Token_t> CallExpressionAst::GetName() const
-	{ return m_Name; }
 
 	WeakRef<const Token_t> CallExpressionAst::GetOpen() const
 	{ return m_Open; }
@@ -37,7 +34,7 @@ namespace Symple::Code
 	{ return m_Close; }
 
 
-	GlobalRef<const FunctionAst> CallExpressionAst::GetFunction() const
+	GlobalRef<ExpressionAst> CallExpressionAst::GetFunction() const
 	{ return m_Func; }
 
 	void CallExpressionAst::Print(std::ostream &os, std::string indent, std::string_view label, bool last) const
@@ -46,7 +43,7 @@ namespace Symple::Code
 		PrintKind(os);
 
 		indent += GetAddIndent(last);
-		m_Name->Print(os << '\n', indent, "Name = ", false);
+		m_Func->Print(os << '\n', indent, "Function = ", false);
 		if (!m_Open.expired())
 			m_Open.lock()->Print(os << '\n', indent, "Open = ", false);
 		for (auto param : m_Params)
@@ -170,7 +167,6 @@ namespace Symple::Code
 	{
 		PrintIndent(os, indent, label, last);
 		PrintKind(os);
-		os << " (" << m_Symbol->Name->Text << ")";
 
 		indent += GetAddIndent(last);
 		m_Name->Print(os << '\n', indent, "Name = ");

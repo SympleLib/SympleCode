@@ -24,12 +24,13 @@ namespace Symple::Code
 		GlobalRef<ExpressionStatementAst> ParseExpressionStatement();
 
 		GlobalRef<ExpressionAst> ParseExpression();
-		GlobalRef<ExpressionAst> ParseUnaryExpression(uint32 parentPrecedence = 0);
+		GlobalRef<ExpressionAst> ParsePrefixExpression(uint32 parentPrecedence = 0);
+		GlobalRef<ExpressionAst> ParsePostfixExpression(uint32 parentPrecedence = 0);
 		GlobalRef<ExpressionAst> ParseBinaryExpression(uint32 parentPrecedence = 0);
+		GlobalRef<CallExpressionAst> ParseCallExpression(GlobalRef<ExpressionAst> function = nullptr);
 
 		GlobalRef<ExpressionAst> ParsePrimaryExpression();
 		GlobalRef<CastExpressionAst> ParseCastExpression(GlobalRef<const Token> open = nullptr);
-		GlobalRef<CallExpressionAst> ParseCallExpression();
 		GlobalRef<NameExpressionAst> ParseNameExpression();
 		GlobalRef<LiteralExpressionAst> ParseLiteralExpression();
 		GlobalRef<ParenthasizedExpressionAst> ParseParenthasizedExpression(GlobalRef<const Token> open = nullptr);

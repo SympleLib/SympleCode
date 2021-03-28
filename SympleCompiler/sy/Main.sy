@@ -1,2 +1,5 @@
+float fn() =>
+	ret 6.9;
+
 float Main(int nArgs, char **args) =>
-	ret Main;
+	fn();

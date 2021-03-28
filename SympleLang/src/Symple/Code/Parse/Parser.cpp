@@ -109,7 +109,7 @@ namespace Symple::Code
 	GlobalRef<ExpressionAst> Parser::ParseExpression()
 	{ return ParseBinaryExpression(); }
 
-	GlobalRef<ExpressionAst> Parser::ParseUnaryExpression(uint32 parentPrecedence)
+	GlobalRef<ExpressionAst> Parser::ParsePrefixExpression(uint32 parentPrecedence)
 	{
 		uint32 precedence = Precedence::Unary(Current->Kind);
 		if (precedence && precedence >= parentPrecedence)
@@ -123,18 +123,44 @@ namespace Symple::Code
 			return ParsePrimaryExpression();
 	}
 
+	GlobalRef<ExpressionAst> Parser::ParsePostfixExpression(uint32 parentPrecedence)
+	{
+		auto operand = ParsePrefixExpression(parentPrecedence);
+		// Hard coded for now
+		if (Current->Is(TokenKind::OpenParen))
+			return ParseCallExpression(operand);
+		else
+			return operand;
+	}
+
 	GlobalRef<ExpressionAst> Parser::ParseBinaryExpression(uint32 parentPrecedence)
 	{
-		auto left = ParseUnaryExpression();
+		auto left = ParsePostfixExpression();
 		while (true)
 		{
 			uint32 precedence = Precedence::Binary(Current->Kind);
 			if (!precedence || precedence <= parentPrecedence)
 				return left;
 			auto op = Next();
-			auto right = ParseUnaryExpression(precedence);
+			auto right = ParsePostfixExpression(precedence);
 			left = MakeRef<BinaryExpressionAst>(op, left, right);
 		}
+	}
+
+	GlobalRef<CallExpressionAst> Parser::ParseCallExpression(GlobalRef<ExpressionAst> func)
+	{
+		auto open = Match(TokenKind::OpenParen);
+		ExpressionList args;
+		if (!Current->Is(TokenKind::CloseParen))
+			args.push_back(ParseExpression());
+		while (!Current->Is(TokenKind::CloseParen))
+		{
+			Match(TokenKind::Comma);
+			args.push_back(ParseExpression());
+		}
+		auto close = Next();
+
+		return MakeRef<CallExpressionAst>(func, open, args, close);
 	}
 
 	GlobalRef<ExpressionAst> Parser::ParsePrimaryExpression()
@@ -142,10 +168,7 @@ namespace Symple::Code
 		switch (Current->Kind)
 		{
 		case TokenKind::Identifier:
-			if (Peek(1)->Is(TokenKind::OpenParen))
-				return ParseCallExpression();
-			else
-				return ParseNameExpression();
+			return ParseNameExpression();
 		case TokenKind::Number:
 			return ParseLiteralExpression();
 		case TokenKind::OpenParen:
@@ -165,26 +188,9 @@ namespace Symple::Code
 			open = Match(TokenKind::OpenParen);
 		auto ty = ParseType();
 		auto close = Match(TokenKind::CloseParen);
-		auto val = ParseUnaryExpression();
+		auto val = ParsePostfixExpression();
 
 		return MakeRef<CastExpressionAst>(open, ty, close, val);
-	}
-
-	GlobalRef<CallExpressionAst> Parser::ParseCallExpression()
-	{
-		auto name = Match(TokenKind::Identifier);
-		auto open = Match(TokenKind::OpenParen);
-		ExpressionList args;
-		if (!Current->Is(TokenKind::CloseParen))
-			args.push_back(ParseExpression());
-		while (!Current->Is(TokenKind::CloseParen))
-		{
-			Match(TokenKind::Comma);
-			args.push_back(ParseExpression());
-		}
-		auto close = Next();
-
-		return MakeRef<CallExpressionAst>(name, open, args, close);
 	}
 
 	GlobalRef<NameExpressionAst> Parser::ParseNameExpression()

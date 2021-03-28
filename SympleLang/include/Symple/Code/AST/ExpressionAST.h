@@ -24,35 +24,30 @@ namespace Symple::Code
 	class SYC_API CallExpressionAst: public ExpressionAst
 	{
 	private:
-		GlobalRef<const Token_t> m_Name;
+		GlobalRef<ExpressionAst> m_Func;
 		WeakRef<const Token_t> m_Open;
 		ExpressionList m_Params;
 		WeakRef<const Token_t> m_Close;
 
-		GlobalRef<FunctionAst> m_Func;
-
 		friend class SymbolVisitor;
 		friend class TypeVisitor;
 	public:
-		CallExpressionAst(GlobalRef<const Token_t> name, WeakRef<const Token_t> open, const ExpressionList &parameters, WeakRef<const Token_t> close);
+		CallExpressionAst(GlobalRef<ExpressionAst> function, WeakRef<const Token_t> open, const ExpressionList &parameters, WeakRef<const Token_t> close);
 
 		virtual AstKind GetKind() const override;
 		virtual WeakRef<const Token_t> GetToken() const override;
 		virtual void Print(std::ostream &, std::string indent = "", std::string_view label = "", bool last = true) const override;
 
-		GlobalRef<const Token_t> GetName() const;
+		GlobalRef<ExpressionAst> GetFunction() const;
 		WeakRef<const Token_t> GetOpen() const;
 		const ExpressionList &GetParameters() const;
 		WeakRef<const Token_t> GetClose() const;
 
-		GlobalRef<const FunctionAst> GetFunction() const;
-
-		SY_PROPERTY_GET(GetName) GlobalRef<const Token_t> Name;
+		SY_PROPERTY_GET(GetFunction) GlobalRef<ExpressionAst> Function;
 		SY_PROPERTY_GET(GetOpen) WeakRef<const Token_t> Open;
 		SY_PROPERTY_GET(GetParameters) const ExpressionList &Parameters;
 		SY_PROPERTY_GET(GetClose) WeakRef<const Token_t> Close;
 
-		SY_PROPERTY_GET(GetFunction) GlobalRef<const FunctionAst> Function;
 	};
 
 	class SYC_API CastExpressionAst: public ExpressionAst
