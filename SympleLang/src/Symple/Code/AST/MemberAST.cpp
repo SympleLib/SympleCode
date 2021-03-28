@@ -24,6 +24,9 @@ namespace Symple::Code
 	GlobalRef<const Token_t> FunctionAst::GetName() const
 	{ return m_Name; }
 
+	bool FunctionAst::GetIsFunction() const
+	{ return true; }
+
 
 	WeakRef<const Token_t> FunctionAst::GetOpen() const
 	{ return m_Open; }
@@ -36,9 +39,6 @@ namespace Symple::Code
 
 	GlobalRef<const StatementAst> FunctionAst::GetBody() const
 	{ return m_Body; }
-
-	const std::string &FunctionAst::GetMangledName() const
-	{ return m_MangledName; }
 	
 	void FunctionAst::Print(std::ostream & os, std::string indent, std::string_view label, bool last) const
 	{

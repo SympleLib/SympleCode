@@ -170,7 +170,7 @@ namespace Symple::Code
 	{
 		PrintIndent(os, indent, label, last);
 		PrintKind(os);
-		os << " [Depth " << m_Depth << "]";
+		os << " (" << m_Symbol->Name->Text << ")";
 
 		indent += GetAddIndent(last);
 		m_Name->Print(os << '\n', indent, "Name = ");

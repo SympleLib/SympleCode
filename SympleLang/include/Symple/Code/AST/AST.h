@@ -44,11 +44,17 @@ namespace Symple::Code
 
 	class SYC_API Symbol
 	{
+	protected:
+		std::string m_MangledName;
+
+		friend class SymbolVisitor;
 	public:
 		virtual GlobalRef<const TypeAst> GetType() const;
 		virtual GlobalRef<const Token> GetName() const;
-		virtual const std::string &GetMangledName() const;
+		virtual bool GetIsFunction() const;
+		const std::string &GetMangledName() const;
 
+		SY_PROPERTY_GET(GetIsFunction) bool IsFunction;
 		SY_PROPERTY_GET(GetType) GlobalRef<const TypeAst> Type;
 		SY_PROPERTY_GET(GetName) GlobalRef<const Token> Name;
 		SY_PROPERTY_GET(GetMangledName) const std::string &MangledName;

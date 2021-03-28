@@ -119,6 +119,9 @@ namespace Symple::Code
 	GlobalRef<const Token> Symbol::GetName() const
 	{ return nullptr; }
 
+	bool Symbol::GetIsFunction() const
+	{ return false; }
+
 	const std::string &Symbol::GetMangledName() const
-	{ return nullptr; }
+	{ return m_MangledName; }
 }

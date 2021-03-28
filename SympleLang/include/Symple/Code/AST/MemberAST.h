@@ -20,8 +20,6 @@ namespace Symple::Code
 		WeakRef<const Token_t> m_Close;
 		GlobalRef<StatementAst> m_Body;
 
-		std::string m_MangledName;
-
 		friend class SymbolVisitor;
 		friend class TypeVisitor;
 	public:
@@ -31,6 +29,7 @@ namespace Symple::Code
 		virtual AstKind GetKind() const override;
 		virtual WeakRef<const Token_t> GetToken() const override;
 		virtual void Print(std::ostream &, std::string indent = "", std::string_view label = "", bool last = true) const override;
+		virtual bool GetIsFunction() const override;
 		
 		GlobalRef<const TypeAst> GetType() const override;
 		GlobalRef<const Token_t> GetName() const override;
@@ -38,8 +37,6 @@ namespace Symple::Code
 		const ParameterList &GetParameters() const;
 		WeakRef<const Token_t> GetClose() const;
 		GlobalRef<const StatementAst> GetBody() const;
-
-		const std::string &GetMangledName() const override;
 
 		SY_PROPERTY_GET(GetOpen) WeakRef<const Token_t> Open;
 		SY_PROPERTY_GET(GetParameters) const ParameterList &Parameters;

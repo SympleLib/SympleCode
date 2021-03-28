@@ -89,18 +89,18 @@ namespace Symple::Code
 
 	void Emitter::Emit(const GlobalRef<const VariableStatementAst> &var)
 	{
-		auto name = var->Name->Text;
+		decltype(auto) name = var->MangledName;
 		uint32 sz = var->Type->Type->Size;
 		Stalloc(sz);
 		uint32 pos = m_Stack;
-		Emit("_%.*s$%u = -%u", name.length(), name.data(), var->Depth, m_Stack);
+		Emit("%s = -%u", name.c_str(), m_Stack);
 		if (var->Initializer)
 		{
 			Emit(var->Initializer);
 			if (var->Initializer->Type->IsFloat)
-				Emit("\tmovss %s, _%.*s$%u(%s)", Reg(RegKind::Xmm0, sz), name.length(), name.data(), var->Depth, Reg(RegKind::Bp));
+				Emit("\tmovss %s, %s(%s)", Reg(RegKind::Xmm0, sz), name.c_str(), Reg(RegKind::Bp));
 			else
-				Emit("\tmov %s, _%.*s$%u(%s)", Reg(RegKind::Ax, sz), name.length(), name.data(), var->Depth, Reg(RegKind::Bp));
+				Emit("\tmov %s, %s(%s)", Reg(RegKind::Ax, sz), name.c_str(), Reg(RegKind::Bp));
 		}
 	}
 
@@ -187,11 +187,14 @@ namespace Symple::Code
 
 	void Emitter::Emit(const GlobalRef<const NameExpressionAst> &name)
 	{
-		auto sname = name->Name->Text;
-		if (name->Type->IsFloat)
-			Emit("\tmovss _%.*s$%u(%s), %s", sname.length(), sname.data(), name->Depth, Reg(RegKind::Bp), Reg(RegKind::Xmm0));
+		decltype(auto) sname = name->Symbol->MangledName;
+		if (name->Symbol->IsFunction)
+			Emit("\tlea %s, %s", sname.c_str(), Reg(RegKind::Ax, name->Type->Size));
 		else
-			Emit("\tmov _%.*s$%u(%s), %s", sname.length(), sname.data(), name->Depth, Reg(RegKind::Bp), Reg(RegKind::Ax, name->Type->Size));
+			if (name->Type->IsFloat)
+				Emit("\tmovss %s(%s), %s", sname.c_str(), Reg(RegKind::Bp), Reg(RegKind::Xmm0));
+			else
+				Emit("\tmov %s(%s), %s", sname.c_str(), Reg(RegKind::Bp), Reg(RegKind::Ax, name->Type->Size));
 	}
 
 	void Emitter::Emit(const GlobalRef<const BinaryExpressionAst> &expr)
