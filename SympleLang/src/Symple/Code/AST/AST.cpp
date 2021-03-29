@@ -80,8 +80,9 @@ namespace Symple::Code
 		PrintKind(os);
 
 		indent += GetAddIndent(last);
-		m_Type->Print(os << '\n', indent, "Type = ", false);
-		m_Name->Print(os << '\n', indent, "Name = ");
+		m_Type->Print(os << '\n', indent, "Type = ", !m_Name);
+		if (m_Name)
+			m_Name->Print(os << '\n', indent, "Name = ");
 	}
 	
 

@@ -1,8 +1,4 @@
-int Main(int ret, char **args)
-{
-	float arg1 = 5.0;
-	float arg2 = 6.0;
+extern int SayHi();
 
-	return 0.0 / 0.0;
-	return (arg1 * arg2 + (arg1 / arg2)) / 0.0 + 3.0;
-}
+int Main(int, char **) =>
+	ret SayHi();

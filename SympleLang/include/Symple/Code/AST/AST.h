@@ -13,6 +13,7 @@ namespace Symple::Code
 
 	class SYC_API MemberAst;
 	class SYC_API FunctionAst;
+	class SYC_API ExternFunctionAst;
 
 	class SYC_API StatementAst;
 	class SYC_API EmptyStatementAst;
@@ -71,6 +72,7 @@ namespace Symple::Code
 		// Members
 		Member,
 		Function,
+		ExternFunction,
 
 		// Statements
 		Statement,
@@ -104,6 +106,7 @@ namespace Symple::Code
 
 		"Member",
 		"Function",
+		"ExternFunction",
 
 
 		"Statement",

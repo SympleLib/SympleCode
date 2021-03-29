@@ -23,6 +23,8 @@ namespace Symple::Code
 	{
 		if (TokenFacts::IsTypeBase(Current->Kind))
 			return ParseFunction();
+		else if (Current->Is(TokenKind::ExternKeyword))
+			return ParseExternFunction();
 		else
 			throw std::exception("Must be function declaration!");
 	}
@@ -39,6 +41,19 @@ namespace Symple::Code
 		auto body = ParseStatement();
 
 		return MakeRef<FunctionAst>(ty, name, open, params, close, body);
+	}
+
+	GlobalRef<ExternFunctionAst> Parser::ParseExternFunction()
+	{
+		auto key = Match(TokenKind::ExternKeyword);
+		auto ty = ParseType();
+		auto name = Match(TokenKind::Identifier);
+		auto open = Match(TokenKind::OpenParen);
+		auto params = ParseParameters();
+		auto close = Match(TokenKind::CloseParen);
+		Match(TokenKind::Semicolon);
+
+		return MakeRef<ExternFunctionAst>(key, ty, name, open, params, close);
 	}
 
 
@@ -280,7 +295,9 @@ namespace Symple::Code
 	{
 		if (!ty || TokenFacts::IsTypeBase(Current->Kind))
 			ty = ParseType();
-		auto name = Match(TokenKind::Identifier);
+		GlobalRef<const Token> name = nullptr;
+		if (Current->Is(TokenKind::Identifier))
+			name = Next();
 
 		return MakeRef<ParameterAst>(ty, name);
 	}

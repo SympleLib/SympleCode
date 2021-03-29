@@ -16,6 +16,7 @@ namespace Symple::Code
 	private:
 		GlobalRef<MemberAst> ParseMember();
 		GlobalRef<FunctionAst> ParseFunction();
+		GlobalRef<ExternFunctionAst> ParseExternFunction();
 
 		GlobalRef<StatementAst> ParseStatement(bool matchSemicolon = true);
 		GlobalRef<BlockStatementAst> ParseBlockStatement();

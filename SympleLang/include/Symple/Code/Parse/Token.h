@@ -53,13 +53,14 @@ namespace Symple::Code
 		BoolKeyword,
 
 		ReturnKeyword,
+		ExternKeyword,
 
 		// Markings
 		Punctuator = Plus,
 		Keyword = VoidKeyword,
 
 		First = Unknown,
-		Last = ReturnKeyword,
+		Last = ExternKeyword,
 		Count, // Number of token kinds
 	};
 
@@ -110,6 +111,7 @@ namespace Symple::Code
 		"BoolKeyword",
 
 		"ReturnKeyword",
+		"ExternKeyword",
 	};
 
 	SYC_API std::ostream &operator <<(std::ostream &, TokenKind);

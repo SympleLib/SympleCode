@@ -59,7 +59,8 @@ namespace Symple::Code
 		{
 			stackPos += 4;
 			decltype(auto) pname = param->MangledName;
-			Emit("%s = %u", pname.c_str(), stackPos);
+			if (!pname.empty())
+				Emit("%s = %u", pname.c_str(), stackPos);
 		}
 
 		Emit(fn->Body);

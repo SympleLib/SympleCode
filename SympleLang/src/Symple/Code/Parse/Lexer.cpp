@@ -79,6 +79,9 @@ namespace Symple::Code
 
 		ID_KEYWORD(ret, Return);
 		ID_KEYWORD(return, Return);
+
+		ID_KEYWORD(extern, Extern);
+		ID_KEYWORD(external, Extern);
 		
 		return MakeToken(TokenKind::Identifier, beg, &Current);
 	}
