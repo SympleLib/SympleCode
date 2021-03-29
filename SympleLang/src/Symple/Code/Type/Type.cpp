@@ -9,7 +9,13 @@ namespace Symple::Code
 
 	Type::Type(TypeKind kind, uint32 ptrCount, bool isRef)
 		: m_Kind(kind), m_PtrCount(ptrCount), m_Ref(isRef)
-	{}
+	{
+		std::stringstream ss;
+		if (m_PtrCount || m_Ref)
+			ss << m_Ref + m_PtrCount;
+		ss << TypeKindNames[(uint32)m_Kind];
+		m_MangledName = std::move(ss.str());
+	}
 
 	GlobalRef<Type> Type::Deref() const
 	{ return MakeRef<Type>(m_Kind, m_PtrCount - 1, false); }
@@ -68,4 +74,8 @@ namespace Symple::Code
 		//	return 16;
 		}
 	}
+
+
+	const std::string &Type::GetMangledName() const
+	{ return m_MangledName; }
 }

@@ -13,13 +13,14 @@ namespace Symple::Code
 
 		Emit(".global _main");
 		Emit("_main:");
+		Emit("\tsub $%u, %s", 8, Reg(RegKind::Sp));
+		Emit("\tmov %u(%s), %s", 12, Reg(RegKind::Sp), Reg(RegKind::Ax));
+		Emit("\tmov %s, %u(%s)", Reg(RegKind::Ax), 0, Reg(RegKind::Sp));
+		Emit("\tmov %u(%s), %s", 16, Reg(RegKind::Sp), Reg(RegKind::Ax));
+		Emit("\tmov %s, %u(%s)", Reg(RegKind::Sp), 4, Reg(RegKind::Sp));
 		Emit("\txor %s, %s", Reg(RegKind::Ax), Reg(RegKind::Ax));
-		Emit("\tpush %u(%s)", 8, Reg(RegKind::Sp));
-		Emit("\tpush %u(%s)", 8, Reg(RegKind::Sp));
-		Emit("\tcall _Sy$Main$Func");
+		Emit("\tcall _Sy$Main$Func$Int$2Char");
 		Emit("\tadd $%u, %s", 8, Reg(RegKind::Sp));
-		//Emit("\tmovss %s, -%u(%s)", Reg(RegKind::Xmm0), 4, Reg(RegKind::Sp));
-		//Emit("\tmov -%u(%s), %s", 4, Reg(RegKind::Sp), Reg(RegKind::Ax));
 		Emit("\tret");
 
 		for (auto member : m_Unit->Members)

@@ -18,7 +18,14 @@ namespace Symple::Code
 				m_Depths.push_back(m_Names.size());
 				auto fn = Cast<FunctionAst>(member);
 				m_Names.push_back(fn);
+
+				std::stringstream ss;
+				ss << "_Sy$" << fn->m_Name->Text << "$Func";
 				for (auto param : fn->m_Params)
+				{
+					auto ty = param->Type->Type;
+					ss << "$" << ty->MangledName;
+
 					if (param->Name)
 					{
 						std::stringstream ss;
@@ -26,12 +33,11 @@ namespace Symple::Code
 						param->m_MangledName = std::move(ss.str());
 						m_Names.push_back(param);
 					}
+				}
 
 				Visit(fn->m_Body);
 				m_Depths.pop_back();
 
-				std::stringstream ss;
-				ss << "_Sy$" << fn->m_Name->Text << "$Func";
 				fn->m_MangledName = std::move(ss.str());
 				m_Names.push_back(fn);
 				break;
@@ -41,19 +47,24 @@ namespace Symple::Code
 				m_Depths.push_back(m_Names.size());
 				auto fn = Cast<ExternFunctionAst>(member);
 				m_Names.push_back(fn);
-				for (auto param : fn->m_Params)
-					if (param->Name)
-					{
-						std::stringstream ss;
-						ss << "_Sy$" << param->Name->Text << "$Var$" << m_Depths.size();
-						param->m_MangledName = std::move(ss.str());
-						m_Names.push_back(param);
-					}
-
-				m_Depths.pop_back();
 
 				std::stringstream ss;
 				ss << "_Sy$" << fn->m_Name->Text << "$Func";
+				for (auto param : fn->m_Params)
+				{
+					auto ty = param->Type->Type;
+					ss << "$" << ty->MangledName;
+
+					if (param->Name)
+					{
+						std::stringstream pss;
+						pss << "_Sy$" << param->Name->Text << "$Var$" << m_Depths.size();
+						param->m_MangledName = std::move(pss.str());
+						m_Names.push_back(param);
+					}
+				}
+
+				m_Depths.pop_back();
 				fn->m_MangledName = std::move(ss.str());
 				m_Names.push_back(fn);
 				break;
