@@ -24,6 +24,8 @@ namespace Symple::Code
 				ss << "_Sy$" << fn->m_Name->Text << "$Func";
 				fn->m_MangledName = std::move(ss.str());
 				m_Depths.pop_back();
+
+				m_Names.push_back(fn);
 			}
 		}
 	}
@@ -61,6 +63,9 @@ namespace Symple::Code
 	{
 		switch (expr->Kind)
 		{
+		case AstKind::CallExpression:
+			Visit(Cast<CallExpressionAst>(expr)->m_Func);
+			break;
 		case AstKind::NameExpression:
 		{
 			auto nameExpr = Cast<NameExpressionAst>(expr);

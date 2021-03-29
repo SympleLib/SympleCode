@@ -101,7 +101,6 @@ namespace Symple::Code
 	GlobalRef<ExpressionStatementAst> Parser::ParseExpressionStatement()
 	{
 		auto expr = ParseExpression();
-		Match(TokenKind::Semicolon);
 		return MakeRef<ExpressionStatementAst>(expr);
 	}
 
