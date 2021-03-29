@@ -126,10 +126,9 @@ namespace Symple::Code
 	{
 		auto operand = ParsePrefixExpression(parentPrecedence);
 		// Hard coded for now
-		if (Current->Is(TokenKind::OpenParen))
-			return ParseCallExpression(operand);
-		else
-			return operand;
+		while (Current->Is(TokenKind::OpenParen))
+			operand = ParseCallExpression(operand);
+		return operand;
 	}
 
 	GlobalRef<ExpressionAst> Parser::ParseBinaryExpression(uint32 parentPrecedence)
