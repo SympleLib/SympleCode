@@ -46,8 +46,8 @@ namespace Symple::Code
 		for (auto param : fn->Parameters)
 		{
 			stackPos += 4;
-			auto pname = param->Name->Text;
-			Emit("_%.*s$%u = %u", pname.length(), pname.data(), 1, stackPos);
+			decltype(auto) pname = param->MangledName;
+			Emit("%s = %u", pname.c_str(), stackPos);
 		}
 
 		Emit(fn->Body);

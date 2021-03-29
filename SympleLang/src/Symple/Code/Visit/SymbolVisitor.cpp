@@ -17,7 +17,12 @@ namespace Symple::Code
 				auto fn = Cast<FunctionAst>(member);
 				m_Names.push_back(fn);
 				for (auto param : fn->m_Params)
+				{
+					std::stringstream ss;
+					ss << "_Sy$" << param->Name->Text << "$Var$" << m_Depths.size();
+					param->m_MangledName = std::move(ss.str());
 					m_Names.push_back(param);
+				}
 
 				Visit(fn->m_Body);
 				std::stringstream ss;

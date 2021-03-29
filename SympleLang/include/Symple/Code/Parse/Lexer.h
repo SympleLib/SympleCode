@@ -22,7 +22,7 @@ namespace Symple::Code
 
 		SY_PROPERTY_GET(Peek) const char &Current;
 
-		GlobalRef<Token> MakeToken(TokenKind, const char *beg, const char *end);
+		GlobalRef<Token> MakeToken(TokenKind, const char *beg, const char *end, bool isIdKey = false);
 
 		GlobalRef<Token> LexNumber();
 		GlobalRef<Token> LexIdentifier();

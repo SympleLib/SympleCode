@@ -5,12 +5,17 @@ namespace Symple::Code
 	SYC_API std::ostream &operator <<(std::ostream &os, TokenKind kind)
 	{ return os <<TokenKindNames[(uint32)kind]; }
 
-	Token::Token(TokenKind kind, const char *beg, const char *end, const GlobalRef<const Symple::Code::File> &file, uint32 ln, uint32 disLn, uint32 col)
-		: m_Kind(kind), m_Text(beg, end - beg), m_File(file), m_Line(ln), m_DisplayLine(disLn), m_Column(col - (end - beg)) {}
+	Token::Token(TokenKind kind, const char *beg, const char *end, const GlobalRef<const Symple::Code::File> &file, uint32 ln, uint32 disLn, uint32 col, bool isIdKey)
+		: m_Kind(kind), m_Text(beg, end - beg), m_File(file), m_Line(ln), m_DisplayLine(disLn), m_Column(col - (end - beg)), m_IdKey(isIdKey) {}
 
 
 	bool Token::Is(TokenKind k) const
-	{ return m_Kind == k; }
+	{
+		if (m_IdKey && k == TokenKind::Identifier)
+			return true;
+		else
+			return m_Kind == k;
+	}
 
 
 	void Token::Print(std::ostream &os, std::string indent, std::string_view label, bool last) const
@@ -38,4 +43,8 @@ namespace Symple::Code
 
 	uint32 Token::GetColumn() const
 	{ return m_Column; }
+
+
+	bool Token::GetIsIdentifierKeyword() const
+	{ return m_IdKey; }
 }

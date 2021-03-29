@@ -123,8 +123,10 @@ namespace Symple::Code
 		const GlobalRef<const File> m_File;
 		// Line, Display Line, Column
 		uint32 m_Line, m_DisplayLine, m_Column;
+
+		bool m_IdKey: 1; // Stores whether this is an Identifier-Keyword
 	public:
-		Token(TokenKind, const char *begin, const char *end, const GlobalRef<const File> &, uint32 line, uint32 displayLine, uint32 column);
+		Token(TokenKind, const char *begin, const char *end, const GlobalRef<const File> &, uint32 line, uint32 displayLine, uint32 column, bool isIdentifierKeyword);
 
 		bool Is(TokenKind) const;
 		template <typename... Args>
@@ -141,6 +143,8 @@ namespace Symple::Code
 		uint32 GetDisplayLine() const;
 		uint32 GetColumn() const;
 
+		bool GetIsIdentifierKeyword() const;
+
 		SY_PROPERTY_GET(GetKind) TokenKind Kind;
 		SY_PROPERTY_GET(GetText) std::string_view Text;
 
@@ -148,6 +152,8 @@ namespace Symple::Code
 		SY_PROPERTY_GET(GetLine) uint32 Line;
 		SY_PROPERTY_GET(GetDisplayLine) uint32 DisplayLine;
 		SY_PROPERTY_GET(GetColumn) uint32 Column;
+
+		SY_PROPERTY_GET(GetIsIdentifierKeyword) bool IsIdentifierKeyword;
 	};
 
 	using TokenList = std::vector<GlobalRef<Token>>;

@@ -54,6 +54,7 @@ namespace Symple::Code
 	}
 	
 	#define KEYWORD(key, word) if (identifier == #key) return MakeToken(TokenKind::##word##Keyword, beg, &Current)
+	#define ID_KEYWORD(key, word) if (identifier == #key) return MakeToken(TokenKind::##word##Keyword, beg, &Current, true)
 	GlobalRef<Token> Lexer::LexIdentifier()
 	{
 		const char *beg = &Next();
@@ -76,8 +77,8 @@ namespace Symple::Code
 		KEYWORD(_Bool, Bool);
 		KEYWORD(bool, Bool);
 
-		KEYWORD(ret, Return);
-		KEYWORD(return, Return);
+		ID_KEYWORD(ret, Return);
+		ID_KEYWORD(return, Return);
 		
 		return MakeToken(TokenKind::Identifier, beg, &Current);
 	}
@@ -122,6 +123,6 @@ namespace Symple::Code
 	}
 
 
-	GlobalRef<Token> Lexer::MakeToken(TokenKind kind, const char *beg, const char *end)
-	{ return MakeRef<Token>(kind, beg, end, m_File, m_Line, m_DisplayLine, m_Column); }
+	GlobalRef<Token> Lexer::MakeToken(TokenKind kind, const char *beg, const char *end, bool isIdKey)
+	{ return MakeRef<Token>(kind, beg, end, m_File, m_Line, m_DisplayLine, m_Column, isIdKey); }
 }

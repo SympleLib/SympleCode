@@ -183,6 +183,10 @@ namespace Symple::Code
 			else
 				return ParseParenthasizedExpression(open);
 		}
+
+		default:
+			if (Current->Is(TokenKind::Identifier)) // Identifier Keywords
+				return ParseNameExpression();
 		}
 	}
 
