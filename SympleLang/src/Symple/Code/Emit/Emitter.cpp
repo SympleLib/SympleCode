@@ -7,7 +7,7 @@ namespace Symple::Code
 
 	void Emitter::Emit()
 	{
-		auto file = m_Unit->EndOfFile.lock()->File; // Unsafe, will fix later...
+		auto file = m_Unit->EndOfFile->File;
 		m_FNum = file->Number;
 		Emit(".file %u \"%s\"", m_FNum, (file->Name.substr(file->Name.find_last_of('/') + 1)).c_str());
 

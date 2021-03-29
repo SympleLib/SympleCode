@@ -86,7 +86,7 @@ namespace Symple::Code
 	}
 	
 
-	CompilationUnitAst::CompilationUnitAst(const MemberList &members, const WeakRef<const Token_t> &eof)
+	CompilationUnitAst::CompilationUnitAst(const MemberList &members, const GlobalRef<const Token_t> &eof)
 		: m_Members(members), m_EndOfFile(eof) {}
 
 	AstKind CompilationUnitAst::GetKind() const
@@ -99,7 +99,7 @@ namespace Symple::Code
 	const MemberList &CompilationUnitAst::GetMembers() const
 	{ return m_Members; }
 
-	WeakRef<const Token_t> CompilationUnitAst::GetEndOfFile() const
+	GlobalRef<const Token_t> CompilationUnitAst::GetEndOfFile() const
 	{ return m_EndOfFile; }
 
 	void CompilationUnitAst::Print(std::ostream &os, std::string indent, std::string_view label, bool last) const
@@ -110,7 +110,8 @@ namespace Symple::Code
 		indent += GetAddIndent(last);
 
 		for (auto member : m_Members)
-			member->Print(os << '\n', indent, "", member == m_Members.back());
+			member->Print(os << '\n', indent, "", false);
+		m_EndOfFile->Print(os << '\n', indent, "EOF = ");
 	}
 
 

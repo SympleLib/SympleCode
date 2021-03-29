@@ -196,22 +196,22 @@ namespace Symple::Code
 	{
 	private:
 		MemberList m_Members;
-		WeakRef<const Token_t> m_EndOfFile;
+		GlobalRef<const Token_t> m_EndOfFile;
 
 		friend class SymbolVisitor;
 		friend class TypeVisitor;
 	public:
-		CompilationUnitAst(const MemberList &members, const WeakRef<const Token_t> &endOfFile);
+		CompilationUnitAst(const MemberList &members, const GlobalRef<const Token_t> &endOfFile);
 
 		virtual AstKind GetKind() const override;
 		virtual WeakRef<const Token_t> GetToken() const override;
 		virtual void Print(std::ostream &, std::string indent = "", std::string_view label = "", bool last = true) const override;
 
 		const MemberList &GetMembers() const;
-		WeakRef<const Token_t> GetEndOfFile() const;
+		GlobalRef<const Token_t> GetEndOfFile() const;
 
 		SY_PROPERTY_GET(GetMembers) const MemberList &Members;
-		SY_PROPERTY_GET(GetEndOfFile) WeakRef<const Token_t> EndOfFile;
+		SY_PROPERTY_GET(GetEndOfFile) GlobalRef<const Token_t> EndOfFile;
 	};
 }
 

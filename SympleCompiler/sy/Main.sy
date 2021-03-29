@@ -1,4 +1,4 @@
-extern int SayHi();
+int SayHi();
 
 int Main(int, char **) =>
-	ret SayHi();
+	ret SayHi / SayHi;
