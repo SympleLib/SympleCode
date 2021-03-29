@@ -119,21 +119,27 @@ namespace Symple::Code
 			return MakeRef<UnaryExpressionAst>(op, operand);
 		}
 		else
-			return ParsePrimaryExpression();
+			return ParsePostfixExpression(parentPrecedence);
 	}
 
 	GlobalRef<ExpressionAst> Parser::ParsePostfixExpression(uint32 parentPrecedence)
 	{
-		auto operand = ParsePrefixExpression(parentPrecedence);
+		auto operand = ParsePrimaryExpression();
 		// Hard coded for now
-		while (Current->Is(TokenKind::OpenParen))
-			operand = ParseCallExpression(operand);
-		return operand;
+		while (true)
+			switch (Current->Kind)
+			{
+			case TokenKind::OpenParen:
+				operand = ParseCallExpression(operand);
+				break;
+			default:
+				return operand;
+			}
 	}
 
 	GlobalRef<ExpressionAst> Parser::ParseBinaryExpression(uint32 parentPrecedence)
 	{
-		auto left = ParsePostfixExpression();
+		auto left = ParsePrefixExpression();
 		while (true)
 		{
 			uint32 precedence = Precedence::Binary(Current->Kind);
