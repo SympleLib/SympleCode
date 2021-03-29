@@ -80,12 +80,27 @@ namespace Symple::Code
 			nameExpr->m_Type = nameExpr->m_Symbol->Type->Type;
 			break;
 		}
+		case AstKind::PunExpression:
+		{
+			auto cexpr = Cast<PunExpressionAst>(expr);
+			Visit(cexpr->m_Value);
+			expr->m_Type = cexpr->m_TypeAst->m_Type;
+			break;
+		}
 		case AstKind::CastExpression:
-			expr->m_Type = Cast<CastExpressionAst>(expr)->m_TypeAst->m_Type;
+		{
+			auto cexpr = Cast<CastExpressionAst>(expr);
+			Visit(cexpr->m_Value);
+			expr->m_Type = cexpr->m_TypeAst->m_Type;
 			break;
+		}
 		case AstKind::CallExpression:
-			expr->m_Type = Cast<CallExpressionAst>(expr)->m_Func->m_Type;
+		{
+			auto cexpr = Cast<CallExpressionAst>(expr);
+			Visit(cexpr->m_Func);
+			expr->m_Type = cexpr->m_Func->m_Type;
 			break;
+		}
 		case AstKind::UnaryExpression:
 		{
 			auto unExpr = Cast<UnaryExpressionAst>(expr);

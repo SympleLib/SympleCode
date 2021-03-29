@@ -175,6 +175,8 @@ namespace Symple::Code
 			return ParseNameExpression();
 		case TokenKind::Number:
 			return ParseLiteralExpression();
+		case TokenKind::OpenBrace:
+			return ParsePunExpression();
 		case TokenKind::OpenParen:
 		{
 			auto open = Next();
@@ -188,6 +190,16 @@ namespace Symple::Code
 			if (Current->Is(TokenKind::Identifier)) // Identifier Keywords
 				return ParseNameExpression();
 		}
+	}
+
+	GlobalRef<PunExpressionAst> Parser::ParsePunExpression()
+	{
+		auto open = Match(TokenKind::OpenBrace);
+		auto ty = ParseType();
+		auto close = Match(TokenKind::CloseBrace);
+		auto val = ParsePostfixExpression();
+
+		return MakeRef<PunExpressionAst>(open, ty, close, val);
 	}
 
 	GlobalRef<CastExpressionAst> Parser::ParseCastExpression(GlobalRef<const Token> open)

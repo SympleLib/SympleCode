@@ -1,2 +1,2 @@
-float Main(int ret, char **args) =>
-	ret ret;
+int Main(int ret, char **args) =>
+	ret {int}(6.9);

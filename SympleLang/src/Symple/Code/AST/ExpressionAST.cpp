@@ -15,6 +15,42 @@ namespace Symple::Code
 	{ return m_Type; }
 
 
+	PunExpressionAst::PunExpressionAst(WeakRef<const Token_t> open, GlobalRef<TypeAst_t> ty, WeakRef<const Token_t> close, GlobalRef<ExpressionAst> val)
+		: m_Open(open), m_TypeAst(ty), m_Close(close), m_Value(val) {}
+
+	AstKind PunExpressionAst::GetKind() const
+	{ return AstKind::PunExpression; }
+
+	WeakRef<const Token_t> PunExpressionAst::GetToken() const
+	{ return m_Close; }
+
+	WeakRef<const Token_t> PunExpressionAst::GetOpen() const
+	{ return m_Open; }
+
+	GlobalRef<const TypeAst_t> PunExpressionAst::GetTypeAst() const
+	{ return m_TypeAst; }
+
+	WeakRef<const Token_t> PunExpressionAst::GetClose() const
+	{ return m_Close; }
+
+	GlobalRef<const ExpressionAst> PunExpressionAst::GetValue() const
+	{ return m_Value; }
+
+	void PunExpressionAst::Print(std::ostream & os, std::string indent, std::string_view label, bool last) const
+	{
+		PrintIndent(os, indent, label, last);
+		PrintKind(os);
+
+		indent += GetAddIndent(last);
+		if (!m_Open.expired())
+			m_Open.lock()->Print(os << '\n', indent, "Open = ", false);
+		m_TypeAst->Print(os << '\n', indent, "TypeAst = ", false);
+		if (!m_Close.expired())
+			m_Close.lock()->Print(os << '\n', indent, "Close = ", false);
+		m_Value->Print(os << '\n', indent, "Value = ");
+	}
+
+
 	CallExpressionAst::CallExpressionAst(GlobalRef<ExpressionAst> func, WeakRef<const Token_t> open, const ExpressionList &params, WeakRef<const Token_t> close)
 		: m_Func(func), m_Open(open), m_Params(params), m_Close(close) {}
 

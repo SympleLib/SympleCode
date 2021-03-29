@@ -22,6 +22,7 @@ namespace Symple::Code
 	class SYC_API ExpressionStatementAst;
 
 	class SYC_API ExpressionAst;
+	class SYC_API PunExpressionAst;
 	class SYC_API CastExpressionAst;
 	class SYC_API CallExpressionAst;
 	class SYC_API NameExpressionAst;
@@ -81,6 +82,7 @@ namespace Symple::Code
 
 		// Expressions
 		Expression,
+		PunExpression,
 		CastExpression,
 		CallExpression,
 		NameExpression,
@@ -113,6 +115,7 @@ namespace Symple::Code
 
 
 		"Expression",
+		"PunExpression",
 		"CastExpression",
 		"CallExpression",
 		"NameExpression",

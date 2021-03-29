@@ -14,8 +14,8 @@ namespace Symple::Code
 		Emit("\tpush %u(%s)", 8, Reg(RegKind::Sp));
 		Emit("\tcall _Sy$Main$Func");
 		Emit("\tadd $%u, %s", 8, Reg(RegKind::Sp));
-		Emit("\tmovss %s, -%u(%s)", Reg(RegKind::Xmm0), 4, Reg(RegKind::Sp));
-		Emit("\tmov -%u(%s), %s", 4, Reg(RegKind::Sp), Reg(RegKind::Ax));
+		//Emit("\tmovss %s, -%u(%s)", Reg(RegKind::Xmm0), 4, Reg(RegKind::Sp));
+		//Emit("\tmov -%u(%s), %s", 4, Reg(RegKind::Sp), Reg(RegKind::Ax));
 		Emit("\tret");
 
 		for (auto member : m_Unit->Members)
@@ -109,6 +109,9 @@ namespace Symple::Code
 	{
 		switch (expr->Kind)
 		{
+		case AstKind::PunExpression:
+			Emit(Cast<const PunExpressionAst>(expr));
+			break;
 		case AstKind::CastExpression:
 			Emit(Cast<const CastExpressionAst>(expr));
 			break;
@@ -131,6 +134,28 @@ namespace Symple::Code
 		default:
 			Emit("\txor %s, %s # Empty expr", Reg(RegKind::Ax), Reg(RegKind::Ax));
 			break;
+		}
+	}
+
+	void Emitter::Emit(const GlobalRef<const PunExpressionAst> &pun)
+	{
+		Emit(pun->Value);
+
+		if (pun->Type->IsFloat && !pun->Value->Type->IsFloat)
+		{
+			Stalloc();
+			uint32 pos = m_Stack;
+			Emit("\tmov %s, -%u(%s)", Reg(RegKind::Ax), pos, Reg(RegKind::Bp));
+			Emit("\tmovss -%u(%s), %s", pos, Reg(RegKind::Bp), Reg(RegKind::Xmm0));
+			Staf();
+		}
+		else if (!pun->Type->IsFloat && pun->Value->Type->IsFloat)
+		{
+			Stalloc();
+			uint32 pos = m_Stack;
+			Emit("\tmovss %s, -%u(%s)", Reg(RegKind::Xmm0), pos, Reg(RegKind::Bp));
+			Emit("\tmov -%u(%s), %s", pos, Reg(RegKind::Bp), Reg(RegKind::Ax));
+			Staf();
 		}
 	}
 
