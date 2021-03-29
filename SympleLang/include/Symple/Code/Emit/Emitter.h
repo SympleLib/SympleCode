@@ -10,6 +10,8 @@ namespace Symple::Code
 	private:
 		File m_File;
 
+		// File num, Func id
+		uint32 m_FNum = 0, m_FId = 0;
 		uint32 m_Stack = 0, m_StackSize = 0;
 		GlobalRef<const CompilationUnitAst> m_Unit;
 	public:
@@ -32,6 +34,7 @@ namespace Symple::Code
 		void Stalloc(uint32 bytes = 4);
 		void Staf(uint32 bytes = 4);
 
+		void Emit(const GlobalRef<const Token> &tok);
 		template<typename... Args>
 		void Emit(_Printf_format_string_ const char *fmt, Args&&... args);
 

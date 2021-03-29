@@ -7,6 +7,11 @@ namespace Symple::Code
 
 	void Emitter::Emit()
 	{
+		auto file = m_Unit->EndOfFile.lock()->File; // Unsafe, will fix later...
+		m_FNum = file->Number;
+		Emit(".file %u \"%s\"", m_FNum, (file->Name.substr(file->Name.find_last_of('/') + 1)).c_str());
+		Emit(".cv_file %u \"%s\"", m_FNum, (file->Name.substr(file->Name.find_last_of('/') + 1)).c_str());
+
 		Emit(".global _main");
 		Emit("_main:");
 		Emit("\txor %s, %s", Reg(RegKind::Ax), Reg(RegKind::Ax));
@@ -23,6 +28,7 @@ namespace Symple::Code
 			{
 			case AstKind::Function:
 				Emit(Cast<const FunctionAst>(member));
+				m_FId++;
 				break;
 			}
 
@@ -37,6 +43,13 @@ namespace Symple::Code
 
 		Emit(".global %s", name.c_str());
 		Emit("%s:", name.c_str());
+
+		// Debug Symbols (I guess...)
+		Emit(".Lfunc_begin%u:", m_FId);
+		Emit(".cv_func_id %u", m_FId);
+		Emit(fn->Name);
+		Emit(".cv_fpo_proc %s %u", name.c_str(), fn->Parameters.size() * 4);
+
 		Emit("\tpush %s", Reg(RegKind::Bp));
 		Emit("\tmov %s, %s", Reg(RegKind::Sp), Reg(RegKind::Bp));
 		Emit("\tsub $%s.StackSize, %s", name.c_str(), Reg(RegKind::Sp));
@@ -63,7 +76,8 @@ namespace Symple::Code
 
 	void Emitter::Emit(const GlobalRef<const StatementAst> &stmt)
 	{
-		Emit("");
+		if (!stmt->Token.expired())
+			Emit(stmt->Token.lock());
 
 		switch (stmt->Kind)
 		{
@@ -85,6 +99,8 @@ namespace Symple::Code
 			Emit(Cast<const VariableStatementAst>(stmt));
 			break;
 		}
+
+		Emit("");
 	}
 
 	void Emitter::Emit(const GlobalRef<const VariableStatementAst> &var)
@@ -107,6 +123,9 @@ namespace Symple::Code
 
 	void Emitter::Emit(const GlobalRef<const ExpressionAst> &expr)
 	{
+		if (!expr->Token.expired())
+			Emit(expr->Token.lock());
+
 		switch (expr->Kind)
 		{
 		case AstKind::PunExpression:
@@ -287,8 +306,8 @@ namespace Symple::Code
 		else
 		{
 			Emit(expr->Right);
-			uint32 pos = m_Stack;
 			Stalloc();
+			uint32 pos = m_Stack;
 			Emit("\tmov %s, -%u(%s)", Reg(RegKind::Ax), pos, Reg(RegKind::Bp));
 			Emit(expr->Left);
 			Emit("\tmov -%u(%s), %s", pos, Reg(RegKind::Bp), Reg(RegKind::Bx));
@@ -356,6 +375,9 @@ namespace Symple::Code
 	void Emitter::Staf(uint32 bytes)
 	{ m_Stack -= bytes; }
 
+
+	void Emitter::Emit(const GlobalRef<const Token> &tok)
+	{ Emit(".cv_loc %u %u %u %u", m_FId, m_FNum, tok->DisplayLine, tok->Column); }
 
 	template<typename... Args>
 	void Emitter::Emit(_Printf_format_string_ const char *fmt, Args&&... args)

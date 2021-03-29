@@ -76,7 +76,7 @@ int main()
 	Emitter emmiter(unit);
 	emmiter.Emit();
 
-	system("clang -m32 bin/Out.S -o bin/Out.exe");
+	system("clang -m32 bin/Out.S -o bin/Out.exe --debug");
 	Console.Color = ConsoleColor::Yellow;
 	puts("Starting program...");
 	Console.Color = ConsoleColor::Reset;

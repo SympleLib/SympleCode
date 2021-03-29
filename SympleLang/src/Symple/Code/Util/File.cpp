@@ -2,7 +2,7 @@
 
 namespace Symple::Code
 {
-	uint32 File::s_NextNum;
+	uint32 File::s_NextNum = 1;
 
 	File::File(const std::string &name, FilePermissions perms)
 		: m_Name(name), m_Perms(perms)

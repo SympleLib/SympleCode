@@ -1,2 +1,2 @@
 int Main(int ret, char **args) =>
-	ret {int}(6.9);
+	ret {int}(6.0 * 9.0);
