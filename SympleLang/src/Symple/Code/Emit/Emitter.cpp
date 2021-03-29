@@ -37,6 +37,7 @@ namespace Symple::Code
 
 	void Emitter::Emit(const GlobalRef<const FunctionAst> &fn)
 	{
+		m_Func = fn;
 		m_Stack = m_StackSize = 0;
 		decltype(auto) name = fn->MangledName;
 
@@ -64,6 +65,7 @@ namespace Symple::Code
 		Emit(fn->Body);
 
 		Emit("");
+		Emit("%s.Return:", fn->MangledName.c_str());
 		Emit("\tmov %s, %s", Reg(RegKind::Bp), Reg(RegKind::Sp));
 		Emit("\tpop %s", Reg(RegKind::Bp));
 		Emit("\tret");
@@ -89,7 +91,7 @@ namespace Symple::Code
 			break;
 		}
 		case AstKind::ReturnStatement:
-			Emit(Cast<const ReturnStatementAst>(stmt)->Value);
+			Emit(Cast<const ReturnStatementAst>(stmt));
 			break;
 		case AstKind::ExpressionStatement:
 			Emit(Cast<const ExpressionStatementAst>(stmt)->Expression);
@@ -100,6 +102,12 @@ namespace Symple::Code
 		}
 
 		Emit("");
+	}
+
+	void Emitter::Emit(const GlobalRef<const ReturnStatementAst> &ret)
+	{
+		Emit(ret->Value);
+		Emit("\tjmp %s.Return", m_Func->MangledName.c_str());
 	}
 
 	void Emitter::Emit(const GlobalRef<const VariableStatementAst> &var)
@@ -257,8 +265,8 @@ namespace Symple::Code
 			Emit(expr->Right);
 			Stalloc();
 			uint32 pos = m_Stack;
-			Emit("\tmovss %s, -%u(%s)", Reg(RegKind::Xmm0), pos, Reg(RegKind::Bp));
 			Emit(expr->Left);
+			Emit("\tmovss %s, -%u(%s)", Reg(RegKind::Xmm0), pos, Reg(RegKind::Bp));
 			Emit("\tmovss -%u(%s), %s", pos, Reg(RegKind::Bp), Reg(RegKind::Xmm1));
 			Staf();
 

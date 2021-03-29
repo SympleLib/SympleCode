@@ -56,7 +56,7 @@ namespace Symple::Code
 			auto var = Cast<VariableStatementAst>(stmt);
 			std::stringstream ss;
 			var->m_Depth = m_Depths.size();
-			ss << "_Sy$" << var << "$Var$" << var->m_Depth;
+			ss << "_Sy$" << var->Name->Text << "$Var$" << var->m_Depth;
 			var->m_MangledName = std::move(ss.str());
 			m_Names.push_back(var);
 			break;

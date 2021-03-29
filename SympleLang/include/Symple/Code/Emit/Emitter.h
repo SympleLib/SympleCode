@@ -9,6 +9,7 @@ namespace Symple::Code
 	{
 	private:
 		File m_File;
+		GlobalRef<const FunctionAst> m_Func;
 
 		// File num, Func id
 		uint32 m_FNum = 0, m_FId = 0;
@@ -21,6 +22,7 @@ namespace Symple::Code
 		void Emit(const GlobalRef<const FunctionAst> &function);
 
 		void Emit(const GlobalRef<const StatementAst> &statement);
+		void Emit(const GlobalRef<const ReturnStatementAst> &ret);
 		void Emit(const GlobalRef<const VariableStatementAst> &var);
 
 		void Emit(const GlobalRef<const ExpressionAst> &expression);
