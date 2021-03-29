@@ -10,7 +10,6 @@ namespace Symple::Code
 		auto file = m_Unit->EndOfFile.lock()->File; // Unsafe, will fix later...
 		m_FNum = file->Number;
 		Emit(".file %u \"%s\"", m_FNum, (file->Name.substr(file->Name.find_last_of('/') + 1)).c_str());
-		Emit(".cv_file %u \"%s\"", m_FNum, (file->Name.substr(file->Name.find_last_of('/') + 1)).c_str());
 
 		Emit(".global _main");
 		Emit("_main:");
@@ -46,9 +45,8 @@ namespace Symple::Code
 
 		// Debug Symbols (I guess...)
 		Emit(".Lfunc_begin%u:", m_FId);
-		Emit(".cv_func_id %u", m_FId);
 		Emit(fn->Name);
-		Emit(".cv_fpo_proc %s %u", name.c_str(), fn->Parameters.size() * 4);
+		Emit(".cfi_startproc");
 
 		Emit("\tpush %s", Reg(RegKind::Bp));
 		Emit("\tmov %s, %s", Reg(RegKind::Sp), Reg(RegKind::Bp));
@@ -70,6 +68,7 @@ namespace Symple::Code
 		Emit("\tpop %s", Reg(RegKind::Bp));
 		Emit("\tret");
 
+		Emit(".cfi_endproc");
 		Emit("%s.StackSize = %u", name.c_str(), m_StackSize);
 	}
 
@@ -356,7 +355,7 @@ namespace Symple::Code
 			fVal = strtod(literal.data(), nullptr);
 			Stalloc();
 			uint32 pos = m_Stack;
-			Emit("\tmovl $0x%x, -%u(%s) # Float %f", iVal, pos, Reg(RegKind::Bp), fVal);
+			Emit("\tmovl $0x%x, -%u(%s) # Float %g", iVal, pos, Reg(RegKind::Bp), fVal);
 			Emit("\tmovss -%u(%s), %s", pos, Reg(RegKind::Bp), Reg(RegKind::Xmm0));
 			Staf();
 		}
@@ -377,7 +376,7 @@ namespace Symple::Code
 
 
 	void Emitter::Emit(const GlobalRef<const Token> &tok)
-	{ Emit(".cv_loc %u %u %u %u", m_FId, m_FNum, tok->DisplayLine, tok->Column); }
+	{ Emit(".loc %u %u %u", m_FNum, tok->DisplayLine, tok->Column); }
 
 	template<typename... Args>
 	void Emitter::Emit(_Printf_format_string_ const char *fmt, Args&&... args)
