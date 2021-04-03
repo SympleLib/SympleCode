@@ -219,6 +219,8 @@ namespace Symple::Code
 		default:
 			if (Current->Is(TokenKind::Identifier)) // Identifier Keywords
 				return ParseNameExpression();
+			else
+				throw std::exception("Invalid Primary Expression");
 		}
 	}
 

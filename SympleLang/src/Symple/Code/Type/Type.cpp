@@ -14,7 +14,7 @@ namespace Symple::Code
 		if (m_PtrCount || m_Ref)
 			ss << m_Ref + m_PtrCount;
 		ss << TypeKindNames[(uint32)m_Kind];
-		m_MangledName = std::move(ss.str());
+		m_MangledName = ss.str();
 	}
 
 	GlobalRef<Type> Type::Deref() const
@@ -72,6 +72,9 @@ namespace Symple::Code
 		//	return 8;
 		//case TypeKind::Triple:
 		//	return 16;
+
+		default:
+			return -1;
 		}
 	}
 

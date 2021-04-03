@@ -19,7 +19,7 @@ namespace Symple::Code
 		Emit("\tmov %u(%s), %s", 16, Reg(RegKind::Sp), Reg(RegKind::Ax));
 		Emit("\tmov %s, %u(%s)", Reg(RegKind::Sp), 4, Reg(RegKind::Sp));
 		Emit("\txor %s, %s", Reg(RegKind::Ax), Reg(RegKind::Ax));
-		Emit("\tcall _Sy$Main$Func$Int$2Char");
+		Emit("\tcall _Syc$Main$Func$Int$2Char");
 		Emit("\tadd $%u, %s", 8, Reg(RegKind::Sp));
 		Emit("\tret");
 
@@ -235,9 +235,9 @@ namespace Symple::Code
 		uint32 off = call->Parameters.size() * 4;
 		for (auto param : call->Parameters)
 		{
+			off -= 4;
 			Emit(param);
 			Emit("\tmov %s, %u(%s)", Reg(RegKind::Ax), off, Reg(RegKind::Sp));
-			off -= 4;
 		}
 		if (sz)
 		{
@@ -252,7 +252,7 @@ namespace Symple::Code
 	{
 		decltype(auto) sname = name->Symbol->MangledName;
 		if (name->Symbol->IsFunction)
-			Emit("\tlea %s, %s", sname.c_str(), Reg(RegKind::Ax, name->Type->Size));
+			Emit("\tlea %s, %s", sname.c_str(), Reg(RegKind::Ax));
 		else
 			if (name->Type->IsFloat)
 				Emit("\tmovss %s(%s), %s", sname.c_str(), Reg(RegKind::Bp), Reg(RegKind::Xmm0));
@@ -362,7 +362,7 @@ namespace Symple::Code
 				float fVal;
 				int iVal;
 			};
-			fVal = strtod(literal.data(), nullptr);
+			fVal = strtof(literal.data(), nullptr);
 			Stalloc();
 			uint32 pos = m_Stack;
 			Emit("\tmovl $0x%x, -%u(%s) # Float %g", iVal, pos, Reg(RegKind::Bp), fVal);
@@ -403,6 +403,7 @@ namespace Symple::Code
 			return 'w';
 		if (sz <= 4)
 			return 'l';
+		return 0;
 	}
 
 	constexpr const char *Emitter::Reg(RegKind kind, uint32 sz)

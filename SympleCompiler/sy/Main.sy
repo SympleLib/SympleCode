@@ -1,3 +1,7 @@
-void puts(char *) __ccall;
+extern void putchar(char) ccall;
 
-int Main(int, char **) __syccall;
+int Main(int, char **)
+{
+	putchar(69); // E
+	ret 0;
+}

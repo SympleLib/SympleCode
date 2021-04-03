@@ -1,6 +1,7 @@
 ﻿#pragma once
 
 #include "Symple/Code/AST/AST.h"
+#include "Symple/Code/Visit/VisitMe.h"
 
 namespace Symple::Code
 {
@@ -14,11 +15,14 @@ namespace Symple::Code
 		std::vector<uint32> m_Depths;
 		std::vector<GlobalRef<const Symbol>> m_Names;
 	public:
-		SymbolVisitor(GlobalRef<CompilationUnitAst> compilationUnit);
+		SymbolVisitor(GlobalRef<CompilationUnitAst>);
 		void Visit();
 	private:
-		void Visit(GlobalRef<StatementAst> statement);
-		void Visit(GlobalRef<ExpressionAst> expression);
+		void Mangle(GlobalRef<Function>);
+		void Mangle(GlobalRef<VariableStatementAst>);
+
+		void Visit(GlobalRef<StatementAst>);
+		void Visit(GlobalRef<ExpressionAst>);
 	};
 
 	class SYC_API TypeVisitor: public Visitor
@@ -27,26 +31,10 @@ namespace Symple::Code
 		GlobalRef<FunctionAst> m_Func;
 		GlobalRef<CompilationUnitAst> m_Unit;
 	public:
-		TypeVisitor(GlobalRef<CompilationUnitAst> compilationUnit);
+		TypeVisitor(GlobalRef<CompilationUnitAst>);
 		void Visit();
 	private:
-		void Visit(GlobalRef<StatementAst> statement);
-		void Visit(GlobalRef<ExpressionAst> expression);
-	};
- 
-	//              👇 Don't mess with him...
-	class SYC_API ManglerVisitor: public Visitor
-	{
-	private:
-		GlobalRef<FunctionAst> m_Func;
-		GlobalRef<CompilationUnitAst> m_Unit;
-
-		std::vector<uint32> m_Depths;
-		std::vector<GlobalRef<const Symbol>> m_Names;
-	public:
-		ManglerVisitor(GlobalRef<CompilationUnitAst> compilationUnit);
-		void Visit();
-	private:
-		void Visit(GlobalRef<StatementAst> statement);
+		void Visit(GlobalRef<StatementAst>);
+		void Visit(GlobalRef<ExpressionAst>);
 	};
 }

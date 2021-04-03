@@ -1,11 +1,65 @@
 #include "Symple/Code/Visit/Visitor.h"
 
 #include <iostream>
+#include "Symple/Code/Parse/Facts.h"
 
 namespace Symple::Code
 {
 	SymbolVisitor::SymbolVisitor(GlobalRef<CompilationUnitAst> unit)
 		: m_Unit(unit) {}
+
+	void SymbolVisitor::Mangle(GlobalRef<Function> fn)
+	{
+		std::stringstream ss;
+		switch (fn->m_Call)
+		{
+		case TokenKind::CCallKeyword:
+			ss << '_' << fn->m_Name->Text;
+			break;
+		case TokenKind::SyCallKeyword:
+			ss << "_Sy$" << fn->m_Name->Text << "$Func";
+			for (auto param : fn->m_Params)
+			{
+				auto ty = param->m_Type->Type;
+				ss << "$" << ty->MangledName;
+
+				if (param->m_Name)
+				{
+					std::stringstream ss;
+					ss << "_Sy$" << param->m_Name->Text << "$Var$" << m_Depths.size();
+					param->m_MangledName = ss.str();
+					m_Names.push_back(param);
+				}
+			}
+			break;
+		case TokenKind::SycCallKeyword:
+			ss << "_Syc$" << fn->m_Name->Text << "$Func";
+			for (auto param : fn->m_Params)
+			{
+				auto ty = param->m_Type->Type;
+				ss << "$" << ty->MangledName;
+
+				if (param->m_Name)
+				{
+					std::stringstream ss;
+					ss << "_Sy$" << param->m_Name->Text << "$Var$" << m_Depths.size();
+					param->m_MangledName = ss.str();
+					m_Names.push_back(param);
+				}
+			}
+			break;
+		}
+		
+		fn->m_MangledName = ss.str();
+	}
+
+	void SymbolVisitor::Mangle(GlobalRef<VariableStatementAst> var)
+	{
+		std::stringstream ss;
+		var->m_Depth = m_Depths.size();
+		ss << "_Sy$" << var->m_Name->Text << "$Var$" << var->m_Depth;
+		var->m_MangledName = ss.str();
+	}
 
 	void SymbolVisitor::Visit()
 	{
@@ -17,11 +71,12 @@ namespace Symple::Code
 			{
 				m_Depths.push_back(m_Names.size());
 				auto fn = Cast<FunctionAst>(member);
-				m_Names.push_back(fn);
-
-				for (auto param : fn->m_Params)
-					if (param->Name)
-						m_Names.push_back(param);
+				if (fn->m_Name->Text == "Main")
+					fn->m_Call = TokenKind::SycCallKeyword;
+				for (auto mod : fn->m_Mods)
+					if (TokenFacts::IsFuncMod(mod->Kind))
+						fn->m_Call = mod->Kind;
+				Mangle(fn);
 
 				Visit(fn->m_Body);
 				m_Depths.pop_back();
@@ -32,11 +87,10 @@ namespace Symple::Code
 			{
 				m_Depths.push_back(m_Names.size());
 				auto fn = Cast<ExternFunctionAst>(member);
-				m_Names.push_back(fn);
-
-				for (auto param : fn->m_Params)
-					if (param->Name)
-						m_Names.push_back(param);
+				for (auto mod : fn->m_Mods)
+					if (TokenFacts::IsFuncMod(mod->Kind))
+						fn->m_Call = mod->Kind;
+				Mangle(fn);
 
 				m_Depths.pop_back();
 				m_Names.push_back(fn);
@@ -65,6 +119,7 @@ namespace Symple::Code
 		case AstKind::VariableStatement:
 		{
 			auto var = Cast<VariableStatementAst>(stmt);
+			Mangle(var);
 			m_Names.push_back(var);
 			break;
 		}

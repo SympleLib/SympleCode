@@ -18,7 +18,7 @@ namespace Symple::Code
 
 	GlobalRef<Token> Lexer::Lex()
 	{
-		while (IsWhiteSpace(Current) || Current == '\n')
+		while (true)
 		{
 			if (Current == '\n')
 			{
@@ -27,8 +27,17 @@ namespace Symple::Code
 				m_Column = 1;
 				m_Pointer++;
 			}
-			else
+			else if (!strncmp(&Current, "//", 2))
+			{
 				Next();
+				Next();
+				while (Current != '\n')
+					Next();
+			}
+			else if (IsWhiteSpace(Current))
+				Next();
+			else
+				break;
 		}
 
 		if (!Current)
