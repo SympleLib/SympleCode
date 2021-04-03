@@ -1,5 +1,6 @@
 #pragma once
 
+#include "Symple/Code/Visit/VisitMe.h"
 #include "Symple/Code/Type/Type.h"
 #include "Symple/Code/Parse/Token.h"
 #include "Symple/Code/Util/Printable.h"
@@ -49,7 +50,7 @@ namespace Symple::Code
 	protected:
 		std::string m_MangledName;
 
-		friend class SymbolVisitor;
+		VISIT_ME;
 	public:
 		virtual GlobalRef<const TypeAst> GetType() const;
 		virtual GlobalRef<const Token> GetName() const;
@@ -155,7 +156,7 @@ namespace Symple::Code
 
 		GlobalRef<Type_t> m_Type;
 
-		friend class TypeVisitor;
+		VISIT_ME;
 	public:
 		TypeAst(WeakRef<const Token_t> base, const ConstWeakTokenList &addons, GlobalRef<Type_t> type);
 
@@ -181,6 +182,7 @@ namespace Symple::Code
 		GlobalRef<const Token_t> m_Name;
 
 		friend class Parser;
+		VISIT_ME;
 	public:
 		ParameterAst(const GlobalRef<TypeAst> &type, const GlobalRef<const Token_t> &name);
 
@@ -198,8 +200,7 @@ namespace Symple::Code
 		MemberList m_Members;
 		GlobalRef<const Token_t> m_EndOfFile;
 
-		friend class SymbolVisitor;
-		friend class TypeVisitor;
+		VISIT_ME;
 	public:
 		CompilationUnitAst(const MemberList &members, const GlobalRef<const Token_t> &endOfFile);
 

@@ -18,13 +18,14 @@ namespace Symple::Code
 		WeakRef<const Token_t> m_Open;
 		ParameterList m_Params;
 		WeakRef<const Token_t> m_Close;
+		ConstTokenList m_Mods;
 		GlobalRef<StatementAst> m_Body;
 
-		friend class SymbolVisitor;
-		friend class TypeVisitor;
+		VISIT_ME;
 	public:
 		FunctionAst(const GlobalRef<TypeAst> &type, const GlobalRef<const Token_t> &name,
-			const WeakRef<const Token_t> &open, const ParameterList &parameters, const WeakRef<const Token_t> &close, const GlobalRef<StatementAst> &body);
+			const WeakRef<const Token_t> &open, const ParameterList &parameters, const WeakRef<const Token_t> &close,
+				const ConstTokenList &modifiers, const GlobalRef<StatementAst> &body);
 
 		virtual AstKind GetKind() const override;
 		virtual WeakRef<const Token_t> GetToken() const override;
@@ -36,12 +37,14 @@ namespace Symple::Code
 		WeakRef<const Token_t> GetOpen() const;
 		const ParameterList &GetParameters() const;
 		WeakRef<const Token_t> GetClose() const;
+		const ConstTokenList &GetModifiers() const;
 		GlobalRef<const StatementAst> GetBody() const;
 
 		SY_PROPERTY_GET(GetOpen) WeakRef<const Token_t> Open;
 		SY_PROPERTY_GET(GetParameters) const ParameterList &Parameters;
 		SY_PROPERTY_GET(GetClose) WeakRef<const Token_t> Close;
 		SY_PROPERTY_GET(GetBody) GlobalRef<const StatementAst> Body;
+		SY_PROPERTY_GET(GetModifiers) const ConstTokenList &Modifiers;
 	};
 
 	class SYC_API ExternFunctionAst: public MemberAst, public Symbol
@@ -53,12 +56,13 @@ namespace Symple::Code
 		WeakRef<const Token_t> m_Open;
 		ParameterList m_Params;
 		WeakRef<const Token_t> m_Close;
+		ConstTokenList m_Mods;
 
-		friend class SymbolVisitor;
-		friend class TypeVisitor;
+		VISIT_ME;
 	public:
 		ExternFunctionAst(const WeakRef<const Token_t> &keyword, const GlobalRef<TypeAst> &type, const GlobalRef<const Token_t> &name,
-			const WeakRef<const Token_t> &open, const ParameterList &parameters, const WeakRef<const Token_t> &close);
+			const WeakRef<const Token_t> &open, const ParameterList &parameters, const WeakRef<const Token_t> &close,
+				const ConstTokenList &modifiers);
 
 		virtual AstKind GetKind() const override;
 		virtual WeakRef<const Token_t> GetToken() const override;
@@ -71,10 +75,12 @@ namespace Symple::Code
 		WeakRef<const Token_t> GetOpen() const;
 		const ParameterList &GetParameters() const;
 		WeakRef<const Token_t> GetClose() const;
+		const ConstTokenList &GetModifiers() const;
 
 		SY_PROPERTY_GET(GetKeyword) WeakRef<const Token_t> Open;
 		SY_PROPERTY_GET(GetOpen) WeakRef<const Token_t> Open;
 		SY_PROPERTY_GET(GetParameters) const ParameterList &Parameters;
-		SY_PROPERTY_GET(GetClose) WeakRef<const Token_t> Close;;
+		SY_PROPERTY_GET(GetClose) WeakRef<const Token_t> Close;
+		SY_PROPERTY_GET(GetModifiers) const ConstTokenList &Modifiers;
 	};
 }

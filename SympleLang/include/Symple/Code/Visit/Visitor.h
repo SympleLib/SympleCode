@@ -1,4 +1,4 @@
-#pragma once
+﻿#pragma once
 
 #include "Symple/Code/AST/AST.h"
 
@@ -32,5 +32,21 @@ namespace Symple::Code
 	private:
 		void Visit(GlobalRef<StatementAst> statement);
 		void Visit(GlobalRef<ExpressionAst> expression);
+	};
+ 
+	//              👇 Don't mess with him...
+	class SYC_API ManglerVisitor: public Visitor
+	{
+	private:
+		GlobalRef<FunctionAst> m_Func;
+		GlobalRef<CompilationUnitAst> m_Unit;
+
+		std::vector<uint32> m_Depths;
+		std::vector<GlobalRef<const Symbol>> m_Names;
+	public:
+		ManglerVisitor(GlobalRef<CompilationUnitAst> compilationUnit);
+		void Visit();
+	private:
+		void Visit(GlobalRef<StatementAst> statement);
 	};
 }

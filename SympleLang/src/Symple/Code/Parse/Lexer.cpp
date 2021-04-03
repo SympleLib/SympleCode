@@ -82,6 +82,15 @@ namespace Symple::Code
 
 		ID_KEYWORD(extern, Extern);
 		ID_KEYWORD(external, Extern);
+
+		ID_KEYWORD(ccall, CCall);
+		ID_KEYWORD(sycall, SyCall);
+		ID_KEYWORD(syccall, SycCall);
+
+		KEYWORD(__cdecl, CCall);
+		KEYWORD(__ccall, CCall);
+		KEYWORD(__sycall, SyCall);
+		KEYWORD(__syccall, SycCall);
 		
 		return MakeToken(TokenKind::Identifier, beg, &Current);
 	}

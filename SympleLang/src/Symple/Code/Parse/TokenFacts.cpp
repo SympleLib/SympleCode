@@ -61,4 +61,19 @@ namespace Symple::Code
 
 	bool TokenFacts::IsTypeRef(TokenKind kind)
 	{ return kind == TokenKind::And; }
+
+
+	bool TokenFacts::IsFuncMod(TokenKind kind)
+	{
+		switch (kind)
+		{
+		case TokenKind::CCallKeyword:
+		case TokenKind::SyCallKeyword:
+		case TokenKind::SycCallKeyword:
+			return true;
+
+		default:
+			return false;
+		}
+	}
 }

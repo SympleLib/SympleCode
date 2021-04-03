@@ -31,8 +31,7 @@ namespace Symple::Code
 		WeakRef<const Token_t> m_Close;
 		GlobalRef<ExpressionAst> m_Value;
 
-		friend class SymbolVisitor;
-		friend class TypeVisitor;
+		VISIT_ME;
 	public:
 		PunExpressionAst(WeakRef<const Token_t> open, GlobalRef<TypeAst_t> type, WeakRef<const Token_t> close, GlobalRef<ExpressionAst> value);
 
@@ -59,8 +58,7 @@ namespace Symple::Code
 		ExpressionList m_Params;
 		WeakRef<const Token_t> m_Close;
 
-		friend class SymbolVisitor;
-		friend class TypeVisitor;
+		VISIT_ME;
 	public:
 		CallExpressionAst(GlobalRef<ExpressionAst> function, WeakRef<const Token_t> open, const ExpressionList &parameters, WeakRef<const Token_t> close);
 
@@ -90,8 +88,7 @@ namespace Symple::Code
 		WeakRef<const Token_t> m_Close;
 		GlobalRef<ExpressionAst> m_Value;
 
-		friend class SymbolVisitor;
-		friend class TypeVisitor;
+		VISIT_ME;
 	public:
 		CastExpressionAst(WeakRef<const Token_t> open, GlobalRef<TypeAst_t> type, WeakRef<const Token_t> close, GlobalRef<ExpressionAst> value);
 
@@ -116,8 +113,7 @@ namespace Symple::Code
 		GlobalRef<const Token_t> m_Operator;
 		GlobalRef<ExpressionAst> m_Operand;
 
-		friend class SymbolVisitor;
-		friend class TypeVisitor;
+		VISIT_ME;
 	public:
 		UnaryExpressionAst(GlobalRef<const Token_t> oqerator, GlobalRef<ExpressionAst> operand);
 
@@ -138,8 +134,7 @@ namespace Symple::Code
 		GlobalRef<const Token_t> m_Operator;
 		GlobalRef<ExpressionAst> m_Left, m_Right;
 	
-		friend class SymbolVisitor;
-		friend class TypeVisitor;
+		VISIT_ME;
 	public:
 		BinaryExpressionAst(GlobalRef<const Token_t> oqerator, GlobalRef<ExpressionAst> left, GlobalRef<ExpressionAst> right);
 
@@ -163,8 +158,7 @@ namespace Symple::Code
 		GlobalRef<const Token_t> m_Name;
 		GlobalRef<const Symbol> m_Symbol;
 
-		friend class SymbolVisitor;
-		friend class TypeVisitor;
+		VISIT_ME;
 	public:
 		NameExpressionAst(GlobalRef<const Token_t> name);
 
@@ -186,7 +180,7 @@ namespace Symple::Code
 	private:
 		GlobalRef<const Token_t> m_Literal;
 
-		friend class TypeVisitor;
+		VISIT_ME;
 	public:
 		LiteralExpressionAst(GlobalRef<const Token_t> literal);
 
@@ -206,8 +200,7 @@ namespace Symple::Code
 		GlobalRef<ExpressionAst> m_Expr;
 		WeakRef<const Token_t> m_Close;
 
-		friend class SymbolVisitor;
-		friend class TypeVisitor;
+		VISIT_ME;
 	public:
 		ParenthasizedExpressionAst(WeakRef<const Token_t> open, GlobalRef<ExpressionAst> expression, WeakRef<const Token_t> close);
 

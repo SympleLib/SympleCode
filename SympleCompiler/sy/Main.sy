@@ -1,1 +1,3 @@
-int Main(int, char **);
+void puts(char *) __ccall;
+
+int Main(int, char **) __syccall;

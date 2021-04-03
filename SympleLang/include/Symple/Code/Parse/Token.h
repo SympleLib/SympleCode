@@ -55,12 +55,16 @@ namespace Symple::Code
 		ReturnKeyword,
 		ExternKeyword,
 
+		CCallKeyword,
+		SyCallKeyword,
+		SycCallKeyword,
+
 		// Markings
 		Punctuator = Plus,
 		Keyword = VoidKeyword,
 
 		First = Unknown,
-		Last = ExternKeyword,
+		Last = SycCallKeyword,
 		Count, // Number of token kinds
 	};
 
@@ -112,6 +116,10 @@ namespace Symple::Code
 
 		"ReturnKeyword",
 		"ExternKeyword",
+
+		"CCallKeyword",
+		"SyCallKeyword",
+		"SycCallKeyword",
 	};
 
 	SYC_API std::ostream &operator <<(std::ostream &, TokenKind);

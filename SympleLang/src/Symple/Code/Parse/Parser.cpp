@@ -36,11 +36,12 @@ namespace Symple::Code
 		auto open = Match(TokenKind::OpenParen);
 		auto params = ParseParameters();
 		auto close = Match(TokenKind::CloseParen);
+		auto mods = ParseFunctionModifiers();
 		if (Current->Is(TokenKind::EqualArrow))
 			Next();
 		auto body = ParseStatement();
 
-		return MakeRef<FunctionAst>(ty, name, open, params, close, body);
+		return MakeRef<FunctionAst>(ty, name, open, params, close, mods, body);
 	}
 
 	GlobalRef<ExternFunctionAst> Parser::ParseExternFunction()
@@ -51,9 +52,23 @@ namespace Symple::Code
 		auto open = Match(TokenKind::OpenParen);
 		auto params = ParseParameters();
 		auto close = Match(TokenKind::CloseParen);
+		auto mods = ParseFunctionModifiers();
 		Match(TokenKind::Semicolon);
 
-		return MakeRef<ExternFunctionAst>(key, ty, name, open, params, close);
+		return MakeRef<ExternFunctionAst>(key, ty, name, open, params, close, mods);
+	}
+
+	ConstTokenList Parser::ParseFunctionModifiers()
+	{
+		ConstTokenList mods;
+		while (TokenFacts::IsFuncMod(Current->Kind))
+		{
+			mods.push_back(Next());
+			if (Current->Is(TokenKind::Comma))
+				Next();
+		}
+
+		return mods;
 	}
 
 
@@ -325,7 +340,7 @@ namespace Symple::Code
 	{
 		if (Current->Is(kind))
 			return Next();
-		std::cerr << '[' << Current->DisplayLine << ':' << Current->Column << "]: " << "Unexpected " << Current->Kind << " '', Expected " << kind << '\n';
+		std::cerr << '[' << Current->DisplayLine << ':' << Current->Column << "]: " << "Unexpected " << Current->Kind << " '" << Current->Text << "', Expected " << kind << '\n';
 		return Current;
 	}
 }

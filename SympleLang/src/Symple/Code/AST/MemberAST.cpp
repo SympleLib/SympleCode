@@ -9,8 +9,10 @@ namespace Symple::Code
 
 
 	FunctionAst::FunctionAst(const GlobalRef<TypeAst> &type, const GlobalRef<const Token_t> &name,
-		const WeakRef<const Token_t> &open, const ParameterList &params, const WeakRef<const Token_t> &close, const GlobalRef<StatementAst> &body)
-		: m_Type(type), m_Name(name), m_Params(params), m_Open(open), m_Close(close), m_Body(body) {}
+		const WeakRef<const Token_t> &open, const ParameterList &params, const WeakRef<const Token_t> &close,
+			const ConstTokenList &mods, const GlobalRef<StatementAst> &body)
+		: m_Type(type), m_Name(name), m_Params(params), m_Open(open), m_Close(close), m_Mods(mods), m_Body(body)
+	{}
 
 	AstKind FunctionAst::GetKind() const
 	{ return AstKind::Function; }
@@ -37,6 +39,9 @@ namespace Symple::Code
 	WeakRef<const Token_t> FunctionAst::GetClose() const
 	{ return m_Close; }
 
+	const ConstTokenList &FunctionAst::GetModifiers() const
+	{ return m_Mods; }
+
 	GlobalRef<const StatementAst> FunctionAst::GetBody() const
 	{ return m_Body; }
 	
@@ -55,13 +60,16 @@ namespace Symple::Code
 			param->Print(os << '\n', indent, "[Param] ", false);
 		if (!m_Close.expired())
 			m_Close.lock()->Print(os << '\n', indent, "Close = ", false);
+		for (auto mod : m_Mods)
+			mod->Print(os << '\n', indent, "[Modifiers] ", false);
 		m_Body->Print(os << '\n', indent, "Body = ");
 	}
 
 
 	ExternFunctionAst::ExternFunctionAst(const WeakRef<const Token_t> &keyword, const GlobalRef<TypeAst> &type, const GlobalRef<const Token_t> &name,
-		const WeakRef<const Token_t> &open, const ParameterList &params, const WeakRef<const Token_t> &close)
-		: m_Keyword(keyword), m_Type(type), m_Name(name), m_Params(params), m_Open(open), m_Close(close)
+		const WeakRef<const Token_t> &open, const ParameterList &params, const WeakRef<const Token_t> &close,
+			const ConstTokenList &mods)
+		: m_Keyword(keyword), m_Type(type), m_Name(name), m_Params(params), m_Open(open), m_Close(close), m_Mods(mods)
 	{}
 
 	AstKind ExternFunctionAst::GetKind() const
@@ -92,6 +100,9 @@ namespace Symple::Code
 	WeakRef<const Token_t> ExternFunctionAst::GetClose() const
 	{ return m_Close; }
 
+	const ConstTokenList &ExternFunctionAst::GetModifiers() const
+	{ return m_Mods; }
+
 	void ExternFunctionAst::Print(std::ostream &os, std::string indent, std::string_view label, bool last) const
 	{
 		PrintIndent(os, indent, label, last);
@@ -106,8 +117,10 @@ namespace Symple::Code
 		if (!m_Open.expired())
 			m_Open.lock()->Print(os << '\n', indent, "Open = ", false);
 		for (auto param : m_Params)
-			param->Print(os << '\n', indent, "[Param] ", param == m_Params.back() && m_Close.expired());
+			param->Print(os << '\n', indent, "[Param] ", false);
 		if (!m_Close.expired())
-			m_Close.lock()->Print(os << '\n', indent, "Close = ");
+			m_Close.lock()->Print(os << '\n', indent, "Close = ", false);
+		for (auto mod : m_Mods)
+			mod->Print(os << '\n', indent, "[Modifiers] ", mod == m_Mods.back());
 	}
 }
