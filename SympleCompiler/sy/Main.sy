@@ -2,6 +2,5 @@ extern void putchar(char) ccall;
 
 int Main(int, char **)
 {
-	putchar(69); // E
-	ret 0;
+	putchar(69 /* E */);
 }

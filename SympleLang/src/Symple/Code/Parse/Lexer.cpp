@@ -34,6 +34,15 @@ namespace Symple::Code
 				while (Current != '\n')
 					Next();
 			}
+			else if (!strncmp(&Current, "/*", 2))
+			{
+				Next();
+				Next();
+				while (strncmp(&Current, "*/", 2))
+					Next();
+				Next();
+				Next();
+			}
 			else if (IsWhiteSpace(Current))
 				Next();
 			else
