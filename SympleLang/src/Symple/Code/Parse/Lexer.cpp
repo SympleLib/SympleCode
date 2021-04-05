@@ -59,6 +59,15 @@ namespace Symple::Code
 			return LexNumber();
 		else if (IsIdentifier(Current))
 			return LexIdentifier();
+		else if (Current == '\'')
+		{
+			Next();
+			bool isString = false;
+			const char *beg = &Next();
+			
+			const char *end = &Next();
+			
+		}
 		else
 			return LexPunctuation();
 	}

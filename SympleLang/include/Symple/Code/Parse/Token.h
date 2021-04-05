@@ -11,6 +11,7 @@ namespace Symple::Code
 		Unknown,
 		EndOfFile,
 
+		Char,
 		Number,
 		Identifier,
 
@@ -73,6 +74,7 @@ namespace Symple::Code
 		"Unknown",
 		"EndOfFile",
 
+		"Char",
 		"Number",
 		"Identifier",
 
