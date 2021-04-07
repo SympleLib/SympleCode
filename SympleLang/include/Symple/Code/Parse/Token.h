@@ -13,6 +13,7 @@ namespace Symple::Code
 
 		Char,
 		Number,
+		String,
 		Identifier,
 
 		// Punctuators
@@ -76,6 +77,7 @@ namespace Symple::Code
 
 		"Char",
 		"Number",
+		"String",
 		"Identifier",
 
 

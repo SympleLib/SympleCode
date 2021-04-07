@@ -5,14 +5,22 @@
 
 namespace Symple::Code
 {
+	enum class SYC_API EmitKind
+	{
+		Text,
+		Data,
+	};
+
 	class SYC_API Emitter
 	{
 	private:
-		File m_File;
+		File m_TextFile, m_DataFile;
 		GlobalRef<const FunctionAst> m_Func;
 
 		// File num, Func id
 		uint32 m_FNum = 0, m_FId = 0;
+
+		uint32 m_Label = 0;
 		uint32 m_Stack = 0, m_StackSize = 0;
 		GlobalRef<const CompilationUnitAst> m_Unit;
 	public:
@@ -37,6 +45,8 @@ namespace Symple::Code
 		void Staf(uint32 bytes = 4);
 
 		void Emit(const GlobalRef<const Token> &tok);
+		template<typename... Args>
+		void Emit(EmitKind, _Printf_format_string_ const char *fmt, Args&&... args);
 		template<typename... Args>
 		void Emit(_Printf_format_string_ const char *fmt, Args&&... args);
 

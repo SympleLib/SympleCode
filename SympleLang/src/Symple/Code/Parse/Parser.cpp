@@ -205,6 +205,7 @@ namespace Symple::Code
 			return ParseNameExpression();
 		case TokenKind::Char:
 		case TokenKind::Number:
+		case TokenKind::String:
 			return ParseLiteralExpression();
 		case TokenKind::OpenBrace:
 			return ParsePunExpression();

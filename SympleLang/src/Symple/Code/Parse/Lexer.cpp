@@ -78,6 +78,16 @@ namespace Symple::Code
 
 			return MakeToken(TokenKind::Identifier, beg, end);
 		}
+		else if (Current == '"')
+		{
+			Next();
+			const char *beg = &Next();
+			while (Current != '"')
+				Next();
+			const char *end = &Next();
+
+			return MakeToken(TokenKind::String, beg, end);
+		}
 		else
 			return LexPunctuation();
 	}

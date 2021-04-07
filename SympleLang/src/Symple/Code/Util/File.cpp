@@ -37,7 +37,7 @@ namespace Symple::Code
 		m_Num = s_NextNum++;
 		m_Open = true;
 
-		if (Seek(0, SEEK_END))
+		if (Seek(0, SEEK_END) && CanRead)
 		{
 			uint32 sz = std::ftell(m_Stream);
 			m_Source.resize(sz + 1);
@@ -61,17 +61,14 @@ namespace Symple::Code
 		if (m_Open)
 		{
 			std::fclose(m_Stream);
-			m_Open = true;
+			m_Stream = nullptr;
+			m_Open = false;
 		}
 	}
 
 
 	bool File::Seek(uint32 offset, int32 origin)
-	{
-		if (CanRead)
-			std::fseek(m_Stream, offset, origin);
-		return CanRead;
-	}
+	{ return !std::fseek(m_Stream, offset, origin); }
 
 
 	const std::string &File::GetName() const

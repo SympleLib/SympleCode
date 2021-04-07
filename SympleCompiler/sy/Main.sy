@@ -1,7 +1,7 @@
-extern void putchar(char) ccall;
+extern void puts(char *) ccall;
 
 void 'Pascalion Case'() =>
-	putchar(`E`);
+	puts("Hello, world!");
 
 int Main(int, char **)
 {

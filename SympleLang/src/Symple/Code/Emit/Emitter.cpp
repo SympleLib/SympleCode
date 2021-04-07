@@ -10,7 +10,7 @@ namespace Symple::Code
 	#define FUNCTION_STACKSIZE_FMT "\"%s.StackSize\""
 
 	Emitter::Emitter(const GlobalRef<const CompilationUnitAst> &unit)
-		: m_Unit(unit), m_File("bin/Out.S", FilePermissions::Write) {}
+		: m_Unit(unit), m_TextFile("bin/Out.S", FilePermissions::Write), m_DataFile("bin/__OutData.S", FilePermissions::ReadWrite) {}
 
 	void Emitter::Emit()
 	{
@@ -18,6 +18,7 @@ namespace Symple::Code
 		m_FNum = file->Number;
 		Emit(".file %u \"%s\"", m_FNum, (file->Name.substr(file->Name.find_last_of('/') + 1)).c_str());
 
+		Emit(".text");
 		Emit(".global _main");
 		Emit("_main:");
 		Emit("\tsub $%u, %s", 8, Reg(RegKind::Sp));
@@ -30,6 +31,10 @@ namespace Symple::Code
 		Emit("\tadd $%u, %s", 8, Reg(RegKind::Sp));
 		Emit("\tret");
 
+
+		Emit(EmitKind::Data, ".data");
+
+
 		for (auto member : m_Unit->Members)
 			switch (member->Kind)
 			{
@@ -39,7 +44,16 @@ namespace Symple::Code
 				break;
 			}
 
-		m_File.Close();
+		char c;
+		m_DataFile.Seek(0, SEEK_SET);
+		while ((c = fgetc(m_DataFile.Stream)) != EOF)
+			fputc(c, m_TextFile.Stream);
+
+		m_DataFile.Close();
+		m_TextFile.Close();
+
+		// Temp file...
+		//std::remove(m_DataFile.Name.c_str());
 	}
 
 
@@ -378,6 +392,16 @@ namespace Symple::Code
 		}
 		else if (expr->Literal->Is(TokenKind::Char))
 			Emit("\tmov $'%.*s', %s", literal.length(), literal.data(), Reg(RegKind::Ax));
+		else if (expr->Literal->Is(TokenKind::String))
+		{
+			auto txt = expr->Literal->Text;
+
+			Emit(EmitKind::Data, "..L%u:", m_Label);
+			Emit(EmitKind::Data, "\t.string \"%.*s\"", txt.length(), txt.data());
+
+			Emit("\tlea ..L%u, %s", m_Label, Reg(RegKind::Ax));
+			m_Label++;
+		}
 		else
 			Emit("\tmov $%.*s, %s", literal.length(), literal.data(), Reg(RegKind::Ax));
 	}
@@ -397,12 +421,32 @@ namespace Symple::Code
 	void Emitter::Emit(const GlobalRef<const Token> &tok)
 	{ Emit(".loc %u %u %u", m_FNum, tok->DisplayLine, tok->Column); }
 
+
+	template<typename... Args>
+	void Emitter::Emit(EmitKind kind, _Printf_format_string_ const char *fmt, Args&&... args)
+	{
+		FILE *fs;
+		switch (kind)
+		{
+		case EmitKind::Text:
+			fs = m_TextFile.Stream;
+			break;
+		case EmitKind::Data:
+			fs = m_DataFile.Stream;
+			break;
+
+		default:
+			std::abort();
+			break;
+		}
+
+		std::fprintf(fs, fmt, args...);
+		std::fputc('\n', fs);
+	}
+
 	template<typename... Args>
 	void Emitter::Emit(_Printf_format_string_ const char *fmt, Args&&... args)
-	{
-		std::fprintf(m_File.Stream, fmt, args...);
-		std::fputc('\n', m_File.Stream);
-	}
+	{ Emit(EmitKind::Text, fmt, args...); }
 
 	constexpr const char Emitter::Suf(uint32 sz)
 	{
