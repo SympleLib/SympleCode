@@ -19,17 +19,12 @@ int main()
 	Lexer lexer(src);
 	auto tokens = lexer.LexAll();
 
-	uint32 pln = 1, pcol = 1;
+	const char *p = src->Source.c_str();
 	for (auto tok : tokens)
 	{
-		for (uint32 ln = tok->Line; ln > pln; ln--)
-		{
-			std::cout << '\n';
-			pcol = 0;
-		}
-
-		for (uint32 col = tok->Column - 1; col > pcol; col--)
-			std::cout << ' ';
+		Console.Color = ConsoleColor::Grey;
+		while (p != tok->Text.data())
+			std::cout << *p++;
 
 		uint32 kind = (uint32)tok->Kind;
 
@@ -37,24 +32,25 @@ int main()
 			Console.Color = ConsoleColor::Magenta;
 		else if (kind >= (uint32)TokenKind::Punctuator)
 			Console.Color = ConsoleColor::Cyan;
-		else if (kind == (uint32)TokenKind::Number)
-			Console.Color = ConsoleColor::DarkYellow;
-		else if (kind == (uint32)TokenKind::Identifier)
+		else if (tok->Is(TokenKind::Number))
+			Console.Color = ConsoleColor::Yellow;
+		else if (tok->Is(TokenKind::Identifier))
 			Console.Color = ConsoleColor::White;
+		else if (tok->Is(TokenKind::String, TokenKind::Char))
+			Console.Color = ConsoleColor::Green;
 		else
 			Console.Color = ConsoleColor::Red;
+		
 		std::cout << tok->Text;
-
-		pln = tok->Line;
-		pcol = tok->Column + tok->Text.length() - 1;
+		p = tok->Text.data() + tok->Text.length();
 	}
 	std::cout << '\n';
 
-	Console.Color = ConsoleColor::Yellow;
-	std::cout << "Tokens:\n";
-	Console.Color = ConsoleColor::Green;
-	for (auto tok : tokens)
-		std::cout << tok->Kind << " | " << tok->Text << " <" << tok->Line << ':' << tok->Column << ">\n";
+	//Console.Color = ConsoleColor::Yellow;
+	//std::cout << "Tokens:\n";
+	//Console.Color = ConsoleColor::Green;
+	//for (auto tok : tokens)
+	//	std::cout << tok->Kind << " | " << tok->Text << " <" << tok->Line << ':' << tok->Column << ">\n";
 
 	Parser parser(tokens);
 	auto unit = parser.Parse();
@@ -67,11 +63,11 @@ int main()
 	Console.Color = ConsoleColor::Red;
 	typeVisit.Visit();
 
-	Console.Color = ConsoleColor::Yellow;
-	std::cout << "Ast:\n";
-	Console.Color = ConsoleColor::Cyan;
-	unit->Print(std::cout);
-	std::cout << '\n';
+	//Console.Color = ConsoleColor::Yellow;
+	//std::cout << "Ast:\n";
+	//Console.Color = ConsoleColor::Cyan;
+	//unit->Print(std::cout);
+	//std::cout << '\n';
 
 	Emitter emmiter(unit);
 	emmiter.Emit();
@@ -87,7 +83,8 @@ int main()
 	};
 	ec = system("bin\\Out.exe");
 	Console.Color = ConsoleColor::Yellow;
-	printf("\nProgram exited with code %i (0x%x) [%g]", ec, ec, fec);
+	printf("\nProgram exited with code %i (0x%x) [%g]\n", ec, ec, fec);
+	Console.Color = ConsoleColor::White;
 
 	std::cout.flush();
 	std::cin.get();
