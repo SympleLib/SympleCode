@@ -2,6 +2,13 @@
 
 namespace Symple::Code
 {
+	#define SYMBOL_FMT "\"%s\""
+	#define VAR_FMT SYMBOL_FMT
+
+	#define FUNCTION_FMT SYMBOL_FMT
+	#define FUNCTION_RETURN_FMT "\"%s.Return\""
+	#define FUNCTION_STACKSIZE_FMT "\"%s.StackSize\""
+
 	Emitter::Emitter(const GlobalRef<const CompilationUnitAst> &unit)
 		: m_Unit(unit), m_File("bin/Out.S", FilePermissions::Write) {}
 
@@ -42,8 +49,8 @@ namespace Symple::Code
 		m_Stack = m_StackSize = 0;
 		decltype(auto) name = fn->MangledName;
 
-		Emit(".global %s", name.c_str());
-		Emit("%s:", name.c_str());
+		Emit(".global " FUNCTION_FMT, name.c_str());
+		Emit(FUNCTION_FMT ":", name.c_str());
 
 		// Debug Symbols (I guess...)
 		Emit(".Lfunc_begin%u:", m_FId);
@@ -52,7 +59,7 @@ namespace Symple::Code
 
 		Emit("\tpush %s", Reg(RegKind::Bp));
 		Emit("\tmov %s, %s", Reg(RegKind::Sp), Reg(RegKind::Bp));
-		Emit("\tsub $%s.StackSize, %s", name.c_str(), Reg(RegKind::Sp));
+		Emit("\tsub $" FUNCTION_STACKSIZE_FMT ", %s", name.c_str(), Reg(RegKind::Sp));
 		Emit("");
 
 		unsigned int stackPos = 4;
@@ -67,13 +74,13 @@ namespace Symple::Code
 		Emit(fn->Body);
 
 		Emit("");
-		Emit("%s.Return:", fn->MangledName.c_str());
+		Emit(FUNCTION_RETURN_FMT ":", fn->MangledName.c_str());
 		Emit("\tmov %s, %s", Reg(RegKind::Bp), Reg(RegKind::Sp));
 		Emit("\tpop %s", Reg(RegKind::Bp));
 		Emit("\tret");
 
 		Emit(".cfi_endproc");
-		Emit("%s.StackSize = %u", name.c_str(), m_StackSize);
+		Emit(FUNCTION_STACKSIZE_FMT " = %u", name.c_str(), m_StackSize);
 	}
 
 
@@ -252,12 +259,12 @@ namespace Symple::Code
 	{
 		decltype(auto) sname = name->Symbol->MangledName;
 		if (name->Symbol->IsFunction)
-			Emit("\tlea %s, %s", sname.c_str(), Reg(RegKind::Ax));
+			Emit("\tlea " FUNCTION_FMT ", %s", sname.c_str(), Reg(RegKind::Ax));
 		else
 			if (name->Type->IsFloat)
-				Emit("\tmovss %s(%s), %s", sname.c_str(), Reg(RegKind::Bp), Reg(RegKind::Xmm0));
+				Emit("\tmovss " VAR_FMT "(%s), %s", sname.c_str(), Reg(RegKind::Bp), Reg(RegKind::Xmm0));
 			else
-				Emit("\tmov %s(%s), %s", sname.c_str(), Reg(RegKind::Bp), Reg(RegKind::Ax, name->Type->Size));
+				Emit("\tmov " VAR_FMT "(%s), %s", sname.c_str(), Reg(RegKind::Bp), Reg(RegKind::Ax, name->Type->Size));
 	}
 
 	void Emitter::Emit(const GlobalRef<const BinaryExpressionAst> &expr)
