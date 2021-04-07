@@ -1,10 +1,10 @@
 extern void putchar(char) ccall;
 
-void pRINTe() =>
+void 'Pascalion Case'() =>
 	putchar(`E`);
 
 int Main(int, char **)
 {
-	pRINTe();
+	'Pascalion Case'();
 	ret 0;
 }
