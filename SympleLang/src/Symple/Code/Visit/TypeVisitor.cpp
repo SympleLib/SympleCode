@@ -106,6 +106,13 @@ namespace Symple::Code
 			auto unExpr = Cast<UnaryExpressionAst>(expr);
 			Visit(unExpr->m_Operand);
 			expr->m_Type = unExpr->m_Operand->m_Type;
+
+			// De-reference
+			if (unExpr->m_Operator->Is(TokenKind::Star))
+			{
+				assert(unExpr->m_Operand->m_Type->PointerCount && "Must be pointer type to dereference");
+				expr->m_Type = unExpr->m_Operand->m_Type->Deref();
+			}
 			break;
 		}
 		case AstKind::BinaryExpression:

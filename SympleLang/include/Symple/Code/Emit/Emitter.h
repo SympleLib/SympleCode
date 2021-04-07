@@ -38,6 +38,7 @@ namespace Symple::Code
 		void Emit(const GlobalRef<const CastExpressionAst> &cast);
 		void Emit(const GlobalRef<const CallExpressionAst> &call);
 		void Emit(const GlobalRef<const NameExpressionAst> &name);
+		void Emit(const GlobalRef<const UnaryExpressionAst> &expression);
 		void Emit(const GlobalRef<const BinaryExpressionAst> &expression);
 		void Emit(const GlobalRef<const LiteralExpressionAst> &literal);
 	private:

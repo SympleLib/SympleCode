@@ -70,7 +70,7 @@ namespace Symple::Code
 		Keyword = VoidKeyword,
 
 		First = Unknown,
-		Last = SycCallKeyword,
+		Last = StafKeyword,
 		Count, // Number of token kinds
 	};
 

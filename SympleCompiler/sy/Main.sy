@@ -1,8 +1,2 @@
-extern void MessageBoxA(void *, char *content, char *title, int ty) stdcall;
-
-int Main(int, char **)
-{
-	MessageBoxA(0, "Hello, world!", "SympleCode Test", 0);
-	MessageBoxA(0, "Hello, world!", "SympleCode Test", 0);
-	ret 0;
-}
+int Main(int 'number args', char **args) =>
+	ret 'number args';

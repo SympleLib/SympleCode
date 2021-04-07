@@ -82,7 +82,7 @@ namespace Symple::Code
 			stackPos += 4;
 			decltype(auto) pname = param->MangledName;
 			if (!pname.empty())
-				Emit("%s = %u", pname.c_str(), stackPos);
+				Emit(VAR_FMT " = %u", pname.c_str(), stackPos);
 		}
 
 		Emit(fn->Body);
@@ -130,7 +130,7 @@ namespace Symple::Code
 	void Emitter::Emit(const GlobalRef<const ReturnStatementAst> &ret)
 	{
 		Emit(ret->Value);
-		Emit("\tjmp %s.Return", m_Func->MangledName.c_str());
+		Emit("\tjmp " FUNCTION_RETURN_FMT, m_Func->MangledName.c_str());
 	}
 
 	void Emitter::Emit(const GlobalRef<const VariableStatementAst> &var)
@@ -139,14 +139,14 @@ namespace Symple::Code
 		uint32 sz = var->Type->Type->Size;
 		Stalloc(sz);
 		uint32 pos = m_Stack;
-		Emit("%s = -%u", name.c_str(), m_Stack);
+		Emit(VAR_FMT " = -%u", name.c_str(), m_Stack);
 		if (var->Initializer)
 		{
 			Emit(var->Initializer);
 			if (var->Initializer->Type->IsFloat)
-				Emit("\tmovss %s, %s(%s)", Reg(RegKind::Xmm0, sz), name.c_str(), Reg(RegKind::Bp));
+				Emit("\tmovss %s, " VAR_FMT "(%s)", Reg(RegKind::Xmm0, sz), name.c_str(), Reg(RegKind::Bp));
 			else
-				Emit("\tmov %s, %s(%s)", Reg(RegKind::Ax, sz), name.c_str(), Reg(RegKind::Bp));
+				Emit("\tmov %s, " VAR_FMT "(%s)", Reg(RegKind::Ax, sz), name.c_str(), Reg(RegKind::Bp));
 		}
 	}
 
@@ -169,6 +169,9 @@ namespace Symple::Code
 			break;
 		case AstKind::NameExpression:
 			Emit(Cast<const NameExpressionAst>(expr));
+			break;
+		case AstKind::UnaryExpression:
+			Emit(Cast<const UnaryExpressionAst>(expr));
 			break;
 		case AstKind::BinaryExpression:
 			Emit(Cast<const BinaryExpressionAst>(expr));
@@ -283,6 +286,24 @@ namespace Symple::Code
 				Emit("\tmovss " VAR_FMT "(%s), %s", sname.c_str(), Reg(RegKind::Bp), Reg(RegKind::Xmm0));
 			else
 				Emit("\tmov " VAR_FMT "(%s), %s", sname.c_str(), Reg(RegKind::Bp), Reg(RegKind::Ax, name->Type->Size));
+	}
+
+	void Emitter::Emit(const GlobalRef<const UnaryExpressionAst> &expr)
+	{
+		Emit(expr->Operand);
+
+		switch (expr->Operator->Kind)
+		{
+		case TokenKind::Plus:
+			Emit("\tand $0x%x, %s", 0x80000000, Reg(RegKind::Ax));
+			break;
+		case TokenKind::Minus:
+			Emit("\tneg %s", Reg(RegKind::Ax));
+			break;
+		case TokenKind::Star:
+			Emit("\tmov (%s), %s", Reg(RegKind::Ax), Reg(RegKind::Ax));
+			break;
+		}
 	}
 
 	void Emitter::Emit(const GlobalRef<const BinaryExpressionAst> &expr)
