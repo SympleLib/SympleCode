@@ -140,6 +140,12 @@ namespace Symple::Code
 		KEYWORD(__stdcall, StdCall);
 		KEYWORD(__sycall, SyCall);
 		KEYWORD(__syccall, SycCall);
+
+		ID_KEYWORD(stalloc, Stalloc);
+		ID_KEYWORD(staf, Staf);
+
+		KEYWORD(__stalloc, Stalloc);
+		KEYWORD(__staf, Staf);
 		
 		return MakeToken(TokenKind::Identifier, beg, &Current);
 	}

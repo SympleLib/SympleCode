@@ -62,6 +62,9 @@ namespace Symple::Code
 		SyCallKeyword,
 		SycCallKeyword,
 
+		StallocKeyword,
+		StafKeyword,
+
 		// Markings
 		Punctuator = Plus,
 		Keyword = VoidKeyword,
@@ -126,6 +129,9 @@ namespace Symple::Code
 		"StdCallKeyword",
 		"SyCallKeyword",
 		"SycCallKeyword",
+
+		"StallocKeyword",
+		"StafKeyword",
 	};
 
 	SYC_API std::ostream &operator <<(std::ostream &, TokenKind);
