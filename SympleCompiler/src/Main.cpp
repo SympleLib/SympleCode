@@ -34,7 +34,8 @@ int main()
 		else switch (tok->Kind)
 		{
 		case TokenKind::Number:
-			Console.Color = ConsoleColor::Yellow;
+			Console.Color = ConsoleColor::DarkYellow;
+			break;
 		case TokenKind::Identifier:
 			Console.Color = ConsoleColor::White;
 			break;
