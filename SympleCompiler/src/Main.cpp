@@ -26,20 +26,27 @@ int main()
 		while (p != tok->Text.data())
 			std::cout << *p++;
 
-		uint32 kind = (uint32)tok->Kind;
 
-		if (kind >= (uint32)TokenKind::Keyword)
+		if ((uint32)tok->Kind >= (uint32)TokenKind::Keyword)
 			Console.Color = ConsoleColor::Magenta;
-		else if (kind >= (uint32)TokenKind::Punctuator)
+		else if ((uint32)tok->Kind >= (uint32)TokenKind::Punctuator)
 			Console.Color = ConsoleColor::Cyan;
-		else if (tok->Is(TokenKind::Number))
+		else switch (tok->Kind)
+		{
+		case TokenKind::Number:
 			Console.Color = ConsoleColor::Yellow;
-		else if (tok->Is(TokenKind::Identifier))
+		case TokenKind::Identifier:
 			Console.Color = ConsoleColor::White;
-		else if (tok->Is(TokenKind::String, TokenKind::Char))
+			break;
+		case TokenKind::Char:
+		case TokenKind::String:
 			Console.Color = ConsoleColor::Green;
-		else
+			break;
+
+		default:
 			Console.Color = ConsoleColor::Red;
+			break;
+		}
 		
 		std::cout << tok->Text;
 		p = tok->Text.data() + tok->Text.length();
