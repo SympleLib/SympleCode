@@ -59,14 +59,24 @@ namespace Symple::Code
 			return LexNumber();
 		else if (IsIdentifier(Current))
 			return LexIdentifier();
+		else if (Current == '`')
+		{
+			Next();
+			const char *beg = &Next();
+			assert(Current == '`');
+			const char *end = &Next();
+
+			return MakeToken(TokenKind::Char, beg, end);
+		}
 		else if (Current == '\'')
 		{
 			Next();
-			bool isString = false;
 			const char *beg = &Next();
-			
+			while (Current != '\'')
+				Next();
 			const char *end = &Next();
-			
+
+			return MakeToken(TokenKind::Identifier, beg, end);
 		}
 		else
 			return LexPunctuation();

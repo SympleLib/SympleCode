@@ -203,6 +203,7 @@ namespace Symple::Code
 		{
 		case TokenKind::Identifier:
 			return ParseNameExpression();
+		case TokenKind::Char:
 		case TokenKind::Number:
 			return ParseLiteralExpression();
 		case TokenKind::OpenBrace:

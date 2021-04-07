@@ -50,11 +50,11 @@ int main()
 	}
 	std::cout << '\n';
 
-	//Console.Color = ConsoleColor::Yellow;
-	//std::cout << "Tokens:\n";
-	//Console.Color = ConsoleColor::Green;
-	//for (auto tok : tokens)
-	//	std::cout << tok->Kind << " | " << tok->Text << " <" << tok->Line << ':' << tok->Column << ">\n";
+	Console.Color = ConsoleColor::Yellow;
+	std::cout << "Tokens:\n";
+	Console.Color = ConsoleColor::Green;
+	for (auto tok : tokens)
+		std::cout << tok->Kind << " | " << tok->Text << " <" << tok->Line << ':' << tok->Column << ">\n";
 
 	Parser parser(tokens);
 	auto unit = parser.Parse();

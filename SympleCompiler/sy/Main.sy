@@ -1,6 +1,6 @@
 extern void putchar(char) ccall;
 
-int Main(int, char **)
+int 'Main'(int, char **)
 {
-	putchar(69 /* E */);
+	putchar(`E`);
 }

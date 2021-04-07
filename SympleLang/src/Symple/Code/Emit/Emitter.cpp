@@ -369,6 +369,8 @@ namespace Symple::Code
 			Emit("\tmovss -%u(%s), %s", pos, Reg(RegKind::Bp), Reg(RegKind::Xmm0));
 			Staf();
 		}
+		else if (expr->Literal->Is(TokenKind::Char))
+			Emit("\tmov $'%.*s', %s", literal.length(), literal.data(), Reg(RegKind::Ax));
 		else
 			Emit("\tmov $%.*s, %s", literal.length(), literal.data(), Reg(RegKind::Ax));
 	}
