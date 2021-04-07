@@ -1,10 +1,10 @@
 extern void putchar(char) ccall;
 
-void 'pRINT THE lETTER `E`'() =>
+void pRINTe() =>
 	putchar(`E`);
 
 int Main(int, char **)
 {
-	'pRINT THE lETTER `E`'();
+	pRINTe();
 	ret 0;
 }
