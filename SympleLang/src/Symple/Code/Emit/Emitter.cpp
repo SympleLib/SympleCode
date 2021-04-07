@@ -247,7 +247,7 @@ namespace Symple::Code
 
 	void Emitter::Emit(const GlobalRef<const CallExpressionAst> &call)
 	{
-		uint32 sz = call->Parameters.size() * 4;
+		uint32 sz = call->Arguments.size() * 4;
 		uint32 fnPos;
 		Emit(call->Function);
 		if (sz)
@@ -258,8 +258,8 @@ namespace Symple::Code
 		}
 
 		Stalloc(sz);
-		uint32 off = call->Parameters.size() * 4;
-		for (auto param : call->Parameters)
+		uint32 off = call->Arguments.size() * 4;
+		for (auto param : call->Arguments)
 		{
 			off -= 4;
 			Emit(param);

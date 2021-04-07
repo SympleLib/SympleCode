@@ -97,6 +97,8 @@ namespace Symple::Code
 			{
 				m_Depths.push_back(m_Names.size());
 				auto fn = Cast<ExternFunctionAst>(member);
+				if (fn->m_Name->Text == "Main")
+					fn->m_Call = TokenKind::SycCallKeyword;
 				for (auto mod : fn->m_Mods)
 					if (TokenFacts::IsFuncMod(mod->Kind))
 						fn->m_Call = mod->Kind;
@@ -141,8 +143,13 @@ namespace Symple::Code
 		switch (expr->Kind)
 		{
 		case AstKind::CallExpression:
-			Visit(Cast<CallExpressionAst>(expr)->m_Func);
+		{
+			auto callExpr = Cast<CallExpressionAst>(expr);
+			Visit(callExpr->m_Func);
+			for (auto arg : callExpr->m_Args)
+				Visit(arg);
 			break;
+		}
 		case AstKind::NameExpression:
 		{
 			auto nameExpr = Cast<NameExpressionAst>(expr);

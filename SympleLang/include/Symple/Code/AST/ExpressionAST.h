@@ -55,12 +55,12 @@ namespace Symple::Code
 	private:
 		GlobalRef<ExpressionAst> m_Func;
 		WeakRef<const Token_t> m_Open;
-		ExpressionList m_Params;
+		ExpressionList m_Args;
 		WeakRef<const Token_t> m_Close;
 
 		VISIT_ME;
 	public:
-		CallExpressionAst(GlobalRef<ExpressionAst> function, WeakRef<const Token_t> open, const ExpressionList &parameters, WeakRef<const Token_t> close);
+		CallExpressionAst(GlobalRef<ExpressionAst> function, WeakRef<const Token_t> open, const ExpressionList &args, WeakRef<const Token_t> close);
 
 		virtual AstKind GetKind() const override;
 		virtual WeakRef<const Token_t> GetToken() const override;
@@ -68,12 +68,12 @@ namespace Symple::Code
 
 		GlobalRef<ExpressionAst> GetFunction() const;
 		WeakRef<const Token_t> GetOpen() const;
-		const ExpressionList &GetParameters() const;
+		const ExpressionList &GetArguments() const;
 		WeakRef<const Token_t> GetClose() const;
 
 		SY_PROPERTY_GET(GetFunction) GlobalRef<ExpressionAst> Function;
 		SY_PROPERTY_GET(GetOpen) WeakRef<const Token_t> Open;
-		SY_PROPERTY_GET(GetParameters) const ExpressionList &Parameters;
+		SY_PROPERTY_GET(GetArguments) const ExpressionList &Arguments;
 		SY_PROPERTY_GET(GetClose) WeakRef<const Token_t> Close;
 
 	};

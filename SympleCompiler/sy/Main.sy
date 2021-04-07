@@ -1,2 +1,4 @@
-int Main(int 'number args', char **args) =>
-	ret 'number args';
+extern void puts(char *) __ccall;
+
+int Main(int nArgs, char **args) =>
+	puts(*args);

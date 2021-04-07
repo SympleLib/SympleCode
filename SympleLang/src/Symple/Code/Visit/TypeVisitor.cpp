@@ -65,6 +65,10 @@ namespace Symple::Code
 			auto lit = litExpr->m_Literal->Text;
 			if (lit.find('.') != std::string_view::npos)
 				litExpr->m_Type = MakeRef<Type>(TypeKind::Float, 0, false);
+			else if (litExpr->m_Literal->Is(TokenKind::Char))
+				litExpr->m_Type = MakeRef<Type>(TypeKind::Char, 0, false);
+			else if (litExpr->m_Literal->Is(TokenKind::String))
+				litExpr->m_Type = MakeRef<Type>(TypeKind::Char, 1, false);
 			break;
 		}
 		case AstKind::ParenthasizedExpression:

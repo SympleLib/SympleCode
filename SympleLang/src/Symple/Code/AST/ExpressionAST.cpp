@@ -51,8 +51,8 @@ namespace Symple::Code
 	}
 
 
-	CallExpressionAst::CallExpressionAst(GlobalRef<ExpressionAst> func, WeakRef<const Token_t> open, const ExpressionList &params, WeakRef<const Token_t> close)
-		: m_Func(func), m_Open(open), m_Params(params), m_Close(close) {}
+	CallExpressionAst::CallExpressionAst(GlobalRef<ExpressionAst> func, WeakRef<const Token_t> open, const ExpressionList &args, WeakRef<const Token_t> close)
+		: m_Func(func), m_Open(open), m_Args(args), m_Close(close) {}
 
 	AstKind CallExpressionAst::GetKind() const
 	{ return AstKind::CallExpression; }
@@ -63,8 +63,8 @@ namespace Symple::Code
 	WeakRef<const Token_t> CallExpressionAst::GetOpen() const
 	{ return m_Open; }
 
-	const ExpressionList &CallExpressionAst::GetParameters() const
-	{ return m_Params; }
+	const ExpressionList &CallExpressionAst::GetArguments() const
+	{ return m_Args; }
 
 	WeakRef<const Token_t> CallExpressionAst::GetClose() const
 	{ return m_Close; }
@@ -82,8 +82,8 @@ namespace Symple::Code
 		m_Func->Print(os << '\n', indent, "Function = ", false);
 		if (!m_Open.expired())
 			m_Open.lock()->Print(os << '\n', indent, "Open = ", false);
-		for (auto param : m_Params)
-			param->Print(os << '\n', indent, "[Param] ", m_Close.expired());
+		for (auto param : m_Args)
+			param->Print(os << '\n', indent, "[Argument] ", m_Close.expired());
 		if (!m_Close.expired())
 			m_Close.lock()->Print(os << '\n', indent, "Close = ");
 	}
