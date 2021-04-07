@@ -27,6 +27,10 @@ namespace Symple::Code
 	{ return true; }
 
 
+	TokenKind Function::GetCallingConvention() const
+	{ return m_Call; }
+
+
 	WeakRef<const Token_t> Function::GetOpen() const
 	{ return m_Open; }
 

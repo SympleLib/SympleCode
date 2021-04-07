@@ -58,6 +58,7 @@ namespace Symple::Code
 		ExternKeyword,
 
 		CCallKeyword,
+		StdCallKeyword,
 		SyCallKeyword,
 		SycCallKeyword,
 
@@ -122,6 +123,7 @@ namespace Symple::Code
 		"ExternKeyword",
 
 		"CCallKeyword",
+		"StdCallKeyword",
 		"SyCallKeyword",
 		"SycCallKeyword",
 	};

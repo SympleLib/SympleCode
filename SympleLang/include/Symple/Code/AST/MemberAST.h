@@ -31,12 +31,16 @@ namespace Symple::Code
 		virtual WeakRef<const Token_t> GetToken() const override;
 		virtual bool GetIsFunction() const override;
 
+		TokenKind GetCallingConvention() const;
+
 		GlobalRef<const TypeAst> GetType() const override;
 		GlobalRef<const Token_t> GetName() const override;
 		WeakRef<const Token_t> GetOpen() const;
 		const ParameterList &GetParameters() const;
 		WeakRef<const Token_t> GetClose() const;
 		const ConstTokenList &GetModifiers() const;
+
+		SY_PROPERTY_GET(GetCallingConvention) TokenKind CallingConvention;
 
 		SY_PROPERTY_GET(GetOpen) WeakRef<const Token_t> Open;
 		SY_PROPERTY_GET(GetParameters) const ParameterList &Parameters;

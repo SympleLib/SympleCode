@@ -68,6 +68,7 @@ namespace Symple::Code
 		switch (kind)
 		{
 		case TokenKind::CCallKeyword:
+		case TokenKind::StdCallKeyword:
 		case TokenKind::SyCallKeyword:
 		case TokenKind::SycCallKeyword:
 			return true;

@@ -1,10 +1,8 @@
-extern void puts(char *) ccall;
-
-void 'Pascalion Case'() =>
-	puts("Hello, world!");
+extern void MessageBoxA(void *, char *content, char *title, int ty) stdcall;
 
 int Main(int, char **)
 {
-	'Pascalion Case'();
+	MessageBoxA(0, "Hello, world!", "SympleCode Test", 0);
+	MessageBoxA(0, "Hello, world!", "SympleCode Test", 0);
 	ret 0;
 }

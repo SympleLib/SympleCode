@@ -16,6 +16,15 @@ namespace Symple::Code
 		case TokenKind::CCallKeyword:
 			ss << '_' << fn->m_Name->Text;
 			break;
+		case TokenKind::StdCallKeyword:
+		{
+			ss << '_' << fn->m_Name->Text << '@';
+			uint32 sz = 0;
+			for (auto param : fn->m_Params)
+				sz += param->m_Type->m_Type->Size;
+			ss << sz;
+			break;
+		}
 		case TokenKind::SyCallKeyword:
 			ss << "_Sy$" << fn->m_Name->Text << "$Func";
 			for (auto param : fn->m_Params)
@@ -28,7 +37,6 @@ namespace Symple::Code
 					std::stringstream ss;
 					ss << "_Sy$" << param->m_Name->Text << "$Var$" << m_Depths.size();
 					param->m_MangledName = ss.str();
-					m_Names.push_back(param);
 				}
 			}
 			break;
@@ -78,6 +86,8 @@ namespace Symple::Code
 						fn->m_Call = mod->Kind;
 				Mangle(fn);
 
+				for (auto param : fn->m_Params)
+					m_Names.push_back(param);
 				Visit(fn->m_Body);
 				m_Depths.pop_back();
 				m_Names.push_back(fn);
@@ -137,7 +147,7 @@ namespace Symple::Code
 		{
 			auto nameExpr = Cast<NameExpressionAst>(expr);
 			for (uint32 i = m_Names.size(); i; i--)
-				if (m_Names[i - 1]->Name->Text == nameExpr->m_Name->Text)
+				if (m_Names[i - 1]->Name && m_Names[i - 1]->Name->Text == nameExpr->m_Name->Text)
 				{
 					nameExpr->m_Symbol = m_Names[i - 1];
 					nameExpr->m_Depth = m_Depths.size();
