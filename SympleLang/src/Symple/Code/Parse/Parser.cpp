@@ -13,11 +13,19 @@ namespace Symple::Code
 	GlobalRef<CompilationUnitAst> Parser::Parse(Scope<ErrorList> *errorList)
 	{
 		MemberList members;
-		while (!Current->Is(TokenKind::EndOfFile))
-			members.push_back(ParseMember());
-		auto eof = Match(TokenKind::EndOfFile);
+		try
+		{
+			while (!Current->Is(TokenKind::EndOfFile))
+				members.push_back(ParseMember());
+		}
+		catch (const GlobalRef<const ErrorMessage> &)
+		{
+			*errorList = MakeScope<ErrorList>(Pass(m_ErrorList));
+			return nullptr;
+		}
 
-		*errorList = MakeScope<ErrorList>(Pass(m_ErrorList));
+		auto eof = Match(TokenKind::EndOfFile);
+		*errorList = MakeScope<ErrorList>();
 		return MakeRef<CompilationUnitAst>(members, eof);
 	}
 
@@ -346,7 +354,8 @@ namespace Symple::Code
 	{
 		if (Current->Is(kind))
 			return Next();
-		m_ErrorList.ReportWrongToken(Current, kind);
+
+		throw m_ErrorList.ReportWrongToken(Current, kind);
 		return Current;
 	}
 }

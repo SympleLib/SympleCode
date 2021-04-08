@@ -19,7 +19,7 @@ namespace Symple::Code
 	}
 
 
-	void ErrorList::Report(const GlobalRef<const ErrorMessage> &err)
+	GlobalRef<const ErrorMessage> ErrorList::Report(const GlobalRef<const ErrorMessage> &err)
 	{
 		m_Msgs.push_back(err);
 
@@ -38,11 +38,13 @@ namespace Symple::Code
 			m_MessageMsgs.push_back(err);
 			break;
 		}
+
+		return err;
 	}
 	
 	
-	void ErrorList::ReportWrongToken(const GlobalRef<const Token> &tok, TokenKind expected)
-	{ Report(Format("Unexpected {} '{}', expected {}", tok->Kind, tok->Text, expected), ErrorLevel::Error, tok); }
+	GlobalRef<const ErrorMessage> ErrorList::ReportWrongToken(const GlobalRef<const Token> &tok, TokenKind expected)
+	{ return Report(Format("Unexpected {} '{}', expected {}", tok->Kind, tok->Text, expected), ErrorLevel::Error, tok); }
 
 
 	void ErrorList::Dump(std::ostream &os)

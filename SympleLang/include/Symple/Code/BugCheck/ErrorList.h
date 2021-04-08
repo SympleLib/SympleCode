@@ -49,11 +49,11 @@ namespace Symple::Code
 		std::vector<GlobalRef<const ErrorMessage>> m_WarningMsgs;
 		std::vector<GlobalRef<const ErrorMessage>> m_MessageMsgs;
 	public:
-		void Report(const GlobalRef<const ErrorMessage> &);
-		void Report(const std::string &message, ErrorLevel severity, const WeakRef<const Token> &token)
-		{ Report(MakeRef<ErrorMessage>(message, severity, token)); }
+		GlobalRef<const ErrorMessage> Report(const GlobalRef<const ErrorMessage> &);
+		GlobalRef<const ErrorMessage> Report(const std::string &message, ErrorLevel severity, const WeakRef<const Token> &token)
+		{ return Report(MakeRef<ErrorMessage>(message, severity, token)); }
 
-		void ReportWrongToken(const GlobalRef<const Token> &, TokenKind expected);
+		GlobalRef<const ErrorMessage> ReportWrongToken(const GlobalRef<const Token> &, TokenKind expected);
 
 
 		void Dump(std::ostream &);
