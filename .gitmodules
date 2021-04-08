@@ -1,0 +1,3 @@
+[submodule "SympleLang/vendor/fmt"]
+	path = SympleLang/vendor/fmt
+	url = https://github.com/fmtlib/fmt.git
