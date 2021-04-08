@@ -71,11 +71,10 @@ int main()
 	Console.Color = ConsoleColor::Red;
 	typeVisit.Visit();
 
-	//Console.Color = ConsoleColor::Yellow;
-	//std::cout << "Ast:\n";
-	//Console.Color = ConsoleColor::Cyan;
-	//unit->Print(std::cout);
-	//std::cout << '\n';
+	Console.Color = ConsoleColor::Yellow;
+	std::cout << "Ast:\n";
+	unit->Print(std::cout);
+	std::cout << '\n';
 
 	Emitter emmiter(unit);
 	emmiter.Emit();

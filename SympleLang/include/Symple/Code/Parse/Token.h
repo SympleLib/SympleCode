@@ -36,6 +36,8 @@ namespace Symple::Code
 		OpenBrace,
 		CloseBrace,
 
+		At,
+
 		Comma,
 		Semicolon,
 
@@ -103,6 +105,8 @@ namespace Symple::Code
 		"CloseParen",
 		"OpenBrace",
 		"CloseBrace",
+
+		"At",
 
 		"Comma",
 		"Semicolon",

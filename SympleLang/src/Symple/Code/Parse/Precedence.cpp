@@ -29,6 +29,7 @@ namespace Symple::Code
 		case TokenKind::Slash:
 		case TokenKind::Percent:
 			return 2;
+		case TokenKind::At:
 		case TokenKind::CarotCarot:
 			return 3;
 		}

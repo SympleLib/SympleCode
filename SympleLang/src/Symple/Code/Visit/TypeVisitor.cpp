@@ -102,6 +102,8 @@ namespace Symple::Code
 		{
 			auto cexpr = Cast<CallExpressionAst>(expr);
 			Visit(cexpr->m_Func);
+			for (auto arg : cexpr->m_Args)
+				Visit(arg);
 			expr->m_Type = cexpr->m_Func->m_Type;
 			break;
 		}
@@ -113,10 +115,7 @@ namespace Symple::Code
 
 			// De-reference
 			if (unExpr->m_Operator->Is(TokenKind::Star))
-			{
-				assert(unExpr->m_Operand->m_Type->PointerCount && "Must be pointer type to dereference");
 				expr->m_Type = unExpr->m_Operand->m_Type->Deref();
-			}
 			break;
 		}
 		case AstKind::BinaryExpression:

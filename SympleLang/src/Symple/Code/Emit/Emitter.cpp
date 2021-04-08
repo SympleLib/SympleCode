@@ -394,6 +394,11 @@ namespace Symple::Code
 			case TokenKind::Carot:
 				Emit("\txor %s, %s", Reg(RegKind::Bx), Reg(RegKind::Ax));
 				break;
+
+			case TokenKind::At:
+				Emit("\timul $%u, %s", expr->Left->Type->Deref()->Size, Reg(RegKind::Bx));
+				Emit("\tadd %s, %s", Reg(RegKind::Bx), Reg(RegKind::Ax));
+				break;
 			}
 		}
 	}
