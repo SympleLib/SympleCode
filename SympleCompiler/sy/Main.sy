@@ -1,4 +1,4 @@
 extern void puts(char *) __ccall;
 
 int Main(int nArgs, char **args) =>
-	puts(*args);
+	puts(*(args + 4));

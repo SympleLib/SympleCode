@@ -23,12 +23,11 @@ namespace Symple::Code
 		Emit("_main:");
 		Emit("\tsub $%u, %s", 8, Reg(RegKind::Sp));
 		Emit("\tmov %u(%s), %s", 12, Reg(RegKind::Sp), Reg(RegKind::Ax));
-		Emit("\tmov %s, %u(%s)", Reg(RegKind::Ax), 0, Reg(RegKind::Sp));
+		Emit("\tmov %s, %u(%s)", Reg(RegKind::Sp), 0, Reg(RegKind::Sp));
 		Emit("\tmov %u(%s), %s", 16, Reg(RegKind::Sp), Reg(RegKind::Ax));
-		Emit("\tmov %s, %u(%s)", Reg(RegKind::Sp), 4, Reg(RegKind::Sp));
+		Emit("\tmov %s, %u(%s)", Reg(RegKind::Ax), 4, Reg(RegKind::Sp));
 		Emit("\txor %s, %s", Reg(RegKind::Ax), Reg(RegKind::Ax));
 		Emit("\tcall _Syc$Main$Func$Int$2Char");
-		Emit("\tadd $%u, %s", 8, Reg(RegKind::Sp));
 		Emit("\tret");
 
 
@@ -76,10 +75,12 @@ namespace Symple::Code
 		Emit("\tsub $" FUNCTION_STACKSIZE_FMT ", %s", name.c_str(), Reg(RegKind::Sp));
 		Emit("");
 
-		unsigned int stackPos = 4;
+		uint32 totalParamSz = 0;
+		uint32 stackPos = 4;
 		for (auto param : fn->Parameters)
 		{
 			stackPos += 4;
+			totalParamSz += param->Type->Type->Size;
 			decltype(auto) pname = param->MangledName;
 			if (!pname.empty())
 				Emit(VAR_FMT " = %u", pname.c_str(), stackPos);
@@ -91,7 +92,7 @@ namespace Symple::Code
 		Emit(FUNCTION_RETURN_FMT ":", fn->MangledName.c_str());
 		Emit("\tmov %s, %s", Reg(RegKind::Bp), Reg(RegKind::Sp));
 		Emit("\tpop %s", Reg(RegKind::Bp));
-		Emit("\tret");
+		Emit("\tretl $%u", totalParamSz);
 
 		Emit(".cfi_endproc");
 		Emit(FUNCTION_STACKSIZE_FMT " = %u", name.c_str(), m_StackSize);
@@ -252,8 +253,8 @@ namespace Symple::Code
 		Emit(call->Function);
 		if (sz)
 		{
-			fnPos = m_Stack;
 			Stalloc();
+			fnPos = m_Stack;
 			Emit("\tmov %s, -%u(%s)", Reg(RegKind::Ax), fnPos, Reg(RegKind::Bp));
 		}
 
