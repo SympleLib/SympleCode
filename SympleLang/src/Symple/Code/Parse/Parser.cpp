@@ -17,7 +17,7 @@ namespace Symple::Code
 			members.push_back(ParseMember());
 		auto eof = Match(TokenKind::EndOfFile);
 
-		*errorList = Pass(m_ErrorList);
+		*errorList = MakeScope<ErrorList>(Pass(m_ErrorList));
 		return MakeRef<CompilationUnitAst>(members, eof);
 	}
 
@@ -346,8 +346,7 @@ namespace Symple::Code
 	{
 		if (Current->Is(kind))
 			return Next();
-		m_ErrorList->Report();
-		std::cerr << '[' << Current->DisplayLine << ':' << Current->Column << "]: " << "Unexpected " << Current->Kind << " '" << Current->Text << "', Expected " << kind << '\n';
+		m_ErrorList.ReportWrongToken(Current, kind);
 		return Current;
 	}
 }

@@ -8,6 +8,13 @@
 
 using namespace Symple::Code;
 
+static void Exit()
+{
+	std::cout.flush();
+	std::cin.get();
+	exit(0);
+}
+
 int main()
 {
 	GlobalRef<File> src = MakeRef<File>("sy/Main.sy", FilePermissions::Read);
@@ -63,6 +70,11 @@ int main()
 	Parser parser(tokens);
 	Scope<ErrorList> errorList;
 	auto unit = parser.Parse(&errorList);
+	if (!errorList->IsEmpty())
+	{
+		errorList->Dump(std::cout);
+		Exit();
+	}
 
 	SymbolVisitor symbolVisit(unit);
 	Console.Color = ConsoleColor::Red;
@@ -95,6 +107,5 @@ int main()
 	printf("\nProgram exited with code %i (0x%x) [%g]\n", ec, ec, fec);
 	Console.Color = ConsoleColor::White;
 
-	std::cout.flush();
-	std::cin.get();
+	Exit();
 }

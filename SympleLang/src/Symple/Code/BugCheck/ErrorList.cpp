@@ -1,7 +1,24 @@
 #include "Symple/Code/BugCheck/ErrorList.h"
 
+#include "Symple/Code/Util/Format.h"
+
 namespace Symple::Code
 {
+	SYC_API std::ostream &operator <<(std::ostream &os, ErrorLevel lvl)
+	{ return os << ErrorLevelNames[(uint32)lvl]; }
+
+	void ErrorMessage::Print(std::ostream &os) const
+	{
+		os << '[' << Severity << ']';
+		if (!Tok.expired())
+		{
+			auto tok = Tok.lock();
+			os << '(' << tok->DisplayLine << ':' << tok->Column << ')';
+		}
+		os << ": " << Msg;
+	}
+
+
 	void ErrorList::Report(const GlobalRef<const ErrorMessage> &err)
 	{
 		m_Msgs.push_back(err);
@@ -25,9 +42,17 @@ namespace Symple::Code
 	
 	
 	void ErrorList::ReportWrongToken(const GlobalRef<const Token> &tok, TokenKind expected)
+	{ Report(Format("Unexpected {} '{}', expected {}", tok->Kind, tok->Text, expected), ErrorLevel::Error, tok); }
+
+
+	void ErrorList::Dump(std::ostream &os)
 	{
-		Report("");
+		for (auto msg : m_Msgs)
+			msg->Print(os);
 	}
+
+	bool ErrorList::IsEmpty()
+	{ return m_Msgs.empty(); }
 
 
 	const std::vector<GlobalRef<const ErrorMessage>> &ErrorList::GetMessages()

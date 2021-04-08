@@ -19,6 +19,7 @@ project "SympleLang"
 	includedirs
 	{
 		"include",
+		"vendor/fmt/include"
 	}
 	
 	files
@@ -28,6 +29,8 @@ project "SympleLang"
 		
 		"src/**.c",
 		"src/**.cpp",
+		
+		"vendor/fmt/src/*.cc",
 	}
 	
 	-- postbuildcommands
