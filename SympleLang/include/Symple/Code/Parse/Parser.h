@@ -2,6 +2,7 @@
 
 #include "Symple/Code/Ast/Ast.h"
 #include "Symple/Code/Parse/Token.h"
+#include "Symple/Code/BugCheck/ErrorList.h"
 
 namespace Symple::Code
 {
@@ -10,9 +11,11 @@ namespace Symple::Code
 	private:
 		const TokenList m_Tokens;
 		uint32 m_Position = 0;
+
+		Scope<ErrorList> m_ErrorList;
 	public:
 		Parser(const TokenList &tokens);
-		GlobalRef<CompilationUnitAst> Parse();
+		GlobalRef<CompilationUnitAst> Parse(Scope<ErrorList> *);
 	private:
 		GlobalRef<MemberAst> ParseMember();
 		GlobalRef<FunctionAst> ParseFunction();

@@ -61,7 +61,8 @@ int main()
 	//	std::cout << tok->Kind << " | " << tok->Text << " <" << tok->Line << ':' << tok->Column << ">\n";
 
 	Parser parser(tokens);
-	auto unit = parser.Parse();
+	Scope<ErrorList> errorList;
+	auto unit = parser.Parse(&errorList);
 
 	SymbolVisitor symbolVisit(unit);
 	Console.Color = ConsoleColor::Red;

@@ -13,6 +13,18 @@ namespace Symple::Code
 	template<typename T>
 	using WeakRef = std::weak_ptr<T>;
 
+	template<typename T>
+	inline constexpr T &&Pass(T &&obj)
+	{ return static_cast<T &&>(obj); }
+
+	template<typename T>
+	inline constexpr T &&Pass(T &obj)
+	{ return static_cast<T &&>(obj); }
+
+	template<typename T>
+	inline constexpr T &&Pass(const T & obj)
+	{ return static_cast<T &&>(obj); }
+
 	template<typename T, typename... Args>
 	inline Scope<T> MakeScope(Args&&... args)
 	{ return std::make_unique<T>(std::forward<Args>(args)...); }
