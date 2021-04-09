@@ -112,7 +112,12 @@ namespace Symple::Code
 		auto open = Match(TokenKind::OpenBrace);
 		StatementList stmts;
 		while (!Current->Is(TokenKind::CloseBrace))
+		{
+			if (Current->Is(TokenKind::EndOfFile))
+				m_ErrorList.ReportEndOfFile(Current);
+
 			stmts.push_back(ParseStatement());
+		}
 		auto close = Next();
 
 		return MakeRef<BlockStatementAst>(open, stmts, close);
@@ -199,6 +204,9 @@ namespace Symple::Code
 			args.push_back(ParseExpression());
 		while (!Current->Is(TokenKind::CloseParen))
 		{
+			if (Current->Is(TokenKind::EndOfFile))
+				m_ErrorList.ReportEndOfFile(Current);
+
 			Match(TokenKind::Comma);
 			args.push_back(ParseExpression());
 		}
@@ -311,6 +319,9 @@ namespace Symple::Code
 		}
 		while (!Current->Is(TokenKind::CloseParen))
 		{
+			if (Current->Is(TokenKind::EndOfFile))
+				m_ErrorList.ReportEndOfFile(Current);
+
 			Match(TokenKind::Comma);
 			auto param = ParseParameter(ty);
 			ty = param->m_Type;

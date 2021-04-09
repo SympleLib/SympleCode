@@ -42,9 +42,14 @@ namespace Symple::Code
 		return err;
 	}
 	
-	
+
+	template<bool Throw>
 	GlobalRef<const ErrorMessage> ErrorList::ReportWrongToken(const GlobalRef<const Token> &tok, TokenKind expected)
-	{ return Report(Format("Unexpected {} '{}', expected {}", tok->Kind, tok->Text, expected), ErrorLevel::Error, tok); }
+	{ return Report<Throw>(Format("Unexpected {} '{}', expected {}", tok->Kind, tok->Text, expected), ErrorLevel::Error, tok); }
+
+	template<bool Throw>
+	GlobalRef<const ErrorMessage> ErrorList::ReportEndOfFile(const GlobalRef<const Token> &tok)
+	{ return Report<Throw>("Unexpected EndOfFile", ErrorLevel::Error, tok); }
 
 
 	void ErrorList::Dump(std::ostream &os)
