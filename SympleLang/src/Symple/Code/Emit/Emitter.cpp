@@ -1,5 +1,8 @@
 #include "Symple/Code/Emit/Emitter.h"
 
+#define NOMINMAX
+#include <Windows.h>
+
 namespace Symple::Code
 {
 	#define SYMBOL_FMT "\"%s\""
@@ -16,7 +19,19 @@ namespace Symple::Code
 	{
 		auto file = m_Unit->EndOfFile->File;
 		m_FNum = file->Number;
-		Emit(".file %u \"%s\"", m_FNum, (file->Name.substr(file->Name.find_last_of('/') + 1)).c_str());
+
+		std::string fileName = file->Name.substr(file->Name.find_last_of('/') + 1);
+
+		std::string path;
+		path.resize(_MAX_PATH);
+		GetModuleFileNameA(NULL, path.data(), path.size());
+		path.resize(path.find_last_of('\\'));
+		for (char &c : path)
+			if (c == '\\')
+				c = '/';
+
+		Emit(".file \"%s\"", fileName.c_str());
+		Emit(".cv_file %u \"%s\"", m_FNum, (path + fileName).c_str());
 
 		Emit(".text");
 		Emit(".global _main");
@@ -52,7 +67,7 @@ namespace Symple::Code
 		m_TextFile.Close();
 
 		// Temp file...
-		//std::remove(m_DataFile.Name.c_str());
+		std::remove(m_DataFile.Name.c_str());
 	}
 
 
@@ -67,8 +82,9 @@ namespace Symple::Code
 
 		// Debug Symbols (I guess...)
 		Emit(".Lfunc_begin%u:", m_FId);
+		Emit(".cv_func_id %u", m_FId);
 		Emit(fn->Name);
-		Emit(".cfi_startproc");
+		Emit(".cv_fpo_proc %s %u", name.c_str(), m_FId);
 
 		Emit("\tpush %s", Reg(RegKind::Bp));
 		Emit("\tmov %s, %s", Reg(RegKind::Sp), Reg(RegKind::Bp));
@@ -94,7 +110,9 @@ namespace Symple::Code
 		Emit("\tpop %s", Reg(RegKind::Bp));
 		Emit("\tretl $%u", totalParamSz);
 
-		Emit(".cfi_endproc");
+		// Debug Symbols (I guess...)
+		Emit(".cv_fpo_endproc");
+		Emit(".Lfunc_end%u:", m_FId);
 		Emit(FUNCTION_STACKSIZE_FMT " = %u", name.c_str(), m_StackSize);
 	}
 
@@ -450,7 +468,7 @@ namespace Symple::Code
 
 
 	void Emitter::Emit(const GlobalRef<const Token> &tok)
-	{ Emit(".loc %u %u %u", m_FNum, tok->DisplayLine, tok->Column); }
+	{ Emit(".cv_loc %u %u %u", m_FId, m_FNum, tok->DisplayLine, tok->Column); }
 
 
 	template<typename... Args>

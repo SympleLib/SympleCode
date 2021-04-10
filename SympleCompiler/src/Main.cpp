@@ -102,7 +102,7 @@ int main()
 		float fec;
 		const char *strRet;
 	};
-	ec = system("bin\\Out.exe \"Hello, world!\"");
+	ec = system("bin\\Out.exe");
 	Console.Color = ConsoleColor::Yellow;
 	printf("\nProgram exited with code %i (0x%x) [%g]\n", ec, ec, fec);
 	Console.Color = ConsoleColor::White;

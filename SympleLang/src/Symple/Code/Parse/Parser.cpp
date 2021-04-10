@@ -114,7 +114,7 @@ namespace Symple::Code
 		while (!Current->Is(TokenKind::CloseBrace))
 		{
 			if (Current->Is(TokenKind::EndOfFile))
-				m_ErrorList.ReportEndOfFile(Current);
+				throw m_ErrorList.ReportEndOfFile(Current);
 
 			stmts.push_back(ParseStatement());
 		}
@@ -205,7 +205,7 @@ namespace Symple::Code
 		while (!Current->Is(TokenKind::CloseParen))
 		{
 			if (Current->Is(TokenKind::EndOfFile))
-				m_ErrorList.ReportEndOfFile(Current);
+				throw m_ErrorList.ReportEndOfFile(Current);
 
 			Match(TokenKind::Comma);
 			args.push_back(ParseExpression());
@@ -320,7 +320,7 @@ namespace Symple::Code
 		while (!Current->Is(TokenKind::CloseParen))
 		{
 			if (Current->Is(TokenKind::EndOfFile))
-				m_ErrorList.ReportEndOfFile(Current);
+				throw m_ErrorList.ReportEndOfFile(Current);
 
 			Match(TokenKind::Comma);
 			auto param = ParseParameter(ty);
