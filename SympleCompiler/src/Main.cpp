@@ -100,7 +100,6 @@ int main()
 	{
 		int ec;
 		float fec;
-		const char *strRet;
 	};
 	ec = system("bin\\Out.exe");
 	Console.Color = ConsoleColor::Yellow;
