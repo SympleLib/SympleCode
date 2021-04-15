@@ -67,12 +67,15 @@ namespace Symple::Code
 		StallocKeyword,
 		StafKeyword,
 
+		ProtoKeyword,
+		CallKeyword,
+
 		// Markings
 		Punctuator = Plus,
 		Keyword = VoidKeyword,
 
 		First = Unknown,
-		Last = StafKeyword,
+		Last = CallKeyword,
 		Count, // Number of token kinds
 	};
 
@@ -136,6 +139,9 @@ namespace Symple::Code
 
 		"StallocKeyword",
 		"StafKeyword",
+
+		"ProtoKeyword",
+		"CallKeyword",
 	};
 
 	SYC_API std::ostream &operator <<(std::ostream &, TokenKind);

@@ -35,8 +35,23 @@ namespace Symple::Code
 			return ParseFunction();
 		else if (Current->Is(TokenKind::ExternKeyword))
 			return ParseExternFunction();
+		else if (Current->Is(TokenKind::ProtoKeyword))
+			return ParseProto();
 		else
 			throw std::exception("Must be function declaration!");
+	}
+
+	GlobalRef<ProtoAst> Parser::ParseProto()
+	{
+		Match(TokenKind::ProtoKeyword);
+		auto name = Match(TokenKind::Identifier);
+		// TODO: something
+		ConstTokenList mods;
+		if (Current->Is(TokenKind::EqualArrow))
+			Next();
+		auto body = ParseStatement();
+
+		return MakeRef<ProtoAst>(name, mods, body);
 	}
 
 	GlobalRef<FunctionAst> Parser::ParseFunction()

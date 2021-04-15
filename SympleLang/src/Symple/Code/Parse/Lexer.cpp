@@ -125,27 +125,32 @@ namespace Symple::Code
 		KEYWORD(bool, Bool);
 
 		ID_KEYWORD(ret, Return);
-		ID_KEYWORD(return, Return);
+		KEYWORD(return, Return);
 
+		KEYWORD(__extern, Extern);
 		ID_KEYWORD(extern, Extern);
 		ID_KEYWORD(external, Extern);
 
 		ID_KEYWORD(ccall, CCall);
 		ID_KEYWORD(stdcall, StdCall);
 		ID_KEYWORD(sycall, SyCall);
-		ID_KEYWORD(syccall, SycCall);
 
 		KEYWORD(__cdecl, CCall);
 		KEYWORD(__ccall, CCall);
 		KEYWORD(__stdcall, StdCall);
 		KEYWORD(__sycall, SyCall);
-		KEYWORD(__syccall, SycCall);
 
 		ID_KEYWORD(stalloc, Stalloc);
 		ID_KEYWORD(staf, Staf);
 
 		KEYWORD(__stalloc, Stalloc);
 		KEYWORD(__staf, Staf);
+
+		KEYWORD(__protocall, Proto);
+		ID_KEYWORD(protocall, Proto);
+		ID_KEYWORD(proto, Proto);
+		KEYWORD(__call, Call);
+		ID_KEYWORD(call, Call);
 		
 		return MakeToken(TokenKind::Identifier, beg, &Current);
 	}

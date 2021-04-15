@@ -13,6 +13,7 @@ namespace Symple::Code
 	class SYC_API CompilationUnitAst;
 
 	class SYC_API MemberAst;
+	class SYC_API ProtoAst;
 	class SYC_API FunctionAst;
 	class SYC_API ExternFunctionAst;
 
@@ -72,6 +73,7 @@ namespace Symple::Code
 
 		// Members
 		Member,
+		Proto,
 		Function,
 		ExternFunction,
 

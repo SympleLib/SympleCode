@@ -8,10 +8,46 @@ namespace Symple::Code
 	{ return AstKind::Member; }
 
 
+	Proto::Proto(const GlobalRef<const Token_t> &name, const ConstTokenList &mods)
+		: m_Name(name), m_Mods(mods) {}
+
+	bool Proto::GetIsFunction() const
+	{ return true; }
+
+	GlobalRef<const Token_t> Proto::GetName() const
+	{ return m_Name; }
+
+	const ConstTokenList &Proto::GetModifiers() const
+	{ return m_Mods; }
+
+
+	ProtoAst::ProtoAst(const GlobalRef<const Token_t> &name, const ConstTokenList &mods, const GlobalRef<StatementAst> &bod)
+		: Proto(name, mods), m_Body(bod) {}
+
+	AstKind ProtoAst::GetKind() const
+	{ return AstKind::Member; }
+
+	GlobalRef<const StatementAst> ProtoAst::GetBody() const
+	{ return m_Body; }
+
+	void ProtoAst::Print(std::ostream & os, std::string indent, std::string_view label, bool last) const
+	{
+		PrintIndent(os, indent, label, last);
+		PrintKind(os);
+		os << " (" << m_MangledName << ')';
+
+		indent += GetAddIndent(last);
+		m_Name->Print(os << '\n', indent, "Name = ", false);
+		for (auto mod : m_Mods)
+			mod->Print(os << '\n', indent, "[Modifier] ", false);
+		m_Body->Print(os << '\n', indent, "Body = ");
+	}
+
+
 	Function::Function(const GlobalRef<TypeAst> &type, const GlobalRef<const Token_t> &name,
 		const WeakRef<const Token_t> &open, const ParameterList &params, const WeakRef<const Token_t> &close,
 			const ConstTokenList &mods)
-		: m_Type(type), m_Name(name), m_Open(open), m_Params(params), m_Close(close), m_Mods(mods)
+		: Proto(name, mods), m_Type(type), m_Open(open), m_Params(params), m_Close(close)
 	{}
 
 	WeakRef<const Token_t> Function::GetToken() const
@@ -19,12 +55,6 @@ namespace Symple::Code
 
 	GlobalRef<const TypeAst> Function::GetType() const
 	{ return m_Type; }
-
-	GlobalRef<const Token_t> Function::GetName() const
-	{ return m_Name; }
-
-	bool Function::GetIsFunction() const
-	{ return true; }
 
 
 	TokenKind Function::GetCallingConvention() const
@@ -39,9 +69,6 @@ namespace Symple::Code
 
 	WeakRef<const Token_t> Function::GetClose() const
 	{ return m_Close; }
-
-	const ConstTokenList &Function::GetModifiers() const
-	{ return m_Mods; }
 
 
 	FunctionAst::FunctionAst(const GlobalRef<TypeAst> &type, const GlobalRef<const Token_t> &name,
@@ -72,7 +99,7 @@ namespace Symple::Code
 		if (!m_Close.expired())
 			m_Close.lock()->Print(os << '\n', indent, "Close = ", false);
 		for (auto mod : m_Mods)
-			mod->Print(os << '\n', indent, "[Modifiers] ", false);
+			mod->Print(os << '\n', indent, "[Modifier] ", false);
 		m_Body->Print(os << '\n', indent, "Body = ");
 	}
 

@@ -468,7 +468,7 @@ namespace Symple::Code
 
 
 	void Emitter::Emit(const GlobalRef<const Token> &tok)
-	{ Emit(".cv_loc %u %u %u", m_FId, m_FNum, tok->DisplayLine, tok->Column); }
+	{ Emit(".cv_loc %u %u %u %u", m_FId, m_FNum, tok->DisplayLine, tok->Column); }
 
 
 	template<typename... Args>

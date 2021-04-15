@@ -1,4 +1,7 @@
 extern void puts(char *) __ccall;
 
+proto Exit =>
+	puts("Exiting");
+
 int Main(int nArgs, char **args) =>
-	puts("Hello, world!");
+	call Exit;
