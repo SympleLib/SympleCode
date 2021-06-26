@@ -42,7 +42,7 @@ namespace Symple::Code
 		Emit("\tmov %u(%s), %s", 16, Reg(RegKind::Sp), Reg(RegKind::Ax));
 		Emit("\tmov %s, %u(%s)", Reg(RegKind::Ax), 4, Reg(RegKind::Sp));
 		Emit("\txor %s, %s", Reg(RegKind::Ax), Reg(RegKind::Ax));
-		Emit("\tcall _Syc$Main$Func$Int$2Char");
+		Emit("\tcall Syc$Main$Int$2Char");
 		Emit("\tret");
 
 

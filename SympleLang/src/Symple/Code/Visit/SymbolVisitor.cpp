@@ -26,7 +26,7 @@ namespace Symple::Code
 			break;
 		}
 		case TokenKind::SyCallKeyword:
-			ss << "_Sy$" << fn->m_Name->Text << "$Func";
+			ss << "Sy$" << fn->m_Name->Text;
 			for (auto param : fn->m_Params)
 			{
 				auto ty = param->m_Type->Type;
@@ -35,13 +35,13 @@ namespace Symple::Code
 				if (param->m_Name)
 				{
 					std::stringstream ss;
-					ss << "_Sy$" << param->m_Name->Text << "$Var$" << m_Depths.size();
+					ss << "Sy$" << param->m_Name->Text << "$" << m_Depths.size();
 					param->m_MangledName = ss.str();
 				}
 			}
 			break;
 		case TokenKind::SycCallKeyword:
-			ss << "_Syc$" << fn->m_Name->Text << "$Func";
+			ss << "Syc$" << fn->m_Name->Text;
 			for (auto param : fn->m_Params)
 			{
 				auto ty = param->m_Type->Type;
@@ -50,7 +50,7 @@ namespace Symple::Code
 				if (param->m_Name)
 				{
 					std::stringstream ss;
-					ss << "_Sy$" << param->m_Name->Text << "$Var$" << m_Depths.size();
+					ss << "Sy$" << param->m_Name->Text << m_Depths.size();
 					param->m_MangledName = ss.str();
 					m_Names.push_back(param);
 				}
@@ -65,7 +65,7 @@ namespace Symple::Code
 	{
 		std::stringstream ss;
 		var->m_Depth = m_Depths.size();
-		ss << "_Sy$" << var->m_Name->Text << "$Var$" << var->m_Depth;
+		ss << "Sy$" << var->m_Name->Text << "$" << var->m_Depth;
 		var->m_MangledName = ss.str();
 	}
 
