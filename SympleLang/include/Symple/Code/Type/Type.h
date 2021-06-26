@@ -24,7 +24,7 @@ namespace Symple::Code
 
 		Count, // Count of type kinds
 	};
-
+	
 	constexpr const char *const TypeKindNames[(uint32)TypeKind::Count] =
 	{
 		"Void",
@@ -51,7 +51,7 @@ namespace Symple::Code
 		uint32 m_PtrCount;
 		bool m_Ref;
 
-		std::string m_MangledName;
+		std::string m_MangledName, m_Code;
 	public:
 		Type(TypeKind, uint32 pointerCount, bool isRef);
 		GlobalRef<Type> Deref() const;
@@ -77,6 +77,7 @@ namespace Symple::Code
 		uint32 GetSize() const;
 
 		const std::string &GetMangledName() const;
+		const std::string &GetCode() const;
 
 		SY_PROPERTY_GET(GetKind) TypeKind Kind;
 		SY_PROPERTY_GET(GetPointerCount) uint32 PointerCount;
@@ -85,5 +86,6 @@ namespace Symple::Code
 		SY_PROPERTY_GET(GetSize) uint32 Size;
 
 		SY_PROPERTY_GET(GetMangledName) const std::string &MangledName;
+		SY_PROPERTY_GET(GetCode) const std::string &Code;
 	};
 }

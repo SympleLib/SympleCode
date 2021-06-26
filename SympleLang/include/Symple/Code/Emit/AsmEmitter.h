@@ -11,7 +11,7 @@ namespace Symple::Code
 		Data,
 	};
 
-	class SYC_API Emitter
+	class SYC_API AsmEmitter
 	{
 	private:
 		File m_TextFile, m_DataFile;
@@ -24,7 +24,7 @@ namespace Symple::Code
 		uint32 m_Stack = 0, m_StackSize = 0;
 		GlobalRef<const CompilationUnitAst> m_Unit;
 	public:
-		Emitter(const GlobalRef<const CompilationUnitAst> &unit);
+		AsmEmitter(const GlobalRef<const CompilationUnitAst> &unit);
 		void Emit();
 	private:
 		void Emit(const GlobalRef<const FunctionAst> &function);

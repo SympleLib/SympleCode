@@ -14,7 +14,7 @@ namespace Symple::Code
 		switch (fn->m_Call)
 		{
 		case TokenKind::CCallKeyword:
-			ss << '_' << fn->m_Name->Text;
+			ss << fn->m_Name->Text;
 			break;
 		case TokenKind::StdCallKeyword:
 		{

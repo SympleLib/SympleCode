@@ -15,6 +15,12 @@ namespace Symple::Code
 			ss << m_Ref + m_PtrCount;
 		ss << TypeKindNames[(uint32)m_Kind];
 		m_MangledName = ss.str();
+
+		ss.str("");
+		ss << TypeKindNames[(uint32)m_Kind];
+		for (uint32 i = 0; i < m_PtrCount; i++)
+			ss << '*';
+		m_Code = ss.str();
 	}
 
 	GlobalRef<Type> Type::Deref() const
@@ -26,11 +32,7 @@ namespace Symple::Code
 	void Type::Print(std::ostream & os, std::string indent, std::string_view label, bool last) const
 	{
 		PrintIndent(os, indent, label, last);
-		os << m_Kind;
-		for (uint32 i = 0; i < m_PtrCount; i++)
-			os << '*';
-		if (m_Ref)
-			os << '&';
+		os << m_Code;
 	}
 
 	bool Type::Is(TypeKind kind) const
@@ -84,4 +86,7 @@ namespace Symple::Code
 
 	const std::string &Type::GetMangledName() const
 	{ return m_MangledName; }
+
+	const std::string &Type::GetCode() const
+	{ return m_Code; }
 }
