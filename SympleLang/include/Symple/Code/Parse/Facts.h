@@ -17,6 +17,8 @@ namespace Symple::Code
 	{
 		TokenFacts() = delete;
 
+		static bool IsBuiltinFunction(TokenKind);
+
 		static TypeKind ToType(TokenKind);
 
 		static bool IsTypeBase(TokenKind);

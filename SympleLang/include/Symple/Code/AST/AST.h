@@ -93,6 +93,7 @@ namespace Symple::Code
 		NameExpression,
 		UnaryExpression,
 		BinaryExpression,
+		BuiltinExpression,
 		LiteralExpression,
 		ParenthasizedExpression,
 
@@ -108,6 +109,7 @@ namespace Symple::Code
 
 
 		"Member",
+		"Proto",
 		"Function",
 		"ExternFunction",
 
@@ -127,6 +129,7 @@ namespace Symple::Code
 		"NameExpression",
 		"UnaryExpression",
 		"BinaryExpression",
+		"BuiltinExpression",
 		"LiteralExpression",
 		"ParenthasizedExpression",
 	};

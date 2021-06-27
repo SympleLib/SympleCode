@@ -75,7 +75,6 @@ namespace Symple::Code
 		SY_PROPERTY_GET(GetOpen) WeakRef<const Token_t> Open;
 		SY_PROPERTY_GET(GetArguments) const ExpressionList &Arguments;
 		SY_PROPERTY_GET(GetClose) WeakRef<const Token_t> Close;
-
 	};
 
 	class SYC_API CastExpressionAst: public ExpressionAst
@@ -105,6 +104,37 @@ namespace Symple::Code
 		SY_PROPERTY_GET(GetTypeAst) GlobalRef<const TypeAst_t> TypeAst;
 		SY_PROPERTY_GET(GetClose) WeakRef<const Token_t> Close;
 		SY_PROPERTY_GET(GetValue) GlobalRef<const ExpressionAst> Value;
+	};
+
+	class SYC_API BuiltinExpressionAst: public ExpressionAst
+	{
+	private:
+		WeakRef<const Token_t> m_Name;
+		WeakRef<const Token_t> m_Open;
+		ExpressionList m_Args;
+		WeakRef<const Token_t> m_Close;
+
+		TokenKind m_Macro;
+
+		VISIT_ME;
+	public:
+		BuiltinExpressionAst(WeakRef<const Token_t> name, TokenKind macro, WeakRef<const Token_t> open, const ExpressionList &args, WeakRef<const Token_t> close);
+
+		virtual AstKind GetKind() const override;
+		virtual WeakRef<const Token_t> GetToken() const override;
+		virtual void Print(std::ostream &, std::string indent = "", std::string_view label = "", bool last = true) const override;
+
+		TokenKind GetMacro() const;
+		WeakRef<const Token_t> GetName() const;
+		WeakRef<const Token_t> GetOpen() const;
+		const ExpressionList &GetArguments() const;
+		WeakRef<const Token_t> GetClose() const;
+
+		SY_PROPERTY_GET(GetMacro) TokenKind Macro;
+		SY_PROPERTY_GET(GetName) WeakRef<const Token_t> Name;
+		SY_PROPERTY_GET(GetOpen) WeakRef<const Token_t> Open;
+		SY_PROPERTY_GET(GetArguments) const ExpressionList &Arguments;
+		SY_PROPERTY_GET(GetClose) WeakRef<const Token_t> Close;
 	};
 
 	class SYC_API UnaryExpressionAst: public ExpressionAst

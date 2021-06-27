@@ -190,6 +190,13 @@ namespace Symple::Code
 			Visit(binExpr->m_Right);
 			break;
 		}
+		case AstKind::BuiltinExpression:
+		{
+			auto macro = Cast<BuiltinExpressionAst>(expr);
+			for (auto arg : macro->Arguments)
+				Visit(arg);
+			break;
+		}
 		}
 	}
 }

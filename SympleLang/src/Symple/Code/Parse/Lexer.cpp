@@ -151,6 +151,9 @@ namespace Symple::Code
 		ID_KEYWORD(proto, Proto);
 		KEYWORD(__call, Call);
 		ID_KEYWORD(call, Call);
+
+		KEYWORD(__lengthof, Lengthof);
+		ID_KEYWORD(lengthof, Lengthof);
 		
 		return MakeToken(TokenKind::Identifier, beg, &Current);
 	}

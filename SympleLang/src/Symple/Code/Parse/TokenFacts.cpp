@@ -2,6 +2,18 @@
 
 namespace Symple::Code
 {
+	bool TokenFacts::IsBuiltinFunction(TokenKind kind)
+	{
+		switch (kind)
+		{
+		case TokenKind::LengthofKeyword:
+			return true;
+
+		default:
+			return false;
+		}
+	}
+
 	TypeKind TokenFacts::ToType(TokenKind kind)
 	{
 		switch (kind)

@@ -206,7 +206,7 @@ namespace Symple::Code
 			if (!precedence || precedence <= parentPrecedence)
 				return left;
 			auto op = Next();
-			auto right = ParsePostfixExpression(precedence);
+			auto right = ParsePostfixExpression(precedence); // TODO: change
 			left = MakeRef<BinaryExpressionAst>(op, left, right);
 		}
 	}
@@ -228,6 +228,26 @@ namespace Symple::Code
 		auto close = Next();
 
 		return MakeRef<CallExpressionAst>(func, open, args, close);
+	}
+
+	GlobalRef<BuiltinExpressionAst> Parser::ParseBuiltinExpression()
+	{
+		auto name = Next();
+		auto open = Match(TokenKind::OpenParen);
+		ExpressionList args;
+		if (!Current->Is(TokenKind::CloseParen))
+			args.push_back(ParseExpression());
+		while (!Current->Is(TokenKind::CloseParen))
+		{
+			if (Current->Is(TokenKind::EndOfFile))
+				throw m_ErrorList.ReportEndOfFile(Current);
+
+			Match(TokenKind::Comma);
+			args.push_back(ParseExpression());
+		}
+		auto close = Next();
+
+		return MakeRef<BuiltinExpressionAst>(name, name->Kind, open, args, close);
 	}
 
 	GlobalRef<ExpressionAst> Parser::ParsePrimaryExpression()
@@ -252,7 +272,9 @@ namespace Symple::Code
 		}
 
 		default:
-			if (Current->Is(TokenKind::Identifier)) // Identifier Keywords
+			if (TokenFacts::IsBuiltinFunction(Current->Kind))
+				return ParseBuiltinExpression();
+			else if (Current->Is(TokenKind::Identifier)) // Identifier Keywords
 				return ParseNameExpression();
 			else
 				throw std::exception("Invalid Primary Expression");

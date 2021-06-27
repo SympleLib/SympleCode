@@ -70,12 +70,14 @@ namespace Symple::Code
 		ProtoKeyword,
 		CallKeyword,
 
+		LengthofKeyword,
+
 		// Markings
 		Punctuator = Plus,
 		Keyword = VoidKeyword,
 
 		First = Unknown,
-		Last = CallKeyword,
+		Last = LengthofKeyword,
 		Count, // Number of token kinds
 	};
 
@@ -142,6 +144,8 @@ namespace Symple::Code
 
 		"ProtoKeyword",
 		"CallKeyword",
+
+		"LengthofKeyword",
 	};
 
 	SYC_API std::ostream &operator <<(std::ostream &, TokenKind);

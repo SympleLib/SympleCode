@@ -1,4 +1,4 @@
 extern void printf(char *) __ccall;
 
 int Main(char *^args) =>
-	printf("First Arg: `%s`", *args);
+	printf("Should print: `%u`", lengthof(args));

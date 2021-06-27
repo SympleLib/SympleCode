@@ -58,7 +58,7 @@ namespace Symple::Code
 	{ return AstKind::CallExpression; }
 
 	WeakRef<const Token_t> CallExpressionAst::GetToken() const
-	{ return m_Open; }
+	{ return m_Func->Token; }
 
 	WeakRef<const Token_t> CallExpressionAst::GetOpen() const
 	{ return m_Open; }
@@ -122,6 +122,46 @@ namespace Symple::Code
 		if (!m_Close.expired())
 			m_Close.lock()->Print(os << '\n', indent, "Close = ", false);
 		m_Value->Print(os << '\n', indent, "Value = ");
+	}
+
+
+	BuiltinExpressionAst::BuiltinExpressionAst(WeakRef<const Token_t> name, TokenKind macro, WeakRef<const Token_t> open, const ExpressionList &args, WeakRef<const Token_t> close)
+		: m_Name(name), m_Macro(macro), m_Open(open), m_Args(args), m_Close(close) {}
+
+	AstKind BuiltinExpressionAst::GetKind() const
+	{ return AstKind::BuiltinExpression; }
+
+	TokenKind BuiltinExpressionAst::GetMacro() const
+	{ return m_Macro; }
+
+	WeakRef<const Token_t> BuiltinExpressionAst::GetToken() const
+	{ return m_Name; }
+
+	WeakRef<const Token_t> BuiltinExpressionAst::GetOpen() const
+	{ return m_Open; }
+
+	const ExpressionList &BuiltinExpressionAst::GetArguments() const
+	{ return m_Args; }
+
+	WeakRef<const Token_t> BuiltinExpressionAst::GetClose() const
+	{ return m_Close; }
+
+	void BuiltinExpressionAst::Print(std::ostream &os, std::string indent, std::string_view label, bool last) const
+	{
+		PrintIndent(os, indent, label, last);
+		PrintKind(os);
+
+		os << " (" << m_Macro << ')';
+
+		indent += GetAddIndent(last);
+		if (!m_Name.expired())
+			m_Name.lock()->Print(os << '\n', indent, "Function = ", false);
+		if (!m_Open.expired())
+			m_Open.lock()->Print(os << '\n', indent, "Open = ", false);
+		for (auto param : m_Args)
+			param->Print(os << '\n', indent, "[Argument] ", m_Close.expired());
+		if (!m_Close.expired())
+			m_Close.lock()->Print(os << '\n', indent, "Close = ");
 	}
 
 

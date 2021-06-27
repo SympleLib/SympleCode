@@ -126,6 +126,13 @@ namespace Symple::Code
 			binExpr->m_Type = binExpr->m_Left->m_Type;
 			break;
 		}
+		case AstKind::BuiltinExpression:
+		{
+			auto macro = Cast<BuiltinExpressionAst>(expr);
+			for (auto arg : macro->Arguments)
+				Visit(arg);
+			break;
+		}
 		}
 	}
 }

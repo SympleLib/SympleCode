@@ -44,7 +44,7 @@ namespace Symple::Code
 		Emit("_main:");
 		Emit("\tsub $%u, %s", 8, Reg(RegKind::Sp));
 		Emit("\tmov %u(%s), %s", 12, Reg(RegKind::Sp), Reg(RegKind::Ax));
-		Emit("\tmov %s, %u(%s)", Reg(RegKind::Sp), 4, Reg(RegKind::Sp));
+		Emit("\tmov %s, %u(%s)", Reg(RegKind::Ax), 4, Reg(RegKind::Sp));
 		Emit("\tmov %u(%s), %s", 16, Reg(RegKind::Sp), Reg(RegKind::Ax));
 		Emit("\tmov %s, %u(%s)", Reg(RegKind::Ax), 0, Reg(RegKind::Sp));
 		Emit("\txor %s, %s", Reg(RegKind::Ax), Reg(RegKind::Ax));
@@ -209,6 +209,9 @@ namespace Symple::Code
 			break;
 		case AstKind::BinaryExpression:
 			Emit(Cast<const BinaryExpressionAst>(expr));
+			break;
+		case AstKind::BuiltinExpression:
+			Emit(Cast<const BuiltinExpressionAst>(expr));
 			break;
 		case AstKind::LiteralExpression:
 			Emit(Cast<const LiteralExpressionAst>(expr));
@@ -433,6 +436,24 @@ namespace Symple::Code
 				Emit("\tadd %s, %s", Reg(RegKind::Bx), Reg(RegKind::Ax));
 				break;
 			}
+		}
+	}
+
+	void AsmEmitter::Emit(const GlobalRef<const BuiltinExpressionAst> &macro)
+	{
+		switch (macro->Macro)
+		{
+		case TokenKind::LengthofKeyword:
+		{
+			auto arg = macro->Arguments[0];
+			if (!arg->Type->IsArray)
+				abort();
+			if (arg->Kind != AstKind::NameExpression)
+				abort();
+			auto trueArg = Cast<const NameExpressionAst>(arg);
+			Emit("\tmov (" VAR_FMT " + %u)(%s), %s", trueArg->Symbol->MangledName.c_str(), trueArg->Type->Size, Reg(RegKind::Bp), Reg(RegKind::Ax));
+			break;
+		}
 		}
 	}
 
