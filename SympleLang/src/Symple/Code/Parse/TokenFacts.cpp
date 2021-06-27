@@ -6,6 +6,7 @@ namespace Symple::Code
 	{
 		switch (kind)
 		{
+		case TokenKind::SizeofKeyword:
 		case TokenKind::LengthofKeyword:
 			return true;
 

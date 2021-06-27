@@ -101,7 +101,7 @@ int main()
 		int ec;
 		float fec;
 	};
-	ec = system("bin\\Out.exe should have about 6 arguments");
+	ec = system("bin\\Out.exe");
 	Console.Color = ConsoleColor::Yellow;
 	printf("\nProgram exited with code %i (0x%x) [%g]\n", ec, ec, fec);
 	Console.Color = ConsoleColor::White;

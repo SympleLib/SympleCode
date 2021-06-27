@@ -154,6 +154,8 @@ namespace Symple::Code
 
 		KEYWORD(__lengthof, Lengthof);
 		ID_KEYWORD(lengthof, Lengthof);
+		KEYWORD(__sizeof, Lengthof);
+		ID_KEYWORD(sizeof, Sizeof);
 		
 		return MakeToken(TokenKind::Identifier, beg, &Current);
 	}

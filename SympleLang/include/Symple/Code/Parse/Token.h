@@ -70,6 +70,7 @@ namespace Symple::Code
 		ProtoKeyword,
 		CallKeyword,
 
+		SizeofKeyword,
 		LengthofKeyword,
 
 		// Markings
@@ -145,6 +146,7 @@ namespace Symple::Code
 		"ProtoKeyword",
 		"CallKeyword",
 
+		"SizeofKeyword",
 		"LengthofKeyword",
 	};
 

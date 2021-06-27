@@ -443,6 +443,9 @@ namespace Symple::Code
 	{
 		switch (macro->Macro)
 		{
+		case TokenKind::SizeofKeyword:
+			Emit("\tmov $%u, %s", macro->Arguments[0]->Type->Size, Reg(RegKind::Ax));
+			break;
 		case TokenKind::LengthofKeyword:
 		{
 			auto arg = macro->Arguments[0];
