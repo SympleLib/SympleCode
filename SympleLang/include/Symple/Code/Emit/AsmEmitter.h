@@ -51,6 +51,11 @@ namespace Symple::Code
 		template<typename... Args>
 		void Emit(_Printf_format_string_ const char *fmt, Args&&... args);
 
+		template<typename... Args>
+		void EmitDbg(EmitKind, _Printf_format_string_ const char *fmt, Args&&... args);
+		template<typename... Args>
+		void EmitDbg(_Printf_format_string_ const char *fmt, Args&&... args);
+
 		constexpr const char Suf(uint32 size = 4);
 		constexpr const char *Reg(RegKind, uint32 size = 4);
 	};

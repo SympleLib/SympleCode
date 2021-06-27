@@ -21,7 +21,7 @@ namespace Symple::Code
 
 		static bool IsTypeBase(TokenKind);
 		static bool IsTypePointer(TokenKind);
-		static bool IsTypeRef(TokenKind);
+		static bool IsTypeArray(TokenKind);
 
 		static bool IsFuncMod(TokenKind);
 	};

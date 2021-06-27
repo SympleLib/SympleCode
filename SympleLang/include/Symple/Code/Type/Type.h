@@ -49,11 +49,11 @@ namespace Symple::Code
 	private:
 		TypeKind m_Kind;
 		uint32 m_PtrCount;
-		bool m_Ref;
+		bool m_Array;
 
 		std::string m_MangledName, m_Code;
 	public:
-		Type(TypeKind, uint32 pointerCount, bool isRef);
+		Type(TypeKind, uint32 pointerCount, bool isArray);
 		GlobalRef<Type> Deref() const;
 
 		virtual void Print(std::ostream &, std::string indent = "", std::string_view label = "", bool last = true) const override;
@@ -72,7 +72,7 @@ namespace Symple::Code
 
 		TypeKind GetKind() const;
 		uint32 GetPointerCount() const;
-		bool GetIsRef() const;
+		bool GetIsArray() const;
 		bool GetIsFloat() const;
 		uint32 GetSize() const;
 
@@ -81,7 +81,7 @@ namespace Symple::Code
 
 		SY_PROPERTY_GET(GetKind) TypeKind Kind;
 		SY_PROPERTY_GET(GetPointerCount) uint32 PointerCount;
-		SY_PROPERTY_GET(GetIsRef) bool IsRef;
+		SY_PROPERTY_GET(GetIsArray) bool IsArray;
 		SY_PROPERTY_GET(GetIsFloat) bool IsFloat;
 		SY_PROPERTY_GET(GetSize) uint32 Size;
 

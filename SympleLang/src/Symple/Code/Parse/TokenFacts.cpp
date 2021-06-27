@@ -59,8 +59,8 @@ namespace Symple::Code
 	bool TokenFacts::IsTypePointer(TokenKind kind)
 	{ return kind == TokenKind::Star; }
 
-	bool TokenFacts::IsTypeRef(TokenKind kind)
-	{ return kind == TokenKind::And; }
+	bool TokenFacts::IsTypeArray(TokenKind kind)
+	{ return kind == TokenKind::Carot; }
 
 
 	bool TokenFacts::IsFuncMod(TokenKind kind)

@@ -1,7 +1,4 @@
-extern void puts(char *) __ccall;
+extern void printf(char *) __ccall;
 
-void Exit() =>
-	puts("Exiting");
-
-int Main(int nArgs, char **args) =>
-	Exit();
+int Main(char *^args) =>
+	printf("First Arg: `%s`", *args);

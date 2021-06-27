@@ -309,15 +309,15 @@ namespace Symple::Code
 		ConstWeakTokenList addons;
 		while (TokenFacts::IsTypePointer(Current->Kind))
 			addons.push_back(Next());
-		bool isRef = false;
-		if (TokenFacts::IsTypeRef(Current->Kind))
+		bool isArray = false;
+		if (TokenFacts::IsTypeArray(Current->Kind))
 		{
 			addons.push_back(Next());
-			isRef = true;
+			isArray = true;
 		}
 
 		auto tyKind = TokenFacts::ToType(base->Kind);
-		GlobalRef<Type> ty = MakeRef<Type>(tyKind, addons.size() - isRef, isRef);
+		GlobalRef<Type> ty = MakeRef<Type>(tyKind, addons.size() - isArray, isArray);
 
 		return MakeRef<TypeAst>(base, addons, ty);
 	}

@@ -19,6 +19,7 @@ namespace Symple::Code
 		void Visit();
 	private:
 		void Mangle(GlobalRef<Function>);
+		void Mangle(GlobalRef<ParameterAst>);
 		void Mangle(GlobalRef<VariableStatementAst>);
 
 		void Visit(GlobalRef<StatementAst>);

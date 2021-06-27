@@ -7,12 +7,14 @@ namespace Symple::Code
 	SYC_API std::ostream &operator <<(std::ostream &os, TypeKind kind)
 	{ return os << TypeKindNames[(uint32)kind] << "Type"; }
 
-	Type::Type(TypeKind kind, uint32 ptrCount, bool isRef)
-		: m_Kind(kind), m_PtrCount(ptrCount), m_Ref(isRef)
+	Type::Type(TypeKind kind, uint32 ptrCount, bool isArray)
+		: m_Kind(kind), m_PtrCount(ptrCount), m_Array(isArray)
 	{
 		std::stringstream ss;
-		if (m_PtrCount || m_Ref)
-			ss << m_Ref + m_PtrCount;
+		if (m_Array)
+			ss << '$';
+		if (m_PtrCount)
+			ss << m_PtrCount;
 		ss << TypeKindNames[(uint32)m_Kind];
 		m_MangledName = ss.str();
 
@@ -20,6 +22,8 @@ namespace Symple::Code
 		ss << TypeKindNames[(uint32)m_Kind];
 		for (uint32 i = 0; i < m_PtrCount; i++)
 			ss << '*';
+		if (m_Array)
+			ss << '^';
 		m_Code = ss.str();
 	}
 
@@ -47,8 +51,8 @@ namespace Symple::Code
 	uint32 Type::GetPointerCount() const
 	{ return m_PtrCount; }
 
-	bool Type::GetIsRef() const
-	{ return m_Ref; }
+	bool Type::GetIsArray() const
+	{ return m_Array; }
 
 	bool Type::GetIsFloat() const
 	{ return (m_Kind == TypeKind::Float /* || m_Kind == TypeKind::Double || m_Kind == TypeKind::Triple */) && !m_PtrCount; }

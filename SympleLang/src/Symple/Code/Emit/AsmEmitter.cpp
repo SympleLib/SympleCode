@@ -1,7 +1,11 @@
 #include "Symple/Code/Emit/AsmEmitter.h"
 
-#define NOMINMAX
-#include <Windows.h>
+#define DEBUG_SYMBOLS false
+
+#if DEBUG_SYMBOLS
+	#define NOMINMAX
+	#include <Windows.h>
+#endif
 
 namespace Symple::Code
 {
@@ -17,6 +21,7 @@ namespace Symple::Code
 
 	void AsmEmitter::Emit()
 	{
+	#if DEBUG_SYMBOLS
 		auto file = m_Unit->EndOfFile->File;
 		m_FNum = file->Number;
 
@@ -30,19 +35,20 @@ namespace Symple::Code
 			if (c == '\\')
 				c = '/';
 
-		Emit(".file \"%s\"", fileName.c_str());
-		Emit(".cv_file %u \"%s\"", m_FNum, (path + fileName).c_str());
+		EmitDbg(".file \"%s\"", fileName.c_str());
+		EmitDbg(".cv_file %u \"%s\"", m_FNum, (path + fileName).c_str());
+	#endif
 
 		Emit(".text");
 		Emit(".global _main");
 		Emit("_main:");
 		Emit("\tsub $%u, %s", 8, Reg(RegKind::Sp));
 		Emit("\tmov %u(%s), %s", 12, Reg(RegKind::Sp), Reg(RegKind::Ax));
-		Emit("\tmov %s, %u(%s)", Reg(RegKind::Sp), 0, Reg(RegKind::Sp));
+		Emit("\tmov %s, %u(%s)", Reg(RegKind::Sp), 4, Reg(RegKind::Sp));
 		Emit("\tmov %u(%s), %s", 16, Reg(RegKind::Sp), Reg(RegKind::Ax));
-		Emit("\tmov %s, %u(%s)", Reg(RegKind::Ax), 4, Reg(RegKind::Sp));
+		Emit("\tmov %s, %u(%s)", Reg(RegKind::Ax), 0, Reg(RegKind::Sp));
 		Emit("\txor %s, %s", Reg(RegKind::Ax), Reg(RegKind::Ax));
-		Emit("\tcall Syc$Main$Int$2Char");
+		Emit("\tcall Syc$Main$$1Char");
 		Emit("\tret");
 
 
@@ -81,10 +87,10 @@ namespace Symple::Code
 		Emit(FUNCTION_FMT ":", name.c_str());
 
 		// Debug Symbols (I guess...)
-		Emit(".Lfunc_begin%u:", m_FId);
-		Emit(".cv_func_id %u", m_FId);
+		EmitDbg(".Lfunc_begin%u:", m_FId);
+		EmitDbg(".cv_func_id %u", m_FId);
 		Emit(fn->Name);
-		Emit(".cv_fpo_proc %s %u", name.c_str(), m_FId);
+		EmitDbg(".cv_fpo_proc %s %u", name.c_str(), m_FId);
 
 		Emit("\tpush %s", Reg(RegKind::Bp));
 		Emit("\tmov %s, %s", Reg(RegKind::Sp), Reg(RegKind::Bp));
@@ -100,6 +106,11 @@ namespace Symple::Code
 			decltype(auto) pname = param->MangledName;
 			if (!pname.empty())
 				Emit(VAR_FMT " = %u", pname.c_str(), stackPos);
+			if (param->Type->Type->IsArray)
+			{
+				stackPos += 4;
+				totalParamSz += 4;
+			}
 		}
 
 		Emit(fn->Body);
@@ -108,12 +119,16 @@ namespace Symple::Code
 		Emit(FUNCTION_RETURN_FMT ":", fn->MangledName.c_str());
 		Emit("\tmov %s, %s", Reg(RegKind::Bp), Reg(RegKind::Sp));
 		Emit("\tpop %s", Reg(RegKind::Bp));
-		Emit("\tretl $%u", totalParamSz);
+		if (fn->CallingConvention == TokenKind::StdCallKeyword || fn->CallingConvention == TokenKind::SycCallKeyword)
+			Emit("\tretl $%u", totalParamSz);
+		else
+			Emit("\tret");
 
 		// Debug Symbols (I guess...)
-		Emit(".cv_fpo_endproc");
-		Emit(".Lfunc_end%u:", m_FId);
+		EmitDbg(".cv_fpo_endproc");
+		EmitDbg(".Lfunc_end%u:", m_FId);
 		Emit(FUNCTION_STACKSIZE_FMT " = %u", name.c_str(), m_StackSize);
+		Emit("");
 	}
 
 
@@ -277,12 +292,12 @@ namespace Symple::Code
 		}
 
 		Stalloc(sz);
-		uint32 off = call->Arguments.size() * 4;
-		for (auto param : call->Arguments)
+		uint32 off = 0;
+		for (auto arg : call->Arguments)
 		{
-			off -= 4;
-			Emit(param);
+			Emit(arg);
 			Emit("\tmov %s, %u(%s)", Reg(RegKind::Ax), off, Reg(RegKind::Sp));
+			off += 4;
 		}
 
 		if (sz)
@@ -468,7 +483,7 @@ namespace Symple::Code
 
 
 	void AsmEmitter::Emit(const GlobalRef<const Token> &tok)
-	{ Emit(".cv_loc %u %u %u %u", m_FId, m_FNum, tok->DisplayLine, tok->Column); }
+	{ EmitDbg(".cv_loc %u %u %u %u", m_FId, m_FNum, tok->DisplayLine, tok->Column); }
 
 
 	template<typename... Args>
@@ -496,6 +511,35 @@ namespace Symple::Code
 	template<typename... Args>
 	void AsmEmitter::Emit(_Printf_format_string_ const char *fmt, Args&&... args)
 	{ Emit(EmitKind::Text, fmt, args...); }
+
+
+	template<typename... Args>
+	void AsmEmitter::EmitDbg(EmitKind kind, _Printf_format_string_ const char *fmt, Args&&... args)
+	{
+	#if DEBUG_SYMBOLS
+		FILE *fs;
+		switch (kind)
+		{
+		case EmitKind::Text:
+			fs = m_TextFile.Stream;
+			break;
+		case EmitKind::Data:
+			fs = m_DataFile.Stream;
+			break;
+
+		default:
+			std::abort();
+			break;
+		}
+
+		std::fprintf(fs, fmt, args...);
+		std::fputc('\n', fs);
+	#endif
+	}
+
+	template<typename... Args>
+	void AsmEmitter::EmitDbg(_Printf_format_string_ const char *fmt, Args&&... args)
+	{ EmitDbg(EmitKind::Text, fmt, args...); }
 
 	constexpr const char AsmEmitter::Suf(uint32 sz)
 	{
@@ -569,6 +613,7 @@ namespace Symple::Code
 				return "%xmm7";
 			}
 
+		abort();
 		return nullptr;
 	}
 }

@@ -14,7 +14,7 @@ namespace Symple::Code
 		switch (fn->m_Call)
 		{
 		case TokenKind::CCallKeyword:
-			ss << fn->m_Name->Text;
+			ss << '_' << fn->m_Name->Text;
 			break;
 		case TokenKind::StdCallKeyword:
 		{
@@ -61,6 +61,13 @@ namespace Symple::Code
 		fn->m_MangledName = ss.str();
 	}
 
+	void SymbolVisitor::Mangle(GlobalRef<ParameterAst> param)
+	{
+		std::stringstream ss;
+		ss << "Sy$" << param->m_Name->Text << "$" << 1;
+		param->m_MangledName = ss.str();
+	}
+
 	void SymbolVisitor::Mangle(GlobalRef<VariableStatementAst> var)
 	{
 		std::stringstream ss;
@@ -87,7 +94,10 @@ namespace Symple::Code
 				Mangle(fn);
 
 				for (auto param : fn->m_Params)
+				{
 					m_Names.push_back(param);
+					Mangle(param);
+				}
 				Visit(fn->m_Body);
 				m_Depths.pop_back();
 				m_Names.push_back(fn);

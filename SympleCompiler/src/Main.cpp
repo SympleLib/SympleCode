@@ -4,7 +4,7 @@
 #include "Symple/Code/Parse/Lexer.h"
 #include "Symple/Code/Parse/Parser.h"
 #include "Symple/Code/Visit/Visitor.h"
-#include "Symple/Code/Emit/CEmitter.h"
+#include "Symple/Code/Emit/AsmEmitter.h"
 
 using namespace Symple::Code;
 
@@ -89,10 +89,10 @@ int main()
 	unit->Print(std::cout);
 	std::cout << '\n';
 
-	CEmitter emmiter(unit);
+	AsmEmitter emmiter(unit);
 	emmiter.Emit();
 
-	system("clang -m32 bin/Out.c -o bin/Out.exe --debug -l User32");
+	system("clang -m32 bin/Out.S -o bin/Out.exe --debug -l User32 -l legacy_stdio_definitions");
 	Console.Color = ConsoleColor::Yellow;
 	puts("Starting program...");
 	Console.Color = ConsoleColor::Reset;
