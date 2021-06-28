@@ -30,6 +30,7 @@ namespace Symple::Code
 	using uint64 = unsigned long long;
 }
 
+#define _CRT_SECURE_NO_WARNINGS
 #include <cassert>
 #include <string>
 #include <sstream>

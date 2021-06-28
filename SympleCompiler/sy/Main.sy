@@ -1,4 +1,7 @@
-extern void printf(char *) __ccall;
+extern void puts(char *) __ccall;
 
 int Main(char *^args) =>
-	printf("Sizeof `args`: %u\n", sizeof(args));
+	Test();
+
+void Test() =>
+	puts("Test works!");

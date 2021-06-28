@@ -84,7 +84,6 @@ namespace Symple::Code
 			{
 			case AstKind::Function:
 			{
-				m_Depths.push_back(m_Names.size());
 				auto fn = Cast<FunctionAst>(member);
 				if (fn->m_Name->Text == "Main")
 					fn->m_Call = TokenKind::SycCallKeyword;
@@ -94,18 +93,12 @@ namespace Symple::Code
 				Mangle(fn);
 
 				for (auto param : fn->m_Params)
-				{
-					m_Names.push_back(param);
 					Mangle(param);
-				}
-				Visit(fn->m_Body);
-				m_Depths.pop_back();
 				m_Names.push_back(fn);
 				break;
 			}
 			case AstKind::ExternFunction:
 			{
-				m_Depths.push_back(m_Names.size());
 				auto fn = Cast<ExternFunctionAst>(member);
 				if (fn->m_Name->Text == "Main")
 					fn->m_Call = TokenKind::SycCallKeyword;
@@ -113,9 +106,25 @@ namespace Symple::Code
 					if (TokenFacts::IsFuncMod(mod->Kind))
 						fn->m_Call = mod->Kind;
 				Mangle(fn);
-
-				m_Depths.pop_back();
 				m_Names.push_back(fn);
+				break;
+			}
+			}
+		}
+		
+		for (auto member : m_Unit->m_Members)
+		{
+			switch (member->Kind)
+			{
+			case AstKind::Function:
+			{
+				m_Depths.push_back(m_Names.size());
+				auto fn = Cast<FunctionAst>(member);
+
+				for (auto param : fn->m_Params)
+					m_Names.push_back(param);
+				Visit(fn->m_Body);
+				m_Depths.pop_back();
 				break;
 			}
 			}
