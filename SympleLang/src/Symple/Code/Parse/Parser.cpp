@@ -10,7 +10,7 @@ namespace Symple::Code
 	Parser::Parser(const TokenList &toks)
 		: m_Tokens(toks) {}
 
-	GlobalRef<CompilationUnitAst> Parser::Parse(Scope<ErrorList> *errorList)
+	GlobalRef<CompilationUnitAst> Parser::Parse(ErrorList *errorList)
 	{
 		MemberList members;
 		try
@@ -19,13 +19,9 @@ namespace Symple::Code
 				members.push_back(ParseMember());
 		}
 		catch (const GlobalRef<const ErrorMessage> &)
-		{
-			*errorList = MakeScope<ErrorList>(Pass(m_ErrorList));
-			return nullptr;
-		}
+		{ return nullptr; }
 
 		auto eof = Match(TokenKind::EndOfFile);
-		*errorList = MakeScope<ErrorList>();
 		return MakeRef<CompilationUnitAst>(members, eof);
 	}
 
@@ -129,7 +125,7 @@ namespace Symple::Code
 		while (!Current->Is(TokenKind::CloseBrace))
 		{
 			if (Current->Is(TokenKind::EndOfFile))
-				throw m_ErrorList.ReportEndOfFile(Current);
+				throw m_ErrorList->ReportEndOfFile(Current);
 
 			stmts.push_back(ParseStatement());
 		}
@@ -220,7 +216,7 @@ namespace Symple::Code
 		while (!Current->Is(TokenKind::CloseParen))
 		{
 			if (Current->Is(TokenKind::EndOfFile))
-				throw m_ErrorList.ReportEndOfFile(Current);
+				throw m_ErrorList->ReportEndOfFile(Current);
 
 			Match(TokenKind::Comma);
 			args.push_back(ParseExpression());
@@ -240,7 +236,7 @@ namespace Symple::Code
 		while (!Current->Is(TokenKind::CloseParen))
 		{
 			if (Current->Is(TokenKind::EndOfFile))
-				throw m_ErrorList.ReportEndOfFile(Current);
+				throw m_ErrorList->ReportEndOfFile(Current);
 
 			Match(TokenKind::Comma);
 			args.push_back(ParseExpression());
@@ -357,7 +353,7 @@ namespace Symple::Code
 		while (!Current->Is(TokenKind::CloseParen))
 		{
 			if (Current->Is(TokenKind::EndOfFile))
-				throw m_ErrorList.ReportEndOfFile(Current);
+				throw m_ErrorList->ReportEndOfFile(Current);
 
 			Match(TokenKind::Comma);
 			auto param = ParseParameter(ty);
@@ -403,7 +399,7 @@ namespace Symple::Code
 		if (Current->Is(kind))
 			return Next();
 
-		throw m_ErrorList.ReportWrongToken(Current, kind);
+		throw m_ErrorList->ReportWrongToken(Current, kind);
 		return Current;
 	}
 }

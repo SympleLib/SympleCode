@@ -49,6 +49,18 @@ namespace Symple::Code
 	GlobalRef<const ErrorMessage> ErrorList::ReportEndOfFile(const GlobalRef<const Token> &tok)
 	{ return Report("Unexpected EndOfFile", ErrorLevel::Error, tok); }
 
+	GlobalRef<const ErrorMessage> ErrorList::ReportUnresolvedSymbol(const GlobalRef<const Token> &tok)
+	{ return Report(Format("Unresolved symbol: `{}`", tok->Text), ErrorLevel::Error, tok); }
+
+
+	void ErrorList::Clear()
+	{
+		m_Msgs.clear();
+		m_FatalMsgs.clear();
+		m_ErrorMsgs.clear();
+		m_WarningMsgs.clear();
+		m_MessageMsgs.clear();
+	}
 
 	void ErrorList::Dump(std::ostream &os)
 	{

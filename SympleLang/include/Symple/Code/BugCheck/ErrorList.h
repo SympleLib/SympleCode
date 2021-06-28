@@ -55,8 +55,9 @@ namespace Symple::Code
 
 		GlobalRef<const ErrorMessage> ReportWrongToken(const GlobalRef<const Token> &, TokenKind expected);
 		GlobalRef<const ErrorMessage> ReportEndOfFile(const GlobalRef<const Token> &);
+		GlobalRef<const ErrorMessage> ReportUnresolvedSymbol(const GlobalRef<const Token> &);
 
-
+		void Clear();
 		void Dump(std::ostream &);
 		bool IsEmpty();
 

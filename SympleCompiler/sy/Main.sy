@@ -2,6 +2,3 @@ extern void puts(char *) __ccall;
 
 int Main(char *^args) =>
 	Test();
-
-void Test() =>
-	puts("Test works!");

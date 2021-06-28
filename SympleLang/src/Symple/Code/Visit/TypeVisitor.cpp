@@ -5,8 +5,10 @@ namespace Symple::Code
 	TypeVisitor::TypeVisitor(GlobalRef<CompilationUnitAst> unit)
 		: m_Unit(unit) {}
 
-	void TypeVisitor::Visit()
+	void TypeVisitor::Visit(ErrorList *errorList)
 	{
+		m_ErrorList = errorList;
+
 		for (auto member : m_Unit->m_Members)
 		{
 			if (member->Kind == AstKind::Function)

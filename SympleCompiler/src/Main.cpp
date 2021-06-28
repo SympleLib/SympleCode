@@ -68,21 +68,31 @@ int main()
 	//	std::cout << tok->Kind << " | " << tok->Text << " <" << tok->Line << ':' << tok->Column << ">\n";
 
 	Parser parser(tokens);
-	Scope<ErrorList> errorList;
+	ErrorList errorList;
 	auto unit = parser.Parse(&errorList);
-	if (!errorList->IsEmpty())
+	if (!errorList.IsEmpty())
 	{
-		errorList->Dump(std::cout);
+		errorList.Dump(std::cout);
 		Exit();
 	}
 
 	SymbolVisitor symbolVisit(unit);
 	Console.Color = ConsoleColor::Red;
-	symbolVisit.Visit();
+	symbolVisit.Visit(&errorList);
+	if (!errorList.IsEmpty())
+	{
+		errorList.Dump(std::cout);
+		Exit();
+	}
 
 	TypeVisitor typeVisit(unit);
 	Console.Color = ConsoleColor::Red;
-	typeVisit.Visit();
+	typeVisit.Visit(&errorList);
+	if (!errorList.IsEmpty())
+	{
+		errorList.Dump(std::cout);
+		Exit();
+	}
 
 	Console.Color = ConsoleColor::Yellow;
 	std::cout << "Ast:\n";
@@ -91,6 +101,11 @@ int main()
 
 	AsmEmitter emmiter(unit);
 	emmiter.Emit();
+	if (!errorList.IsEmpty())
+	{
+		errorList.Dump(std::cout);
+		Exit();
+	}
 
 	system("clang -m32 bin/Out.S -o bin/Out.exe --debug -l User32 -l legacy_stdio_definitions");
 	Console.Color = ConsoleColor::Yellow;

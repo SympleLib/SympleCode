@@ -76,59 +76,66 @@ namespace Symple::Code
 		var->m_MangledName = ss.str();
 	}
 
-	void SymbolVisitor::Visit()
+	void SymbolVisitor::Visit(ErrorList *errorList)
 	{
-		for (auto member : m_Unit->m_Members)
-		{
-			switch (member->Kind)
-			{
-			case AstKind::Function:
-			{
-				auto fn = Cast<FunctionAst>(member);
-				if (fn->m_Name->Text == "Main")
-					fn->m_Call = TokenKind::SycCallKeyword;
-				for (auto mod : fn->m_Mods)
-					if (TokenFacts::IsFuncMod(mod->Kind))
-						fn->m_Call = mod->Kind;
-				Mangle(fn);
+		m_ErrorList = errorList;
 
-				for (auto param : fn->m_Params)
-					Mangle(param);
-				m_Names.push_back(fn);
-				break;
-			}
-			case AstKind::ExternFunction:
+		try
+		{
+			for (auto member : m_Unit->m_Members)
 			{
-				auto fn = Cast<ExternFunctionAst>(member);
-				if (fn->m_Name->Text == "Main")
-					fn->m_Call = TokenKind::SycCallKeyword;
-				for (auto mod : fn->m_Mods)
-					if (TokenFacts::IsFuncMod(mod->Kind))
-						fn->m_Call = mod->Kind;
-				Mangle(fn);
-				m_Names.push_back(fn);
-				break;
+				switch (member->Kind)
+				{
+				case AstKind::Function:
+				{
+					auto fn = Cast<FunctionAst>(member);
+					if (fn->m_Name->Text == "Main")
+						fn->m_Call = TokenKind::SycCallKeyword;
+					for (auto mod : fn->m_Mods)
+						if (TokenFacts::IsFuncMod(mod->Kind))
+							fn->m_Call = mod->Kind;
+					Mangle(fn);
+
+					for (auto param : fn->m_Params)
+						Mangle(param);
+					m_Names.push_back(fn);
+					break;
+				}
+				case AstKind::ExternFunction:
+				{
+					auto fn = Cast<ExternFunctionAst>(member);
+					if (fn->m_Name->Text == "Main")
+						fn->m_Call = TokenKind::SycCallKeyword;
+					for (auto mod : fn->m_Mods)
+						if (TokenFacts::IsFuncMod(mod->Kind))
+							fn->m_Call = mod->Kind;
+					Mangle(fn);
+					m_Names.push_back(fn);
+					break;
+				}
+				}
 			}
+
+			for (auto member : m_Unit->m_Members)
+			{
+				switch (member->Kind)
+				{
+				case AstKind::Function:
+				{
+					m_Depths.push_back(m_Names.size());
+					auto fn = Cast<FunctionAst>(member);
+
+					for (auto param : fn->m_Params)
+						m_Names.push_back(param);
+					Visit(fn->m_Body);
+					m_Depths.pop_back();
+					break;
+				}
+				}
 			}
 		}
-		
-		for (auto member : m_Unit->m_Members)
-		{
-			switch (member->Kind)
-			{
-			case AstKind::Function:
-			{
-				m_Depths.push_back(m_Names.size());
-				auto fn = Cast<FunctionAst>(member);
-
-				for (auto param : fn->m_Params)
-					m_Names.push_back(param);
-				Visit(fn->m_Body);
-				m_Depths.pop_back();
-				break;
-			}
-			}
-		}
+		catch (const GlobalRef<const ErrorMessage> &)
+		{}
 	}
 
 	void SymbolVisitor::Visit(GlobalRef<StatementAst> stmt)
@@ -183,7 +190,7 @@ namespace Symple::Code
 					break;
 				}
 			if (!nameExpr->m_Symbol)
-				std::cerr << "Symbol '" << nameExpr->m_Name->Text << "' does not exist!\n";
+				throw m_ErrorList->ReportUnresolvedSymbol(nameExpr->m_Name);
 			break;
 		}
 		case AstKind::ParenthasizedExpression:

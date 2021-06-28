@@ -12,10 +12,10 @@ namespace Symple::Code
 		const TokenList m_Tokens;
 		uint32 m_Position = 0;
 
-		ErrorList m_ErrorList;
+		ErrorList *m_ErrorList;
 	public:
 		Parser(const TokenList &tokens);
-		GlobalRef<CompilationUnitAst> Parse(Scope<ErrorList> *);
+		GlobalRef<CompilationUnitAst> Parse(ErrorList *);
 	private:
 		GlobalRef<MemberAst> ParseMember();
 		GlobalRef<ProtoAst> ParseProto();
