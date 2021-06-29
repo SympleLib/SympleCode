@@ -11,7 +11,7 @@ namespace Symple::Code
 	class SYC_API SymbolVisitor: public Visitor
 	{
 	private:
-		ErrorList *m_ErrorList;
+		ErrorList *m_ErrorList = nullptr;
 		GlobalRef<CompilationUnitAst> m_Unit;
 
 		std::vector<uint32> m_Depths;
@@ -31,7 +31,7 @@ namespace Symple::Code
 	class SYC_API TypeVisitor: public Visitor
 	{
 	private:
-		ErrorList *m_ErrorList;
+		ErrorList *m_ErrorList = nullptr;
 		GlobalRef<FunctionAst> m_Func;
 		GlobalRef<CompilationUnitAst> m_Unit;
 	public:

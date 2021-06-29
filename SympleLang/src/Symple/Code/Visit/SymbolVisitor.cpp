@@ -159,6 +159,8 @@ namespace Symple::Code
 			auto var = Cast<VariableStatementAst>(stmt);
 			Mangle(var);
 			m_Names.push_back(var);
+			if (var->m_Next)
+				Visit(var->m_Next);
 			break;
 		}
 		}

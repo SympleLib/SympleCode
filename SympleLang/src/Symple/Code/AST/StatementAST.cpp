@@ -64,8 +64,8 @@ namespace Symple::Code
 	}
 
 
-	VariableStatementAst::VariableStatementAst(GlobalRef<TypeAst> ty, GlobalRef<const Token_t> name, WeakRef<const Token_t> equals, GlobalRef<ExpressionAst> init)
-		: m_Type(ty), m_Name(name), m_Equals(equals), m_Init(init) {}
+	VariableStatementAst::VariableStatementAst(GlobalRef<TypeAst> ty, GlobalRef<const Token_t> name, WeakRef<const Token_t> equals, GlobalRef<ExpressionAst> init, GlobalRef<VariableStatementAst> next)
+		: m_Type(ty), m_Name(name), m_Equals(equals), m_Init(init), m_Next(next) {}
 
 	AstKind VariableStatementAst::GetKind() const
 	{ return AstKind::VariableStatement; }
@@ -85,6 +85,12 @@ namespace Symple::Code
 	GlobalRef<const ExpressionAst> VariableStatementAst::GetInitializer() const
 	{ return m_Init; }
 
+	GlobalRef<const VariableStatementAst> VariableStatementAst::GetNext() const
+	{ return m_Next; }
+
+	void VariableStatementAst::SetNext(GlobalRef<VariableStatementAst> to)
+	{ m_Next = to; }
+
 	uint32 VariableStatementAst::GetDepth() const
 	{ return m_Depth; }
 
@@ -101,6 +107,8 @@ namespace Symple::Code
 			m_Equals.lock()->Print(os << '\n', indent, "Equals = ", !m_Init);
 		if (m_Init)
 			m_Init->Print(os << '\n', indent, "Initializer = ");
+		if (m_Next)
+			m_Next->Print(os << '\n', indent, "Next = ");
 	}
 
 

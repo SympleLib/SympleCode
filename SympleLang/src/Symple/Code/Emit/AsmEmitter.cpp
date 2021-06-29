@@ -182,6 +182,9 @@ namespace Symple::Code
 			else
 				Emit("\tmov %s, " VAR "(%s)", Reg(RegKind::Ax, sz), name.c_str(), Reg(RegKind::Bp));
 		}
+
+		if (var->Next)
+			Emit(var->Next);
 	}
 
 

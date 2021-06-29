@@ -141,17 +141,34 @@ namespace Symple::Code
 		return MakeRef<ReturnStatementAst>(keyword, expr);
 	}
 
-	GlobalRef<VariableStatementAst> Parser::ParseVariableStatement()
+	GlobalRef<VariableStatementAst> Parser::ParseVariableStatement(GlobalRef<TypeAst> ty)
 	{
-		auto ty = ParseType();
+		if (!ty || TokenFacts::IsTypeBase(Current->Kind))
+			ty = ParseType();
 		auto name = Match(TokenKind::Identifier);
+
+		GlobalRef<VariableStatementAst> stmt;
 		if (Current->Is(TokenKind::Equal))
 		{
 			auto equal = Next();
 			auto init = ParseExpression();
-			return MakeRef<VariableStatementAst>(ty, name, equal, init);
+			stmt = MakeRef<VariableStatementAst>(ty, name, equal, init);
+
+			// I'm gonna do whats called a pro-gamer move
+			goto TryNext;
 		}
-		return MakeRef<VariableStatementAst>(ty, name);
+
+		stmt = MakeRef<VariableStatementAst>(ty, name);
+
+	TryNext:
+		if (Current->Is(TokenKind::Comma))
+		{
+			Next();
+			auto next = ParseVariableStatement(ty);
+			stmt->Next = next;
+		}
+
+		return stmt;
 	}
 
 	GlobalRef<ExpressionStatementAst> Parser::ParseExpressionStatement()

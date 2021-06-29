@@ -52,6 +52,9 @@ namespace Symple::Code
 				cast->m_Type = cast->m_TypeAst->m_Type;
 				var->m_Init = cast;
 			}
+
+			if (var->m_Next)
+				Visit(var->m_Next);
 			break;
 		}
 		}

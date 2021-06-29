@@ -1,4 +1,5 @@
-extern void puts(char *) __ccall;
-
-int Main(char *^args) =>
-	Test();
+int Main(char *^args)
+{
+	int x = 5, y = 6;
+	ret x + y;
+}
