@@ -1,4 +1,4 @@
-#include "Symple/Code/Emit/AsmEmitter.h"
+#include "Symple/Code/Emit/Emitter.h"
 
 #define DEBUG_SYMBOLS false
 
@@ -16,10 +16,10 @@ namespace Symple::Code
 #define FUNCTION_RETURN "\"%s.Return\""
 #define FUNCTION_STACKSIZE "\"%s.StackSize\""
 
-	AsmEmitter::AsmEmitter(const GlobalRef<const CompilationUnitAst> &unit)
+	Emitter::Emitter(const GlobalRef<const CompilationUnitAst> &unit)
 		: m_Unit(unit), m_TextFile("bin/Out.S", FilePermissions::Write), m_DataFile("bin/__OutData.S", FilePermissions::ReadWrite) {}
 
-	void AsmEmitter::Emit()
+	void Emitter::Emit()
 	{
 	#if DEBUG_SYMBOLS
 		auto file = m_Unit->EndOfFile->File;
@@ -77,7 +77,7 @@ namespace Symple::Code
 	}
 
 
-	void AsmEmitter::Emit(const GlobalRef<const FunctionAst> &fn)
+	void Emitter::Emit(const GlobalRef<const FunctionAst> &fn)
 	{
 		m_Func = fn;
 		m_Stack = m_StackSize = 0;
@@ -132,7 +132,7 @@ namespace Symple::Code
 	}
 
 
-	void AsmEmitter::Emit(const GlobalRef<const StatementAst> &stmt)
+	void Emitter::Emit(const GlobalRef<const StatementAst> &stmt)
 	{
 		if (!stmt->Token.expired())
 			Emit(stmt->Token.lock());
@@ -161,13 +161,13 @@ namespace Symple::Code
 		Emit("");
 	}
 
-	void AsmEmitter::Emit(const GlobalRef<const ReturnStatementAst> &ret)
+	void Emitter::Emit(const GlobalRef<const ReturnStatementAst> &ret)
 	{
 		Emit(ret->Value);
 		Emit("\tjmp " FUNCTION_RETURN, m_Func->MangledName.c_str());
 	}
 
-	void AsmEmitter::Emit(const GlobalRef<const VariableStatementAst> &var)
+	void Emitter::Emit(const GlobalRef<const VariableStatementAst> &var)
 	{
 		decltype(auto) name = var->MangledName;
 		uint32 sz = var->Type->Type->Size;
@@ -188,7 +188,7 @@ namespace Symple::Code
 	}
 
 
-	void AsmEmitter::Emit(const GlobalRef<const ExpressionAst> &expr)
+	void Emitter::Emit(const GlobalRef<const ExpressionAst> &expr)
 	{
 		if (!expr->Token.expired())
 			Emit(expr->Token.lock());
@@ -229,7 +229,7 @@ namespace Symple::Code
 		}
 	}
 
-	void AsmEmitter::Emit(const GlobalRef<const PunExpressionAst> &pun)
+	void Emitter::Emit(const GlobalRef<const PunExpressionAst> &pun)
 	{
 		Emit(pun->Value);
 
@@ -251,7 +251,7 @@ namespace Symple::Code
 		}
 	}
 
-	void AsmEmitter::Emit(const GlobalRef<const CastExpressionAst> &cast)
+	void Emitter::Emit(const GlobalRef<const CastExpressionAst> &cast)
 	{
 		Emit(cast->Value);
 
@@ -285,7 +285,7 @@ namespace Symple::Code
 		}
 	}
 
-	void AsmEmitter::Emit(const GlobalRef<const CallExpressionAst> &call)
+	void Emitter::Emit(const GlobalRef<const CallExpressionAst> &call)
 	{
 		uint32 sz = call->Arguments.size() * 4;
 		uint32 fnPos;
@@ -316,7 +316,7 @@ namespace Symple::Code
 		Staf(sz);
 	}
 
-	void AsmEmitter::Emit(const GlobalRef<const NameExpressionAst> &name)
+	void Emitter::Emit(const GlobalRef<const NameExpressionAst> &name)
 	{
 		decltype(auto) sname = name->Symbol->MangledName;
 		if (name->Symbol->IsFunction)
@@ -328,7 +328,7 @@ namespace Symple::Code
 				Emit("\tmov " VAR "(%s), %s", sname.c_str(), Reg(RegKind::Bp), Reg(RegKind::Ax, name->Type->Size));
 	}
 
-	void AsmEmitter::Emit(const GlobalRef<const UnaryExpressionAst> &expr)
+	void Emitter::Emit(const GlobalRef<const UnaryExpressionAst> &expr)
 	{
 		Emit(expr->Operand);
 
@@ -346,7 +346,7 @@ namespace Symple::Code
 		}
 	}
 
-	void AsmEmitter::Emit(const GlobalRef<const BinaryExpressionAst> &expr)
+	void Emitter::Emit(const GlobalRef<const BinaryExpressionAst> &expr)
 	{
 		if (expr->Type->IsFloat)
 		{
@@ -442,7 +442,7 @@ namespace Symple::Code
 		}
 	}
 
-	void AsmEmitter::Emit(const GlobalRef<const BuiltinExpressionAst> &macro)
+	void Emitter::Emit(const GlobalRef<const BuiltinExpressionAst> &macro)
 	{
 		switch (macro->Macro)
 		{
@@ -463,7 +463,7 @@ namespace Symple::Code
 		}
 	}
 
-	void AsmEmitter::Emit(const GlobalRef<const LiteralExpressionAst> &expr)
+	void Emitter::Emit(const GlobalRef<const LiteralExpressionAst> &expr)
 	{
 		auto literal = expr->Literal->Text;
 
@@ -498,23 +498,23 @@ namespace Symple::Code
 	}
 
 
-	void AsmEmitter::Stalloc(uint32 bytes)
+	void Emitter::Stalloc(uint32 bytes)
 	{
 		m_Stack += bytes;
 		if (m_Stack > m_StackSize)
 			m_StackSize = m_Stack;
 	}
 
-	void AsmEmitter::Staf(uint32 bytes)
+	void Emitter::Staf(uint32 bytes)
 	{ m_Stack -= bytes; }
 
 
-	void AsmEmitter::Emit(const GlobalRef<const Token> &tok)
+	void Emitter::Emit(const GlobalRef<const Token> &tok)
 	{ EmitDbg(".cv_loc %u %u %u %u", m_FId, m_FNum, tok->DisplayLine, tok->Column); }
 
 
 	template<typename... Args>
-	void AsmEmitter::Emit(EmitKind kind, _Printf_format_string_ const char *fmt, Args&&... args)
+	void Emitter::Emit(EmitKind kind, _Printf_format_string_ const char *fmt, Args&&... args)
 	{
 		FILE *fs;
 		switch (kind)
@@ -536,12 +536,12 @@ namespace Symple::Code
 	}
 
 	template<typename... Args>
-	void AsmEmitter::Emit(_Printf_format_string_ const char *fmt, Args&&... args)
+	void Emitter::Emit(_Printf_format_string_ const char *fmt, Args&&... args)
 	{ Emit(EmitKind::Text, fmt, args...); }
 
 
 	template<typename... Args>
-	void AsmEmitter::EmitDbg(EmitKind kind, _Printf_format_string_ const char *fmt, Args&&... args)
+	void Emitter::EmitDbg(EmitKind kind, _Printf_format_string_ const char *fmt, Args&&... args)
 	{
 	#if DEBUG_SYMBOLS
 		FILE *fs;
@@ -565,10 +565,10 @@ namespace Symple::Code
 	}
 
 	template<typename... Args>
-	void AsmEmitter::EmitDbg(_Printf_format_string_ const char *fmt, Args&&... args)
+	void Emitter::EmitDbg(_Printf_format_string_ const char *fmt, Args&&... args)
 	{ EmitDbg(EmitKind::Text, fmt, args...); }
 
-	constexpr const char AsmEmitter::Suf(uint32 sz)
+	constexpr const char Emitter::Suf(uint32 sz)
 	{
 		if (sz <= 1)
 			return 'b';
@@ -579,7 +579,7 @@ namespace Symple::Code
 		return 0;
 	}
 
-	constexpr const char *AsmEmitter::Reg(RegKind kind, uint32 sz)
+	constexpr const char *Emitter::Reg(RegKind kind, uint32 sz)
 	{
 		if (sz)
 			switch (kind)

@@ -4,7 +4,7 @@
 #include "Symple/Code/Parse/Lexer.h"
 #include "Symple/Code/Parse/Parser.h"
 #include "Symple/Code/Visit/Visitor.h"
-#include "Symple/Code/Emit/AsmEmitter.h"
+#include "Symple/Code/Emit/Emitter.h"
 
 using namespace Symple::Code;
 
@@ -99,7 +99,7 @@ int main()
 	unit->Print(std::cout);
 	std::cout << '\n';
 
-	AsmEmitter emmiter(unit);
+	Emitter emmiter(unit);
 	emmiter.Emit();
 	if (!errorList.IsEmpty())
 	{
