@@ -46,6 +46,8 @@ namespace Symple::Code
 		void Stalloc(uint32 bytes = 4);
 		void Staf(uint32 bytes = 4);
 
+		bool OverridesRegs(const GlobalRef<const Ast>);
+
 		void Emit(const GlobalRef<const Token> &tok);
 		template<typename... Args>
 		void Emit(EmitKind, _Printf_format_string_ const char *fmt, Args&&... args);

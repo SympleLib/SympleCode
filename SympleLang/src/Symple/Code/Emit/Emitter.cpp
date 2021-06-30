@@ -348,15 +348,25 @@ namespace Symple::Code
 
 	void Emitter::Emit(const GlobalRef<const BinaryExpressionAst> &expr)
 	{
+		bool overrides = OverridesRegs(expr->Left);
+
 		if (expr->Type->IsFloat)
 		{
 			Emit(expr->Right);
-			Stalloc();
-			uint32 pos = m_Stack;
-			Emit(expr->Left);
-			Emit("\tmovss %s, -%u(%s)", Reg(RegKind::Xmm0), pos, Reg(RegKind::Bp));
-			Emit("\tmovss -%u(%s), %s", pos, Reg(RegKind::Bp), Reg(RegKind::Xmm1));
-			Staf();
+			if (overrides)
+			{
+				Stalloc();
+				uint32 pos = m_Stack;
+				Emit("\tmovss %s, -%u(%s)", Reg(RegKind::Xmm0), pos, Reg(RegKind::Bp));
+				Emit(expr->Left);
+				Emit("\tmovss -%u(%s), %s", pos, Reg(RegKind::Bp), Reg(RegKind::Xmm1));
+				Staf();
+			}
+			else
+			{
+				Emit("\tmovss %s, %s", Reg(RegKind::Xmm0), Reg(RegKind::Xmm1));
+				Emit(expr->Left);
+			}
 
 			switch (expr->Operator->Kind)
 			{
@@ -401,12 +411,21 @@ namespace Symple::Code
 		else
 		{
 			Emit(expr->Right);
-			Stalloc();
-			uint32 pos = m_Stack;
-			Emit("\tmov %s, -%u(%s)", Reg(RegKind::Ax), pos, Reg(RegKind::Bp));
-			Emit(expr->Left);
-			Emit("\tmov -%u(%s), %s", pos, Reg(RegKind::Bp), Reg(RegKind::Bx));
-			Staf();
+			if (overrides)
+			{
+				Stalloc();
+				uint32 pos = m_Stack;
+				Emit("\tmov %s, -%u(%s)", Reg(RegKind::Ax), pos, Reg(RegKind::Bp));
+				Emit(expr->Left);
+				Emit("\tmov -%u(%s), %s", pos, Reg(RegKind::Bp), Reg(RegKind::Bx));
+				Staf();
+			}
+			else
+			{
+				Emit("\tmov %s, %s", Reg(RegKind::Ax), Reg(RegKind::Bx));
+				Emit(expr->Left);
+			}
+
 
 			switch (expr->Operator->Kind)
 			{
@@ -507,6 +526,22 @@ namespace Symple::Code
 
 	void Emitter::Staf(uint32 bytes)
 	{ m_Stack -= bytes; }
+	
+	bool Emitter::OverridesRegs(const GlobalRef<const Ast> node)
+	{
+		switch (node->Kind)
+		{
+		case AstKind::ParenthasizedExpression:
+			return OverridesRegs(Cast<const ParenthasizedExpressionAst>(node)->Expression);
+
+		case AstKind::BinaryExpression:
+		case AstKind::CallExpression:
+			return true;
+
+		default:
+			return false;
+		}
+	}
 
 
 	void Emitter::Emit(const GlobalRef<const Token> &tok)
