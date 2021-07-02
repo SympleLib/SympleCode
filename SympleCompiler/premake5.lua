@@ -6,11 +6,6 @@ project "SympleCompiler"
 	targetdir ("%{wks.location}/bin/" .. outputdir .. "/%{prj.name}")
 	objdir ("%{wks.location}/bin-int/" .. outputdir .. "/%{prj.name}")
 	
-	defines
-	{
-		"SY_x86",
-	}
-	
 	includedirs
 	{
 		"include",

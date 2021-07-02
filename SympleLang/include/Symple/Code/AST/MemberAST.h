@@ -54,6 +54,7 @@ namespace Symple::Code
 		ParameterList m_Params;
 		WeakRef<const Token_t> m_Close;
 
+		bool m_Main;
 		TokenKind m_Call = TokenKind::SyCallKeyword;
 
 		Function(const GlobalRef<TypeAst> &type, const GlobalRef<const Token_t> &name,
@@ -71,11 +72,15 @@ namespace Symple::Code
 		const ParameterList &GetParameters() const;
 		WeakRef<const Token_t> GetClose() const;
 
+		bool GetIsMain() const;
+
 		SY_PROPERTY_GET(GetCallingConvention) TokenKind CallingConvention;
 
 		SY_PROPERTY_GET(GetOpen) WeakRef<const Token_t> Open;
 		SY_PROPERTY_GET(GetParameters) const ParameterList &Parameters;
 		SY_PROPERTY_GET(GetClose) WeakRef<const Token_t> Close;
+
+		SY_PROPERTY_GET(GetIsMain) bool IsMain;
 	};
 
 	class SYC_API FunctionAst: public Function

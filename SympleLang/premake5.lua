@@ -10,11 +10,7 @@ project "SympleLang"
 	-- pchsource "src/Symple/Common/Common.cpp"
 	
 	defines
-	{
-		"SY_x86",
-		"SY_ASM",
-		"SY_CODE_BUILD",
-	}
+	{ "SYC_BUILD", }
 	
 	includedirs
 	{

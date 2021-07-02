@@ -40,15 +40,9 @@ namespace Symple::Code
 	#endif
 
 		Emit(".text");
-		Emit(".global _main");
-		Emit("_main:");
-		Emit("\tsub $%u, %s", 8, Reg(RegKind::Sp));
-		Emit("\tmov %u(%s), %s", 12, Reg(RegKind::Sp), Reg(RegKind::Ax));
-		Emit("\tmov %s, %u(%s)", Reg(RegKind::Ax), 4, Reg(RegKind::Sp));
-		Emit("\tmov %u(%s), %s", 16, Reg(RegKind::Sp), Reg(RegKind::Ax));
-		Emit("\tmov %s, %u(%s)", Reg(RegKind::Ax), 0, Reg(RegKind::Sp));
-		Emit("\tcall Syc$Main$$1Char");
-		Emit("\tret");
+		Emit(".global main");
+		Emit("main:");
+		Emit("\tjmp Syc$Main$2Char$Int");
 
 
 		Emit(EmitKind::Data, ".data");
@@ -96,11 +90,11 @@ namespace Symple::Code
 		Emit("\tsub $" FUNCTION_STACKSIZE ", %s", name.c_str(), Reg(RegKind::Sp));
 		Emit("");
 
-		uint32 totalParamSz = 0;
-		uint32 stackPos = 4;
+		int32 totalParamSz = -32;
+		uint32 stackPos = 8;
 		for (auto param : fn->Parameters)
 		{
-			stackPos += 4;
+			stackPos += 8;
 			totalParamSz += param->Type->Type->Size;
 			decltype(auto) pname = param->MangledName;
 			if (!pname.empty())
@@ -126,8 +120,8 @@ namespace Symple::Code
 		Emit(FUNCTION_RETURN ":", fn->MangledName.c_str());
 		Emit("\tmov %s, %s", Reg(RegKind::Bp), Reg(RegKind::Sp));
 		Emit("\tpop %s", Reg(RegKind::Bp));
-		if (fn->CallingConvention == TokenKind::StdCallKeyword || fn->CallingConvention == TokenKind::SycCallKeyword)
-			Emit("\tretl $%u", totalParamSz);
+		if (fn->CallingConvention == TokenKind::StdCallKeyword || fn->CallingConvention == TokenKind::SycCallKeyword && totalParamSz > 0)
+			Emit("\tretq $%u", totalParamSz);
 		else
 			Emit("\tret");
 
@@ -626,44 +620,6 @@ namespace Symple::Code
 		if (sz)
 			switch (kind)
 			{
-			case RegKind::Ax:
-				if (sz <= 1)
-					return "%al";
-				if (sz <= 2)
-					return "%ax";
-				if (sz <= 4)
-					return "%eax";
-				break;
-			case RegKind::Bx:
-				if (sz <= 1)
-					return "%bl";
-				if (sz <= 2)
-					return "%bx";
-				if (sz <= 4)
-					return "%ebx";
-				break;
-			case RegKind::Cx:
-				if (sz <= 1)
-					return "%cl";
-				if (sz <= 2)
-					return "%cx";
-				if (sz <= 4)
-					return "%ecx";
-				break;
-			case RegKind::Dx:
-				if (sz <= 1)
-					return "%dl";
-				if (sz <= 2)
-					return "%dx";
-				if (sz <= 4)
-					return "%edx";
-				break;
-
-			case RegKind::Sp:
-				return "%esp";
-			case RegKind::Bp:
-				return "%ebp";
-
 			case RegKind::Xmm0:
 				return "%xmm0";
 			case RegKind::Xmm1:
@@ -680,6 +636,16 @@ namespace Symple::Code
 				return "%xmm6";
 			case RegKind::Xmm7:
 				return "%xmm7";
+
+			default:
+				if (sz <= 1)
+					return Reg8[(uint32)kind];
+				if (sz <= 2)
+					return Reg16[(uint32)kind];
+				if (sz <= 4)
+					return Reg32[(uint32)kind];
+				if (sz <= 8)
+					return Reg64[(uint32)kind];
 			}
 
 		abort();

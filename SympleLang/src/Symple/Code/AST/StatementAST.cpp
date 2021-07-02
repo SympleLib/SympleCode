@@ -106,7 +106,7 @@ namespace Symple::Code
 		if (!m_Equals.expired())
 			m_Equals.lock()->Print(os << '\n', indent, "Equals = ", !m_Init);
 		if (m_Init)
-			m_Init->Print(os << '\n', indent, "Initializer = ");
+			m_Init->Print(os << '\n', indent, "Initializer = ", !m_Next);
 		if (m_Next)
 			m_Next->Print(os << '\n', indent, "Next = ");
 	}

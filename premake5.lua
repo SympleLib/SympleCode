@@ -1,5 +1,5 @@
 workspace "SympleCode"
-	architecture "x86"
+	architecture "x64"
 
 	configurations {
 		"Debug",

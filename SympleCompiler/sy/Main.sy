@@ -1,4 +1,4 @@
-int Main(char *^args)
+int Main(char **args, int nArgs)
 {
 	int x = 5, y = 6;
 	ret x + y;

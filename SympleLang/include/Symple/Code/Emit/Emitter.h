@@ -43,8 +43,8 @@ namespace Symple::Code
 		void Emit(const GlobalRef<const BuiltinExpressionAst> &macro);
 		void Emit(const GlobalRef<const LiteralExpressionAst> &literal);
 	private:
-		void Stalloc(uint32 bytes = 4);
-		void Staf(uint32 bytes = 4);
+		void Stalloc(uint32 bytes = 8);
+		void Staf(uint32 bytes = 8);
 
 		bool OverridesRegs(const GlobalRef<const Ast>);
 
@@ -59,7 +59,7 @@ namespace Symple::Code
 		template<typename... Args>
 		void EmitDbg(_Printf_format_string_ const char *fmt, Args&&... args);
 
-		constexpr const char Suf(uint32 size = 4);
-		constexpr const char *Reg(RegKind, uint32 size = 4);
+		constexpr const char Suf(uint32 size = 8);
+		constexpr const char *Reg(RegKind, uint32 size = 8);
 	};
 }

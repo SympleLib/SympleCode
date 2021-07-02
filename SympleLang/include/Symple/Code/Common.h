@@ -11,7 +11,7 @@
 
 #if defined(SYC_BUILD)
 	#define SYC_API __declspec(dllexport)
-#elif defined(SY_CODE_USE_DLL)
+#elif defined(SYC_USE_DLL)
 	#define SYC_API __declspec(dllimport)
 #else
 	#define SYC_API

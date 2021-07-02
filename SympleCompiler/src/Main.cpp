@@ -95,7 +95,7 @@ static void Compile()
 	Emitter emmiter(unit);
 	emmiter.Emit();
 
-	system("clang -m32 bin/Out.S -o bin/Out.exe --debug -l User32 -l legacy_stdio_definitions");
+	system("clang bin/Out.S -o bin/Out.exe --debug -l User32 -l legacy_stdio_definitions");
 	Console.Color = ConsoleColor::Yellow;
 	puts("Starting program...");
 	Console.Color = ConsoleColor::Reset;
