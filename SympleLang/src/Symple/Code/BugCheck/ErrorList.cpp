@@ -43,6 +43,9 @@ namespace Symple::Code
 	}
 	
 
+	GlobalRef<const ErrorMessage> ErrorList::ReportExpectedExpression(const GlobalRef<const Token> &tok)
+	{ return Report("Expected expression", ErrorLevel::Error, tok); }
+
 	GlobalRef<const ErrorMessage> ErrorList::ReportWrongToken(const GlobalRef<const Token> &tok, TokenKind expected)
 	{ return Report(Format("Unexpected {} '{}', expected {}", tok->Kind, tok->Text, expected), ErrorLevel::Error, tok); }
 
@@ -65,7 +68,7 @@ namespace Symple::Code
 	void ErrorList::Dump(std::ostream &os)
 	{
 		for (auto msg : m_Msgs)
-			msg->Print(os);
+		{ msg->Print(os); os << '\n'; }
 	}
 
 	bool ErrorList::IsEmpty()

@@ -53,6 +53,7 @@ namespace Symple::Code
 		GlobalRef<const ErrorMessage> Report(const std::string &message, ErrorLevel severity, const WeakRef<const Token> &token)
 		{ return Report(MakeRef<ErrorMessage>(message, severity, token)); }
 
+		GlobalRef<const ErrorMessage> ReportExpectedExpression(const GlobalRef<const Token> &);
 		GlobalRef<const ErrorMessage> ReportWrongToken(const GlobalRef<const Token> &, TokenKind expected);
 		GlobalRef<const ErrorMessage> ReportEndOfFile(const GlobalRef<const Token> &);
 		GlobalRef<const ErrorMessage> ReportUnresolvedSymbol(const GlobalRef<const Token> &);

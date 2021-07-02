@@ -47,7 +47,6 @@ namespace Symple::Code
 		Emit("\tmov %s, %u(%s)", Reg(RegKind::Ax), 4, Reg(RegKind::Sp));
 		Emit("\tmov %u(%s), %s", 16, Reg(RegKind::Sp), Reg(RegKind::Ax));
 		Emit("\tmov %s, %u(%s)", Reg(RegKind::Ax), 0, Reg(RegKind::Sp));
-		Emit("\txor %s, %s", Reg(RegKind::Ax), Reg(RegKind::Ax));
 		Emit("\tcall Syc$Main$$1Char");
 		Emit("\tret");
 
@@ -116,6 +115,14 @@ namespace Symple::Code
 		Emit(fn->Body);
 
 		Emit("");
+		if (fn->Type->Type->Code != "Void")
+		{
+			if (fn->IsMain)
+				Emit("\txor %s, %s", Reg(RegKind::Ax), Reg(RegKind::Ax));
+			else
+				Emit("\tud2");
+		}
+
 		Emit(FUNCTION_RETURN ":", fn->MangledName.c_str());
 		Emit("\tmov %s, %s", Reg(RegKind::Bp), Reg(RegKind::Sp));
 		Emit("\tpop %s", Reg(RegKind::Bp));

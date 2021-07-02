@@ -12,14 +12,11 @@ namespace Symple::Code
 
 	GlobalRef<CompilationUnitAst> Parser::Parse(ErrorList *errorList)
 	{
+		m_ErrorList = errorList;
+
 		MemberList members;
-		try
-		{
-			while (!Current->Is(TokenKind::EndOfFile))
-				members.push_back(ParseMember());
-		}
-		catch (const GlobalRef<const ErrorMessage> &)
-		{ return nullptr; }
+		while (!Current->Is(TokenKind::EndOfFile))
+			members.push_back(ParseMember());
 
 		auto eof = Match(TokenKind::EndOfFile);
 		return MakeRef<CompilationUnitAst>(members, eof);
@@ -233,7 +230,10 @@ namespace Symple::Code
 		while (!Current->Is(TokenKind::CloseParen))
 		{
 			if (Current->Is(TokenKind::EndOfFile))
-				throw m_ErrorList->ReportEndOfFile(Current);
+			{
+				m_ErrorList->ReportEndOfFile(Current);
+				break;
+			}
 
 			Match(TokenKind::Comma);
 			args.push_back(ParseExpression());
@@ -253,7 +253,10 @@ namespace Symple::Code
 		while (!Current->Is(TokenKind::CloseParen))
 		{
 			if (Current->Is(TokenKind::EndOfFile))
-				throw m_ErrorList->ReportEndOfFile(Current);
+			{
+				m_ErrorList->ReportEndOfFile(Current);
+				break;
+			}
 
 			Match(TokenKind::Comma);
 			args.push_back(ParseExpression());
@@ -290,7 +293,10 @@ namespace Symple::Code
 			else if (Current->Is(TokenKind::Identifier)) // Identifier Keywords
 				return ParseNameExpression();
 			else
-				throw std::exception("Invalid Primary Expression");
+			{
+				m_ErrorList->ReportExpectedExpression(Current);
+				return MakeRef<ExpressionAst>();
+			}
 		}
 	}
 
@@ -370,7 +376,10 @@ namespace Symple::Code
 		while (!Current->Is(TokenKind::CloseParen))
 		{
 			if (Current->Is(TokenKind::EndOfFile))
-				throw m_ErrorList->ReportEndOfFile(Current);
+			{
+				m_ErrorList->ReportEndOfFile(Current);
+				break;
+			}
 
 			Match(TokenKind::Comma);
 			auto param = ParseParameter(ty);
@@ -416,7 +425,7 @@ namespace Symple::Code
 		if (Current->Is(kind))
 			return Next();
 
-		throw m_ErrorList->ReportWrongToken(Current, kind);
+		m_ErrorList->ReportWrongToken(Current, kind);
 		return Current;
 	}
 }

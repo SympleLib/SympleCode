@@ -8,21 +8,14 @@
 
 using namespace Symple::Code;
 
-static void Exit()
-{
-	std::cout.flush();
-	std::cin.get();
-	exit(0);
-}
-
-int main()
+static void Compile()
 {
 	GlobalRef<File> src = MakeRef<File>("sy/Main.sy", FilePermissions::Read);
 	Console.Color = ConsoleColor::Yellow;
 	std::cout << "Source:\n";
 	//Console.Color = ConsoleColor::Cyan;
 	//std::cout << src->Source << '\n';
-	
+
 	Lexer lexer(src);
 	auto tokens = lexer.LexAll();
 
@@ -55,7 +48,7 @@ int main()
 			Console.Color = ConsoleColor::Red;
 			break;
 		}
-		
+
 		std::cout << tok->Text;
 		p = tok->Text.data() + tok->Text.length();
 	}
@@ -73,7 +66,7 @@ int main()
 	if (!errorList.IsEmpty())
 	{
 		errorList.Dump(std::cout);
-		Exit();
+		return;
 	}
 
 	SymbolVisitor symbolVisit(unit);
@@ -82,7 +75,7 @@ int main()
 	if (!errorList.IsEmpty())
 	{
 		errorList.Dump(std::cout);
-		Exit();
+		return;
 	}
 
 	TypeVisitor typeVisit(unit);
@@ -91,7 +84,7 @@ int main()
 	if (!errorList.IsEmpty())
 	{
 		errorList.Dump(std::cout);
-		Exit();
+		return;
 	}
 
 	Console.Color = ConsoleColor::Yellow;
@@ -101,11 +94,6 @@ int main()
 
 	Emitter emmiter(unit);
 	emmiter.Emit();
-	if (!errorList.IsEmpty())
-	{
-		errorList.Dump(std::cout);
-		Exit();
-	}
 
 	system("clang -m32 bin/Out.S -o bin/Out.exe --debug -l User32 -l legacy_stdio_definitions");
 	Console.Color = ConsoleColor::Yellow;
@@ -120,6 +108,21 @@ int main()
 	Console.Color = ConsoleColor::Yellow;
 	printf("\nProgram exited with code %i (0x%x) [%g]\n", ec, ec, fec);
 	Console.Color = ConsoleColor::White;
+}
 
-	Exit();
+bool ReComp()
+{
+	std::string ln;
+	std::getline(std::cin, ln);
+
+	if (ln == "recomp")
+		return true;
+	return false;
+}
+
+int main()
+{
+	do
+		Compile();
+	while (ReComp());
 }
