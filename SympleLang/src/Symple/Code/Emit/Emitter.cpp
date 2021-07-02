@@ -91,17 +91,17 @@ namespace Symple::Code
 		Emit("");
 
 		// First 4 args are stored in regs
+		uint32 paramPos = 8;
 		for (uint32 i = 0; i < 4 && i < fn->Parameters.size(); i++)
 		{
+			paramPos += 8;
 			uint32 sz = fn->Parameters[i]->Type->Type->Size;
-			uint32 pos = Stalloc(sz);
 			decltype(auto) name = fn->Parameters[i]->MangledName;
-			Emit(VAR " = -%u", name.c_str(), pos);
+			Emit(VAR " = %u", name.c_str(), paramPos);
 			Emit("\tmov %s, " VAR "(%s)", Reg(ArgRegs[i], sz), name.c_str(), Reg(RegKind::Bp));
 		}
 
 		uint32 stackParamSz = 0;
-		uint32 paramPos = 8;
 		for (uint32 i = 4; i < fn->Parameters.size(); i++)
 		{
 			paramPos += 8;
@@ -125,7 +125,7 @@ namespace Symple::Code
 		Emit(FUNCTION_RETURN ":", fn->MangledName.c_str());
 		Emit("\tmov %s, %s", Reg(RegKind::Bp), Reg(RegKind::Sp));
 		Emit("\tpop %s", Reg(RegKind::Bp));
-		if (fn->CallingConvention == TokenKind::StdCallKeyword || fn->CallingConvention == TokenKind::SycCallKeyword)
+		if (fn->CallingConvention == TokenKind::SycCallKeyword)
 			Emit("\tretq $%u", stackParamSz);
 		else
 			Emit("\tret");
@@ -295,6 +295,7 @@ namespace Symple::Code
 		Emit("\tmov %s, -%u(%s)", Reg(RegKind::Ax), fnPos, Reg(RegKind::Bp));
 
 		uint32 nArgs = call->Arguments.size();
+		Stalloc(nArgs * 8);
 		for (uint32 i = 0; i < 4 && i < nArgs; i++)
 		{
 			Emit(call->Arguments[i]);
@@ -304,22 +305,18 @@ namespace Symple::Code
 		if (nArgs > 4)
 		{
 			uint32 off = 0;
-			uint32 sz = (nArgs - 4) * 8;
-			Stalloc(sz);
-
 			for (uint32 i = 4; i < nArgs; i++)
 			{
 				Emit(call->Arguments[i]);
 				Emit("\tmov %s, %u(%s)", Reg(RegKind::Ax), off, Reg(RegKind::Sp));
 				off += 8;
 			}
-
-			Staf(sz);
 		}
 
 		Emit("\tmov -%u(%s), %s", fnPos, Reg(RegKind::Bp), Reg(RegKind::Ax));
-		Staf();
 		Emit("\tcall *%s", Reg(RegKind::Ax));
+		Staf(nArgs);
+		Staf();
 	}
 
 	void Emitter::Emit(const GlobalRef<const NameExpressionAst> &name)

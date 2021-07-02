@@ -60,7 +60,7 @@ namespace Symple::Code
 	uint32 Type::GetSize() const
 	{
 		if (m_PtrCount)
-			return 4;
+			return 8;
 
 		switch (m_Kind)
 		{
