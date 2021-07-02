@@ -290,7 +290,6 @@ namespace Symple::Code
 		Emit("\tmov %s, -%u(%s)", Reg(RegKind::Ax), fnPos, Reg(RegKind::Bp));
 
 		uint32 nArgs = call->Arguments.size();
-		Stalloc(nArgs * 8);
 		for (uint32 i = 0; i < 4 && i < nArgs; i++)
 		{
 			Emit(call->Arguments[i]);
@@ -310,9 +309,10 @@ namespace Symple::Code
 		}
 
 		Emit("\tmov -%u(%s), %s", fnPos, Reg(RegKind::Bp), Reg(RegKind::Ax));
-		Emit("\tcall *%s", Reg(RegKind::Ax));
-		Staf(nArgs * 8);
 		Staf();
+		Emit("\tcall *%s", Reg(RegKind::Ax));
+		Stalloc(24);
+		Staf(24);
 	}
 
 	void Emitter::Emit(const GlobalRef<const NameExpressionAst> &name)
