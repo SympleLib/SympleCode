@@ -101,11 +101,9 @@ namespace Symple::Code
 			Emit("\tmov %s, " VAR "(%s)", Reg(ArgRegs[i], sz), name.c_str(), Reg(RegKind::Bp));
 		}
 
-		uint32 stackParamSz = 0;
 		for (uint32 i = 4; i < fn->Parameters.size(); i++)
 		{
 			paramPos += 8;
-			stackParamSz += 8;
 			decltype(auto) name = fn->Parameters[i]->MangledName;
 			if (!name.empty())
 				Emit(VAR " = %u", name.c_str(), paramPos);
@@ -125,10 +123,7 @@ namespace Symple::Code
 		Emit(FUNCTION_RETURN ":", fn->MangledName.c_str());
 		Emit("\tmov %s, %s", Reg(RegKind::Bp), Reg(RegKind::Sp));
 		Emit("\tpop %s", Reg(RegKind::Bp));
-		if (fn->CallingConvention == TokenKind::SycCallKeyword)
-			Emit("\tretq $%u", stackParamSz);
-		else
-			Emit("\tret");
+		Emit("\tret");
 
 		// Debug Symbols (I guess...)
 		EmitDbg(".cv_fpo_endproc");
@@ -304,18 +299,19 @@ namespace Symple::Code
 
 		if (nArgs > 4)
 		{
-			uint32 off = 0;
+			uint32 off = 8 * 4;
 			for (uint32 i = 4; i < nArgs; i++)
 			{
 				Emit(call->Arguments[i]);
 				Emit("\tmov %s, %u(%s)", Reg(RegKind::Ax), off, Reg(RegKind::Sp));
 				off += 8;
 			}
+
 		}
 
 		Emit("\tmov -%u(%s), %s", fnPos, Reg(RegKind::Bp), Reg(RegKind::Ax));
 		Emit("\tcall *%s", Reg(RegKind::Ax));
-		Staf(nArgs);
+		Staf(nArgs * 8);
 		Staf();
 	}
 
