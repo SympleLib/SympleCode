@@ -1,5 +1,6 @@
+extern int puts(char *) ccall;
+
 int Main(char **args, int nArgs)
 {
-	int x = 5, y = 6;
-	ret x + y;
+	puts("Hello, world!");
 }

@@ -47,10 +47,7 @@ namespace Symple::Code
 	Function::Function(const GlobalRef<TypeAst> &type, const GlobalRef<const Token_t> &name,
 		const WeakRef<const Token_t> &open, const ParameterList &params, const WeakRef<const Token_t> &close,
 		const ConstTokenList &mods)
-		: Proto(name, mods), m_Type(type), m_Open(open), m_Params(params), m_Close(close),
-		m_Main(m_Name->Text == "Main" && m_Call == TokenKind::SycCallKeyword && m_Params.size() == 2 &&
-			m_Params[0]->Type->Type->Kind == TypeKind::Char && m_Params[0]->Type->Type->PointerCount == 2 &&
-			m_Params[1]->Type->Type->Kind == TypeKind::Int && m_Params[1]->Type->Type->PointerCount == 0)
+		: Proto(name, mods), m_Type(type), m_Open(open), m_Params(params), m_Close(close)
 	{}
 
 	WeakRef<const Token_t> Function::GetToken() const

@@ -22,6 +22,7 @@ namespace Symple::Code
 
 		Sp,
 		Bp,
+		Ip,
 
 		Xmm0,
 		Xmm1,
@@ -37,7 +38,7 @@ namespace Symple::Code
 		LastXmm = Xmm7, // Last `free` float register
 	};
 
-	constexpr const char *const RegKindNames[(uint32)RegKind::Count] =
+	static constexpr const char *const RegKindNames[(uint32)RegKind::Count] =
 	{
 		"Ax",
 		"Bx",
@@ -71,24 +72,27 @@ namespace Symple::Code
 	inline std::ostream &operator <<(std::ostream &os, RegKind reg)
 	{ return os << RegKindNames[(uint32)reg]; }
 
-	constexpr const char *const Reg64[(uint32)RegKind::Count] = {
+	static constexpr const char *const Reg64[(uint32)RegKind::Count] = {
 		"%rax", "%rbx", "%rcx", "%rdx",
 		"%rsi", "%rdi", "%r8", "%r9", "%r10", "%r11", "%r12", "%r13", "%r14", "%r15",
-		"%rsp", "%rbp",
+		"%rsp", "%rbp", "%rip",
 	};
-	constexpr const char *const Reg32[(uint32)RegKind::Count] = {
+	static constexpr const char *const Reg32[(uint32)RegKind::Count] = {
 		"%eax", "%ebx", "%ecx", "%edx",
 		"%esi", "%edi", "%r8d", "%r9d", "%r10d", "%r11d", "%r12d", "%r13d", "%r14d", "%r15d",
 		"%esp", "%ebp",
 	};
-	constexpr const char *const Reg16[(uint32)RegKind::Count] = {
+	static constexpr const char *const Reg16[(uint32)RegKind::Count] = {
 		"ax", "bx", "cx", "dx",
 		"si", "di", "r8w", "r9w", "r10w", "r11w", "r12w", "r13w", "r14w", "r15w",
 		"sp", "bp",
 	};
-	constexpr const char *const Reg8[(uint32)RegKind::Count] = {
+	static constexpr const char *const Reg8[(uint32)RegKind::Count] = {
 		"%al", "%bl", "%cl", "%dl",
 		"%sil", "%dil", "%r8b", "%r9b", "%r10b", "%r11b", "%r12b", "%r13b", "%r14b", "%r15b",
 		"%spl", "%bpl",
 	};
+
+
+	static constexpr RegKind ArgRegs[4] = { RegKind::Cx, RegKind::Dx, RegKind::R8, RegKind::R9 };
 }

@@ -14,17 +14,9 @@ namespace Symple::Code
 		switch (fn->m_Call)
 		{
 		case TokenKind::CCallKeyword:
-			ss << '_' << fn->m_Name->Text;
-			break;
 		case TokenKind::StdCallKeyword:
-		{
-			ss << '_' << fn->m_Name->Text << '@';
-			uint32 sz = 0;
-			for (auto param : fn->m_Params)
-				sz += param->m_Type->m_Type->Size;
-			ss << sz;
+			ss << fn->m_Name->Text;
 			break;
-		}
 		case TokenKind::SyCallKeyword:
 			ss << "Sy$" << fn->m_Name->Text;
 			for (auto param : fn->m_Params)
@@ -59,6 +51,8 @@ namespace Symple::Code
 		}
 		
 		fn->m_MangledName = ss.str();
+		if (fn->m_MangledName == "Syc$Main$2Char$Int")
+			fn->m_Main = true;
 	}
 
 	void SymbolVisitor::Mangle(GlobalRef<ParameterAst> param)

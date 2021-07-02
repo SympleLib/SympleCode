@@ -91,13 +91,13 @@ namespace Symple::Code
 		Emit("");
 
 		// First 4 args are stored in regs
-		static constexpr RegKind regs[4] = { RegKind::Cx, RegKind::Dx, RegKind::R8, RegKind::R9 };
 		for (uint32 i = 0; i < 4 && i < fn->Parameters.size(); i++)
 		{
-			uint32 pos = Stalloc(fn->Parameters[i]->Type->Type->Size);
+			uint32 sz = fn->Parameters[i]->Type->Type->Size;
+			uint32 pos = Stalloc(sz);
 			decltype(auto) name = fn->Parameters[i]->MangledName;
 			Emit(VAR " = -%u", name.c_str(), pos);
-			Emit("\tmov %s, " VAR "(%s)", Reg(regs[i]), name.c_str(), Reg(RegKind::Bp));
+			Emit("\tmov %s, " VAR "(%s)", Reg(ArgRegs[i], sz), name.c_str(), Reg(RegKind::Bp));
 		}
 
 		uint32 stackParamSz = 0;
@@ -177,8 +177,7 @@ namespace Symple::Code
 	{
 		decltype(auto) name = var->MangledName;
 		uint32 sz = var->Type->Type->Size;
-		Stalloc(sz);
-		uint32 pos = m_Stack;
+		uint32 pos = Stalloc(sz);
 		Emit(VAR " = -%u", name.c_str(), m_Stack);
 		if (var->Initializer)
 		{
@@ -241,17 +240,15 @@ namespace Symple::Code
 
 		if (pun->Type->IsFloat && !pun->Value->Type->IsFloat)
 		{
-			Stalloc();
-			uint32 pos = m_Stack;
+			uint32 pos = Stalloc();
 			Emit("\tmov %s, -%u(%s)", Reg(RegKind::Ax), pos, Reg(RegKind::Bp));
-			Emit("\tmovss -%u(%s), %s", pos, Reg(RegKind::Bp), Reg(RegKind::Xmm0));
+			Emit("\tmovsd -%u(%s), %s", pos, Reg(RegKind::Bp), Reg(RegKind::Xmm0));
 			Staf();
 		}
 		else if (!pun->Type->IsFloat && pun->Value->Type->IsFloat)
 		{
-			Stalloc();
-			uint32 pos = m_Stack;
-			Emit("\tmovss %s, -%u(%s)", Reg(RegKind::Xmm0), pos, Reg(RegKind::Bp));
+			uint32 pos = Stalloc();
+			Emit("\tmovsd %s, -%u(%s)", Reg(RegKind::Xmm0), pos, Reg(RegKind::Bp));
 			Emit("\tmov -%u(%s), %s", pos, Reg(RegKind::Bp), Reg(RegKind::Ax));
 			Staf();
 		}
@@ -273,7 +270,7 @@ namespace Symple::Code
 			Stalloc();
 			uint32 pos = m_Stack;
 			Emit("\tmov %s, -%u(%s)", Reg(RegKind::Ax), pos, Reg(RegKind::Bp));
-			Emit("\tcvtsi2ssl -%u(%s), %s", pos, Reg(RegKind::Bp), Reg(RegKind::Xmm0));
+			Emit("\tcvtsi2sdq -%u(%s), %s", pos, Reg(RegKind::Bp), Reg(RegKind::Xmm0));
 			Staf();
 		}
 		else if (!cast->Type->IsFloat && cast->Value->Type->IsFloat)
@@ -281,7 +278,7 @@ namespace Symple::Code
 			Stalloc();
 			uint32 pos = m_Stack;
 			Emit("\tmovss %s, -%u(%s)", Reg(RegKind::Xmm0), pos, Reg(RegKind::Bp));
-			Emit("\tcvttss2si -%u(%s), %s", pos, Reg(RegKind::Bp), Reg(RegKind::Ax));
+			Emit("\tcvttsd2si -%u(%s), %s", pos, Reg(RegKind::Bp), Reg(RegKind::Ax));
 			Staf();
 		}
 		else if (cast->Type->Size != cast->Value->Type->Size)
@@ -293,40 +290,43 @@ namespace Symple::Code
 
 	void Emitter::Emit(const GlobalRef<const CallExpressionAst> &call)
 	{
-		uint32 sz = call->Arguments.size() * 4;
-		uint32 fnPos;
 		Emit(call->Function);
-		if (sz)
+		uint32 fnPos = Stalloc();
+		Emit("\tmov %s, -%u(%s)", Reg(RegKind::Ax), fnPos, Reg(RegKind::Bp));
+
+		uint32 nArgs = call->Arguments.size();
+		for (uint32 i = 0; i < 4 && i < nArgs; i++)
 		{
-			Stalloc();
-			fnPos = m_Stack;
-			Emit("\tmov %s, -%u(%s)", Reg(RegKind::Ax), fnPos, Reg(RegKind::Bp));
+			Emit(call->Arguments[i]);
+			Emit("\tmov %s, %s", Reg(RegKind::Ax), Reg(ArgRegs[i]));
 		}
 
-		Stalloc(sz);
-		uint32 off = 0;
-		for (auto arg : call->Arguments)
+		if (nArgs > 4)
 		{
-			Emit(arg);
-			Emit("\tmov %s, %u(%s)", Reg(RegKind::Ax), off, Reg(RegKind::Sp));
-			off += 4;
+			uint32 off = 0;
+			uint32 sz = (nArgs - 4) * 8;
+			Stalloc(sz);
+
+			for (uint32 i = 4; i < nArgs; i++)
+			{
+				Emit(call->Arguments[i]);
+				Emit("\tmov %s, %u(%s)", Reg(RegKind::Ax), off, Reg(RegKind::Sp));
+				off += 8;
+			}
+
+			Staf(sz);
 		}
 
-		if (sz)
-		{
-			Staf();
-			Emit("\tmov -%u(%s), %s", fnPos, Reg(RegKind::Bp), Reg(RegKind::Ax));
-		}
+		Emit("\tmov -%u(%s), %s", fnPos, Reg(RegKind::Bp), Reg(RegKind::Ax));
+		Staf();
 		Emit("\tcall *%s", Reg(RegKind::Ax));
-		Stalloc(sz);
-		Staf(sz);
 	}
 
 	void Emitter::Emit(const GlobalRef<const NameExpressionAst> &name)
 	{
 		decltype(auto) sname = name->Symbol->MangledName;
 		if (name->Symbol->IsFunction)
-			Emit("\tlea " FUNCTION ", %s", sname.c_str(), Reg(RegKind::Ax));
+			Emit("\tlea " FUNCTION "(%s), %s", sname.c_str(), Reg(RegKind::Ip), Reg(RegKind::Ax));
 		else
 			if (name->Type->IsFloat)
 				Emit("\tmovss " VAR "(%s), %s", sname.c_str(), Reg(RegKind::Bp), Reg(RegKind::Xmm0));
@@ -515,7 +515,7 @@ namespace Symple::Code
 			Emit(EmitKind::Data, "..L%u:", m_Label);
 			Emit(EmitKind::Data, "\t.string \"%.*s\"", txt.length(), txt.data());
 
-			Emit("\tlea ..L%u, %s", m_Label, Reg(RegKind::Ax));
+			Emit("\tlea ..L%u(%s), %s", m_Label, Reg(RegKind::Ip), Reg(RegKind::Ax));
 			m_Label++;
 		}
 		else

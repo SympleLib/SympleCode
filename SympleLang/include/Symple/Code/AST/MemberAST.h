@@ -54,7 +54,7 @@ namespace Symple::Code
 		ParameterList m_Params;
 		WeakRef<const Token_t> m_Close;
 
-		bool m_Main;
+		bool m_Main = false;
 		TokenKind m_Call = TokenKind::SyCallKeyword;
 
 		Function(const GlobalRef<TypeAst> &type, const GlobalRef<const Token_t> &name,
