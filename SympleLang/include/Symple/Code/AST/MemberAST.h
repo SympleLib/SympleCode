@@ -46,6 +46,14 @@ namespace Symple::Code
 		SY_PROPERTY_GET(GetBody) GlobalRef<const StatementAst> Body;
 	};
 
+	class SYC_API Struct: public Symbol, public TypeBase
+	{
+	protected:
+
+		VISIT_ME;
+	public:
+	};
+
 	class SYC_API Function: public Proto
 	{
 	protected:
