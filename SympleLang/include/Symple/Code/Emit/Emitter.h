@@ -45,6 +45,7 @@ namespace Symple::Code
 	private:
 		uint32 Stalloc(uint32 bytes = 8);
 		uint32 Staf(uint32 bytes = 8);
+		uint32 Reserve(uint32 bytes = 8);
 
 		bool OverridesRegs(const GlobalRef<const Ast>);
 

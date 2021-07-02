@@ -311,8 +311,7 @@ namespace Symple::Code
 		Emit("\tmov -%u(%s), %s", fnPos, Reg(RegKind::Bp), Reg(RegKind::Ax));
 		Staf();
 		Emit("\tcall *%s", Reg(RegKind::Ax));
-		Stalloc(24);
-		Staf(24);
+		Reserve(24 + nArgs * 4);
 	}
 
 	void Emitter::Emit(const GlobalRef<const NameExpressionAst> &name)
@@ -526,6 +525,14 @@ namespace Symple::Code
 
 	uint32 Emitter::Staf(uint32 bytes)
 	{ return m_Stack -= bytes; }
+
+	uint32 Emitter::Reserve(uint32 bytes)
+	{
+		m_Stack += bytes;
+		if (m_Stack > m_StackSize)
+			m_StackSize = m_Stack;
+		return m_Stack -= bytes;
+	}
 	
 	bool Emitter::OverridesRegs(const GlobalRef<const Ast> node)
 	{
