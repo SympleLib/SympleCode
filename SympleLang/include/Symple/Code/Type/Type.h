@@ -12,11 +12,10 @@ namespace Symple::Code
 		Byte,
 		Short,
 		Int,
-		//Long,
+		Long,
 
 		Float,
-		//Double,
-		//Triple,
+		Double,
 
 		Char,
 		WChar,
@@ -31,11 +30,10 @@ namespace Symple::Code
 		"Byte",
 		"Short",
 		"Int",
-		//"Long",
+		"Long",
 
 		"Float",
-		//"Double",
-		//"Triple",
+		"Double",
 
 		"Char",
 		"WChar",

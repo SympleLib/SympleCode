@@ -279,7 +279,10 @@ namespace Symple::Code
 		else if (cast->Type->Size != cast->Value->Type->Size)
 		{
 			uint32 min = std::min(cast->Type->Size, cast->Value->Type->Size);
-			Emit("\tmovz%c%c %s, %s", Suf(min), Suf(), Reg(RegKind::Ax, min), Reg(RegKind::Ax));
+			uint32 pos = Stalloc(min);
+			Emit("\tmov %s, -%u(%s)", Reg(RegKind::Ax, min), pos, Reg(RegKind::Bp));
+			Emit("\txor %s, %s", Reg(RegKind::Ax), Reg(RegKind::Ax));
+			Emit("\tmov -%u(%s), %s", pos, Reg(RegKind::Bp), Reg(RegKind::Ax, min));
 		}
 	}
 
@@ -618,7 +621,9 @@ namespace Symple::Code
 			return 'w';
 		if (sz <= 4)
 			return 'l';
-		return 0;
+		if (sz <= 8)
+			return 'q';
+		throw nullptr;
 	}
 
 	constexpr const char *Emitter::Reg(RegKind kind, uint32 sz)

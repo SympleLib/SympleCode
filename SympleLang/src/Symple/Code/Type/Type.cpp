@@ -76,11 +76,9 @@ namespace Symple::Code
 		case TypeKind::Int:
 		case TypeKind::Float:
 			return 4;
-		//case TypeKind::Long:
-		//case TypeKind::Double:
-		//	return 8;
-		//case TypeKind::Triple:
-		//	return 16;
+		case TypeKind::Long:
+		case TypeKind::Double:
+			return 8;
 
 		default:
 			return -1;

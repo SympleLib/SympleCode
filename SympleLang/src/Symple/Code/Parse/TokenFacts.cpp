@@ -27,14 +27,12 @@ namespace Symple::Code
 			return TypeKind::Short;
 		case TokenKind::IntKeyword:
 			return TypeKind::Int;
-		//case TokenKind::LongKeyword:
-			//return TypeKind::Long;
+		case TokenKind::LongKeyword:
+			return TypeKind::Long;
 		case TokenKind::FloatKeyword:
 			return TypeKind::Float;
-		//case TokenKind::DoubleKeyword:
-			//return TypeKind::Double;
-		//case TokenKind::TripleKeyword:
-			//return TypeKind::Triple;
+		case TokenKind::DoubleKeyword:
+			return TypeKind::Double;
 		case TokenKind::CharKeyword:
 			return TypeKind::Char;
 		case TokenKind::WCharKeyword:
@@ -55,10 +53,9 @@ namespace Symple::Code
 		case TokenKind::ByteKeyword:
 		case TokenKind::ShortKeyword:
 		case TokenKind::IntKeyword:
-		//case TokenKind::LongKeyword:
+		case TokenKind::LongKeyword:
 		case TokenKind::FloatKeyword:
-		//case TokenKind::DoubleKeyword:
-		//case TokenKind::TripleKeyword:
+		case TokenKind::DoubleKeyword:
 		case TokenKind::CharKeyword:
 		case TokenKind::WCharKeyword:
 		case TokenKind::BoolKeyword:

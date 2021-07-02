@@ -1,6 +1,6 @@
 extern int puts(char *) ccall;
 
-int Main(char **args, int nArgs)
+long Main(char **args, int nArgs)
 {
-	puts("Hello, world!");
+	ret {long}(double)69;
 }
