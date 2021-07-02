@@ -90,20 +90,25 @@ namespace Symple::Code
 		Emit("\tsub $" FUNCTION_STACKSIZE ", %s", name.c_str(), Reg(RegKind::Sp));
 		Emit("");
 
-		int32 totalParamSz = -32;
-		uint32 stackPos = 8;
-		for (auto param : fn->Parameters)
+		// First 4 args are stored in regs
+		static constexpr RegKind regs[4] = { RegKind::Cx, RegKind::Dx, RegKind::R8, RegKind::R9 };
+		for (uint32 i = 0; i < 4 && i < fn->Parameters.size(); i++)
 		{
-			stackPos += 8;
-			totalParamSz += param->Type->Type->Size;
-			decltype(auto) pname = param->MangledName;
-			if (!pname.empty())
-				Emit(VAR " = %u", pname.c_str(), stackPos);
-			if (param->Type->Type->IsArray)
-			{
-				stackPos += 4;
-				totalParamSz += 4;
-			}
+			uint32 pos = Stalloc(fn->Parameters[i]->Type->Type->Size);
+			decltype(auto) name = fn->Parameters[i]->MangledName;
+			Emit(VAR " = -%u", name.c_str(), pos);
+			Emit("\tmov %s, " VAR "(%s)", Reg(regs[i]), name.c_str(), Reg(RegKind::Bp));
+		}
+
+		uint32 stackParamSz = 0;
+		uint32 paramPos = 8;
+		for (uint32 i = 4; i < fn->Parameters.size(); i++)
+		{
+			paramPos += 8;
+			stackParamSz += 8;
+			decltype(auto) name = fn->Parameters[i]->MangledName;
+			if (!name.empty())
+				Emit(VAR " = %u", name.c_str(), paramPos);
 		}
 
 		Emit(fn->Body);
@@ -120,8 +125,8 @@ namespace Symple::Code
 		Emit(FUNCTION_RETURN ":", fn->MangledName.c_str());
 		Emit("\tmov %s, %s", Reg(RegKind::Bp), Reg(RegKind::Sp));
 		Emit("\tpop %s", Reg(RegKind::Bp));
-		if (fn->CallingConvention == TokenKind::StdCallKeyword || fn->CallingConvention == TokenKind::SycCallKeyword && totalParamSz > 0)
-			Emit("\tretq $%u", totalParamSz);
+		if (fn->CallingConvention == TokenKind::StdCallKeyword || fn->CallingConvention == TokenKind::SycCallKeyword)
+			Emit("\tretq $%u", stackParamSz);
 		else
 			Emit("\tret");
 
@@ -518,15 +523,16 @@ namespace Symple::Code
 	}
 
 
-	void Emitter::Stalloc(uint32 bytes)
+	uint32 Emitter::Stalloc(uint32 bytes)
 	{
 		m_Stack += bytes;
 		if (m_Stack > m_StackSize)
 			m_StackSize = m_Stack;
+		return m_Stack;
 	}
 
-	void Emitter::Staf(uint32 bytes)
-	{ m_Stack -= bytes; }
+	uint32 Emitter::Staf(uint32 bytes)
+	{ return m_Stack -= bytes; }
 	
 	bool Emitter::OverridesRegs(const GlobalRef<const Ast> node)
 	{

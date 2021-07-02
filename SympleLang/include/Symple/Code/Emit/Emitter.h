@@ -43,8 +43,8 @@ namespace Symple::Code
 		void Emit(const GlobalRef<const BuiltinExpressionAst> &macro);
 		void Emit(const GlobalRef<const LiteralExpressionAst> &literal);
 	private:
-		void Stalloc(uint32 bytes = 8);
-		void Staf(uint32 bytes = 8);
+		uint32 Stalloc(uint32 bytes = 8);
+		uint32 Staf(uint32 bytes = 8);
 
 		bool OverridesRegs(const GlobalRef<const Ast>);
 
