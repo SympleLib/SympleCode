@@ -25,7 +25,7 @@ namespace Symple::Code
 		SY_PROPERTY_GET(GetSize) uint32 Size;
 	};
 
-	using TypeBaseRef = const TypeBase &;
+	using TypeBaseRef = GlobalRef<const TypeBase>;
 
 	enum class SYC_API NativeTypeKind
 	{
@@ -78,21 +78,24 @@ namespace Symple::Code
 	class SYC_API NativeType: public TypeBase
 	{
 	private:
+		static bool inited;
 		NativeTypeKind m_Kind;
-	public:
+
 		NativeType(std::string_view name, NativeTypeKind kind)
 			: TypeBase(name), m_Kind(kind) {}
 	public:
-		static const NativeType Void;
-		static const NativeType Byte;
-		static const NativeType Short;
-		static const NativeType Int;
-		static const NativeType Long;
-		static const NativeType Float;
-		static const NativeType Double;
-		static const NativeType Char;
-		static const NativeType WChar;
-		static const NativeType Bool;
+		static void Init();
+
+		static GlobalRef<const NativeType> Void;
+		static GlobalRef<const NativeType> Byte;
+		static GlobalRef<const NativeType> Short;
+		static GlobalRef<const NativeType> Int;
+		static GlobalRef<const NativeType> Long;
+		static GlobalRef<const NativeType> Float;
+		static GlobalRef<const NativeType> Double;
+		static GlobalRef<const NativeType> Char;
+		static GlobalRef<const NativeType> WChar;
+		static GlobalRef<const NativeType> Bool;
 	public:
 		virtual uint32 GetSize() const override
 		{ return NativeTypeSizes[(uint32)m_Kind]; }

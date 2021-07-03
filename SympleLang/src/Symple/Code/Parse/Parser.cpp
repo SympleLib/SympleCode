@@ -8,7 +8,11 @@
 namespace Symple::Code
 {
 	Parser::Parser(const TokenList &toks)
-		: m_Tokens(toks), m_Buddy(MakeRef<SymbolBuddy>()) {}
+		: m_Tokens(toks)
+	{
+		NativeType::Init();
+		m_Buddy = MakeRef<SymbolBuddy>();
+	}
 
 	GlobalRef<CompilationUnitAst> Parser::Parse(ErrorList *errorList)
 	{
@@ -351,7 +355,7 @@ namespace Symple::Code
 			addons.push_back(Next());
 
 		TypeBaseRef tyBase = m_Buddy->GetTypeBase(base);
-		GlobalRef<Type> ty = MakeRef<Type>(base, addons.size());
+		GlobalRef<Type> ty = MakeRef<Type>(tyBase, addons.size());
 		return MakeRef<TypeAst>(base, addons, ty);
 	}
 

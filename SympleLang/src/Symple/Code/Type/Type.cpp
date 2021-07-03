@@ -4,14 +4,39 @@ namespace Symple::Code
 {
 	SYC_API const GlobalRef<const Type> Type::Default = MakeRef<const Type>(NativeType::Byte, 0);
 
-	SYC_API const NativeType NativeType::Void = NativeType("void", NativeTypeKind::Void);
-	SYC_API const NativeType NativeType::Byte = NativeType("byte", NativeTypeKind::Byte);
-	SYC_API const NativeType NativeType::Short = NativeType("short", NativeTypeKind::Short);
-	SYC_API const NativeType NativeType::Int = NativeType("int", NativeTypeKind::Int);
-	SYC_API const NativeType NativeType::Long = NativeType("long", NativeTypeKind::Long);
-	
-	SYC_API const NativeType NativeType::Float = NativeType("float", NativeTypeKind::Float);
-	SYC_API const NativeType NativeType::Double = NativeType("double", NativeTypeKind::Double);
+	SYC_API GlobalRef<const NativeType> NativeType::Void;
+	SYC_API GlobalRef<const NativeType> NativeType::Byte;
+	SYC_API GlobalRef<const NativeType> NativeType::Short;
+	SYC_API GlobalRef<const NativeType> NativeType::Int;
+	SYC_API GlobalRef<const NativeType> NativeType::Long;
+
+	SYC_API GlobalRef<const NativeType> NativeType::Float;
+	SYC_API GlobalRef<const NativeType> NativeType::Double;
+
+	SYC_API GlobalRef<const NativeType> NativeType::Char;
+	SYC_API GlobalRef<const NativeType> NativeType::WChar;
+	SYC_API GlobalRef<const NativeType> NativeType::Bool;
+
+	void NativeType::Init()
+	{
+		if (!inited)
+			inited = true;
+		else
+			return;
+
+		Void = GlobalRef<const NativeType>(new NativeType("void", NativeTypeKind::Void));
+		Byte = GlobalRef<const NativeType>(new NativeType("byte", NativeTypeKind::Byte));
+		Short = GlobalRef<const NativeType>(new NativeType("short", NativeTypeKind::Short));
+		Int = GlobalRef<const NativeType>(new NativeType("int", NativeTypeKind::Int));
+		Long = GlobalRef<const NativeType>(new NativeType("long", NativeTypeKind::Long));
+
+		Float = GlobalRef<const NativeType>(new NativeType("float", NativeTypeKind::Float));
+		Double = GlobalRef<const NativeType>(new NativeType("double", NativeTypeKind::Double));
+
+		Char = GlobalRef<const NativeType>(new NativeType("char", NativeTypeKind::Char));
+		WChar = GlobalRef<const NativeType>(new NativeType("wchar", NativeTypeKind::WChar));
+		Bool = GlobalRef<const NativeType>(new NativeType("bool", NativeTypeKind::Bool));
+	}
 
 	Type::Type(TypeBaseRef base, uint32 ptrCount)
 		: m_Base(base), m_PtrCount(ptrCount)

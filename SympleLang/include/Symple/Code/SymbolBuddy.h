@@ -7,12 +7,9 @@ namespace Symple::Code
 {
 	struct SYC_API SymbolBuddy
 	{
-		std::vector<TypeBase> typeBases = {
-			NativeType::Void,
-			NativeType::Byte, NativeType::Short, NativeType::Int, NativeType::Long,
-			NativeType::Float, NativeType::Double,
-			NativeType::Char, NativeType::WChar,
-		};
+		std::vector<GlobalRef<TypeBase>> typeBases;
+
+		SymbolBuddy();
 
 		bool IsTypeBase(GlobalRef<const Token>);
 		TypeBaseRef GetTypeBase(GlobalRef<const Token>);

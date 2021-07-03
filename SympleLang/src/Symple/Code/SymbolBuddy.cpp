@@ -2,6 +2,16 @@
 
 namespace Symple::Code
 {
+	SymbolBuddy::SymbolBuddy()
+	{
+		typeBases = {
+			(TypeBaseRef)NativeType::Void,
+			(TypeBaseRef)NativeType::Byte, (TypeBaseRef)NativeType::Short, (TypeBaseRef)NativeType::Int, (TypeBaseRef)NativeType::Long,
+			(TypeBaseRef)NativeType::Float, (TypeBaseRef)NativeType::Double,
+			(TypeBaseRef)NativeType::Char, (TypeBaseRef)NativeType::WChar,
+		};
+	}
+
 	bool SymbolBuddy::IsTypeBase(GlobalRef<const Token> tok)
 	{
 		for (TypeBaseRef base : typeBases)
