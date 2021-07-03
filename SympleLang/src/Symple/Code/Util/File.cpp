@@ -33,7 +33,8 @@ namespace Symple::Code
 		}
 
 		m_Stream = std::fopen(name.c_str(), mode);
-		assert(m_Stream);
+		if (!m_Stream)
+			throw nullptr;
 		m_Num = s_NextNum++;
 		m_Open = true;
 

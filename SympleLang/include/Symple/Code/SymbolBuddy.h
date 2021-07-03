@@ -7,7 +7,7 @@ namespace Symple::Code
 {
 	struct SYC_API SymbolBuddy
 	{
-		std::vector<GlobalRef<TypeBase>> typeBases;
+		std::vector<TypeBaseRef> typeBases;
 
 		SymbolBuddy();
 

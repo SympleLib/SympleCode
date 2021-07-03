@@ -20,7 +20,7 @@ namespace Symple::Code
 
 		static const GlobalRef<const Type> Default;
 
-		bool Is(const TypeBase &) const;
+		bool Is(TypeBaseRef) const;
 		bool Is(GlobalRef<const Type>) const;
 		template<typename... Args>
 		bool Is(GlobalRef<const Type> type, Args&&... types) const

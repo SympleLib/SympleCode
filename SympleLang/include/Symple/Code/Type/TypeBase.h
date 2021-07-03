@@ -1,11 +1,12 @@
 #pragma once
 
 #include "Symple/Code/Common.h"
+#include "Symple/Code/Util/Memory.h"
 #include "Symple/Code/Util/Printable.h"
 
 namespace Symple::Code
 {
-	class SYC_API TypeBase: public Printable
+	class SYC_API TypeBase
 	{
 	protected:
 		std::string m_Name;
@@ -15,8 +16,6 @@ namespace Symple::Code
 
 		bool operator ==(const TypeBase &other) const
 		{ return this == &other; }
-		virtual void Print(std::ostream &os, std::string indent = "", std::string_view label = "", bool last = true) const
-		{ os << ' ' << m_Name << " (Type)"; }
 		virtual uint32 GetSize() const = 0;
 		const std::string &GetName() const
 		{ return m_Name; }
@@ -78,14 +77,11 @@ namespace Symple::Code
 	class SYC_API NativeType: public TypeBase
 	{
 	private:
-		static bool inited;
 		NativeTypeKind m_Kind;
 
 		NativeType(std::string_view name, NativeTypeKind kind)
 			: TypeBase(name), m_Kind(kind) {}
 	public:
-		static void Init();
-
 		static GlobalRef<const NativeType> Void;
 		static GlobalRef<const NativeType> Byte;
 		static GlobalRef<const NativeType> Short;

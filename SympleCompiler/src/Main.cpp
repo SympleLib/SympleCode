@@ -1,4 +1,5 @@
 #include <iostream>
+#include <filesystem>
 #include "Symple/Code/Util/Console.h"
 #include "Symple/Code/Util/File.h"
 #include "Symple/Code/Parse/Lexer.h"
@@ -92,6 +93,7 @@ static void Compile()
 	unit->Print(std::cout);
 	std::cout << '\n';
 
+	std::filesystem::create_directory("bin");
 	Emitter emmiter(unit);
 	emmiter.Emit();
 

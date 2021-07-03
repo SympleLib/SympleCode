@@ -9,10 +9,7 @@ namespace Symple::Code
 {
 	Parser::Parser(const TokenList &toks)
 		: m_Tokens(toks)
-	{
-		NativeType::Init();
-		m_Buddy = MakeRef<SymbolBuddy>();
-	}
+	{ m_Buddy = MakeRef<SymbolBuddy>(); }
 
 	GlobalRef<CompilationUnitAst> Parser::Parse(ErrorList *errorList)
 	{

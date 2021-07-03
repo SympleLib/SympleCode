@@ -15,7 +15,7 @@ namespace Symple::Code
 	bool SymbolBuddy::IsTypeBase(GlobalRef<const Token> tok)
 	{
 		for (TypeBaseRef base : typeBases)
-			if (base.Name == tok->Text)
+			if (base->Name == tok->Text)
 				return true;
 		return false;
 	}
@@ -23,7 +23,7 @@ namespace Symple::Code
 	TypeBaseRef SymbolBuddy::GetTypeBase(GlobalRef<const Token> tok)
 	{
 		for (TypeBaseRef base : typeBases)
-			if (base.Name == tok->Text)
+			if (base->Name == tok->Text)
 				return base;
 		throw nullptr;
 	}

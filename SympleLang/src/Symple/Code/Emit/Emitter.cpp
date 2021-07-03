@@ -42,7 +42,7 @@ namespace Symple::Code
 		Emit(".text");
 		Emit(".global main");
 		Emit("main:");
-		Emit("\tjmp Syc$Main$2Char$Int");
+		Emit("\tjmp Syc$Main$2char$int");
 
 
 		Emit(EmitKind::Data, ".data");
@@ -253,12 +253,12 @@ namespace Symple::Code
 	{
 		Emit(cast->Value);
 
-		const auto &nativeTy = *dynamic_cast<const NativeType *>(&cast->Type->Base);
-		if (!&nativeTy)
+		auto nativeTy = Cast<const NativeType>(cast->Type->Base);
+		if (!nativeTy)
 			throw nullptr; // TODO: Support other casting
 
 		if (cast->Type->Is(cast->Value->Type));
-		else if (nativeTy.Kind == NativeTypeKind::Bool)
+		else if (nativeTy->Kind == NativeTypeKind::Bool)
 		{
 			Emit("\ttest %s, %s", Reg(RegKind::Ax), Reg(RegKind::Ax));
 			Emit("\tsetne %s", Reg(RegKind::Ax, 1));
