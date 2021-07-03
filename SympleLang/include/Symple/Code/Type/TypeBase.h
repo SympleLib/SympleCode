@@ -13,6 +13,8 @@ namespace Symple::Code
 		TypeBase(std::string_view name)
 			: m_Name(name) {}
 
+		bool operator ==(const TypeBase &other) const
+		{ return this == &other; }
 		virtual uint32 GetSize() const = 0;
 		const std::string &GetName() const
 		{ return m_Name; }
@@ -77,7 +79,16 @@ namespace Symple::Code
 		NativeType(std::string_view name, NativeTypeKind kind)
 			: TypeBase(name), m_Kind(kind) {}
 	public:
-		static const NativeType Void, Byte, Short, Int, Long, Float, Double, Char, WChar, Bool;
+		static const NativeType Void;
+		static const NativeType Byte;
+		static const NativeType Short;
+		static const NativeType Int;
+		static const NativeType Long;
+		static const NativeType Float;
+		static const NativeType Double;
+		static const NativeType Char;
+		static const NativeType WChar;
+		static const NativeType Bool;
 	public:
 		virtual uint32 GetSize() const override
 		{ return NativeTypeSizes[(uint32)m_Kind]; }

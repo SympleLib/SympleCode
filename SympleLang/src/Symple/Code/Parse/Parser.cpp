@@ -31,7 +31,7 @@ namespace Symple::Code
 		else if (Current->Is(TokenKind::ProtoKeyword))
 			return ParseProto();
 		else
-			throw std::exception("Must be function declaration!");
+			throw "Must be function declaration!";
 	}
 
 	GlobalRef<ProtoAst> Parser::ParseProto()
@@ -357,7 +357,7 @@ namespace Symple::Code
 			isArray = true;
 		}
 
-		auto tyKind = TokenFacts::ToType(base->Kind);
+		auto tyKind = TokenFacts::NativeType(base->Kind);
 		GlobalRef<Type> ty = MakeRef<Type>(tyKind, addons.size() - isArray, isArray);
 
 		return MakeRef<TypeAst>(base, addons, ty);

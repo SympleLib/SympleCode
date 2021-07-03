@@ -19,7 +19,7 @@ namespace Symple::Code
 
 		static bool IsBuiltinFunction(TokenKind);
 
-		static TypeKind ToType(TokenKind);
+		static NativeTypeKind NativeType(TokenKind);
 
 		static bool IsTypeBase(TokenKind);
 		static bool IsTypePointer(TokenKind);

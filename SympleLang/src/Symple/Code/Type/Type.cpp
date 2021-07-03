@@ -19,11 +19,11 @@ namespace Symple::Code
 		std::stringstream ss;
 		if (m_PtrCount)
 			ss << m_PtrCount;
-		m_Base->Print(ss);
+		m_Base.Print(ss);
 		m_MangledName = ss.str();
 
 		ss.str("");
-		ss << TypeKindNames[(uint32)m_Kind];
+		m_Base.Print(ss);
 		for (uint32 i = 0; i < m_PtrCount; i++)
 			ss << '*';
 		m_Code = ss.str();
@@ -32,7 +32,7 @@ namespace Symple::Code
 	GlobalRef<Type> Type::Deref() const
 	{
 		assert("Cannot dereference a non-pointer" && m_PtrCount);
-		return MakeRef<Type>(m_Kind, m_PtrCount - 1, false);
+		return MakeRef<Type>(m_Base, m_PtrCount - 1, false);
 	}
 
 	void Type::Print(std::ostream & os, std::string indent, std::string_view label, bool last) const
@@ -41,47 +41,44 @@ namespace Symple::Code
 		os << m_Code;
 	}
 
-	bool Type::Is(TypeKind kind) const
-	{ return m_Kind == kind; }
+	bool Type::Is(const TypeBase &base) const
+	{ return m_Base == base; }
 
 	bool Type::Is(GlobalRef<const Type> ty) const
-	{ return Is(ty->m_Kind) && m_PtrCount == ty->m_PtrCount; }
+	{ return Is(ty->m_Base) && m_PtrCount == ty->m_PtrCount; }
 
-	TypeKind Type::GetKind() const
-	{ return m_Kind; }
+	const TypeBase &Type::GetBase() const
+	{ return m_Base; }
 
 	uint32 Type::GetPointerCount() const
 	{ return m_PtrCount; }
 
 	bool Type::GetIsFloat() const
-	{ return (m_Kind == TypeKind::Float /* || m_Kind == TypeKind::Double || m_Kind == TypeKind::Triple */) && !m_PtrCount; }
+	{
+		if (m_PtrCount)
+			return false;
+
+		const auto &nativeTy = *dynamic_cast<const NativeType *>(&m_Base);
+		if (!&nativeTy)
+			return false;
+
+		// Hard coded for now
+		switch (nativeTy.Kind)
+		{
+		case NativeTypeKind::Float:
+		case NativeTypeKind::Double:
+			return true;
+
+		default:
+			return false;
+		}
+	}
 
 	uint32 Type::GetSize() const
 	{
 		if (m_PtrCount)
 			return 8;
-
-		switch (m_Kind)
-		{
-		case TypeKind::Void:
-			return 0;
-		case TypeKind::Byte:
-		case TypeKind::Char:
-		case TypeKind::WChar:
-		case TypeKind::Bool:
-			return 1;
-		case TypeKind::Short:
-			return 2;
-		case TypeKind::Int:
-		case TypeKind::Float:
-			return 4;
-		case TypeKind::Long:
-		case TypeKind::Double:
-			return 8;
-
-		default:
-			return -1;
-		}
+		return m_Base.Size;
 	}
 
 

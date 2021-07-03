@@ -15,33 +15,33 @@ namespace Symple::Code
 		}
 	}
 
-	TypeKind TokenFacts::ToType(TokenKind kind)
+	NativeTypeKind TokenFacts::NativeType(TokenKind kind)
 	{
 		switch (kind)
 		{
 		case TokenKind::VoidKeyword:
-			return TypeKind::Void;
+			return NativeTypeKind::Void;
 		case TokenKind::ByteKeyword:
-			return TypeKind::Byte;
+			return NativeTypeKind::Byte;
 		case TokenKind::ShortKeyword:
-			return TypeKind::Short;
+			return NativeTypeKind::Short;
 		case TokenKind::IntKeyword:
-			return TypeKind::Int;
+			return NativeTypeKind::Int;
 		case TokenKind::LongKeyword:
-			return TypeKind::Long;
+			return NativeTypeKind::Long;
 		case TokenKind::FloatKeyword:
-			return TypeKind::Float;
+			return NativeTypeKind::Float;
 		case TokenKind::DoubleKeyword:
-			return TypeKind::Double;
+			return NativeTypeKind::Double;
 		case TokenKind::CharKeyword:
-			return TypeKind::Char;
+			return NativeTypeKind::Char;
 		case TokenKind::WCharKeyword:
-			return TypeKind::WChar;
+			return NativeTypeKind::WChar;
 		case TokenKind::BoolKeyword:
-			return TypeKind::Bool;
+			return NativeTypeKind::Bool;
 
 		default:
-			throw std::exception();
+			throw nullptr;
 		}
 	}
 

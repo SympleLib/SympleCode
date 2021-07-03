@@ -20,12 +20,13 @@ namespace Symple::Code
 
 		static const GlobalRef<const Type> Default;
 
+		bool Is(const TypeBase &) const;
 		bool Is(GlobalRef<const Type>) const;
 		template<typename... Args>
 		bool Is(GlobalRef<const Type> type, Args&&... types) const
 		{ return Is(type) || Is(std::forward(types)...); }
 
-		TypeKind GetKind() const;
+		const TypeBase &GetBase() const;
 		uint32 GetPointerCount() const;
 		bool GetIsFloat() const;
 		uint32 GetSize() const;
@@ -33,7 +34,7 @@ namespace Symple::Code
 		const std::string &GetMangledName() const;
 		const std::string &GetCode() const;
 
-		SY_PROPERTY_GET(GetKind) TypeKind Kind;
+		SY_PROPERTY_GET(GetBase) const TypeBase &Base;
 		SY_PROPERTY_GET(GetPointerCount) uint32 PointerCount;
 		SY_PROPERTY_GET(GetIsFloat) bool IsFloat;
 		SY_PROPERTY_GET(GetSize) uint32 Size;
