@@ -8,7 +8,7 @@
 namespace Symple::Code
 {
 	Parser::Parser(const TokenList &toks)
-		: m_Tokens(toks) {}
+		: m_Tokens(toks), m_Buddy(MakeRef<SymbolBuddy>()) {}
 
 	GlobalRef<CompilationUnitAst> Parser::Parse(ErrorList *errorList)
 	{
@@ -24,7 +24,7 @@ namespace Symple::Code
 
 	GlobalRef<MemberAst> Parser::ParseMember()
 	{
-		if (TokenFacts::IsTypeBase(Current->Kind))
+		if (m_Buddy->IsTypeBase(Current))
 			return ParseFunction();
 		else if (Current->Is(TokenKind::ExternKeyword))
 			return ParseExternFunction();
@@ -103,7 +103,7 @@ namespace Symple::Code
 			stmt = ParseReturnStatement();
 			break;
 		default:
-			if (TokenFacts::IsTypeBase(Current->Kind))
+			if (m_Buddy->IsTypeBase(Current))
 				stmt = ParseVariableStatement();
 			else
 				stmt = ParseExpressionStatement();
@@ -140,7 +140,7 @@ namespace Symple::Code
 
 	GlobalRef<VariableStatementAst> Parser::ParseVariableStatement(GlobalRef<TypeAst> ty)
 	{
-		if (!ty || TokenFacts::IsTypeBase(Current->Kind))
+		if (!ty || m_Buddy->IsTypeBase(Current))
 			ty = ParseType();
 		auto name = Match(TokenKind::Identifier);
 
@@ -281,7 +281,7 @@ namespace Symple::Code
 		case TokenKind::OpenParen:
 		{
 			auto open = Next();
-			if (TokenFacts::IsTypeBase(Current->Kind))
+			if (m_Buddy->IsTypeBase(Current))
 				return ParseCastExpression(open);
 			else
 				return ParseParenthasizedExpression(open);
@@ -346,20 +346,12 @@ namespace Symple::Code
 	GlobalRef<TypeAst> Parser::ParseType()
 	{
 		auto base = Next();
-		assert(TokenFacts::IsTypeBase(base->Kind));
 		ConstWeakTokenList addons;
 		while (TokenFacts::IsTypePointer(Current->Kind))
 			addons.push_back(Next());
-		bool isArray = false;
-		if (TokenFacts::IsTypeArray(Current->Kind))
-		{
-			addons.push_back(Next());
-			isArray = true;
-		}
 
-		auto tyKind = TokenFacts::NativeType(base->Kind);
-		GlobalRef<Type> ty = MakeRef<Type>(tyKind, addons.size() - isArray, isArray);
-
+		auto tyBase = m_Buddy->GetTypeBase(base);
+		GlobalRef<Type> ty = MakeRef<Type>(base, addons.size());
 		return MakeRef<TypeAst>(base, addons, ty);
 	}
 
@@ -392,7 +384,7 @@ namespace Symple::Code
 
 	GlobalRef<ParameterAst> Parser::ParseParameter(GlobalRef<TypeAst> ty)
 	{
-		if (!ty || TokenFacts::IsTypeBase(Current->Kind))
+		if (!ty || m_Buddy->IsTypeBase(Current))
 			ty = ParseType();
 		GlobalRef<const Token> name = nullptr;
 		if (Current->Is(TokenKind::Identifier))

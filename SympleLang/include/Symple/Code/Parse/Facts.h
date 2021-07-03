@@ -17,15 +17,8 @@ namespace Symple::Code
 	{
 		TokenFacts() = delete;
 
-		static std::vector<const TypeBase &> TypeBases;
-
 		static bool IsBuiltinFunction(TokenKind);
-
-		static bool IsTypeBase(TokenKind);
-		static const TypeBase &GetTypeBase(TokenKind);
-
 		static bool IsTypePointer(TokenKind);
-
 		static bool IsFuncMod(TokenKind);
 	};
 }

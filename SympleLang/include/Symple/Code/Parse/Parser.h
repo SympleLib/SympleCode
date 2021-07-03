@@ -1,5 +1,6 @@
 #pragma once
 
+#include "Symple/Code/SymbolBuddy.h"
 #include "Symple/Code/Ast/Ast.h"
 #include "Symple/Code/Parse/Token.h"
 #include "Symple/Code/BugCheck/ErrorList.h"
@@ -12,6 +13,7 @@ namespace Symple::Code
 		const TokenList m_Tokens;
 		uint32 m_Position = 0;
 
+		GlobalRef<SymbolBuddy> m_Buddy;
 		ErrorList *m_ErrorList;
 	public:
 		Parser(const TokenList &tokens);

@@ -13,7 +13,7 @@ namespace Symple::Code
 	SYC_API const NativeType NativeType::Float = NativeType("float", NativeTypeKind::Float);
 	SYC_API const NativeType NativeType::Double = NativeType("double", NativeTypeKind::Double);
 
-	Type::Type(const TypeBase &base, uint32 ptrCount)
+	Type::Type(TypeBaseRef base, uint32 ptrCount)
 		: m_Base(base), m_PtrCount(ptrCount)
 	{
 		std::stringstream ss;
@@ -47,7 +47,7 @@ namespace Symple::Code
 	bool Type::Is(GlobalRef<const Type> ty) const
 	{ return Is(ty->m_Base) && m_PtrCount == ty->m_PtrCount; }
 
-	const TypeBase &Type::GetBase() const
+	TypeBaseRef Type::GetBase() const
 	{ return m_Base; }
 
 	uint32 Type::GetPointerCount() const

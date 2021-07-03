@@ -253,6 +253,10 @@ namespace Symple::Code
 	{
 		Emit(cast->Value);
 
+		const auto &nativeTy = *dynamic_cast<const NativeType *>(&cast->Type->Base);
+		if (!&nativeTy)
+			throw nullptr; // TODO: Support other casting
+
 		if (cast->Type->Is(cast->Value->Type));
 		else if (cast->Type->Is(TypeKind::Bool))
 		{

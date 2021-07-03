@@ -23,6 +23,8 @@ namespace Symple::Code
 		SY_PROPERTY_GET(GetSize) uint32 Size;
 	};
 
+	using TypeBaseRef = const TypeBase &;
+
 	enum class SYC_API NativeTypeKind
 	{
 		Void,
