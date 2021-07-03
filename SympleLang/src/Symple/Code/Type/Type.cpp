@@ -32,7 +32,7 @@ namespace Symple::Code
 	GlobalRef<Type> Type::Deref() const
 	{
 		assert("Cannot dereference a non-pointer" && m_PtrCount);
-		return MakeRef<Type>(m_Base, m_PtrCount - 1, false);
+		return MakeRef<Type>(m_Base, m_PtrCount - 1);
 	}
 
 	void Type::Print(std::ostream & os, std::string indent, std::string_view label, bool last) const

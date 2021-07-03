@@ -9,7 +9,7 @@
 #error Only MSVC supported for SympleCode
 #endif
 
-#if defined(SYC_BUILD)
+#if defined(SYC_BUILD_DLL)
 	#define SYC_API __declspec(dllexport)
 #elif defined(SYC_USE_DLL)
 	#define SYC_API __declspec(dllimport)
@@ -17,6 +17,7 @@
 	#define SYC_API
 #endif
 
+#pragma warning(disable: 4244 4267)
 namespace Symple::Code
 {
 	using int8 = char;

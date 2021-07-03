@@ -258,7 +258,7 @@ namespace Symple::Code
 			throw nullptr; // TODO: Support other casting
 
 		if (cast->Type->Is(cast->Value->Type));
-		else if (cast->Type->Is(TypeKind::Bool))
+		else if (nativeTy.Kind == NativeTypeKind::Bool)
 		{
 			Emit("\ttest %s, %s", Reg(RegKind::Ax), Reg(RegKind::Ax));
 			Emit("\tsetne %s", Reg(RegKind::Ax, 1));
@@ -476,10 +476,8 @@ namespace Symple::Code
 		case TokenKind::LengthofKeyword:
 		{
 			auto arg = macro->Arguments[0];
-			if (!arg->Type->IsArray)
-				abort();
 			if (arg->Kind != AstKind::NameExpression)
-				abort();
+				throw nullptr;
 			auto trueArg = Cast<const NameExpressionAst>(arg);
 			Emit("\tmov (" VAR " + %u)(%s), %s", trueArg->Symbol->MangledName.c_str(), trueArg->Type->Size, Reg(RegKind::Bp), Reg(RegKind::Ax));
 			break;

@@ -15,6 +15,8 @@ namespace Symple::Code
 
 		bool operator ==(const TypeBase &other) const
 		{ return this == &other; }
+		virtual void Print(std::ostream &os, std::string indent = "", std::string_view label = "", bool last = true) const
+		{ os << ' ' << m_Name << " (Type)"; }
 		virtual uint32 GetSize() const = 0;
 		const std::string &GetName() const
 		{ return m_Name; }
@@ -77,7 +79,7 @@ namespace Symple::Code
 	{
 	private:
 		NativeTypeKind m_Kind;
-
+	public:
 		NativeType(std::string_view name, NativeTypeKind kind)
 			: TypeBase(name), m_Kind(kind) {}
 	public:

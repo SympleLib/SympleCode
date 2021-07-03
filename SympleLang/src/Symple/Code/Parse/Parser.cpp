@@ -350,7 +350,7 @@ namespace Symple::Code
 		while (TokenFacts::IsTypePointer(Current->Kind))
 			addons.push_back(Next());
 
-		auto tyBase = m_Buddy->GetTypeBase(base);
+		TypeBaseRef tyBase = m_Buddy->GetTypeBase(base);
 		GlobalRef<Type> ty = MakeRef<Type>(base, addons.size());
 		return MakeRef<TypeAst>(base, addons, ty);
 	}

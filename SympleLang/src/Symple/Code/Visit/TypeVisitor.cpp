@@ -68,12 +68,12 @@ namespace Symple::Code
 		{
 			auto litExpr = Cast<LiteralExpressionAst>(expr);
 			auto lit = litExpr->m_Literal->Text;
-			if (lit.find('.') != std::string_view::npos)
-				litExpr->m_Type = MakeRef<Type>(TypeKind::Float, 0, false);
-			else if (litExpr->m_Literal->Is(TokenKind::Char))
-				litExpr->m_Type = MakeRef<Type>(TypeKind::Char, 0, false);
+			if (litExpr->m_Literal->Is(TokenKind::Char))
+				litExpr->m_Type = MakeRef<Type>(NativeType::Char, 0);
 			else if (litExpr->m_Literal->Is(TokenKind::String))
-				litExpr->m_Type = MakeRef<Type>(TypeKind::Char, 1, false);
+				litExpr->m_Type = MakeRef<Type>(NativeType::Char, 1);
+			else if (lit.find('.') != std::string_view::npos)
+					litExpr->m_Type = MakeRef<Type>(NativeType::Float, 0);
 			break;
 		}
 		case AstKind::ParenthasizedExpression:
