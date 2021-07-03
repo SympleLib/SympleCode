@@ -2,6 +2,8 @@
 
 namespace Symple::Code
 {
+	SYC_API std::vector<const TypeBase &> TokenFacts::TypeBases;
+
 	bool TokenFacts::IsBuiltinFunction(TokenKind kind)
 	{
 		switch (kind)
@@ -15,34 +17,12 @@ namespace Symple::Code
 		}
 	}
 
-	NativeTypeKind TokenFacts::NativeType(TokenKind kind)
+	const TypeBase &TokenFacts::GetTypeBase(TokenKind kind)
 	{
-		switch (kind)
-		{
-		case TokenKind::VoidKeyword:
-			return NativeTypeKind::Void;
-		case TokenKind::ByteKeyword:
-			return NativeTypeKind::Byte;
-		case TokenKind::ShortKeyword:
-			return NativeTypeKind::Short;
-		case TokenKind::IntKeyword:
-			return NativeTypeKind::Int;
-		case TokenKind::LongKeyword:
-			return NativeTypeKind::Long;
-		case TokenKind::FloatKeyword:
-			return NativeTypeKind::Float;
-		case TokenKind::DoubleKeyword:
-			return NativeTypeKind::Double;
-		case TokenKind::CharKeyword:
-			return NativeTypeKind::Char;
-		case TokenKind::WCharKeyword:
-			return NativeTypeKind::WChar;
-		case TokenKind::BoolKeyword:
-			return NativeTypeKind::Bool;
+		for (const auto &bases : TypeBases)
+			if (bases.Name == )
 
-		default:
-			throw nullptr;
-		}
+		throw nullptr;
 	}
 
 	bool TokenFacts::IsTypeBase(TokenKind kind)
