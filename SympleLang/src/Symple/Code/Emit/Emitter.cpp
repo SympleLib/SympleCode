@@ -109,9 +109,9 @@ namespace Symple::Code
 				Emit(VAR " = %u", name.c_str(), paramPos);
 		}
 
+		Emit("");
 		Emit(fn->Body);
 
-		Emit("");
 		if (fn->Type->Type->Code != "Void")
 		{
 			if (fn->IsMain)
@@ -178,7 +178,7 @@ namespace Symple::Code
 		{
 			Emit(var->Initializer);
 			if (var->Initializer->Type->IsFloat)
-				Emit("\tmovss %s, " VAR "(%s)", Reg(RegKind::Xmm0, sz), name.c_str(), Reg(RegKind::Bp));
+				Emit("\tmovsd %s, " VAR "(%s)", Reg(RegKind::Xmm0, sz), name.c_str(), Reg(RegKind::Bp));
 			else
 				Emit("\tmov %s, " VAR "(%s)", Reg(RegKind::Ax, sz), name.c_str(), Reg(RegKind::Bp));
 		}
@@ -274,9 +274,8 @@ namespace Symple::Code
 		}
 		else if (!cast->Type->IsFloat && cast->Value->Type->IsFloat)
 		{
-			Stalloc();
-			uint32 pos = m_Stack;
-			Emit("\tmovss %s, -%u(%s)", Reg(RegKind::Xmm0), pos, Reg(RegKind::Bp));
+			uint32 pos = Stalloc();
+			Emit("\tmovsd %s, -%u(%s)", Reg(RegKind::Xmm0), pos, Reg(RegKind::Bp));
 			Emit("\tcvttsd2si -%u(%s), %s", pos, Reg(RegKind::Bp), Reg(RegKind::Ax));
 			Staf();
 		}

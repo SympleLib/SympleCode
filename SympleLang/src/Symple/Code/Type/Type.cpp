@@ -15,7 +15,7 @@ namespace Symple::Code
 	SYC_API GlobalRef<const NativeType> NativeType::WChar = GlobalRef<const NativeType>(new NativeType("wchar", NativeTypeKind::WChar));
 	SYC_API GlobalRef<const NativeType> NativeType::Bool = GlobalRef<const NativeType>(new NativeType("bool", NativeTypeKind::Bool));
 
-	SYC_API const GlobalRef<const Type> Type::Default = MakeRef<const Type>(NativeType::Byte, 0);
+	SYC_API const GlobalRef<const Type> Type::Default = MakeRef<const Type>(NativeType::Int, 0);
 
 	Type::Type(TypeBaseRef base, uint32 ptrCount)
 		: m_Base(base), m_PtrCount(ptrCount)
