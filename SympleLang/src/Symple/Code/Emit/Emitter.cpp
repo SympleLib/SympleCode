@@ -178,7 +178,15 @@ namespace Symple::Code
 		{
 			Emit(var->Initializer);
 			if (var->Initializer->Type->IsFloat)
-				Emit("\tmovsd %s, " VAR "(%s)", Reg(RegKind::Xmm0, sz), name.c_str(), Reg(RegKind::Bp));
+			{
+				if (sz == 4)
+				{
+					Emit("\tcvtsd2ss %s, %s", Reg(RegKind::Xmm0), Reg(RegKind::Xmm0));
+					Emit("\tmovss %s, " VAR "(%s)", Reg(RegKind::Xmm0), name.c_str(), Reg(RegKind::Bp));
+				}
+				else
+					Emit("\tmovsd %s, " VAR "(%s)", Reg(RegKind::Xmm0, sz), name.c_str(), Reg(RegKind::Bp));
+			}
 			else
 				Emit("\tmov %s, " VAR "(%s)", Reg(RegKind::Ax, sz), name.c_str(), Reg(RegKind::Bp));
 		}
@@ -327,7 +335,15 @@ namespace Symple::Code
 			Emit("\tlea " FUNCTION "(%s), %s", sname.c_str(), Reg(RegKind::Ip), Reg(RegKind::Ax));
 		else
 			if (name->Type->IsFloat)
-				Emit("\tmovss " VAR "(%s), %s", sname.c_str(), Reg(RegKind::Bp), Reg(RegKind::Xmm0));
+			{
+				if (name->Type->Size == 4)
+				{
+					Emit("\tmovss " VAR "(%s), %s", sname.c_str(), Reg(RegKind::Bp), Reg(RegKind::Xmm0));
+					Emit("\tcvtss2sd %s, %s", Reg(RegKind::Xmm0), Reg(RegKind::Xmm0));
+				}
+				else
+					Emit("\tmovsd " VAR "(%s), %s", sname.c_str(), Reg(RegKind::Bp), Reg(RegKind::Xmm0));
+			}
 			else
 				Emit("\tmov " VAR "(%s), %s", sname.c_str(), Reg(RegKind::Bp), Reg(RegKind::Ax, name->Type->Size));
 	}

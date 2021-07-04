@@ -189,6 +189,18 @@ namespace Symple::Code
 				throw m_ErrorList->ReportUnresolvedSymbol(nameExpr->m_Name);
 			break;
 		}
+		case AstKind::PunExpression:
+		{
+			auto cexpr = Cast<PunExpressionAst>(expr);
+			Visit(cexpr->m_Value);
+			break;
+		}
+		case AstKind::CastExpression:
+		{
+			auto cexpr = Cast<CastExpressionAst>(expr);
+			Visit(cexpr->m_Value);
+			break;
+		}
 		case AstKind::ParenthasizedExpression:
 			Visit(Cast<ParenthasizedExpressionAst>(expr)->m_Expr);
 			break;
