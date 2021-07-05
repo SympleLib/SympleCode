@@ -51,7 +51,7 @@ namespace Symple::Code
 		}
 		
 		fn->m_MangledName = ss.str();
-		if (fn->m_MangledName == "Syc$Main$2Char$Int")
+		if (fn->m_MangledName == "Syc$Main$2char$int")
 			fn->m_Main = true;
 	}
 
@@ -153,6 +153,8 @@ namespace Symple::Code
 			auto var = Cast<VariableStatementAst>(stmt);
 			Mangle(var);
 			m_Names.push_back(var);
+			if (var->m_Init)
+				Visit(var->m_Init);
 			if (var->m_Next)
 				Visit(var->m_Next);
 			break;

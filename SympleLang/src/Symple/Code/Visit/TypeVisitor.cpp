@@ -5,6 +5,20 @@ namespace Symple::Code
 	TypeVisitor::TypeVisitor(GlobalRef<CompilationUnitAst> unit)
 		: m_Unit(unit) {}
 
+	GlobalRef<CastExpressionAst> TypeVisitor::InsertCast(GlobalRef<ExpressionAst> from, GlobalRef<const Type> to)
+	{
+		auto cast = MakeRef<CastExpressionAst>(WeakRef<Token>(), MakeRef<TypeAst>(to), WeakRef<Token>(), from);
+		cast->m_Type = cast->m_TypeAst->m_Type;
+		return cast;
+	}
+
+	GlobalRef<CastExpressionAst> TypeVisitor::InsertCast(GlobalRef<ExpressionAst> from, GlobalRef<TypeAst> to)
+	{
+		auto cast = MakeRef<CastExpressionAst>(WeakRef<Token>(), to, WeakRef<Token>(), from);
+		cast->m_Type = cast->m_TypeAst->m_Type;
+		return cast;
+	}
+
 	void TypeVisitor::Visit(ErrorList *errorList)
 	{
 		m_ErrorList = errorList;
@@ -33,9 +47,7 @@ namespace Symple::Code
 			auto val = RetStmt->m_Value;
 			Visit(val);
 
-			auto cast = MakeRef<CastExpressionAst>(WeakRef<Token>(), m_Func->m_Type, WeakRef<Token>(), val);
-			cast->m_Type = cast->m_TypeAst->m_Type;
-			RetStmt->m_Value = cast;
+			RetStmt->m_Value = InsertCast(val, m_Func->m_Type);
 			break;
 		}
 		case AstKind::ExpressionStatement:
@@ -48,9 +60,7 @@ namespace Symple::Code
 			if (val)
 			{
 				Visit(val);
-				auto cast = MakeRef<CastExpressionAst>(WeakRef<Token>(), var->m_Type, WeakRef<Token>(), val);
-				cast->m_Type = cast->m_TypeAst->m_Type;
-				var->m_Init = cast;
+				var->m_Init = InsertCast(val, var->m_Type);
 			}
 
 			if (var->m_Next)
@@ -126,9 +136,13 @@ namespace Symple::Code
 		case AstKind::BinaryExpression:
 		{
 			auto binExpr = Cast<BinaryExpressionAst>(expr);
-			Visit(binExpr->m_Left);
-			Visit(binExpr->m_Right);
-			binExpr->m_Type = binExpr->m_Left->m_Type;
+			auto left = binExpr->m_Left, right = binExpr->m_Right;
+			Visit(left);
+			Visit(right);
+
+			binExpr->m_Type = left->m_Type;
+			binExpr->m_Left = InsertCast(right, binExpr->m_Type);
+			binExpr->m_Right = InsertCast(right, binExpr->m_Type);
 			break;
 		}
 		case AstKind::BuiltinExpression:

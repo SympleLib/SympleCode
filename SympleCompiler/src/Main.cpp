@@ -97,15 +97,18 @@ static void Compile()
 	Emitter emmiter(unit);
 	emmiter.Emit();
 
-	system("clang bin/Out.S -o bin/Out.exe --debug -l User32 -l legacy_stdio_definitions");
-	Console.Color = ConsoleColor::Yellow;
-	puts("Starting program...");
-	Console.Color = ConsoleColor::Reset;
 	union
 	{
 		int ec;
 		float fec;
 	};
+	ec = system("clang bin/Out.S -o bin/Out.exe --debug -l User32 -l legacy_stdio_definitions");
+	if (ec)
+		return;
+
+	Console.Color = ConsoleColor::Yellow;
+	puts("Starting program...");
+	Console.Color = ConsoleColor::Reset;
 	ec = system("bin\\Out.exe");
 	Console.Color = ConsoleColor::Yellow;
 	printf("\nProgram exited with code %i (0x%x) [%g]\n", ec, ec, fec);

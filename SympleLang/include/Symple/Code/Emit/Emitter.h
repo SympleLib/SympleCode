@@ -60,7 +60,8 @@ namespace Symple::Code
 		template<typename... Args>
 		void EmitDbg(_Printf_format_string_ const char *fmt, Args&&... args);
 
-		constexpr const char Suf(uint32 size = 8);
+		char FSuf(GlobalRef<const Type>);
+		constexpr char Suf(uint32 size = 8);
 		constexpr const char *Reg(RegKind, uint32 size = 8);
 	};
 }

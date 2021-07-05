@@ -3,5 +3,5 @@ extern int puts(char *) ccall;
 int Main(char **args, int nArgs)
 {
 	double x = 5;
-	ret {int}x;
+	ret {int}(float)(x + x);
 }

@@ -159,11 +159,12 @@ namespace Symple::Code
 		WeakRef<const Token_t> m_Base;
 		ConstWeakTokenList m_Addons;
 
-		GlobalRef<Type_t> m_Type;
+		GlobalRef<const Type_t> m_Type;
 
 		VISIT_ME;
 	public:
-		TypeAst(WeakRef<const Token_t> base, const ConstWeakTokenList &addons, GlobalRef<Type_t> type);
+		TypeAst(GlobalRef<const Type_t> type);
+		TypeAst(WeakRef<const Token_t> base, const ConstWeakTokenList &addons, GlobalRef<const Type_t> type);
 
 		virtual AstKind GetKind() const;
 		virtual WeakRef<const Token_t> GetToken() const;

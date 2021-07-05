@@ -38,6 +38,9 @@ namespace Symple::Code
 		TypeVisitor(GlobalRef<CompilationUnitAst>);
 		void Visit(ErrorList *);
 	private:
+		GlobalRef<CastExpressionAst> InsertCast(GlobalRef<ExpressionAst> from, GlobalRef<const Type> to);
+		GlobalRef<CastExpressionAst> InsertCast(GlobalRef<ExpressionAst> from, GlobalRef<TypeAst> to);
+
 		void Visit(GlobalRef<StatementAst>);
 		void Visit(GlobalRef<ExpressionAst>);
 	};

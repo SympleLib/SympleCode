@@ -9,6 +9,8 @@
 
 namespace Symple::Code
 {
+#define Breakpoint Emit("\tint $3")
+
 #define SYMBOL "\"%s\""
 #define VAR SYMBOL
 
@@ -171,22 +173,15 @@ namespace Symple::Code
 	void Emitter::Emit(const GlobalRef<const VariableStatementAst> &var)
 	{
 		decltype(auto) name = var->MangledName;
+		auto ty = var->Type->Type;
 		uint32 sz = var->Type->Type->Size;
 		uint32 pos = Stalloc(sz);
 		Emit(VAR " = -%u", name.c_str(), m_Stack);
 		if (var->Initializer)
 		{
 			Emit(var->Initializer);
-			if (var->Initializer->Type->IsFloat)
-			{
-				if (sz == 4)
-				{
-					Emit("\tcvtsd2ss %s, %s", Reg(RegKind::Xmm0), Reg(RegKind::Xmm0));
-					Emit("\tmovss %s, " VAR "(%s)", Reg(RegKind::Xmm0), name.c_str(), Reg(RegKind::Bp));
-				}
-				else
-					Emit("\tmovsd %s, " VAR "(%s)", Reg(RegKind::Xmm0, sz), name.c_str(), Reg(RegKind::Bp));
-			}
+			if (ty->IsFloat)
+				Emit("\tmovs%c %s, " VAR "(%s)", FSuf(ty), Reg(RegKind::Xmm0, sz), name.c_str(), Reg(RegKind::Bp));
 			else
 				Emit("\tmov %s, " VAR "(%s)", Reg(RegKind::Ax, sz), name.c_str(), Reg(RegKind::Bp));
 		}
@@ -241,18 +236,21 @@ namespace Symple::Code
 	{
 		Emit(pun->Value);
 
-		if (pun->Type->IsFloat && !pun->Value->Type->IsFloat)
+		auto from = pun->Value->Type;
+		auto to = pun->Type;
+
+		if (from->IsFloat && !to->IsFloat)
+		{
+			uint32 pos = Stalloc();
+			Emit("\tmovs%c %s, -%u(%s)", FSuf(from), Reg(RegKind::Xmm0), pos, Reg(RegKind::Bp));
+			Emit("\tmov -%u(%s), %s", pos, Reg(RegKind::Bp), Reg(RegKind::Ax));
+			Staf();
+		}
+		else if (!from->IsFloat && to->IsFloat)
 		{
 			uint32 pos = Stalloc();
 			Emit("\tmov %s, -%u(%s)", Reg(RegKind::Ax), pos, Reg(RegKind::Bp));
-			Emit("\tmovsd -%u(%s), %s", pos, Reg(RegKind::Bp), Reg(RegKind::Xmm0));
-			Staf();
-		}
-		else if (!pun->Type->IsFloat && pun->Value->Type->IsFloat)
-		{
-			uint32 pos = Stalloc();
-			Emit("\tmovsd %s, -%u(%s)", Reg(RegKind::Xmm0), pos, Reg(RegKind::Bp));
-			Emit("\tmov -%u(%s), %s", pos, Reg(RegKind::Bp), Reg(RegKind::Ax));
+			Emit("\tmovs%c -%u(%s), %s", FSuf(to), pos, Reg(RegKind::Bp), Reg(RegKind::Xmm0));
 			Staf();
 		}
 	}
@@ -260,34 +258,37 @@ namespace Symple::Code
 	void Emitter::Emit(const GlobalRef<const CastExpressionAst> &cast)
 	{
 		Emit(cast->Value);
+		auto to = cast->Type;
+		auto from = cast->Value->Type;
 
-		auto nativeTy = Cast<const NativeType>(cast->Type->Base);
+		auto nativeTy = Cast<const NativeType>(to->Base);
 		if (!nativeTy)
 			throw nullptr; // TODO: Support other casting
 
-		if (cast->Type->Is(cast->Value->Type));
+
+		if (to->Is(from));
 		else if (nativeTy->Kind == NativeTypeKind::Bool)
 		{
 			Emit("\ttest %s, %s", Reg(RegKind::Ax), Reg(RegKind::Ax));
 			Emit("\tsetne %s", Reg(RegKind::Ax, 1));
 			Emit("\tmovz%c%c %s, %s", Suf(1), Suf(), Reg(RegKind::Ax, 1), Reg(RegKind::Ax));
 		}
-		else if (cast->Type->IsFloat && !cast->Value->Type->IsFloat)
+		else if (!from->IsFloat && to->IsFloat)
 		{
-			Stalloc();
-			uint32 pos = m_Stack;
-			Emit("\tmov %s, -%u(%s)", Reg(RegKind::Ax), pos, Reg(RegKind::Bp));
-			Emit("\tcvtsi2sdq -%u(%s), %s", pos, Reg(RegKind::Bp), Reg(RegKind::Xmm0));
-			Staf();
+			Emit("\tcvtsi2s%cq %s, %s", FSuf(to), Reg(RegKind::Ax), Reg(RegKind::Xmm0));
 		}
-		else if (!cast->Type->IsFloat && cast->Value->Type->IsFloat)
+		else if (from->IsFloat && !to->IsFloat)
 		{
-			uint32 pos = Stalloc();
-			Emit("\tmovsd %s, -%u(%s)", Reg(RegKind::Xmm0), pos, Reg(RegKind::Bp));
-			Emit("\tcvttsd2si -%u(%s), %s", pos, Reg(RegKind::Bp), Reg(RegKind::Ax));
-			Staf();
+			Emit("\tcvtts%c2si %s, %s", FSuf(to), Reg(RegKind::Xmm0), Reg(RegKind::Ax));
 		}
-		else if (cast->Type->Size != cast->Value->Type->Size)
+		else if (from->IsFloat && to->IsFloat)
+		{
+			if (from->IsF32)
+				Emit("\tcvtss2sd %s, %s", Reg(RegKind::Xmm0), Reg(RegKind::Xmm0));
+			else
+				Emit("\tcvtsd2ss %s, %s", Reg(RegKind::Xmm0), Reg(RegKind::Xmm0));
+		}
+		else if (from->Size != to->Size)
 		{
 			uint32 min = std::min(cast->Type->Size, cast->Value->Type->Size);
 			uint32 pos = Stalloc(min);
@@ -335,15 +336,7 @@ namespace Symple::Code
 			Emit("\tlea " FUNCTION "(%s), %s", sname.c_str(), Reg(RegKind::Ip), Reg(RegKind::Ax));
 		else
 			if (name->Type->IsFloat)
-			{
-				if (name->Type->Size == 4)
-				{
-					Emit("\tmovss " VAR "(%s), %s", sname.c_str(), Reg(RegKind::Bp), Reg(RegKind::Xmm0));
-					Emit("\tcvtss2sd %s, %s", Reg(RegKind::Xmm0), Reg(RegKind::Xmm0));
-				}
-				else
-					Emit("\tmovsd " VAR "(%s), %s", sname.c_str(), Reg(RegKind::Bp), Reg(RegKind::Xmm0));
-			}
+				Emit("\tmovs%c " VAR "(%s), %s", FSuf(name->Type), sname.c_str(), Reg(RegKind::Bp), Reg(RegKind::Xmm0));
 			else
 				Emit("\tmov " VAR "(%s), %s", sname.c_str(), Reg(RegKind::Bp), Reg(RegKind::Ax, name->Type->Size));
 	}
@@ -370,60 +363,58 @@ namespace Symple::Code
 	{
 		bool overrides = OverridesRegs(expr->Left);
 
-		if (expr->Type->IsFloat)
+		auto ty = expr->Type;
+		if (ty->IsFloat)
 		{
+			char fs = FSuf(ty);
 			Emit(expr->Right);
 			if (overrides)
 			{
-				Stalloc();
+				Stalloc(ty->Size);
 				uint32 pos = m_Stack;
-				Emit("\tmovss %s, -%u(%s)", Reg(RegKind::Xmm0), pos, Reg(RegKind::Bp));
+				Emit("\tmovs%c %s, -%u(%s)", fs, Reg(RegKind::Xmm0), pos, Reg(RegKind::Bp));
 				Emit(expr->Left);
-				Emit("\tmovss -%u(%s), %s", pos, Reg(RegKind::Bp), Reg(RegKind::Xmm1));
-				Staf();
+				Emit("\tmovs%c -%u(%s), %s", fs, pos, Reg(RegKind::Bp), Reg(RegKind::Xmm1));
+				Staf(ty->Size);
 			}
 			else
 			{
-				Emit("\tmovss %s, %s", Reg(RegKind::Xmm0), Reg(RegKind::Xmm1));
+				Emit("\tmovs%c %s, %s", fs, Reg(RegKind::Xmm0), Reg(RegKind::Xmm1));
 				Emit(expr->Left);
 			}
 
 			switch (expr->Operator->Kind)
 			{
 			case TokenKind::Plus:
-				Emit("\taddss %s, %s", Reg(RegKind::Xmm1), Reg(RegKind::Xmm0));
+				Emit("\tadds%c %s, %s", fs, Reg(RegKind::Xmm1), Reg(RegKind::Xmm0));
 				break;
 			case TokenKind::Minus:
-				Emit("\tsubss %s, %s", Reg(RegKind::Xmm1), Reg(RegKind::Xmm0));
+				Emit("\tsubs%c %s, %s", fs, Reg(RegKind::Xmm1), Reg(RegKind::Xmm0));
 				break;
 			case TokenKind::Star:
-				Emit("\tmulss %s, %s", Reg(RegKind::Xmm1), Reg(RegKind::Xmm0));
+				Emit("\tmuls%c %s, %s", fs, Reg(RegKind::Xmm1), Reg(RegKind::Xmm0));
 				break;
 			case TokenKind::Slash:
-				Emit("\tdivss %s, %s", Reg(RegKind::Xmm1), Reg(RegKind::Xmm0));
+				Emit("\tdivs%c %s, %s", fs, Reg(RegKind::Xmm1), Reg(RegKind::Xmm0));
 				break;
 			case TokenKind::Percent:
 			{
-				Stalloc(8);
+				Stalloc(ty->Size);
 				uint32 pos = m_Stack;
-				Emit("\tmovss %s, %u(%s)", Reg(RegKind::Xmm0), 0, Reg(RegKind::Sp));
-				Emit("\tmovss %s, %u(%s)", Reg(RegKind::Xmm1), 4, Reg(RegKind::Sp));
-				Emit("\tcall _fmodf");
-				Emit("\tfstps -%u(%s)", pos, Reg(RegKind::Bp));
-				Emit("\tmovss -%u(%s), %s", pos, Reg(RegKind::Bp), Reg(RegKind::Xmm0));
-				Staf(8);
+				Emit("\tmovs%c %s, %u(%s)", fs, Reg(RegKind::Xmm0), 0, Reg(RegKind::Sp));
+				Emit("\tmovs%c %s, %u(%s)", fs, Reg(RegKind::Xmm1), 4, Reg(RegKind::Sp));
+				Emit("\tcall %s", ty->IsF32 ? "fmodf" : "fmod");
+				Staf(ty->Size);
 				break;
 			}
 			case TokenKind::CarotCarot:
 			{
-				Stalloc(8);
+				Stalloc(ty->Size);
 				uint32 pos = m_Stack;
-				Emit("\tmovss %s, %u(%s)", Reg(RegKind::Xmm0), 0, Reg(RegKind::Sp));
-				Emit("\tmovss %s, %u(%s)", Reg(RegKind::Xmm1), 4, Reg(RegKind::Sp));
-				Emit("\tcall _powf");
-				Emit("\tfstps -%u(%s)", pos, Reg(RegKind::Bp));
-				Emit("\tmovss -%u(%s), %s", pos, Reg(RegKind::Bp), Reg(RegKind::Xmm0));
-				Staf(8);
+				Emit("\tmovs%c %s, %u(%s)", Reg(RegKind::Xmm0), 0, Reg(RegKind::Sp));
+				Emit("\tmovs%c %s, %u(%s)", Reg(RegKind::Xmm1), 4, Reg(RegKind::Sp));
+				Emit("\tcall %s", ty->IsF32 ? "powf" : "pow");
+				Staf(ty->Size);
 				break;
 			}
 			}
@@ -630,7 +621,16 @@ namespace Symple::Code
 	void Emitter::EmitDbg(_Printf_format_string_ const char *fmt, Args&&... args)
 	{ EmitDbg(EmitKind::Text, fmt, args...); }
 
-	constexpr const char Emitter::Suf(uint32 sz)
+	char Emitter::FSuf(GlobalRef<const Type> ty)
+	{
+		if (ty->IsF32)
+			return 's';
+		if (ty->IsFloat)
+			return 'd';
+		throw nullptr;
+	}
+
+	constexpr char Emitter::Suf(uint32 sz)
 	{
 		if (sz <= 1)
 			return 'b';
@@ -676,7 +676,6 @@ namespace Symple::Code
 					return Reg64[(uint32)kind];
 			}
 
-		abort();
-		return nullptr;
+		throw nullptr;
 	}
 }
