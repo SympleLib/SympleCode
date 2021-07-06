@@ -2,7 +2,7 @@ extern int puts(char *) ccall;
 
 int Main(char **args, int nArgs)
 {
-	double x = 5;
+	float x = 5;
 	int *y = @x;
 	return *y;
 }

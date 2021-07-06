@@ -33,6 +33,9 @@ namespace Symple::Code
 		m_Code = ss.str();
 	}
 
+	GlobalRef<Type> Type::Ptr() const
+	{ return MakeRef<Type>(m_Base, m_PtrCount + 1); }
+
 	GlobalRef<Type> Type::Deref() const
 	{
 		if (!m_PtrCount)

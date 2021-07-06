@@ -144,7 +144,7 @@ namespace Symple::Code
 			Visit(right);
 
 			binExpr->m_Type = left->m_Type;
-			binExpr->m_Left = InsertCast(right, binExpr->m_Type);
+			binExpr->m_Left = InsertCast(left, binExpr->m_Type);
 			binExpr->m_Right = InsertCast(right, binExpr->m_Type);
 			break;
 		}

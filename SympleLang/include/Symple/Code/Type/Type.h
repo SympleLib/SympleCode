@@ -14,6 +14,7 @@ namespace Symple::Code
 		std::string m_MangledName, m_Code;
 	public:
 		Type(TypeBaseRef, uint32 pointerCount);
+		GlobalRef<Type> Ptr() const;
 		GlobalRef<Type> Deref() const;
 
 		virtual void Print(std::ostream &, std::string indent = "", std::string_view label = "", bool last = true) const override;
