@@ -3,6 +3,5 @@ extern int puts(char *) ccall;
 int Main(char **args, int nArgs)
 {
 	float x = 5;
-	int *y = @x;
-	return *y;
+	return *(int *)@x;
 }

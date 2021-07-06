@@ -190,12 +190,12 @@ namespace Symple::Code
 			return MakeRef<UnaryExpressionAst>(op, operand);
 		}
 		else
-			return ParsePostfixExpression(parentPrecedence);
+			return ParsePrimaryExpression();
 	}
 
 	GlobalRef<ExpressionAst> Parser::ParsePostfixExpression(uint32 parentPrecedence)
 	{
-		auto operand = ParsePrimaryExpression();
+		auto operand = ParsePrefixExpression(parentPrecedence);
 		// Hard coded for now
 		while (true)
 			switch (Current->Kind)
@@ -210,7 +210,7 @@ namespace Symple::Code
 
 	GlobalRef<ExpressionAst> Parser::ParseBinaryExpression(uint32 parentPrecedence)
 	{
-		auto left = ParsePrefixExpression();
+		auto left = ParsePostfixExpression();
 		while (true)
 		{
 			uint32 precedence = Precedence::Binary(Current->Kind);
