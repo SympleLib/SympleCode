@@ -279,7 +279,7 @@ namespace Symple::Code
 			Emit("\tcvtts%c2si %s, %s", FSuf(from), Reg(RegKind::Xmm0), Reg(RegKind::Ax));
 		else if (from->IsFloat && to->IsFloat)
 		{
-			if (from->IsF32)
+			if (from->Is86)
 				Emit("\tcvtss2sd %s, %s", Reg(RegKind::Xmm0), Reg(RegKind::Xmm0));
 			else
 				Emit("\tcvtsd2ss %s, %s", Reg(RegKind::Xmm0), Reg(RegKind::Xmm0));
@@ -404,7 +404,7 @@ namespace Symple::Code
 				uint32 pos = m_Stack;
 				Emit("\tmovs%c %s, %u(%s)", fs, Reg(RegKind::Xmm0), 0, Reg(RegKind::Sp));
 				Emit("\tmovs%c %s, %u(%s)", fs, Reg(RegKind::Xmm1), 4, Reg(RegKind::Sp));
-				Emit("\tcall %s", ty->IsF32 ? "fmodf" : "fmod");
+				Emit("\tcall %s", ty->Is86 ? "fmodf" : "fmod");
 				Staf(ty->Size);
 				break;
 			}
@@ -414,7 +414,7 @@ namespace Symple::Code
 				uint32 pos = m_Stack;
 				Emit("\tmovs%c %s, %u(%s)", Reg(RegKind::Xmm0), 0, Reg(RegKind::Sp));
 				Emit("\tmovs%c %s, %u(%s)", Reg(RegKind::Xmm1), 4, Reg(RegKind::Sp));
-				Emit("\tcall %s", ty->IsF32 ? "powf" : "pow");
+				Emit("\tcall %s", ty->Is86 ? "powf" : "pow");
 				Staf(ty->Size);
 				break;
 			}
@@ -422,19 +422,19 @@ namespace Symple::Code
 		}
 		else
 		{
+			uint32 sz = ty->Is86 ? 4 : 8;
 			Emit(expr->Right);
 			if (overrides)
 			{
-				Stalloc();
-				uint32 pos = m_Stack;
-				Emit("\tmov %s, -%u(%s)", Reg(RegKind::Ax), pos, Reg(RegKind::Bp));
+				uint32 pos = Stalloc(sz);
+				Emit("\tmov %s, -%u(%s)", Reg(RegKind::Ax, sz), pos, Reg(RegKind::Bp));
 				Emit(expr->Left);
-				Emit("\tmov -%u(%s), %s", pos, Reg(RegKind::Bp), Reg(RegKind::Bx));
-				Staf();
+				Emit("\tmov -%u(%s), %s", pos, Reg(RegKind::Bp), Reg(RegKind::Bx, sz));
+				Staf(sz);
 			}
 			else
 			{
-				Emit("\tmov %s, %s", Reg(RegKind::Ax), Reg(RegKind::Bx));
+				Emit("\tmov %s, %s", Reg(RegKind::Ax, sz), Reg(RegKind::Bx, sz));
 				Emit(expr->Left);
 			}
 
@@ -442,32 +442,32 @@ namespace Symple::Code
 			switch (expr->Operator->Kind)
 			{
 			case TokenKind::Plus:
-				Emit("\tadd %s, %s", Reg(RegKind::Bx), Reg(RegKind::Ax));
+				Emit("\tadd %s, %s", Reg(RegKind::Bx, sz), Reg(RegKind::Ax, sz));
 				break;
 			case TokenKind::Minus:
-				Emit("\tsub %s, %s", Reg(RegKind::Bx), Reg(RegKind::Ax));
+				Emit("\tsub %s, %s", Reg(RegKind::Bx, sz), Reg(RegKind::Ax, sz));
 				break;
 			case TokenKind::Star:
-				Emit("\timul %s, %s", Reg(RegKind::Bx), Reg(RegKind::Ax));
+				Emit("\timul %s, %s", Reg(RegKind::Bx, sz), Reg(RegKind::Ax, sz));
 				break;
 			case TokenKind::Slash:
-				Emit("\tmov %s, %s", Reg(RegKind::Bx), Reg(RegKind::Cx));
+				Emit("\tmov %s, %s", Reg(RegKind::Bx, sz), Reg(RegKind::Cx, sz));
 				Emit("\tcltd");
-				Emit("\tidiv %s", Reg(RegKind::Cx));
+				Emit("\tidiv %s", Reg(RegKind::Cx, sz));
 				break;
 			case TokenKind::Percent:
-				Emit("\tmov %s, %s", Reg(RegKind::Bx), Reg(RegKind::Cx));
+				Emit("\tmov %s, %s", Reg(RegKind::Bx, sz), Reg(RegKind::Cx, sz));
 				Emit("\tcltd");
-				Emit("\tidiv %s", Reg(RegKind::Cx));
-				Emit("\tmov %s, %s", Reg(RegKind::Dx), Reg(RegKind::Ax));
+				Emit("\tidiv %s", Reg(RegKind::Cx, sz));
+				Emit("\tmov %s, %s", Reg(RegKind::Dx, sz), Reg(RegKind::Ax, sz));
 				break;
 			case TokenKind::Carot:
-				Emit("\txor %s, %s", Reg(RegKind::Bx), Reg(RegKind::Ax));
+				Emit("\txor %s, %s", Reg(RegKind::Bx, sz), Reg(RegKind::Ax, sz));
 				break;
 
 			case TokenKind::At:
-				Emit("\timul $%u, %s", expr->Left->Type->Deref()->Size, Reg(RegKind::Bx));
-				Emit("\tadd %s, %s", Reg(RegKind::Bx), Reg(RegKind::Ax));
+				Emit("\timul $%u, %s", expr->Left->Type->Deref()->Size, Reg(RegKind::Bx, sz));
+				Emit("\tadd %s, %s", Reg(RegKind::Bx, sz), Reg(RegKind::Ax, sz));
 				break;
 			}
 		}
@@ -647,11 +647,13 @@ namespace Symple::Code
 
 	char Emitter::FSuf(GlobalRef<const Type> ty)
 	{
-		if (ty->IsF32)
+		if (!ty->IsFloat)
+			throw nullptr;
+
+		if (ty->Is86)
 			return 's';
-		if (ty->IsFloat)
+		else
 			return 'd';
-		throw nullptr;
 	}
 
 	constexpr char Emitter::Suf(uint32 sz)

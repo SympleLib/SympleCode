@@ -30,7 +30,7 @@ namespace Symple::Code
 		TypeBaseRef GetBase() const;
 		uint32 GetPointerCount() const;
 		bool GetIsFloat() const;
-		bool GetIsF32() const;
+		bool GetIs86() const;
 		uint32 GetSize() const;
 
 		const std::string &GetMangledName() const;
@@ -39,7 +39,7 @@ namespace Symple::Code
 		SY_PROPERTY_GET(GetBase) TypeBaseRef Base;
 		SY_PROPERTY_GET(GetPointerCount) uint32 PointerCount;
 		SY_PROPERTY_GET(GetIsFloat) bool IsFloat;
-		SY_PROPERTY_GET(GetIsF32) bool IsF32;
+		SY_PROPERTY_GET(GetIs86) bool Is86;
 		SY_PROPERTY_GET(GetSize) uint32 Size;
 
 		SY_PROPERTY_GET(GetMangledName) const std::string &MangledName;

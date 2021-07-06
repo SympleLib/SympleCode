@@ -82,18 +82,8 @@ namespace Symple::Code
 		}
 	}
 
-	bool Type::GetIsF32() const
-	{
-		if (m_PtrCount)
-			return false;
-
-		auto nativeTy = Cast<const NativeType>(m_Base);
-		if (!nativeTy)
-			return false;
-
-		// Hard coded for now
-		return nativeTy->Kind == NativeTypeKind::Float;
-	}
+	bool Type::GetIs86() const
+	{ return Size <= 4; }
 
 	uint32 Type::GetSize() const
 	{
