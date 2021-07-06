@@ -126,7 +126,10 @@ namespace Symple::Code
 		{
 			auto unExpr = Cast<UnaryExpressionAst>(expr);
 			Visit(unExpr->m_Operand);
-			expr->m_Type = unExpr->m_Operand->m_Type;
+			if (unExpr->m_Operator->Is(TokenKind::At))
+				expr->m_Type = unExpr->m_Operand->m_Type->Ptr();
+			else
+				expr->m_Type = unExpr->m_Operand->m_Type;
 
 			// De-reference
 			if (unExpr->m_Operator->Is(TokenKind::Star))

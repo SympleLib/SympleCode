@@ -121,7 +121,8 @@ namespace Symple::Code
 		m_TypeAst->Print(os << '\n', indent, "TypeAst = ", false);
 		if (!m_Close.expired())
 			m_Close.lock()->Print(os << '\n', indent, "Close = ", false);
-		m_Value->Print(os << '\n', indent, "Value = ");
+		m_Value->Print(os << '\n', indent, "Value = ", false);
+		m_Value->Type->Print(os << '\n', indent, "Value Type = ");
 	}
 
 

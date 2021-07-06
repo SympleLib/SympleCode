@@ -12,6 +12,7 @@ namespace Symple::Code
 		case TokenKind::Minus:
 			return 4;
 		case TokenKind::Star:
+		case TokenKind::At:
 			return 5;
 		}
 	}

@@ -42,6 +42,9 @@ namespace Symple::Code
 		void Emit(const GlobalRef<const BinaryExpressionAst> &expression);
 		void Emit(const GlobalRef<const BuiltinExpressionAst> &macro);
 		void Emit(const GlobalRef<const LiteralExpressionAst> &literal);
+
+		void EmitAdr(const GlobalRef<const ExpressionAst> &expression);
+		void EmitAdr(const GlobalRef<const NameExpressionAst> &name);
 	private:
 		uint32 Stalloc(uint32 bytes = 8);
 		uint32 Staf(uint32 bytes = 8);

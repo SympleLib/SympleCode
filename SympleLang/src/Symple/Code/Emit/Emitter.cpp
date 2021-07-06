@@ -276,7 +276,7 @@ namespace Symple::Code
 		else if (!from->IsFloat && to->IsFloat)
 			Emit("\tcvtsi2s%cq %s, %s", FSuf(to), Reg(RegKind::Ax), Reg(RegKind::Xmm0));
 		else if (from->IsFloat && !to->IsFloat)
-			Emit("\tcvtts%c2si %s, %s", FSuf(to), Reg(RegKind::Xmm0), Reg(RegKind::Ax));
+			Emit("\tcvtts%c2si %s, %s", FSuf(from), Reg(RegKind::Xmm0), Reg(RegKind::Ax));
 		else if (from->IsFloat && to->IsFloat)
 		{
 			if (from->IsF32)
@@ -339,8 +339,13 @@ namespace Symple::Code
 
 	void Emitter::Emit(const GlobalRef<const UnaryExpressionAst> &expr)
 	{
-		Emit(expr->Operand);
+		if (expr->Operator->Is(TokenKind::At))
+		{
+			EmitAdr(expr->Operand);
+			return;
+		}
 
+		Emit(expr->Operand);
 		switch (expr->Operator->Kind)
 		{
 		case TokenKind::Plus:
@@ -519,6 +524,29 @@ namespace Symple::Code
 		}
 		else
 			Emit("\tmov $%.*s, %s", literal.length(), literal.data(), Reg(RegKind::Ax));
+	}
+
+
+	void Emitter::EmitAdr(const GlobalRef<const ExpressionAst> &expr)
+	{
+		switch (expr->Kind)
+		{
+		case AstKind::ParenthasizedExpression:
+			EmitAdr(Cast<const ParenthasizedExpressionAst>(expr)->Expression);
+			break;
+
+		case AstKind::NameExpression:
+			EmitAdr(Cast<const NameExpressionAst>(expr));
+			break;
+		}
+	}
+	void Emitter::EmitAdr(const GlobalRef<const NameExpressionAst> &name)
+	{
+		decltype(auto) sname = name->Symbol->MangledName;
+		if (name->Symbol->IsFunction)
+			Emit("\tlea " FUNCTION "(%s), %s", sname.c_str(), Reg(RegKind::Ip), Reg(RegKind::Ax));
+		else
+			Emit("\tlea " VAR "(%s), %s", sname.c_str(), Reg(RegKind::Bp), Reg(RegKind::Ax));
 	}
 
 
