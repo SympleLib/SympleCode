@@ -274,13 +274,9 @@ namespace Symple::Code
 			Emit("\tmovz%c%c %s, %s", Suf(1), Suf(), Reg(RegKind::Ax, 1), Reg(RegKind::Ax));
 		}
 		else if (!from->IsFloat && to->IsFloat)
-		{
 			Emit("\tcvtsi2s%cq %s, %s", FSuf(to), Reg(RegKind::Ax), Reg(RegKind::Xmm0));
-		}
 		else if (from->IsFloat && !to->IsFloat)
-		{
 			Emit("\tcvtts%c2si %s, %s", FSuf(to), Reg(RegKind::Xmm0), Reg(RegKind::Ax));
-		}
 		else if (from->IsFloat && to->IsFloat)
 		{
 			if (from->IsF32)
