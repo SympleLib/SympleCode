@@ -172,6 +172,12 @@ namespace Symple::Code
 
 	void Emitter::Emit(const GlobalRef<const VariableStatementAst> &var)
 	{
+		for (auto decl : var->Declarations)
+			Emit(Cast<const VariableDeclarationAst>(decl));
+	}
+
+	void Emitter::Emit(const GlobalRef<const VariableDeclarationAst> &var)
+	{
 		decltype(auto) name = var->MangledName;
 		auto ty = var->Type->Type;
 		uint32 sz = var->Type->Type->Size;
@@ -185,9 +191,6 @@ namespace Symple::Code
 			else
 				Emit("\tmov %s, " VAR "(%s)", Reg(RegKind::Ax, sz), name.c_str(), Reg(RegKind::Bp));
 		}
-
-		if (var->Next)
-			Emit(var->Next);
 	}
 
 

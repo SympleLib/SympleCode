@@ -49,6 +49,7 @@ namespace Symple::Code
 	class SYC_API Struct: public Symbol, public TypeBase
 	{
 	protected:
+		
 
 		VISIT_ME;
 	public:

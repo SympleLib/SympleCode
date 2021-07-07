@@ -32,6 +32,7 @@ namespace Symple::Code
 		void Emit(const GlobalRef<const StatementAst> &statement);
 		void Emit(const GlobalRef<const ReturnStatementAst> &ret);
 		void Emit(const GlobalRef<const VariableStatementAst> &var);
+		void Emit(const GlobalRef<const VariableDeclarationAst> &var);
 
 		void Emit(const GlobalRef<const ExpressionAst> &expression);
 		void Emit(const GlobalRef<const PunExpressionAst> &pun); // Get it?

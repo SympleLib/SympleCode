@@ -64,37 +64,31 @@ namespace Symple::Code
 	}
 
 
-	VariableStatementAst::VariableStatementAst(GlobalRef<TypeAst> ty, GlobalRef<const Token_t> name, WeakRef<const Token_t> equals, GlobalRef<ExpressionAst> init, GlobalRef<VariableStatementAst> next)
-		: m_Type(ty), m_Name(name), m_Equals(equals), m_Init(init), m_Next(next) {}
+	VariableDeclarationAst::VariableDeclarationAst(GlobalRef<TypeAst> ty, GlobalRef<const Token_t> name, WeakRef<const Token_t> equals, GlobalRef<ExpressionAst> init)
+		: m_Type(ty), m_Name(name), m_Equals(equals), m_Init(init) {}
 
-	AstKind VariableStatementAst::GetKind() const
-	{ return AstKind::VariableStatement; }
+	AstKind VariableDeclarationAst::GetKind() const
+	{ return AstKind::VariableDeclaration; }
 
-	WeakRef<const Token_t> VariableStatementAst::GetToken() const
+	WeakRef<const Token_t> VariableDeclarationAst::GetToken() const
 	{ return m_Name; }
 
-	GlobalRef<const TypeAst> VariableStatementAst::GetType() const
+	GlobalRef<const TypeAst> VariableDeclarationAst::GetType() const
 	{ return m_Type; }
 
-	GlobalRef<const Token_t> VariableStatementAst::GetName() const
+	GlobalRef<const Token_t> VariableDeclarationAst::GetName() const
 	{ return m_Name; }
 
-	WeakRef<const Token_t> VariableStatementAst::GetEquals() const
+	WeakRef<const Token_t> VariableDeclarationAst::GetEquals() const
 	{ return m_Equals; }
 
-	GlobalRef<const ExpressionAst> VariableStatementAst::GetInitializer() const
+	GlobalRef<const ExpressionAst> VariableDeclarationAst::GetInitializer() const
 	{ return m_Init; }
 
-	GlobalRef<const VariableStatementAst> VariableStatementAst::GetNext() const
-	{ return m_Next; }
-
-	void VariableStatementAst::SetNext(GlobalRef<VariableStatementAst> to)
-	{ m_Next = to; }
-
-	uint32 VariableStatementAst::GetDepth() const
+	uint32 VariableDeclarationAst::GetDepth() const
 	{ return m_Depth; }
 
-	void VariableStatementAst::Print(std::ostream & os, std::string indent, std::string_view label, bool last) const
+	void VariableDeclarationAst::Print(std::ostream &os, std::string indent, std::string_view label, bool last) const
 	{
 		PrintIndent(os, indent, label, last);
 		PrintKind(os);
@@ -106,9 +100,27 @@ namespace Symple::Code
 		if (!m_Equals.expired())
 			m_Equals.lock()->Print(os << '\n', indent, "Equals = ", !m_Init);
 		if (m_Init)
-			m_Init->Print(os << '\n', indent, "Initializer = ", !m_Next);
-		if (m_Next)
-			m_Next->Print(os << '\n', indent, "Next = ");
+			m_Init->Print(os << '\n', indent, "Initializer = ");
+	}
+
+
+	VariableStatementAst::VariableStatementAst(const std::vector<GlobalRef<VariableDeclarationAst>> &decls)
+		: m_Decls(decls) {}
+
+	AstKind VariableStatementAst::GetKind() const
+	{ return AstKind::VariableStatement; }
+
+	const std::vector<GlobalRef<VariableDeclarationAst>> &VariableStatementAst::GetDeclarations() const
+	{ return m_Decls; }
+
+	void VariableStatementAst::Print(std::ostream &os, std::string indent, std::string_view label, bool last) const
+	{
+		PrintIndent(os, indent, label, last);
+		PrintKind(os);
+
+		indent += GetAddIndent(last);
+		for (auto decl : m_Decls)
+			decl->Print(os << '\n', indent, "[Declaration] ", decl == m_Decls.back());
 	}
 
 

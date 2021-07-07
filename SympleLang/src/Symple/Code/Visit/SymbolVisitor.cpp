@@ -62,7 +62,7 @@ namespace Symple::Code
 		param->m_MangledName = ss.str();
 	}
 
-	void SymbolVisitor::Mangle(GlobalRef<VariableStatementAst> var)
+	void SymbolVisitor::Mangle(GlobalRef<VariableDeclarationAst> var)
 	{
 		std::stringstream ss;
 		var->m_Depth = m_Depths.size();
@@ -151,12 +151,17 @@ namespace Symple::Code
 		case AstKind::VariableStatement:
 		{
 			auto var = Cast<VariableStatementAst>(stmt);
+			for (auto decl : var->m_Decls)
+				Visit(decl);
+			break;
+		}
+		case AstKind::VariableDeclaration:
+		{
+			auto var = Cast<VariableDeclarationAst>(stmt);
 			Mangle(var);
 			m_Names.push_back(var);
 			if (var->m_Init)
 				Visit(var->m_Init);
-			if (var->m_Next)
-				Visit(var->m_Next);
 			break;
 		}
 		}

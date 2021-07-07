@@ -22,7 +22,7 @@ namespace Symple::Code
 	private:
 		void Mangle(GlobalRef<Function>);
 		void Mangle(GlobalRef<ParameterAst>);
-		void Mangle(GlobalRef<VariableStatementAst>);
+		void Mangle(GlobalRef<VariableDeclarationAst>);
 
 		void Visit(GlobalRef<StatementAst>);
 		void Visit(GlobalRef<ExpressionAst>);

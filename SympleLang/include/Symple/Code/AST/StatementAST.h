@@ -48,7 +48,7 @@ namespace Symple::Code
 		SY_PROPERTY_GET(GetStatements) StatementList Statements;
 	};
 
-	class SYC_API VariableStatementAst: public StatementAst, public Symbol
+	class SYC_API VariableDeclarationAst: public StatementAst, public Symbol
 	{
 	private:
 		GlobalRef<TypeAst> m_Type;
@@ -56,14 +56,11 @@ namespace Symple::Code
 		WeakRef<const Token_t> m_Equals;
 		GlobalRef<ExpressionAst> m_Init;
 
-		// TODO: Think (recommended)
-		GlobalRef<VariableStatementAst> m_Next;
-
 		uint32 m_Depth;
 
 		VISIT_ME;
 	public:
-		VariableStatementAst(GlobalRef<TypeAst> type, GlobalRef<const Token_t> name, WeakRef<const Token_t> equals = {}, GlobalRef<ExpressionAst> initializer = nullptr, GlobalRef<VariableStatementAst> next = nullptr);
+		VariableDeclarationAst(GlobalRef<TypeAst> type, GlobalRef<const Token_t> name, WeakRef<const Token_t> equals = {}, GlobalRef<ExpressionAst> initializer = nullptr);
 
 		virtual AstKind GetKind() const override;
 		virtual WeakRef<const Token_t> GetToken() const override;
@@ -73,16 +70,29 @@ namespace Symple::Code
 		GlobalRef<const Token_t> GetName() const override;
 		WeakRef<const Token_t> GetEquals() const;
 		GlobalRef<const ExpressionAst> GetInitializer() const;
-		GlobalRef<const VariableStatementAst> GetNext() const;
-		void SetNext(GlobalRef<VariableStatementAst>);
 
 		uint32 GetDepth() const;
 
 		SY_PROPERTY_GET(GetEquals) WeakRef<const Token_t> Equals;
 		SY_PROPERTY_GET(GetInitializer) GlobalRef<const ExpressionAst> Initializer;
-		SY_PROPERTY_GET_SET(GetNext, SetNext) GlobalRef<const VariableStatementAst> Next;
 
 		SY_PROPERTY_GET(GetDepth) uint32 Depth;
+	};
+
+	class SYC_API VariableStatementAst: public StatementAst
+	{
+	private:
+		std::vector<GlobalRef<VariableDeclarationAst>> m_Decls;
+
+		VISIT_ME;
+	public:
+		VariableStatementAst(const std::vector<GlobalRef<VariableDeclarationAst>> &);
+
+		virtual AstKind GetKind() const override;
+		virtual void Print(std::ostream &, std::string indent = "", std::string_view label = "", bool last = true) const override;
+
+		const std::vector<GlobalRef<VariableDeclarationAst>> &GetDeclarations() const;
+		SY_PROPERTY_GET(GetDeclarations) const std::vector<GlobalRef<VariableDeclarationAst>> &Declarations;
 	};
 
 	class SYC_API ExpressionStatementAst: public StatementAst

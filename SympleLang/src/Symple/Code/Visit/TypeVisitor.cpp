@@ -56,15 +56,19 @@ namespace Symple::Code
 		case AstKind::VariableStatement:
 		{
 			auto var = Cast<VariableStatementAst>(stmt);
+			for (auto decl : var->m_Decls)
+				Visit(decl);
+			break;
+		}
+		case AstKind::VariableDeclaration:
+		{
+			auto var = Cast<VariableDeclarationAst>(stmt);
 			auto val = var->m_Init;
 			if (val)
 			{
 				Visit(val);
 				var->m_Init = InsertCast(val, var->m_Type);
 			}
-
-			if (var->m_Next)
-				Visit(var->m_Next);
 			break;
 		}
 		}
