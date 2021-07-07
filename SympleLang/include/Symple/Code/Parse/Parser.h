@@ -20,8 +20,9 @@ namespace Symple::Code
 		GlobalRef<CompilationUnitAst> Parse(ErrorList *);
 	private:
 		GlobalRef<MemberAst> ParseMember();
-		GlobalRef<ProtoAst> ParseProto();
+		GlobalRef<StructAst> ParseStruct();
 		GlobalRef<FunctionAst> ParseFunction();
+		GlobalRef<VariableStatementAst> ParseFields();
 		GlobalRef<ExternFunctionAst> ParseExternFunction();
 		ConstTokenList ParseFunctionModifiers();
 

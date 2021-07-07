@@ -23,11 +23,11 @@ namespace Symple::Code
 		std::stringstream ss;
 		if (m_PtrCount)
 			ss << m_PtrCount;
-		ss << m_Base->Name;
+		ss << m_Base->TypeName;
 		m_MangledName = ss.str();
 
 		ss.str("");
-		ss << m_Base->Name;
+		ss << m_Base->TypeName;
 		for (uint32 i = 0; i < m_PtrCount; i++)
 			ss << '*';
 		m_Code = ss.str();

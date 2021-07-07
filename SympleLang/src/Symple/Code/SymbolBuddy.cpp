@@ -9,13 +9,17 @@ namespace Symple::Code
 			(TypeBaseRef)NativeType::Byte, (TypeBaseRef)NativeType::Short, (TypeBaseRef)NativeType::Int, (TypeBaseRef)NativeType::Long,
 			(TypeBaseRef)NativeType::Float, (TypeBaseRef)NativeType::Double,
 			(TypeBaseRef)NativeType::Char, (TypeBaseRef)NativeType::WChar,
+			(TypeBaseRef)NativeType::Bool,
 		};
 	}
+
+	void SymbolBuddy::DefineTypeBase(TypeBaseRef ty)
+	{ typeBases.push_back(ty); }
 
 	bool SymbolBuddy::IsTypeBase(GlobalRef<const Token> tok)
 	{
 		for (TypeBaseRef base : typeBases)
-			if (base->Name == tok->Text)
+			if (base->TypeName == tok->Text)
 				return true;
 		return false;
 	}
@@ -23,7 +27,7 @@ namespace Symple::Code
 	TypeBaseRef SymbolBuddy::GetTypeBase(GlobalRef<const Token> tok)
 	{
 		for (TypeBaseRef base : typeBases)
-			if (base->Name == tok->Text)
+			if (base->TypeName == tok->Text)
 				return base;
 		throw nullptr;
 	}

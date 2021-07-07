@@ -29,23 +29,23 @@ namespace Symple::Code
 			return ParseFunction();
 		else if (Current->Is(TokenKind::ExternKeyword))
 			return ParseExternFunction();
-		else if (Current->Is(TokenKind::ProtoKeyword))
-			return ParseProto();
+		else if (Current->Is(TokenKind::StructKeyword))
+			return ParseStruct();
 		else
 			throw "Must be function declaration!";
 	}
 
-	GlobalRef<ProtoAst> Parser::ParseProto()
+	GlobalRef<StructAst> Parser::ParseStruct()
 	{
-		Match(TokenKind::ProtoKeyword);
+		auto key = Match(TokenKind::StructKeyword);
 		auto name = Match(TokenKind::Identifier);
-		// TODO: something
-		ConstTokenList mods;
-		if (Current->Is(TokenKind::EqualArrow))
-			Next();
-		auto body = ParseStatement();
+		auto open = Match(TokenKind::OpenBrace);
+		auto fields = ParseFields();
+		auto close = Match(TokenKind::CloseBrace);
 
-		return MakeRef<ProtoAst>(name, mods, body);
+		auto ztruct =  MakeRef<StructAst>(key, name, open, fields, close);
+		m_Buddy->typeBases.push_back(ztruct);
+		return ztruct;
 	}
 
 	GlobalRef<FunctionAst> Parser::ParseFunction()
@@ -75,6 +75,29 @@ namespace Symple::Code
 		Match(TokenKind::Semicolon);
 
 		return MakeRef<ExternFunctionAst>(key, ty, name, open, params, close, mods);
+	}
+
+	GlobalRef<VariableStatementAst> Parser::ParseFields()
+	{
+		GlobalRef<TypeAst> ty = nullptr;
+		std::vector<GlobalRef<VariableDeclarationAst>> decls;
+
+		auto decl = ParseVariableDeclaration(ty);
+		decls.push_back(decl);
+
+		while (Current->Is(TokenKind::Comma))
+		{
+			Next();
+			if (!m_Buddy->IsTypeBase(Current))
+				break;
+			if (!Current->Is(TokenKind::Identifier))
+				break;
+
+			auto decl = ParseVariableDeclaration(ty);
+			decls.push_back(decl);
+		}
+
+		return MakeRef<VariableStatementAst>(decls);
 	}
 
 	ConstTokenList Parser::ParseFunctionModifiers()

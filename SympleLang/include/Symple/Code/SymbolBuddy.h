@@ -11,6 +11,8 @@ namespace Symple::Code
 
 		SymbolBuddy();
 
+		void DefineTypeBase(TypeBaseRef);
+
 		bool IsTypeBase(GlobalRef<const Token>);
 		TypeBaseRef GetTypeBase(GlobalRef<const Token>);
 	};

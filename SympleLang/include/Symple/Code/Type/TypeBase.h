@@ -17,10 +17,10 @@ namespace Symple::Code
 		bool operator ==(const TypeBase &other) const
 		{ return this == &other; }
 		virtual uint32 GetSize() const = 0;
-		const std::string &GetName() const
+		const std::string &GetTypeName() const
 		{ return m_Name; }
 
-		SY_PROPERTY_GET(GetName) const std::string &Name;
+		SY_PROPERTY_GET(GetTypeName) const std::string &TypeName;
 		SY_PROPERTY_GET(GetSize) uint32 Size;
 	};
 

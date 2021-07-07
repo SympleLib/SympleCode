@@ -19,7 +19,6 @@ namespace Symple::Code
 		Proto(const GlobalRef<const Token_t> &name, const ConstTokenList &modifiers);
 		VISIT_ME;
 	public:
-
 		virtual bool GetIsFunction() const override;
 
 		GlobalRef<const Token_t> GetName() const override;
@@ -29,30 +28,38 @@ namespace Symple::Code
 		SY_PROPERTY_GET(GetModifiers) const ConstTokenList &Modifiers;
 	};
 
-	class SYC_API ProtoAst: public Proto
+	class SYC_API StructAst: public MemberAst, public TypeBase
 	{
-	private:
-		GlobalRef<StatementAst> m_Body;
+	protected:
+		WeakRef<const Token_t> m_Kerword;
+		WeakRef<const Token_t> m_NameTok;
+		WeakRef<const Token_t> m_Open;
+		GlobalRef<VariableStatementAst> m_Fields;
+		WeakRef<const Token_t> m_Close;
+
+		uint32 m_Sz;
 
 		VISIT_ME;
 	public:
-		ProtoAst(const GlobalRef<const Token_t> &name, const ConstTokenList &modifiers, const GlobalRef<StatementAst> &body);
+		StructAst(const WeakRef<const Token_t> &keyword, const GlobalRef<const Token_t> &name,
+			const WeakRef<const Token_t> &open, GlobalRef<VariableStatementAst> fields, const WeakRef<const Token_t> &close);
 
 		virtual AstKind GetKind() const override;
 		virtual void Print(std::ostream &, std::string indent = "", std::string_view label = "", bool last = true) const override;
 
-		GlobalRef<const StatementAst> GetBody() const;
+		virtual uint32 GetSize() const;
 
-		SY_PROPERTY_GET(GetBody) GlobalRef<const StatementAst> Body;
-	};
+		WeakRef<const Token_t> GetKeyword() const;
+		WeakRef<const Token_t> GetNameToken() const;
+		WeakRef<const Token_t> GetOpen() const;
+		GlobalRef<const VariableStatementAst> GetFields() const;
+		WeakRef<const Token_t> GetClose() const;
 
-	class SYC_API Struct: public Symbol, public TypeBase
-	{
-	protected:
-		
-
-		VISIT_ME;
-	public:
+		SY_PROPERTY_GET(GetKeyword) WeakRef<const Token_t> Keyword;
+		SY_PROPERTY_GET(GetNameToken) WeakRef<const Token_t> NameToken;
+		SY_PROPERTY_GET(GetOpen) WeakRef<const Token_t> Open;
+		SY_PROPERTY_GET(GetFields) GlobalRef<const VariableStatementAst> Fields;
+		SY_PROPERTY_GET(GetClose) WeakRef<const Token_t> Close;
 	};
 
 	class SYC_API Function: public Proto

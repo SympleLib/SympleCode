@@ -1,7 +1,11 @@
 extern int puts(char *) ccall;
 
+struct Test
+{
+	bool works,
+}
+
 int Main(char **args, int nArgs)
 {
-	long x = 5, int y = 6;
-	return x + y;
+	Test test;
 }

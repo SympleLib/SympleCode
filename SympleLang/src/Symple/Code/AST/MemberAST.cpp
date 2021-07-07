@@ -21,26 +21,52 @@ namespace Symple::Code
 	{ return m_Mods; }
 
 
-	ProtoAst::ProtoAst(const GlobalRef<const Token_t> &name, const ConstTokenList &mods, const GlobalRef<StatementAst> &bod)
-		: Proto(name, mods), m_Body(bod) {}
+	StructAst::StructAst(const WeakRef<const Token_t> &keyword, const GlobalRef<const Token_t> &name,
+		const WeakRef<const Token_t> &open, GlobalRef<VariableStatementAst> fields, const WeakRef<const Token_t> &close)
+		: TypeBase(name->Text), m_Kerword(keyword), m_NameTok(name), m_Open(open), m_Fields(fields), m_Close(close),
+			m_Sz()
+	{
+		for (auto field : fields->Declarations)
+			m_Sz += field->Type->Type->Size;
+	}
 
-	AstKind ProtoAst::GetKind() const
-	{ return AstKind::Member; }
+	uint32 StructAst::GetSize() const
+	{ return m_Sz; }
 
-	GlobalRef<const StatementAst> ProtoAst::GetBody() const
-	{ return m_Body; }
+	AstKind StructAst::GetKind() const
+	{ return AstKind::Struct; }
 
-	void ProtoAst::Print(std::ostream & os, std::string indent, std::string_view label, bool last) const
+	WeakRef<const Token_t> StructAst::GetKeyword() const
+	{ return m_Kerword; }
+
+	WeakRef<const Token_t> StructAst::GetNameToken() const
+	{ return m_NameTok; }
+
+	WeakRef<const Token_t> StructAst::GetOpen() const
+	{ return m_Open; }
+
+	GlobalRef<const VariableStatementAst> StructAst::GetFields() const
+	{ return m_Fields; }
+
+	WeakRef<const Token_t> StructAst::GetClose() const
+	{ return m_Close; }
+
+	void StructAst::Print(std::ostream & os, std::string indent, std::string_view label, bool last) const
 	{
 		PrintIndent(os, indent, label, last);
 		PrintKind(os);
-		os << " (" << m_MangledName << ')';
+		os << " (" << m_Name << ')';
 
-		indent += GetAddIndent(last);
-		m_Name->Print(os << '\n', indent, "Name = ", false);
-		for (auto mod : m_Mods)
-			mod->Print(os << '\n', indent, "[Modifier] ", false);
-		m_Body->Print(os << '\n', indent, "Body = ");
+		indent += GetAddIndent(last); //                  / This is not a typo (intentional)
+		if (!m_Kerword.expired()) //                     \|/ 
+			m_Kerword.lock()->Print(os << '\n', indent, "Kerword = ", false);
+		if (!m_NameTok.expired())
+			m_NameTok.lock()->Print(os << '\n', indent, "Name = ", false);
+		if (!m_Open.expired())
+			m_Open.lock()->Print(os << '\n', indent, "Open = ", false);
+		m_Fields->Print(os << '\n', indent, "Fields = ", m_Close.expired());
+		if (!m_Close.expired())
+			m_Close.lock()->Print(os << '\n', indent, "Close = ");
 	}
 
 
@@ -98,7 +124,7 @@ namespace Symple::Code
 		if (!m_Open.expired())
 			m_Open.lock()->Print(os << '\n', indent, "Open = ", false);
 		for (auto param : m_Params)
-			param->Print(os << '\n', indent, "[Param] ", false);
+			param->Print(os << '\n', indent, "[Parameter] ", false);
 		if (!m_Close.expired())
 			m_Close.lock()->Print(os << '\n', indent, "Close = ", false);
 		for (auto mod : m_Mods)

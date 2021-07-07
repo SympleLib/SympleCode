@@ -146,11 +146,10 @@ namespace Symple::Code
 		KEYWORD(__stalloc, Stalloc);
 		KEYWORD(__staf, Staf);
 
-		KEYWORD(__protocall, Proto);
-		ID_KEYWORD(protocall, Proto);
-		ID_KEYWORD(proto, Proto);
-		KEYWORD(__call, Call);
-		ID_KEYWORD(call, Call);
+		KEYWORD(__struct, Struct);
+		KEYWORD(__structure, Struct);
+		ID_KEYWORD(struct, Struct);
+		ID_KEYWORD(structure, Struct);
 
 		KEYWORD(__lengthof, Lengthof);
 		ID_KEYWORD(lengthof, Lengthof);

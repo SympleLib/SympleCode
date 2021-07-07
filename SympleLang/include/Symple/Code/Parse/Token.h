@@ -67,8 +67,7 @@ namespace Symple::Code
 		StallocKeyword,
 		StafKeyword,
 
-		ProtoKeyword,
-		CallKeyword,
+		StructKeyword,
 
 		SizeofKeyword,
 		LengthofKeyword,
@@ -143,8 +142,7 @@ namespace Symple::Code
 		"StallocKeyword",
 		"StafKeyword",
 
-		"ProtoKeyword",
-		"CallKeyword",
+		"StructKeyword",
 
 		"SizeofKeyword",
 		"LengthofKeyword",
