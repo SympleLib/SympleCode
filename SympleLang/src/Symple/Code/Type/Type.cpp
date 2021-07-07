@@ -1,5 +1,7 @@
 #include "Symple/Code/Type/Type.h"
 
+#include "Symple/Code/AST/AST.h"
+
 namespace Symple::Code
 {
 	SYC_API GlobalRef<const NativeType> NativeType::Void = GlobalRef<const NativeType>(new NativeType("void", NativeTypeKind::Void));
@@ -60,6 +62,9 @@ namespace Symple::Code
 
 	uint32 Type::GetPointerCount() const
 	{ return m_PtrCount; }
+
+	bool Type::GetIsStruct() const
+	{ return (bool)Cast<const StructAst>(m_Base); }
 
 	bool Type::GetIsFloat() const
 	{

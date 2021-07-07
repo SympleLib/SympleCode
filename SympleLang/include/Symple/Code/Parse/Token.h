@@ -69,6 +69,9 @@ namespace Symple::Code
 
 		StructKeyword,
 
+		TrueKeyword,
+		FalseKeyword,
+
 		SizeofKeyword,
 		LengthofKeyword,
 
@@ -143,6 +146,9 @@ namespace Symple::Code
 		"StafKeyword",
 
 		"StructKeyword",
+
+		"TrueKeyword",
+		"FalseKeyword",
 
 		"SizeofKeyword",
 		"LengthofKeyword",

@@ -13,7 +13,7 @@ namespace Symple::Code
 
 		std::string m_MangledName, m_Code;
 	public:
-		Type(TypeBaseRef, uint32 pointerCount);
+		Type(TypeBaseRef, uint32 pointerCount = 0);
 		GlobalRef<Type> Ptr() const;
 		GlobalRef<Type> Deref() const;
 
@@ -29,6 +29,7 @@ namespace Symple::Code
 
 		TypeBaseRef GetBase() const;
 		uint32 GetPointerCount() const;
+		bool GetIsStruct() const;
 		bool GetIsFloat() const;
 		bool GetIs86() const;
 		uint32 GetSize() const;
@@ -38,6 +39,7 @@ namespace Symple::Code
 
 		SY_PROPERTY_GET(GetBase) TypeBaseRef Base;
 		SY_PROPERTY_GET(GetPointerCount) uint32 PointerCount;
+		SY_PROPERTY_GET(GetIsStruct) bool IsStruct;
 		SY_PROPERTY_GET(GetIsFloat) bool IsFloat;
 		SY_PROPERTY_GET(GetIs86) bool Is86;
 		SY_PROPERTY_GET(GetSize) uint32 Size;

@@ -188,6 +188,12 @@ namespace Symple::Code
 			Emit(var->Initializer);
 			if (ty->IsFloat)
 				Emit("\tmovs%c %s, " VAR "(%s)", FSuf(ty), Reg(RegKind::Xmm0, sz), name.c_str(), Reg(RegKind::Bp));
+			else if (ty->IsStruct)
+			{
+				Emit("\tmov %s, %s", Reg(RegKind::Ax), Reg(RegKind::Si));
+				Emit("\tlea " VAR "(%s), %s", name.c_str(), Reg(RegKind::Bp), Reg(RegKind::Di));
+				MovStruct(Cast<const StructAst>(ty->Base));
+			}
 			else
 				Emit("\tmov %s, " VAR "(%s)", Reg(RegKind::Ax, sz), name.c_str(), Reg(RegKind::Bp));
 		}
@@ -264,13 +270,14 @@ namespace Symple::Code
 		auto to = cast->Type;
 		auto from = cast->Value->Type;
 
+
+		if (to->Is(from))
+			return;
+
 		auto nativeTy = Cast<const NativeType>(to->Base);
 		if (!nativeTy)
-			throw nullptr; // TODO: Support other casting
-
-
-		if (to->Is(from));
-		else if (nativeTy->Kind == NativeTypeKind::Bool)
+			throw "Only native Casting supported!"; // TODO: Support other casting
+		if (nativeTy->Kind == NativeTypeKind::Bool)
 		{
 			Emit("\ttest %s, %s", Reg(RegKind::Ax), Reg(RegKind::Ax));
 			Emit("\tsetne %s", Reg(RegKind::Ax, 1));
@@ -515,6 +522,8 @@ namespace Symple::Code
 		}
 		else if (expr->Literal->Is(TokenKind::Char))
 			Emit("\tmov $'%.*s', %s", literal.length(), literal.data(), Reg(RegKind::Ax));
+		else if (expr->Literal->Is(TokenKind::TrueKeyword, TokenKind::FalseKeyword))
+			Emit("\tmov $%u, %s", expr->Literal->Is(TokenKind::TrueKeyword), Reg(RegKind::Ax));
 		else if (expr->Literal->Is(TokenKind::String))
 		{
 			auto txt = expr->Literal->Text;
@@ -570,6 +579,15 @@ namespace Symple::Code
 		if (m_Stack > m_StackSize)
 			m_StackSize = m_Stack;
 		return m_Stack -= bytes;
+	}
+
+	void Emitter::MovStruct(GlobalRef<const StructAst> ty)
+	{
+		for (uint32 i = 0; i < ty->Size; i++)
+		{
+			Emit("\tmov %u(%s), %s", i, Reg(RegKind::Si), Reg(RegKind::Ax));
+			Emit("\tmov %s, %u(%s)", Reg(RegKind::Ax), i, Reg(RegKind::Di));
+		}
 	}
 	
 	bool Emitter::OverridesRegs(const GlobalRef<const Ast> node)

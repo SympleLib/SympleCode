@@ -151,6 +151,10 @@ namespace Symple::Code
 		ID_KEYWORD(struct, Struct);
 		ID_KEYWORD(structure, Struct);
 
+		KEYWORD(TotesRadical, True); // <-- Congrats, you found: `Easter Egg`!
+		KEYWORD(true, True);
+		KEYWORD(false, False);
+
 		KEYWORD(__lengthof, Lengthof);
 		ID_KEYWORD(lengthof, Lengthof);
 		KEYWORD(__sizeof, Lengthof);

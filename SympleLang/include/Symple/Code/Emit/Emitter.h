@@ -51,6 +51,8 @@ namespace Symple::Code
 		uint32 Staf(uint32 bytes = 8);
 		uint32 Reserve(uint32 bytes = 8);
 
+		void MovStruct(GlobalRef<const StructAst>);
+
 		bool OverridesRegs(const GlobalRef<const Ast>);
 
 		void Emit(const GlobalRef<const Token> &tok);
