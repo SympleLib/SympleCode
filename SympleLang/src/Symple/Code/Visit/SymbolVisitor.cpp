@@ -218,7 +218,12 @@ namespace Symple::Code
 		{
 			auto binExpr = Cast<BinaryExpressionAst>(expr);
 			Visit(binExpr->m_Left);
-			Visit(binExpr->m_Right);
+
+			if (binExpr->m_Operator->Is(TokenKind::Arrow))
+			{
+			}
+			else
+				Visit(binExpr->m_Right);
 			break;
 		}
 		case AstKind::BuiltinExpression:

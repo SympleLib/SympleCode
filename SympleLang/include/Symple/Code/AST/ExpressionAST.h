@@ -10,7 +10,9 @@ namespace Symple::Code
 		using Type_t = Type;
 	protected:
 		GlobalRef<const Type_t> m_Type = Type_t::Default;
-		friend class TypeVisitor;
+		
+
+		VISIT_ME;
 	public:
 		virtual AstKind GetKind() const override;
 

@@ -147,11 +147,31 @@ namespace Symple::Code
 			auto binExpr = Cast<BinaryExpressionAst>(expr);
 			auto left = binExpr->m_Left, right = binExpr->m_Right;
 			Visit(left);
-			Visit(right);
 
-			binExpr->m_Type = left->m_Type;
-			binExpr->m_Left = InsertCast(left, binExpr->m_Type);
-			binExpr->m_Right = InsertCast(right, binExpr->m_Type);
+			if (binExpr->m_Operator->Is(TokenKind::Arrow))
+			{
+				auto ztruct = binExpr->m_Left->m_Type;
+				auto rhs = Cast<NameExpressionAst>(binExpr->m_Right);
+				for (auto field : Cast<const StructAst>(ztruct->Base)->m_Fields->m_Decls)
+					if (field->m_Name->Text == rhs->m_Name->Text)
+						rhs->m_Symbol = field;
+
+				if (!rhs->m_Symbol)
+					throw m_ErrorList->ReportUnresolvedSymbol(rhs->m_Name);
+				rhs->m_Type = rhs->m_Symbol->Type->Type;
+			}
+			else
+			{
+				Visit(right);
+
+				if (binExpr->m_Operator->Is(TokenKind::Equal))
+					binExpr->m_Type = left->m_Type;
+				else
+					binExpr->m_Type = left->m_Type;
+
+				binExpr->m_Left = InsertCast(left, binExpr->m_Type);
+				binExpr->m_Right = InsertCast(right, binExpr->m_Type);
+			}
 			break;
 		}
 		case AstKind::BuiltinExpression:

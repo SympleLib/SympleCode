@@ -7,7 +7,8 @@ struct Test
 
 int Main(char **args, int nArgs)
 {
-	bool x = true;
-	Test test = {Test}@x;
+	Test test;
+	test->works = true;
+	
 	return {int}test;
 }

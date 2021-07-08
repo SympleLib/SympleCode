@@ -39,6 +39,7 @@ namespace Symple::Code
 		At,
 
 		Comma,
+		Arrow,
 		Semicolon,
 
 		// Keywords
@@ -117,6 +118,7 @@ namespace Symple::Code
 		"At",
 
 		"Comma",
+		"Arrow",
 		"Semicolon",
 
 
