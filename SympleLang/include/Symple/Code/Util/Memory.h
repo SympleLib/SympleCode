@@ -1,61 +1,37 @@
 #pragma once
 
+#include "Symple/Code/Common.h"
 #include <memory>
 
 namespace Symple::Code
 {
 	template<typename T>
-	using Scope = std::unique_ptr<T>;
-
-	template<typename T>
-	using GlobalRef = std::shared_ptr<T>;
-
-	template<typename T>
-	using WeakRef = std::weak_ptr<T>;
-
-	template<typename T>
-	inline constexpr T &&Pass(T &&obj)
-	{ return static_cast<T &&>(obj); }
-
-	template<typename T>
-	inline constexpr T &&Pass(T &obj)
-	{ return static_cast<T &&>(obj); }
-
-	template<typename T>
-	inline constexpr T &&Pass(const T & obj)
-	{ return static_cast<T &&>(obj); }
-
-	template<typename T, typename... Args>
-	inline Scope<T> MakeScope(Args&&... args)
-	{ return std::make_unique<T>(std::forward<Args>(args)...); }
-	
-	template<typename T, typename... Args>
-	inline GlobalRef<T> MakeRef(Args&&... args)
-	{ return std::make_shared<T>(std::forward<Args>(args)...); }
-
-	template<typename To, typename From>
-	inline Scope<To> Cast(Scope<From> &&ref)
+	struct Ref
 	{
-		To *cast = dynamic_cast<To *>(ref.get());
-		if (cast)
+		T *const ptr;
+
+		Ref() = default;
+		Ref(const T *ptr)
+			: ptr(const_cast<T *>(ptr))
+		{ refCount++; }
+
+		Ref(const Ref &other)
+			: ptr(other.ptr)
+		{ refCount++; }
+
+		~Ref()
 		{
-			Scope<To> result(cast);
-			ref.release();
-			return result;
+			refCount--;
+			if (refCount == 0)
+				delete ptr;
 		}
-		else
-			return Scope<To>();
-	}
 
-	template<typename To, typename From>
-	inline GlobalRef<To> Cast(GlobalRef<From>&& ref)
-	{ return std::dynamic_pointer_cast<To>(std::move(ref)); }
+		T *operator ->()
+		{ return ptr; }
 
-	template<typename To, typename From>
-	inline GlobalRef<To> Cast(const GlobalRef<From>& ref)
-	{ return std::dynamic_pointer_cast<To>(ref); }
-
-	template <typename T>
-	bool IsEmpty(const WeakRef<T> &ptr)
-	{ return !ptr.owner_before(WeakRef<T>()) && !WeakRef<T>().owner_before(ptr); }
+		const T *operator ->() const
+		{ return ptr; }
+	private:
+		static mutable Size refCount;
+	};
 }

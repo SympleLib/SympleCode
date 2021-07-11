@@ -1,14 +1,5 @@
 #pragma once
 
-#if defined(_MSC_VER)
-#if !defined(SY_PROPERTY_GET)
-	#define SY_PROPERTY_GET(getter) __declspec(property(get = getter))
-	#define SY_PROPERTY_GET_SET(getter, setter) __declspec(property(get = getter, put = setter))
-#endif
-#else
-#error Only MSVC supported for SympleCode
-#endif
-
 #if defined(SYC_BUILD_DLL)
 	#define SYC_API __declspec(dllexport)
 #elif defined(SYC_USE_DLL)
@@ -29,10 +20,7 @@ namespace Symple::Code
 	using uint16 = unsigned short;
 	using uint32 = unsigned int;
 	using uint64 = unsigned long long;
+	
+	using it = size_t;
+	using Size = size_t;
 }
-
-#define _CRT_SECURE_NO_WARNINGS
-#include <cassert>
-#include <string>
-#include <sstream>
-#include <vector>
