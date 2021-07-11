@@ -65,6 +65,8 @@ namespace Symple::Code
 	class SYC_API Function: public Proto
 	{
 	protected:
+		GlobalRef<llvm::Function> m_LLFunc;
+
 		GlobalRef<TypeAst> m_Type;
 		WeakRef<const Token_t> m_Open;
 		ParameterList m_Params;

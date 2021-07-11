@@ -9,17 +9,16 @@ project "SympleLang"
 	-- pchheader "Symple/Common/Common.h"
 	-- pchsource "src/Symple/Common/Common.cpp"
 	
-	defines
-	{ "SYC_BUILD", }
+	defines "SYC_BUILD"
 	
-	includedirs
-	{
+	includedirs {
 		"include",
-		"vendor/fmt/include"
+		"vendor/fmt/include",
+		"vendor/llvm-project/llvm/include",
+		"vendor/llvm-project/llvm/build/include",
 	}
 	
-	files
-	{
+	files {
 		"include/**.h",
 		"include/**.hpp",
 		
@@ -35,17 +34,13 @@ project "SympleLang"
 	-- }
 	
 	filter "configurations:Debug"
-		defines
-		{
-			"SY_DEBUG",
-		}
+		defines "SY_DEBUG"
+		links "vendor/llvm-project/llvm/build/Debug/lib/LLVMCore"
 		
 		symbols "On"
 	
 	filter "configurations:Release"
-		defines
-		{
-			"SY_RELEASE",
-		}
+		defines "SY_RELEASE"
+		links "vendor/llvm-project/llvm/build/Release/lib/LLVMCore"
 		
 		optimize "On"

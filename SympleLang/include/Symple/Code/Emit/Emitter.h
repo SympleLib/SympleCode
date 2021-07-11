@@ -1,27 +1,25 @@
 #pragma once
 
 #include "Symple/Code/Ast/AST.h"
-#include "Symple/Code/Emit/Register.h"
+
+namespace llvm
+{
+	class LLVMContext;
+	class IRBuilder;
+	class Function;
+}
 
 namespace Symple::Code
 {
-	enum class SYC_API EmitKind
-	{
-		Text,
-		Data,
-	};
+	using namespace llvm;
 
 	class SYC_API Emitter
 	{
 	private:
-		File m_TextFile, m_DataFile;
+		Scope<LLVMContext> ctx;
+		Scope<IRBuilder> builder;
+
 		GlobalRef<const FunctionAst> m_Func;
-
-		// File num, Func id
-		uint32 m_FNum = 0, m_FId = 0;
-
-		uint32 m_Label = 0;
-		uint32 m_Stack = 0, m_StackSize = 0;
 		GlobalRef<const CompilationUnitAst> m_Unit;
 	public:
 		Emitter(const GlobalRef<const CompilationUnitAst> &unit);

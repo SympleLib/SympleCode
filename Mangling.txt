@@ -8,15 +8,15 @@ _{CALL}${NAME}${PARAM_TYPES}${TYPE}
 
 Example:
 	--- Syc
-	..float ..Symple.Code.StdLib.Mathf.Pow(in ..float, in ..float) __sycall;
+	..float ..StdLib.Mathf.Pow(in ..float, in ..float) __sycall;
 	--- Asm
-	_Sy$Symple$$Code$$StdLib$$Mathf$$Pow$float$float$Func
+	Sy$StdLib.Mathf.Pow(float, float)
 	---
 	
 	--- Syc
 	..Symple.Win32.LResult ..MyWin32App.MyWinProc(in ..Symple.Win32.HWindow, in ..uint32, in ..Symple.Win32.WParam, in ..Symple.Win32.LParam) __syccall;
 	--- Asm
-	_Syc$MyWin32App$$MyWinProc$Symple$$Win32$$HWindow$uint32$Symple$$Win32$$HWindow$Symple$$Win32$$WParam$Symple$$Win32$$LParam$Func
+	_Syc$MyWin32App.MyWinProc$Symple.Win32.HWindow$uint32$Symple.Win32.HWindow$Symple.Win32.WParam$Symple.Win32.LParam
 	---
 	
 	--- Syc
@@ -30,6 +30,6 @@ Example:
 		}
 	}
 	--- Asm
-	_Sy$Symple$$DateAndTime$$Time$$CTime$PGet
-	_Sy$Symple$$DateAndTime$$Time$$CTime$PSet
+	_Sy$Symple_DateAndTime_Time_CTime$PGet
+	_Sy$Symple_DateAndTime_Time_CTime$PSet
 	---
