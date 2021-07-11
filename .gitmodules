@@ -1,6 +1,0 @@
-[submodule "SympleLang/vendor/fmt"]
-	path = SympleLang/vendor/fmt
-	url = https://github.com/fmtlib/fmt.git
-[submodule "SympleLang/vendor/llvm-project"]
-	path = SympleLang/vendor/llvm-project
-	url = https://github.com/SympleLib/llvm-project
