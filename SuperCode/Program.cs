@@ -19,7 +19,7 @@ namespace SuperCode
 			LLVMValueRef ret = builder.BuildAdd(fn.Params[0], fn.Params[1]);
 			builder.BuildRet(ret);
 
-			
+
 			Console.WriteLine(fn.PrintToString());
 			Console.ReadKey();
 		}
