@@ -8,9 +8,18 @@
 	#define SYC_API
 #endif
 
+#define _CRT_SECURE_NO_WARNINGS
+#include <cstdio>
+#include <string>
+
 #pragma warning(disable: 4244 4267)
 namespace Symple::Code
 {
+	using String = std::string;
+	using StringView = std::string_view;
+
+	using OStream = std::ostream;
+
 	using int8 = char;
 	using int16 = short;
 	using int32 = int;

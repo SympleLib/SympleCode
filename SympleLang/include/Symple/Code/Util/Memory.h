@@ -6,32 +6,55 @@
 namespace Symple::Code
 {
 	template<typename T>
-	struct Ref
+	using Slave = std::unique_ptr;
+	template<typename T>
+	using Ref = std::shared_ptr;
+	template<typename T>
+	using Friend = std::weak_ptr;
+
+	template<typename T>
+	inline constexpr T &&Pass(T &&obj)
+	{ return static_cast<T &&>(obj); }
+
+	template<typename T>
+	inline constexpr T &&Pass(T &obj)
+	{ return static_cast<T &&>(obj); }
+
+	template<typename T>
+	inline constexpr T &&Pass(const T &obj)
+	{ return static_cast<T &&>(obj); }
+
+	template<typename T, typename... Args>
+	inline Slave<T> MakeSlave(Args&&... args)
+	{ return std::make_unique<T>(std::forward<Args>(args)...); }
+
+	template<typename T, typename... Args>
+	inline Ref<T> MakeRef(Args&&... args)
+	{ return std::make_shared<T>(std::forward<Args>(args)...); }
+
+	template<typename To, typename From>
+	inline Slave<To> Cast(Slave<From> &&ref)
 	{
-		T *const ptr;
-
-		Ref() = default;
-		Ref(const T *ptr)
-			: ptr(const_cast<T *>(ptr))
-		{ refCount++; }
-
-		Ref(const Ref &other)
-			: ptr(other.ptr)
-		{ refCount++; }
-
-		~Ref()
+		To *cast = dynamic_cast<To *>(ref.get());
+		if (cast)
 		{
-			refCount--;
-			if (refCount == 0)
-				delete ptr;
+			Slave<To> result(cast);
+			ref.release();
+			return result;
 		}
+		else
+			return Friend<To>();
+	}
 
-		T *operator ->()
-		{ return ptr; }
+	template<typename To, typename From>
+	inline Ref<To> Cast(Ref<From> &&ref)
+	{ return std::dynamic_pointer_cast<To>(Pass(ref)); }
 
-		const T *operator ->() const
-		{ return ptr; }
-	private:
-		static mutable Size refCount;
-	};
+	template<typename To, typename From>
+	inline Ref<To> Cast(const Ref<From> &ref)
+	{ return std::dynamic_pointer_cast<To>(ref); }
+
+	template <typename T>
+	bool IsEmpty(const Friend<T> &ptr)
+	{ return !ptr.owner_before(Friend<T>()) && !Friend<T>().owner_before(ptr); }
 }

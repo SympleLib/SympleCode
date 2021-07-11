@@ -6,15 +6,15 @@
 
 namespace Symple::Code
 {
-	SYC_API _Console Console;
+	ConsoleColor tmp;
+	SYC_API _Console &Console = *(_Console *)&tmp;
 
-	ConsoleColor _Console::GetConsoleColor() const
-	{ return col; }
-
-	void _Console::SetConsoleColor(ConsoleColor col)
+	void _Console::SetColor(ConsoleColor col)
 	{
-		if (this->col == col)
+		if (tmp == col)
 			return;
+
+		tmp = col;
 
 	#if defined(_WIN32)
 		SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), (WORD)col);

@@ -26,15 +26,30 @@ namespace Symple::Code
 		Reset = White,
 	};
 
+	struct SYC_API _Console;
+	extern SYC_API _Console &Console;
 	struct SYC_API _Console
 	{
-		ConsoleColor GetConsoleColor() const;
-		void SetConsoleColor(ConsoleColor);
+		_Console() = delete;
 
-		SY_PROPERTY_GET_SET(GetConsoleColor, SetConsoleColor) ConsoleColor Color;
-	private:
-		ConsoleColor col;
+		void SetColor(ConsoleColor);
+
+		class
+		{
+		private:
+			ConsoleColor value;
+		public:
+			bool operator ==(ConsoleColor col)
+			{ value == col; }
+
+			ConsoleColor operator =(ConsoleColor col)
+			{
+				Console.SetColor(col);
+				return value;
+			}
+
+			operator ConsoleColor()
+			{ value; }
+		} color;
 	};
-
-	extern SYC_API _Console Console;
 }

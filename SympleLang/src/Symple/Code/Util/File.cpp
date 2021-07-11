@@ -2,10 +2,8 @@
 
 namespace Symple::Code
 {
-	uint32 File::s_NextNum = 1;
-
-	File::File(const std::string &name, FilePermissions perms)
-		: m_Name(name), m_Perms(perms)
+	File::File(const String &name, FilePermissions perms)
+		: name(name), perms(perms)
 	{
 		const char *mode;
 		switch (perms)
@@ -32,63 +30,58 @@ namespace Symple::Code
 			break;
 		}
 
-		m_Stream = std::fopen(name.c_str(), mode);
-		if (!m_Stream)
-			throw nullptr;
-		m_Num = s_NextNum++;
-		m_Open = true;
+		stream = std::fopen(name.c_str(), mode);
+		if (!stream)
+			abort();
+		open = true;
 
-		if (Seek(0, SEEK_END) && CanRead)
+		if (Seek(0, SEEK_END) && CanRead())
 		{
-			uint32 sz = std::ftell(m_Stream);
-			m_Source.resize(sz + 1);
-			std::rewind(m_Stream);
-			std::fread(m_Source.data(), 1, sz, m_Stream);
+			uint32 sz = std::ftell(stream);
+			source.resize(sz + 1);
+			std::rewind(stream);
+			std::fread(source.data(), 1, sz, stream);
 		}
 	}
 
-	File File::Open(const std::string &name, FilePermissions perms)
+	File File::Open(const String &name, FilePermissions perms)
 	{ return File(name, perms); }
 
 	File::~File()
 	{ Close(); }
 
 	std::FILE *File::GetStream()
-	{ return m_Stream; }
+	{ return stream; }
 
 
 	void File::Close()
 	{
-		if (m_Open)
+		if (open)
 		{
-			std::fclose(m_Stream);
-			m_Stream = nullptr;
-			m_Open = false;
+			std::fclose(stream);
+			stream = nullptr;
+			open = false;
 		}
 	}
 
 
 	bool File::Seek(uint32 offset, int32 origin)
-	{ return !std::fseek(m_Stream, offset, origin); }
+	{ return !std::fseek(stream, offset, origin); }
 
 
-	const std::string &File::GetName() const
-	{ return m_Name; }
+	const String &File::GetName() const
+	{ return name; }
 
-	const std::string &File::GetSource() const
-	{ return m_Source; }
+	const String &File::GetSource() const
+	{ return source; }
 
-	bool File::GetIsOpen() const
-	{ return m_Open; }
-
-
-	uint32 File::GetNumber() const
-	{ return m_Num; }
+	bool File::IsOpen() const
+	{ return open; }
 
 	
-	bool File::GetCanRead() const
-	{ return (uint8)m_Perms & (uint8)FilePermissions::Read; }
+	bool File::CanRead() const
+	{ return (uint8)perms & (uint8)FilePermissions::Read; }
 
-	bool File::GetCanEdit() const
-	{ return (uint8)m_Perms & (uint8)FilePermissions::Write || (uint8)m_Perms & (uint8)FilePermissions::Append; }
+	bool File::CanEdit() const
+	{ return (uint8)perms & (uint8)FilePermissions::Write || (uint8)perms & (uint8)FilePermissions::Append; }
 }
