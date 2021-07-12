@@ -2,11 +2,35 @@
 {
 	public struct Token
 	{
-		public TokenKind kind { get; init; }
-		public string text { get; init; }
+		public static readonly Token error = new (TokenKind.Unknown, "", "", 0);
+
+		public readonly TokenKind kind;
+		public readonly string text;
+		public readonly string file;
+		public readonly int line;
+
+		public Token(TokenKind kind, string txt, string path, int ln)
+		{
+			this.kind = kind;
+			text = txt;
+			file = path;
+			line = ln;
+		}
+
+		public bool Is(params TokenKind[] kinds)
+		{
+			foreach (var kind in kinds)
+				if (this.kind == kind)
+					return true;
+			return false;
+		}
 
 		public override string ToString() =>
-			$"{kind} `{text}`";
+			$"{file}:{line}> {kind} `{text}`";
+
+		public static readonly string[] punctuators = {
+			"+", "-", "*", "/", "%",
+		};
 	}
 
 	public enum TokenKind
@@ -15,5 +39,14 @@
 
 		Identifier,
 		Number,
+
+		Plus,
+		Minus,
+		Star,
+		Slash,
+		Percent,
+
+		Count,
+		Punctuator = Plus,
 	}
 }

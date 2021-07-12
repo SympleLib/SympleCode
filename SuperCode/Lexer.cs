@@ -1,20 +1,23 @@
 ﻿using System.Collections.Generic;
+using System.IO;
 
 namespace SuperCode
 {
 	public class Lexer
 	{
-		private string src;
+		private readonly string path;
+		private readonly string src;
 		private int line;
 		private int pos;
 
-		private char current { get => pos < src.Length ? src[pos] : '\0'; }
-		private char next { get => pos + 1 < src.Length ? src[pos + 1] : '\0'; }
+		private char current => pos < src.Length ? src[pos] : '\0';
+		private char next => pos + 1 < src.Length ? src[pos + 1] : '\0';
 
-		public Lexer(string src)
+		public Lexer(string path)
 		{
-			this.src = src;
-			line = 0;
+			this.path = path;
+			src = File.ReadAllText("../../../" + path);
+			line = 1;
 			pos = 0;
 		}
 
@@ -30,6 +33,13 @@ namespace SuperCode
 			var tokens = new List<Token>();
 			while (pos < src.Length)
 			{
+				if (current == '\n')
+				{
+					line++;
+					Next();
+					continue;
+				}
+
 				if (char.IsWhiteSpace(current))
 				{
 					Next();
@@ -47,6 +57,8 @@ namespace SuperCode
 					tokens.Add(Number());
 					continue;
 				}
+
+				tokens.Add(Punctuator());
 			}
 
 			return tokens.ToArray();
@@ -64,12 +76,29 @@ namespace SuperCode
 		private Token Number()
 		{
 			int begin = pos;
-			while (char.IsDigit(current)) // <-- This ones for you, Swerdlow
+			while (char.IsDigit(current))
 				Next();
 			return MakeToken(TokenKind.Number, begin);
 		}
 
+		private Token Punctuator()
+		{
+			for (int i = 0; i < Token.punctuators.Length; i++)
+			{
+				string punc = Token.punctuators[i];
+				if (src[pos..(pos + punc.Length)] == punc)
+				{
+					int begin = pos;
+					pos += punc.Length;
+					return MakeToken(TokenKind.Punctuator + i, begin);
+				}
+			}
+
+			Next();
+			return MakeToken(TokenKind.Unknown, pos - 1);
+		}
+
 		private Token MakeToken(TokenKind kind, int begin) =>
-			new Token { kind = kind, text = src[begin..pos] };
+			new (kind, src[begin..pos], path, line);
 	}
 }

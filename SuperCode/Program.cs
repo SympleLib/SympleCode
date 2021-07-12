@@ -5,13 +5,30 @@ namespace SuperCode
 {
 	public class Program
 	{
-		private static void Main(string[] args)
+		private static void Main(string[] _args)
 		{
-			var lexer = new Lexer(@"6969 four20 L33T");
-			var tokens = lexer.Lex();
+			var parser = new Parser("Main.sy");
 
-			foreach (var token in tokens)
+			Console.ForegroundColor = ConsoleColor.Yellow;
+			foreach (var token in parser.tokens)
 				Console.WriteLine(token);
+			Console.WriteLine();
+
+			var expr = parser.Parse();
+
+			var module = LLVMModuleRef.CreateWithName("SympleCode");
+			var builder = LLVMBuilderRef.Create(module.Context);
+
+			var funcTy = LLVMTypeRef.CreateFunction(LLVMTypeRef.Int32, new LLVMTypeRef[] { });
+			var func = module.AddFunction("Main", funcTy);
+			var entry = func.AppendBasicBlock("Entry");
+
+			builder.PositionAtEnd(entry);
+			var val = expr.CodeGen(builder);
+			builder.BuildRet(val);
+
+			Console.ForegroundColor = ConsoleColor.Green;
+			Console.WriteLine(func);
 			Console.ReadKey();
 		}
 	}
