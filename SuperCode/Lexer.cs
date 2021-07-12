@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.IO;
 
 namespace SuperCode
@@ -52,7 +53,7 @@ namespace SuperCode
 					continue;
 				}
 
-				if (char.IsDigit(current))
+				if (char.IsDigit(current) || current == '.')
 				{
 					tokens.Add(Number());
 					continue;
@@ -75,9 +76,20 @@ namespace SuperCode
 
 		private Token Number()
 		{
+			bool didDot = false;
+
 			int begin = pos;
-			while (char.IsDigit(current))
+			while (char.IsDigit(current) || current == '.')
+			{
+				if (current == '.')
+				{
+					if (didDot)
+						Console.Error.WriteLine("Tooo many dots for poor number to handle");
+					didDot = true;
+				}
 				Next();
+			}
+
 			return MakeToken(TokenKind.Number, begin);
 		}
 

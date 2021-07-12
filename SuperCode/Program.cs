@@ -4,6 +4,15 @@ using LLVMSharp.Interop;
 
 namespace SuperCode
 {
+	[StructLayout(LayoutKind.Explicit)]
+	struct FIUnion
+	{
+		[FieldOffset(0)]
+		public float fval;
+		[FieldOffset(0)]
+		public int ival;
+	}
+
 	public class Program
 	{
 		[UnmanagedFunctionPointer(CallingConvention.Cdecl)]
@@ -25,7 +34,11 @@ namespace SuperCode
 
 			builder.PositionAtEnd(entry);
 			var val = expr.CodeGen(builder);
-			builder.BuildRet(val);
+			var fptr = builder.BuildAlloca(LLVMTypeRef.Float);
+			builder.BuildStore(val, fptr);
+			var iptr = builder.BuildBitCast(fptr, LLVMTypeRef.CreatePointer(LLVMTypeRef.Int32, 0));
+			var ret = builder.BuildLoad(iptr);
+			builder.BuildRet(ret);
 
 			Console.ForegroundColor = ConsoleColor.DarkYellow;
 			Console.WriteLine(func);
@@ -45,10 +58,10 @@ namespace SuperCode
 				Console.Error.WriteLine(err);
 
 			var program = (Run)Marshal.GetDelegateForFunctionPointer(engine.GetPointerToGlobal(func), typeof(Run));
-			int result = program();
+			var result = new FIUnion { ival = program() };
 
 			Console.ForegroundColor = ConsoleColor.Gray;
-			Console.WriteLine($"Returned {result}");
+			Console.WriteLine($"Returned {result.fval}");
 			Console.ReadKey();
 		}
 	}
