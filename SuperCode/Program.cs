@@ -34,7 +34,7 @@ namespace SuperCode
 
 			builder.PositionAtEnd(entry);
 			var val = expr.CodeGen(builder);
-			var fptr = builder.BuildAlloca(LLVMTypeRef.Float);
+			var fptr = builder.BuildAlloca(expr.type);
 			builder.BuildStore(val, fptr);
 			var iptr = builder.BuildBitCast(fptr, LLVMTypeRef.CreatePointer(LLVMTypeRef.Int32, 0));
 			var ret = builder.BuildLoad(iptr);
@@ -44,11 +44,11 @@ namespace SuperCode
 			Console.WriteLine(func);
 
 			LLVM.LinkInMCJIT();
-			LLVM.InitializeX86TargetMC();
-			LLVM.InitializeX86Target();
-			LLVM.InitializeX86TargetInfo();
-			LLVM.InitializeX86AsmParser();
-			LLVM.InitializeX86AsmPrinter();
+			LLVM.InitializeAllTargetMCs();
+			LLVM.InitializeAllTargets();
+			LLVM.InitializeAllTargetInfos();
+			LLVM.InitializeAllAsmParsers();
+			LLVM.InitializeAllAsmPrinters();
 
 			if (!module.TryVerify(LLVMVerifierFailureAction.LLVMPrintMessageAction, out string err))
 				Console.Error.WriteLine(err);

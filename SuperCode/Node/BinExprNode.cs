@@ -3,24 +3,6 @@ using LLVMSharp.Interop;
 
 namespace SuperCode
 {
-	public abstract class ExprNode: Node
-	{ public LLVMTypeRef type { get; protected init; } }
-
-	public class NumExprNode: ExprNode
-	{
-		public override Token token => numTok;
-		public readonly Token numTok;
-
-		public NumExprNode(Token num)
-		{ numTok = num; }
-
-		public override LLVMValueRef CodeGen(LLVMBuilderRef builder)
-		{
-			float num = float.Parse(numTok.text);
-			return LLVMValueRef.CreateConstReal(LLVMTypeRef.Float, num);
-		}
-	}
-
 	public class BinExprNode: ExprNode
 	{
 		public override Token token => op;
