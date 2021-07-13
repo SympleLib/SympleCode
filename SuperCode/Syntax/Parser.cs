@@ -21,13 +21,13 @@ namespace SuperCode
 		private ExprAst Expr() =>
 			BinExpr();
 
-		private ExprAst BinExpr(int parentPri = 0)
+		private ExprAst BinExpr(int parentPriority = 0)
 		{
 			var left = PrimExpr();
 			while (true)
 			{
-				int priority = current.kind.BinPri();
-				if (priority == 0 || priority < parentPri)
+				int priority = current.binPriority;
+				if (priority == 0 || priority < parentPriority)
 					break;
 
 				var op = Next();
@@ -46,8 +46,7 @@ namespace SuperCode
 				return litExpr();
 
 			default:
-				Console.Error.WriteLine("Expected expression");
-				return null;
+				throw new Exception("Expected expr");
 			}
 		}
 
