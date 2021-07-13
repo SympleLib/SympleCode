@@ -1,6 +1,4 @@
-﻿using System;
-
-namespace SuperCode
+﻿namespace SuperCode
 {
 	public class BinExprAst: ExprAst
 	{
