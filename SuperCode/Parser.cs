@@ -15,7 +15,7 @@ namespace SuperCode
 			tokens = lexer.Lex();
 		}
 
-		public ExprNode Parse() =>
+		public Node Parse() =>
 			Expr();
 
 		private ExprNode Expr() =>

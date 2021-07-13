@@ -21,8 +21,8 @@ namespace SuperCode
 		private static void Main(string[] _)
 		{
 			var parser = new Parser("Main.sy");
-			var expr = parser.Parse();
-			expr.Print(Console.Out);
+			var tree = parser.Parse();
+			tree.Print(Console.Out);
 			Console.WriteLine();
 
 			var module = LLVMModuleRef.CreateWithName("SympleCode");
@@ -33,8 +33,8 @@ namespace SuperCode
 			var entry = func.AppendBasicBlock("Entry");
 
 			builder.PositionAtEnd(entry);
-			var val = expr.CodeGen(builder);
-			var fptr = builder.BuildAlloca(expr.type);
+			var val = tree.CodeGen(builder);
+			var fptr = builder.BuildAlloca(LLVMTypeRef.Float);
 			builder.BuildStore(val, fptr);
 			var iptr = builder.BuildBitCast(fptr, LLVMTypeRef.CreatePointer(LLVMTypeRef.Int32, 0));
 			var ret = builder.BuildLoad(iptr);
