@@ -15,31 +15,35 @@ namespace SuperCode
 			tokens = lexer.Lex();
 		}
 
-		public Node Parse() =>
+		public Ast Parse() =>
 			Expr();
 
-		private ExprNode Expr() =>
+		private ExprAst Expr() =>
 			BinExpr();
 
-		private ExprNode BinExpr()
+		private ExprAst BinExpr(int parentPri = 0)
 		{
 			var left = PrimExpr();
-			while (current.Is(TokenKind.Plus, TokenKind.Minus, TokenKind.Star, TokenKind.Slash, TokenKind.Percent))
+			while (true)
 			{
+				int priority = current.kind.BinPri();
+				if (priority == 0 || priority < parentPri)
+					break;
+
 				var op = Next();
-				var right = PrimExpr();
-				left = new BinExprNode(left, op, right);
+				var right = BinExpr(priority);
+				left = new BinExprAst(op, left, right);
 			}
 
 			return left;
 		}
 
-		private ExprNode PrimExpr()
+		private ExprAst PrimExpr()
 		{
 			switch (current.kind)
 			{
 			case TokenKind.Number:
-				return NumExpr();
+				return litExpr();
 
 			default:
 				Console.Error.WriteLine("Expected expression");
@@ -47,7 +51,7 @@ namespace SuperCode
 			}
 		}
 
-		private NumExprNode NumExpr() =>
+		private LitExprAst litExpr() =>
 			new (Match(TokenKind.Number));
 
 		private Token Next()

@@ -25,30 +25,25 @@ namespace SuperCode
 			tree.Print(Console.Out);
 			Console.WriteLine();
 
-			var module = LLVMModuleRef.CreateWithName("SympleCode");
-			var builder = LLVMBuilderRef.Create(module.Context);
+			var emitter = new Emitter(tree);
+			var module = emitter.Emit();
 
-			var funcTy = LLVMTypeRef.CreateFunction(LLVMTypeRef.Int32, Array.Empty<LLVMTypeRef>());
-			var func = module.AddFunction("Main", funcTy);
-			var entry = func.AppendBasicBlock("Entry");
+			Console.ForegroundColor = ConsoleColor.DarkGreen;
+			Console.WriteLine(emitter.mainFn);
 
-			builder.PositionAtEnd(entry);
-			var val = tree.CodeGen(builder);
-			var fptr = builder.BuildAlloca(LLVMTypeRef.Float);
-			builder.BuildStore(val, fptr);
-			var iptr = builder.BuildBitCast(fptr, LLVMTypeRef.CreatePointer(LLVMTypeRef.Int32, 0));
-			var ret = builder.BuildLoad(iptr);
-			builder.BuildRet(ret);
+			var result = new FIUnion { ival = RunJIT(module, emitter.runFn) };
+			Console.ForegroundColor = ConsoleColor.White;
+			Console.WriteLine($"Returned {result.fval}");
+			Console.ReadKey();
+		}
 
-			Console.ForegroundColor = ConsoleColor.DarkYellow;
-			Console.WriteLine(func);
-
+		private static int RunJIT(LLVMModuleRef module, LLVMValueRef runFn)
+		{
 			LLVM.LinkInMCJIT();
-			LLVM.InitializeAllTargetMCs();
-			LLVM.InitializeAllTargets();
-			LLVM.InitializeAllTargetInfos();
-			LLVM.InitializeAllAsmParsers();
-			LLVM.InitializeAllAsmPrinters();
+			LLVM.InitializeNativeTarget();
+			LLVM.InitializeNativeAsmParser();
+			LLVM.InitializeNativeAsmPrinter();
+			LLVM.InitializeNativeDisassembler();
 
 			if (!module.TryVerify(LLVMVerifierFailureAction.LLVMPrintMessageAction, out string err))
 				Console.Error.WriteLine(err);
@@ -57,12 +52,8 @@ namespace SuperCode
 			if (!module.TryCreateMCJITCompiler(out var engine, ref options, out err))
 				Console.Error.WriteLine(err);
 
-			var program = (Run)Marshal.GetDelegateForFunctionPointer(engine.GetPointerToGlobal(func), typeof(Run));
-			var result = new FIUnion { ival = program() };
-
-			Console.ForegroundColor = ConsoleColor.Gray;
-			Console.WriteLine($"Returned {result.fval}");
-			Console.ReadKey();
+			var exec = (Run) Marshal.GetDelegateForFunctionPointer(engine.GetPointerToGlobal(runFn), typeof(Run));
+			return exec();
 		}
 	}
 }
