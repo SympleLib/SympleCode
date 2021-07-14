@@ -62,6 +62,7 @@ namespace SuperCode
 				tokens.Add(Punctuator());
 			}
 
+			tokens.Add(MakeToken(TokenKind.Eof, "\0"));
 			return tokens.ToArray();
 		}
 
@@ -71,7 +72,7 @@ namespace SuperCode
 			while (char.IsLetterOrDigit(current) || current == '_' || current == '$' ||
 				current == '-') // <-- This ones for you, Swerdlow
 				Next();
-			return MakeToken(TokenKind.Iden, begin);
+			return Keyword(src[begin..pos]);
 		}
 
 		private Token Number()
@@ -104,7 +105,7 @@ namespace SuperCode
 				{
 					int begin = pos;
 					pos += punc.Length;
-					return MakeToken(TokenKind.Punc + i, begin);
+					return MakeToken(TokenFacts.firstPunc + i, begin);
 				}
 			}
 
@@ -112,7 +113,18 @@ namespace SuperCode
 			return MakeToken(TokenKind.Unknown, pos - 1);
 		}
 
+		private Token Keyword(string txt)
+		{
+			foreach (var key in Token.keys)
+				if (key.Key == txt)
+					return MakeToken(key.Value, txt);
+			return MakeToken(TokenKind.Iden, txt);
+		}
+
 		private Token MakeToken(TokenKind kind, int begin) =>
 			new (kind, src[begin..pos], path, line);
+
+		private Token MakeToken(TokenKind kind, string txt) =>
+			new(kind, txt, path, line);
 	}
 }

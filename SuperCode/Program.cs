@@ -11,7 +11,6 @@ namespace SuperCode
 
 		private static void Main(string[] _)
 		{
-#pragma warning disable CS0162 // Unreachable code detected
 			var parser = new Parser("Main.sy");
 			var tree = parser.Parse();
 			tree.Print(Console.Out);
@@ -30,9 +29,6 @@ namespace SuperCode
 			int result = RunJIT(module, mainFn);
 			Console.ForegroundColor = ConsoleColor.White;
 			Console.WriteLine($"Returned {result}");
-
-#pragma warning restore CS0162 // Unreachable code detected
-		Wait:
 			Console.ReadKey();
 		}
 
@@ -42,8 +38,7 @@ namespace SuperCode
 			var fn = module.AddFunction("Main", fnTy);
 			var entry = fn.AppendBasicBlock("Entry");
 			builder.PositionAtEnd(entry);
-			var ret = node.Build(builder);
-			builder.BuildRet(ret);
+			node.Build(builder);
 			return fn;
 		}
 

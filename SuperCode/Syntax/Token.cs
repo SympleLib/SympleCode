@@ -1,4 +1,6 @@
-﻿namespace SuperCode
+﻿using System.Collections.Generic;
+
+namespace SuperCode
 {
 	public enum TokenKind
 	{
@@ -16,15 +18,18 @@
 
 		Eql,
 
+		Semicol,
+
+		VarKey,
+
 		Count,
-		Punc = Plus,
 	}
 
 	public struct Token
 	{
-		public static readonly Token error = new (TokenKind.Unknown, "", "", 0);
+		public static readonly Token error = new(TokenKind.Unknown, "", "", 0);
 		public int binPriority => kind.BinPriority();
-		
+
 		public readonly TokenKind kind;
 		public readonly string text;
 		public readonly string file;
@@ -52,6 +57,12 @@
 		public static readonly string[] puncs = {
 			"+", "-", "*", "/", "%",
 			"=",
+			";",
+		};
+
+		public static readonly Dictionary<string, TokenKind> keys = new ()
+		{
+			{ "var", TokenKind.VarKey },
 		};
 	}
 }

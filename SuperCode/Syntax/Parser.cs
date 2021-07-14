@@ -30,7 +30,7 @@ namespace SuperCode
 		{
 			switch (current.kind)
 			{
-			case TokenKind.Iden:
+			case TokenKind.VarKey:
 				return VarStmt();
 
 			default:
@@ -40,15 +40,17 @@ namespace SuperCode
 
 		private VarStmtAst VarStmt()
 		{
+			var key = Match(TokenKind.VarKey);
 			var name = Match(TokenKind.Iden);
 			var eql = Match(TokenKind.Eql);
 			var init = Expr();
+			var semi = Match(TokenKind.Semicol);
 
-			return new (name, eql, init);
+			return new (key, name, eql, init, semi);
 		}
 
 		private ExprStmtAst ExprStmt() =>
-			new (Expr());
+			new (Expr(), Match(TokenKind.Semicol));
 
 		private ExprAst Expr() =>
 			BinExpr();
@@ -75,6 +77,7 @@ namespace SuperCode
 			switch (current.kind)
 			{
 			case TokenKind.Num:
+			case TokenKind.Iden:
 				return litExpr();
 
 			default:
@@ -83,7 +86,7 @@ namespace SuperCode
 		}
 
 		private LitExprAst litExpr() =>
-			new (Match(TokenKind.Num));
+			new (Next());
 
 		private Token Next()
 		{
@@ -97,8 +100,7 @@ namespace SuperCode
 			if (current.Is(kind))
 				return Next();
 
-			Console.Error.WriteLine($"Expected {kind}, got {current}");
-			return current;
+			throw new InvalidOperationException($"Expected {kind}, got {current}");
 		}
 	}
 }

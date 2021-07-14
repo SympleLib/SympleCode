@@ -8,37 +8,6 @@ namespace SuperCode
 	{
 		public virtual AstKind kind => AstKind.Unknown;
 
-		public Token[] GetTokens()
-		{
-			var fields = GetType().GetFields();
-			var tokens = new List<Token>();
-
-			foreach (var field in fields)
-				if (field.FieldType == typeof(Token))
-				{
-					var token = (Token)field.GetValue(this);
-					tokens.Add(token);
-				}
-
-			return tokens.ToArray();
-		}
-
-		public Ast[] GetChildren()
-		{
-			var fields = GetType().GetFields();
-			var children = new List<Ast>();
-
-			foreach (var field in fields)
-				if (field.FieldType.IsSubclassOf(typeof(Ast)))
-				{
-					var child = (Ast)field.GetValue(this);
-					if (child is not null)
-						children.Add(child);
-				}
-
-			return children.ToArray();
-		}
-
 		private void PrintChildren(TextWriter writer, string indent)
 		{
 			var fields = GetType().GetFields();
@@ -54,6 +23,15 @@ namespace SuperCode
 					var child = (Ast)field.GetValue(this);
 					if (child is not null)
 						child.Print(writer, indent, $"{field.Name}: ", fieldLast);
+				}
+				else if (field.FieldType.IsArray)
+				{
+					foreach (var obj in (Ast[]) field.GetValue(this))
+					{
+						var child = obj;
+						if (child is not null)
+							child.Print(writer, indent, $"[{field.Name[..^1]}] ", fieldLast);
+					}
 				}
 				else if (field.FieldType == typeof(Token))
 				{

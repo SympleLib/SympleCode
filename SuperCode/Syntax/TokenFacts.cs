@@ -2,6 +2,9 @@
 {
 	public static class TokenFacts
 	{
+		public const TokenKind firstPunc = TokenKind.Plus;
+		public const TokenKind firstKey = TokenKind.VarKey;
+
 		public static int BinPriority(this TokenKind kind) =>
 			kind switch
 			{

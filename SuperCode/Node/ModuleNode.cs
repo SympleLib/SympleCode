@@ -14,7 +14,7 @@ namespace SuperCode
 		{
 			foreach (var stmt in stmts)
 				stmt.Build(builder);
-			return builder.BuildRetVoid();
+			return builder.BuildRet(LLVMValueRef.CreateConstInt(LLVMTypeRef.Int32, 0, true));
 		}
 	}
 }
