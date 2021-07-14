@@ -4,15 +4,6 @@ using LLVMSharp.Interop;
 
 namespace SuperCode
 {
-	[StructLayout(LayoutKind.Explicit)]
-	struct FIUnion
-	{
-		[FieldOffset(0)]
-		public float fval;
-		[FieldOffset(0)]
-		public int ival;
-	}
-
 	public class Program
 	{
 		[UnmanagedFunctionPointer(CallingConvention.Cdecl)]
@@ -25,16 +16,31 @@ namespace SuperCode
 			tree.Print(Console.Out);
 			Console.WriteLine();
 
-			var emitter = new Emitter(tree);
-			var module = emitter.Emit();
+			var noder = new Noder(tree);
+			var node = noder.Nodify();
+
+			var module = LLVMModuleRef.CreateWithName("SympleCode");
+			var builder = LLVMBuilderRef.Create(module.Context);
+			var mainFn = BuildMain(module, builder, node);
 
 			Console.ForegroundColor = ConsoleColor.DarkGreen;
-			Console.WriteLine(emitter.mainFn);
+			Console.WriteLine(mainFn);
 
-			var result = new FIUnion { ival = RunJIT(module, emitter.runFn) };
+			int result = RunJIT(module, mainFn);
 			Console.ForegroundColor = ConsoleColor.White;
-			Console.WriteLine($"Returned {result.fval}");
+			Console.WriteLine($"Returned {result}");
 			Console.ReadKey();
+		}
+
+		private static LLVMValueRef BuildMain(LLVMModuleRef module, LLVMBuilderRef builder, Node node)
+		{
+			var fnTy = LLVMTypeRef.CreateFunction(LLVMTypeRef.Int32, Array.Empty<LLVMTypeRef>());
+			var fn = module.AddFunction("Main", fnTy);
+			var entry = fn.AppendBasicBlock("Entry");
+			builder.PositionAtEnd(entry);
+			var ret = node.Build(builder);
+			builder.BuildRet(ret);
+			return fn;
 		}
 
 		private static int RunJIT(LLVMModuleRef module, LLVMValueRef runFn)

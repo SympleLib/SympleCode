@@ -17,7 +17,7 @@ namespace SuperCode
 		public Lexer(string path)
 		{
 			this.path = path;
-			src = File.ReadAllText("../../../../" + path);
+			src = File.ReadAllText("../../../" + path);
 			line = 1;
 			pos = 0;
 		}

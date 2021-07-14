@@ -1,4 +1,8 @@
-﻿namespace SuperCode
+﻿using System;
+
+using LLVMSharp.Interop;
+
+namespace SuperCode
 {
 	public enum BinOp
 	{
@@ -22,5 +26,27 @@
 		}
 
 		public override NodeKind kind => NodeKind.BinExpr;
+		public override LLVMValueRef Build(LLVMBuilderRef builder)
+		{
+			var lhs = left.Build(builder);
+			var rhs = right.Build(builder);
+
+			switch (op)
+			{
+			case BinOp.Add:
+				return builder.BuildAdd(lhs, rhs);
+			case BinOp.Sub:
+				return builder.BuildSub(lhs, rhs);
+			case BinOp.Mul:
+				return builder.BuildMul(lhs, rhs);
+			case BinOp.Div:
+				return builder.BuildSDiv(lhs, rhs);
+			case BinOp.Mod:
+				return builder.BuildSRem(lhs, rhs);
+
+			default:
+				throw new InvalidOperationException("Invalid bin-op");
+			}
+		}
 	}
 }

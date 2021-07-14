@@ -2,6 +2,6 @@
 
 namespace SuperCode
 {
-	public class ExprNode: Node
+	public abstract class ExprNode: Node
 	{ public LLVMTypeRef type { get; protected set; } = LLVMTypeRef.Int32; }
 }
