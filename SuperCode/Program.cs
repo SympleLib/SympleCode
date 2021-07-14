@@ -16,7 +16,6 @@ namespace SuperCode
 			var tree = parser.Parse();
 			tree.Print(Console.Out);
 			Console.WriteLine();
-			goto Wait;
 
 			var noder = new Noder(tree);
 			var node = noder.Nodify();

@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 
 namespace SuperCode
 {
@@ -15,8 +16,15 @@ namespace SuperCode
 			tokens = lexer.Lex();
 		}
 
-		public Ast Parse() =>
-			Stmt();
+		public ModuleAst Parse()
+		{
+			var stmts = new List<StmtAst>();
+			while (!current.Is(TokenKind.Eof))
+				stmts.Add(Stmt());
+
+			var eof = Next();
+			return new ModuleAst(stmts.ToArray(), eof);
+		}
 
 		private StmtAst Stmt()
 		{

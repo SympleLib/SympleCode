@@ -1,16 +1,39 @@
 ﻿using System;
+using System.Collections.Generic;
 
 namespace SuperCode
 {
 	public class Noder
 	{
-		public readonly Ast tree;
+		public readonly ModuleAst module;
 
-		public Noder(Ast ast) =>
-			tree = ast;
+		public Noder(ModuleAst module) =>
+			this.module = module;
 
-		public Node Nodify() =>
-			Nodify((ExprAst) tree);
+		public ModuleNode Nodify()
+		{
+			var stmts = new List<StmtNode>();
+			foreach (var stmt in module.stmts)
+				stmts.Add(Nodify(stmt));
+			return new ModuleNode(stmts.ToArray());
+		}
+
+		private StmtNode Nodify(StmtAst stmt)
+		{
+			switch (stmt.kind)
+			{
+			case AstKind.VarStmt:
+				return Nodify((VarStmtAst) stmt);
+			case AstKind.ExprStmt:
+				return Nodify(((ExprStmtAst) stmt).expr);
+
+			default:
+				throw new InvalidOperationException("Invalid stmt");
+			}
+		}
+
+		private VarStmtNode Nodify(VarStmtAst stmt) =>
+			new (stmt.name.text, Nodify(stmt.init));
 
 		private ExprNode Nodify(ExprAst expr)
 		{

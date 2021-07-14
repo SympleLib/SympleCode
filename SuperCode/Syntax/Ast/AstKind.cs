@@ -4,6 +4,8 @@
 	{
 		Unknown,
 
+		Module,
+
 		VarStmt,
 		ExprStmt,
 

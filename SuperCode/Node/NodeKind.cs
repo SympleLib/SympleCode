@@ -4,6 +4,8 @@
 	{
 		Unknown,
 
+		VarStmt,
+
 		NumExpr,
 		BinExpr,
 	}
