@@ -3,18 +3,21 @@
 	public enum TokenKind
 	{
 		Unknown,
+		Eof,
 
-		Identifier,
-		Number,
+		Iden,
+		Num,
 
 		Plus,
-		Minus,
+		Dash,
 		Star,
 		Slash,
 		Percent,
 
+		Eql,
+
 		Count,
-		Punctuator = Plus,
+		Punc = Plus,
 	}
 
 	public struct Token
@@ -46,8 +49,9 @@
 		public override string ToString() =>
 			$"{file}:{line}> {kind} `{text}`";
 
-		public static readonly string[] punctuators = {
+		public static readonly string[] puncs = {
 			"+", "-", "*", "/", "%",
+			"=",
 		};
 	}
 }

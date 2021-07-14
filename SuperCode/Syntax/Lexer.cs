@@ -71,7 +71,7 @@ namespace SuperCode
 			while (char.IsLetterOrDigit(current) || current == '_' || current == '$' ||
 				current == '-') // <-- This ones for you, Swerdlow
 				Next();
-			return MakeToken(TokenKind.Identifier, begin);
+			return MakeToken(TokenKind.Iden, begin);
 		}
 
 		private Token Number()
@@ -92,19 +92,19 @@ namespace SuperCode
 				Next();
 			}
 
-			return MakeToken(TokenKind.Number, begin);
+			return MakeToken(TokenKind.Num, begin);
 		}
 
 		private Token Punctuator()
 		{
-			for (int i = 0; i < Token.punctuators.Length; i++)
+			for (int i = 0; i < Token.puncs.Length; i++)
 			{
-				string punc = Token.punctuators[i];
+				string punc = Token.puncs[i];
 				if (src[pos..(pos + punc.Length)] == punc)
 				{
 					int begin = pos;
 					pos += punc.Length;
-					return MakeToken(TokenKind.Punctuator + i, begin);
+					return MakeToken(TokenKind.Punc + i, begin);
 				}
 			}
 

@@ -30,7 +30,7 @@ namespace SuperCode
 		{
 			switch (expr.literal.kind)
 			{
-			case TokenKind.Number:
+			case TokenKind.Num:
 				return new NumExprNode(ulong.Parse(expr.literal.text));
 
 			default:
@@ -48,7 +48,7 @@ namespace SuperCode
 			case TokenKind.Plus:
 				op = BinOp.Add;
 				goto BinExpr;
-			case TokenKind.Minus:
+			case TokenKind.Dash:
 				op = BinOp.Sub;
 				goto BinExpr;
 			case TokenKind.Star:

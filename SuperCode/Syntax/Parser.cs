@@ -16,7 +16,31 @@ namespace SuperCode
 		}
 
 		public Ast Parse() =>
-			Expr();
+			Stmt();
+
+		private StmtAst Stmt()
+		{
+			switch (current.kind)
+			{
+			case TokenKind.Iden:
+				return VarStmt();
+
+			default:
+				return ExprStmt();
+			}
+		}
+
+		private VarStmtAst VarStmt()
+		{
+			var name = Match(TokenKind.Iden);
+			var eql = Match(TokenKind.Eql);
+			var init = Expr();
+
+			return new (name, eql, init);
+		}
+
+		private ExprStmtAst ExprStmt() =>
+			new (Expr());
 
 		private ExprAst Expr() =>
 			BinExpr();
@@ -42,7 +66,7 @@ namespace SuperCode
 		{
 			switch (current.kind)
 			{
-			case TokenKind.Number:
+			case TokenKind.Num:
 				return litExpr();
 
 			default:
@@ -51,7 +75,7 @@ namespace SuperCode
 		}
 
 		private LitExprAst litExpr() =>
-			new (Match(TokenKind.Number));
+			new (Match(TokenKind.Num));
 
 		private Token Next()
 		{

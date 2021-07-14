@@ -11,10 +11,12 @@ namespace SuperCode
 
 		private static void Main(string[] _)
 		{
+#pragma warning disable CS0162 // Unreachable code detected
 			var parser = new Parser("Main.sy");
 			var tree = parser.Parse();
 			tree.Print(Console.Out);
 			Console.WriteLine();
+			goto Wait;
 
 			var noder = new Noder(tree);
 			var node = noder.Nodify();
@@ -29,6 +31,9 @@ namespace SuperCode
 			int result = RunJIT(module, mainFn);
 			Console.ForegroundColor = ConsoleColor.White;
 			Console.WriteLine($"Returned {result}");
+
+#pragma warning restore CS0162 // Unreachable code detected
+		Wait:
 			Console.ReadKey();
 		}
 

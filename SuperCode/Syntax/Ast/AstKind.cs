@@ -4,7 +4,14 @@
 	{
 		Unknown,
 
+		VarStmt,
+		ExprStmt,
+
 		LitExpr,
 		BinExpr,
+
+		Count,
+		Stmt = VarStmt,
+		Expr = LitExpr,
 	}
 }

@@ -53,7 +53,7 @@ namespace SuperCode
 				{
 					var child = (Ast)field.GetValue(this);
 					if (child is not null)
-						child.Print(writer, indent, fieldLast);
+						child.Print(writer, indent, $"{field.Name}: ", fieldLast);
 				}
 				else if (field.FieldType == typeof(Token))
 				{
@@ -63,23 +63,26 @@ namespace SuperCode
 						Console.ForegroundColor = ConsoleColor.Cyan;
 					writer.Write(prefix);
 					if (toConsole)
-						Console.ForegroundColor = ConsoleColor.Green;
+						Console.ForegroundColor = ConsoleColor.DarkGray;
 					writer.Write($"{field.Name}: ");
 					if (toConsole)
-						Console.ForegroundColor = ConsoleColor.Yellow;
+						Console.ForegroundColor = ConsoleColor.DarkYellow;
 					var token = (Token)field.GetValue(this);
 					writer.WriteLine(token);
 				}
 			}
 		}
 
-		public void Print(TextWriter writer, string indent = "", bool last = true)
+		public void Print(TextWriter writer, string indent = "", string prefix = "", bool last = true)
 		{
 			bool toConsole = writer == Console.Out;
-			string prefix = indent + (last ? "└──" : "├──");
+			string before = indent + (last ? "└──" : "├──");
 
 			if (toConsole)
 				Console.ForegroundColor = ConsoleColor.Cyan;
+			writer.Write(before);
+			if (toConsole)
+				Console.ForegroundColor = ConsoleColor.DarkGray;
 			writer.Write(prefix);
 			if (toConsole)
 				Console.ForegroundColor = ConsoleColor.Green;
