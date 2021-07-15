@@ -11,7 +11,7 @@ namespace SuperCode
 		public VarExprNode(string name) =>
 			this.name = name;
 
-		public override LLVMValueRef Build(LLVMBuilderRef builder) =>
-			throw new NotImplementedException();
+		public override LLVMValueRef Build(LLVMModuleRef module, LLVMBuilderRef builder) =>
+			builder.BuildLoad(VarStmtNode.vars[name]);
 	}
 }

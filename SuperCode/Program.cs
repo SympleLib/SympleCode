@@ -24,7 +24,7 @@ namespace SuperCode
 			var mainFn = BuildMain(module, builder, node);
 
 			Console.ForegroundColor = ConsoleColor.DarkGreen;
-			Console.WriteLine(mainFn);
+			Console.WriteLine(module);
 
 			int result = RunJIT(module, mainFn);
 			Console.ForegroundColor = ConsoleColor.White;
@@ -38,7 +38,7 @@ namespace SuperCode
 			var fn = module.AddFunction("Main", fnTy);
 			var entry = fn.AppendBasicBlock("Entry");
 			builder.PositionAtEnd(entry);
-			node.Build(builder);
+			node.Build(module, builder);
 			return fn;
 		}
 

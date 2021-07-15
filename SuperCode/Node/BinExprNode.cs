@@ -26,10 +26,10 @@ namespace SuperCode
 		}
 
 		public override NodeKind kind => NodeKind.BinExpr;
-		public override LLVMValueRef Build(LLVMBuilderRef builder)
+		public override LLVMValueRef Build(LLVMModuleRef module, LLVMBuilderRef builder)
 		{
-			var lhs = left.Build(builder);
-			var rhs = right.Build(builder);
+			var lhs = left.Build(module, builder);
+			var rhs = right.Build(module, builder);
 
 			switch (op)
 			{

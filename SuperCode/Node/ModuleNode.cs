@@ -10,10 +10,10 @@ namespace SuperCode
 		public ModuleNode(StmtNode[] stmts) =>
 			this.stmts = stmts;
 
-		public override LLVMValueRef Build(LLVMBuilderRef builder)
+		public override LLVMValueRef Build(LLVMModuleRef module, LLVMBuilderRef builder)
 		{
 			foreach (var stmt in stmts)
-				stmt.Build(builder);
+				stmt.Build(module, builder);
 			return builder.BuildRet(LLVMValueRef.CreateConstInt(LLVMTypeRef.Int32, 0, true));
 		}
 	}

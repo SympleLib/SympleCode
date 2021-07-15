@@ -9,7 +9,7 @@ namespace SuperCode
 	{
 		public virtual NodeKind kind => NodeKind.Unknown;
 
-		public abstract LLVMValueRef Build(LLVMBuilderRef builder);
+		public abstract LLVMValueRef Build(LLVMModuleRef module, LLVMBuilderRef builder);
 
 		public Node[] GetChildren()
 		{

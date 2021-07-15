@@ -1,9 +1,14 @@
-﻿using LLVMSharp.Interop;
+﻿using System.Collections.Generic;
+
+using LLVMSharp.Interop;
 
 namespace SuperCode
 {
 	public class VarStmtNode: StmtNode
 	{
+		// TODO: Don't chez
+		public static readonly Dictionary<string, LLVMValueRef> vars = new ();
+
 		public readonly string name;
 		public readonly ExprNode init;
 
@@ -14,11 +19,15 @@ namespace SuperCode
 		}
 
 		public override NodeKind kind => NodeKind.VarStmt;
-		public override LLVMValueRef Build(LLVMBuilderRef builder)
+		public override LLVMValueRef Build(LLVMModuleRef module, LLVMBuilderRef builder)
 		{
-			var ptr = builder.BuildAlloca(LLVMTypeRef.Int32, name);
-			builder.BuildStore(init.Build(builder), ptr);
-			return ptr;
+			var var = builder.BuildAlloca(LLVMTypeRef.Int32);
+			var val = init.Build(module, builder);
+			builder.BuildStore(val, var);
+
+			vars.Add(name, var);
+
+			return var;
 		}
 	}
 }

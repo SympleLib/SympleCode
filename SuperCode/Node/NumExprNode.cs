@@ -13,7 +13,7 @@ namespace SuperCode
 		}
 
 		public override NodeKind kind => NodeKind.NumExpr;
-		public override LLVMValueRef Build(LLVMBuilderRef builder) =>
+		public override LLVMValueRef Build(LLVMModuleRef module, LLVMBuilderRef builder) =>
 			LLVMValueRef.CreateConstInt(type, value, true);
 	}
 }

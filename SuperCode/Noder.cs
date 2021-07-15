@@ -53,6 +53,8 @@ namespace SuperCode
 		{
 			switch (expr.literal.kind)
 			{
+			case TokenKind.Iden:
+				return new VarExprNode(expr.literal.text);
 			case TokenKind.Num:
 				return new NumExprNode(ulong.Parse(expr.literal.text));
 
