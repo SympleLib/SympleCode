@@ -16,10 +16,13 @@ namespace SuperCode
 		Slash,
 		Percent,
 
-		Eql,
-		Arrow,
+		LeftBrace,
+		RightBrace,
 
 		Semicol,
+
+		Eql,
+		Arrow,
 
 		VarKey,
 		FuncKey,
@@ -58,8 +61,9 @@ namespace SuperCode
 
 		public static readonly string[] puncs = {
 			"+", "-", "*", "/", "%",
-			"=", "->",
+			"{", "}",
 			";",
+			"=", "->",
 		};
 
 		public static readonly Dictionary<string, TokenKind> keys = new ()

@@ -8,6 +8,8 @@ namespace SuperCode
 		public readonly Token key;
 		public readonly Token name;
 		public readonly Token arrow;
+		public readonly Token open;
+		public readonly Token close;
 		public readonly StmtAst[] stmts;
 
 		public FuncMemAst(Token key, Token name, Token arrow, StmtAst[] stmts)
@@ -15,6 +17,15 @@ namespace SuperCode
 			this.key = key;
 			this.name = name;
 			this.arrow = arrow;
+			this.stmts = stmts;
+		}
+
+		public FuncMemAst(Token key, Token name, Token open, Token close, StmtAst[] stmts)
+		{
+			this.key = key;
+			this.name = name;
+			this.open = open;
+			this.close = close;
 			this.stmts = stmts;
 		}
 

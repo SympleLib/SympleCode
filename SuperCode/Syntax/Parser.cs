@@ -43,10 +43,24 @@ namespace SuperCode
 			var key = Match(TokenKind.FuncKey);
 			var name = Match(TokenKind.Iden);
 			var arrow = Match(TokenKind.Arrow);
+			var stmts = new List<StmtAst>();
 
-			var stmts = new List<StmtAst>()
-			{ Stmt() };
+			if (current.Is(TokenKind.LeftBrace))
+			{
+				var open = Next();
+				while (!current.Is(TokenKind.RightBrace))
+				{
+					if (current.Is(TokenKind.Eof))
+						throw new InvalidOperationException("Finish ur code dude");
 
+					stmts.Add(Stmt());
+				}
+
+				var close = Next();
+				return new FuncMemAst(key, name, open, close, stmts.ToArray());
+			}
+
+			stmts.Add(Stmt());
 			return new FuncMemAst(key, name, arrow, stmts.ToArray());
 		}
 

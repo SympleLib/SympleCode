@@ -88,7 +88,7 @@ namespace SuperCode
 				if (current == '.')
 				{
 					if (didDot)
-						throw new Exception("Tooo many dots for poor number to handle");
+						throw new InvalidOperationException("Tooo many dots for poor number to handle");
 					didDot = true;
 					if (!char.IsDigit(next))
 						break;

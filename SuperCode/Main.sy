@@ -1,2 +1,5 @@
 ﻿func Run ->
-	var test = 6 * 9;
+{
+	var x = 6 * 9;
+	var y = x + x;
+}
