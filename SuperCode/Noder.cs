@@ -13,8 +13,8 @@ namespace SuperCode
 		public ModuleNode Nodify()
 		{
 			var stmts = new List<StmtNode>();
-			foreach (var stmt in module.stmts)
-				stmts.Add(Nodify(stmt));
+			//foreach (var mem in module.mems)
+				//stmts.Add(Nodify(mem));
 			return new ModuleNode(stmts.ToArray());
 		}
 

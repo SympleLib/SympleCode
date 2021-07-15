@@ -6,7 +6,7 @@ namespace SuperCode
 {
 	public class VarStmtNode: StmtNode
 	{
-		// TODO: Don't chez
+		// TODO: donut chez
 		public static readonly Dictionary<string, LLVMValueRef> vars = new ();
 
 		public readonly string name;

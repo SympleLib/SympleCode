@@ -1,4 +1,6 @@
-﻿using System;
+﻿#define SYNTAX_ONLY
+
+using System;
 using System.Runtime.InteropServices;
 using LLVMSharp.Interop;
 
@@ -12,9 +14,16 @@ namespace SuperCode
 		private static void Main(string[] _)
 		{
 			var parser = new Parser("Main.sy");
+			Console.ForegroundColor = ConsoleColor.DarkGreen;
+			foreach (var tok in parser.tokens)
+				Console.WriteLine(tok);
+			Console.WriteLine();
+
 			var tree = parser.Parse();
 			tree.Print(Console.Out);
 			Console.WriteLine();
+
+#if !SYNTAX_ONLY
 
 			var noder = new Noder(tree);
 			var node = noder.Nodify();
@@ -29,9 +38,11 @@ namespace SuperCode
 			int result = RunJIT(module, mainFn);
 			Console.ForegroundColor = ConsoleColor.White;
 			Console.WriteLine($"Returned {result}");
+#endif
 			Console.ReadKey();
 		}
 
+#if !SYNTAX_ONLY
 		private static LLVMValueRef BuildMain(LLVMModuleRef module, LLVMBuilderRef builder, Node node)
 		{
 			var fnTy = LLVMTypeRef.CreateFunction(LLVMTypeRef.Int32, Array.Empty<LLVMTypeRef>());
@@ -60,5 +71,6 @@ namespace SuperCode
 			var exec = (Run) Marshal.GetDelegateForFunctionPointer(engine.GetPointerToGlobal(runFn), typeof(Run));
 			return exec();
 		}
+#endif
 	}
 }

@@ -17,10 +17,12 @@ namespace SuperCode
 		Percent,
 
 		Eql,
+		Arrow,
 
 		Semicol,
 
 		VarKey,
+		FuncKey,
 
 		Count,
 	}
@@ -56,13 +58,14 @@ namespace SuperCode
 
 		public static readonly string[] puncs = {
 			"+", "-", "*", "/", "%",
-			"=",
+			"=", "->",
 			";",
 		};
 
 		public static readonly Dictionary<string, TokenKind> keys = new ()
 		{
 			{ "var", TokenKind.VarKey },
+			{ "func", TokenKind.FuncKey },
 		};
 	}
 }

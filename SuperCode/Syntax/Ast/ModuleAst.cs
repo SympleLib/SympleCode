@@ -2,12 +2,12 @@
 {
 	public class ModuleAst: Ast
 	{
-		public readonly StmtAst[] stmts;
+		public readonly MemAst[] mems;
 		public readonly Token eof;
 
-		public ModuleAst(StmtAst[] stmts, Token eof)
+		public ModuleAst(MemAst[] mems, Token eof)
 		{
-			this.stmts = stmts;
+			this.mems = mems;
 			this.eof = eof;
 		}
 

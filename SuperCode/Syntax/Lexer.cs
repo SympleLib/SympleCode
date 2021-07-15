@@ -68,9 +68,12 @@ namespace SuperCode
 
 		private Token Identifier()
 		{
+			bool IsIden(char c) =>
+				char.IsLetterOrDigit(c) || c == '_' || c == '$';
+
 			int begin = pos;
-			while (char.IsLetterOrDigit(current) || current == '_' || current == '$' ||
-				current == '-') // <-- This ones for you, Swerdlow
+			while (IsIden(current) ||
+				(current == '-' && IsIden(next))) // <-- This ones for you, Swerdlow
 				Next();
 			return Keyword(src[begin..pos]);
 		}
@@ -98,10 +101,18 @@ namespace SuperCode
 
 		private Token Punctuator()
 		{
-			for (int i = 0; i < Token.puncs.Length; i++)
+			for (int i = Token.puncs.Length - 1; i >= 0; i--)
 			{
 				string punc = Token.puncs[i];
-				if (src[pos..(pos + punc.Length)] == punc)
+				bool works = true;
+				for (int j = 0; j < punc.Length; j++)
+					if (src[pos + j] != punc[j])
+					{
+						works = false;
+						break;
+					}
+
+				if (works)
 				{
 					int begin = pos;
 					pos += punc.Length;

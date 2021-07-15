@@ -18,12 +18,36 @@ namespace SuperCode
 
 		public ModuleAst Parse()
 		{
-			var stmts = new List<StmtAst>();
+			var mems = new List<MemAst>();
 			while (!current.Is(TokenKind.Eof))
-				stmts.Add(Stmt());
+				mems.Add(Mem());
 
 			var eof = Next();
-			return new ModuleAst(stmts.ToArray(), eof);
+			return new ModuleAst(mems.ToArray(), eof);
+		}
+
+		private MemAst Mem()
+		{
+			switch (current.kind)
+			{
+			case TokenKind.FuncKey:
+				return FuncMem();
+
+			default:
+				throw new InvalidOperationException("Invlid mem");
+			}
+		}
+
+		private FuncMemAst FuncMem()
+		{
+			var key = Match(TokenKind.FuncKey);
+			var name = Match(TokenKind.Iden);
+			var arrow = Match(TokenKind.Arrow);
+
+			var stmts = new List<StmtAst>()
+			{ Stmt() };
+
+			return new FuncMemAst(key, name, arrow, stmts.ToArray());
 		}
 
 		private StmtAst Stmt()
@@ -81,7 +105,7 @@ namespace SuperCode
 				return litExpr();
 
 			default:
-				throw new Exception("Expected expr");
+				throw new InvalidOperationException("Expected expr");
 			}
 		}
 

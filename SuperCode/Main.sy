@@ -1,2 +1,2 @@
-﻿var LEET = 1337;
-var I-am = LEET;
+﻿func Main ->
+	var test = 6 * 9;
