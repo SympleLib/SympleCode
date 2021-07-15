@@ -1,2 +1,2 @@
-﻿func Main ->
+﻿func Run ->
 	var test = 6 * 9;

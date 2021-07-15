@@ -17,5 +17,7 @@ namespace SuperCode
 			this.arrow = arrow;
 			this.stmts = stmts;
 		}
+
+		public override AstKind kind => AstKind.FuncMem;
 	}
 }

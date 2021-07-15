@@ -12,10 +12,32 @@ namespace SuperCode
 
 		public ModuleNode Nodify()
 		{
+			var mems = new List<MemNode>();
+			foreach (var mem in module.mems)
+				mems.Add(Nodify(mem));
+			return new ModuleNode(mems.ToArray());
+		}
+
+		private MemNode Nodify(MemAst mem)
+		{
+			switch (mem.kind)
+			{
+			case AstKind.FuncMem:
+				return Nodify((FuncMemAst) mem);
+
+			default:
+				throw new InvalidOperationException("Invalid mem");
+			}
+		}
+
+		private FuncMemNode Nodify(FuncMemAst mem)
+		{
+			string name = mem.name.text;
 			var stmts = new List<StmtNode>();
-			//foreach (var mem in module.mems)
-				//stmts.Add(Nodify(mem));
-			return new ModuleNode(stmts.ToArray());
+			foreach (var stmt in mem.stmts)
+				stmts.Add(Nodify(stmt));
+
+			return new FuncMemNode(name, stmts.ToArray());
 		}
 
 		private StmtNode Nodify(StmtAst stmt)

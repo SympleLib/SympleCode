@@ -3,8 +3,9 @@
 	public enum AstKind
 	{
 		Unknown,
-
 		Module,
+
+		FuncMem,
 
 		VarStmt,
 		ExprStmt,

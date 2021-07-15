@@ -1,4 +1,4 @@
-﻿#define SYNTAX_ONLY
+﻿//#define SYNTAX_ONLY
 
 using System;
 using System.Runtime.InteropServices;
@@ -9,7 +9,7 @@ namespace SuperCode
 	public class Program
 	{
 		[UnmanagedFunctionPointer(CallingConvention.Cdecl)]
-		public delegate int Run();
+		public delegate void Run();
 
 		private static void Main(string[] _)
 		{
@@ -30,30 +30,19 @@ namespace SuperCode
 
 			var module = LLVMModuleRef.CreateWithName("SympleCode");
 			var builder = LLVMBuilderRef.Create(module.Context);
-			var mainFn = BuildMain(module, builder, node);
+			node.Build(module, builder);
 
 			Console.ForegroundColor = ConsoleColor.DarkGreen;
 			Console.WriteLine(module);
 
-			int result = RunJIT(module, mainFn);
 			Console.ForegroundColor = ConsoleColor.White;
-			Console.WriteLine($"Returned {result}");
+			RunJIT(module);
 #endif
 			Console.ReadKey();
 		}
 
 #if !SYNTAX_ONLY
-		private static LLVMValueRef BuildMain(LLVMModuleRef module, LLVMBuilderRef builder, Node node)
-		{
-			var fnTy = LLVMTypeRef.CreateFunction(LLVMTypeRef.Int32, Array.Empty<LLVMTypeRef>());
-			var fn = module.AddFunction("Main", fnTy);
-			var entry = fn.AppendBasicBlock("Entry");
-			builder.PositionAtEnd(entry);
-			node.Build(module, builder);
-			return fn;
-		}
-
-		private static int RunJIT(LLVMModuleRef module, LLVMValueRef runFn)
+		private static void RunJIT(LLVMModuleRef module)
 		{
 			LLVM.LinkInMCJIT();
 			LLVM.InitializeNativeTarget();
@@ -68,8 +57,8 @@ namespace SuperCode
 			if (!module.TryCreateMCJITCompiler(out var engine, ref options, out err))
 				Console.Error.WriteLine(err);
 
-			var exec = (Run) Marshal.GetDelegateForFunctionPointer(engine.GetPointerToGlobal(runFn), typeof(Run));
-			return exec();
+			var exec = (Run) Marshal.GetDelegateForFunctionPointer(engine.GetPointerToGlobal(module.GetNamedFunction("Run")), typeof(Run));
+			exec();
 		}
 #endif
 	}
