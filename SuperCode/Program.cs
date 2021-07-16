@@ -62,6 +62,7 @@ namespace SuperCode
 
 			var cg = new CodeGen(node);
 			var module = cg.Gen();
+			cg.Optimize();
 
 			Console.ForegroundColor = ConsoleColor.DarkGreen;
 			Console.WriteLine(module);

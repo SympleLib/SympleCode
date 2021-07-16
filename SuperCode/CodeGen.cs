@@ -8,6 +8,7 @@ namespace SuperCode
 	public class CodeGen
 	{
 		private static readonly Dictionary<string, LLVMValueRef> vars = new ();
+		private static readonly Dictionary<string, LLVMValueRef> funcs = new ();
 
 		public readonly ModuleNode modNode;
 		public readonly LLVMModuleRef module;
@@ -25,6 +26,20 @@ namespace SuperCode
 			foreach (var mem in modNode.mems)
 				Gen(mem);
 			return module;
+		}
+
+		public void Optimize()
+		{
+			var pass = LLVMPassManagerRef.Create();
+			pass.AddGVNPass();
+			pass.AddReassociatePass();
+			pass.AddCFGSimplificationPass();
+			pass.AddInstructionCombiningPass();
+			pass.InitializeFunctionPassManager();
+
+			foreach (var func in funcs)
+				pass.RunFunctionPassManager(func.Value);
+			pass.Run(module);
 		}
 
 		private LLVMValueRef Gen(Node node)
