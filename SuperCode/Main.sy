@@ -1,4 +1,4 @@
-﻿func Run()
+﻿func Run ->
 {
 	var x = 6 * 9;
 	var y = x + x;

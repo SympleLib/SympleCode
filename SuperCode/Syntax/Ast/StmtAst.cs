@@ -1,8 +1,6 @@
-﻿using System;
-
-namespace SuperCode
+﻿namespace SuperCode
 {
-	public class StmtAst: Ast
+	public abstract class StmtAst: Ast
 	{
 		public readonly Token semicol;
 

@@ -1,31 +1,12 @@
 ﻿using System;
 using System.IO;
 using System.Collections.Generic;
-using LLVMSharp.Interop;
 
 namespace SuperCode
 {
 	public abstract class Node
 	{
-		public virtual NodeKind kind => NodeKind.Unknown;
-
-		public abstract LLVMValueRef Build(LLVMModuleRef module, LLVMBuilderRef builder);
-
-		public Node[] GetChildren()
-		{
-			var fields = GetType().GetFields();
-			var children = new List<Node>();
-
-			foreach (var field in fields)
-				if (field.FieldType.IsSubclassOf(typeof(Node)))
-				{
-					var child = (Node) field.GetValue(this);
-					if (child is not null)
-						children.Add(child);
-				}
-
-			return children.ToArray();
-		}
+		public abstract NodeKind kind { get; }
 
 		private void PrintChildren(TextWriter writer, string indent)
 		{

@@ -1,8 +1,4 @@
-﻿using System;
-
-using LLVMSharp.Interop;
-
-namespace SuperCode
+﻿namespace SuperCode
 {
 	public class VarExprNode: ExprNode
 	{
@@ -11,7 +7,6 @@ namespace SuperCode
 		public VarExprNode(string name) =>
 			this.name = name;
 
-		public override LLVMValueRef Build(LLVMModuleRef module, LLVMBuilderRef builder) =>
-			builder.BuildLoad(VarStmtNode.vars[name]);
+		public override NodeKind kind => NodeKind.VarExpr;
 	}
 }

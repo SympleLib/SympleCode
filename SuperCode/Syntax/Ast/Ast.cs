@@ -4,9 +4,9 @@ using System.Collections.Generic;
 
 namespace SuperCode
 {
-	public class Ast
+	public abstract class Ast
 	{
-		public virtual AstKind kind => AstKind.Unknown;
+		public abstract AstKind kind { get; }
 
 		private void PrintChildren(TextWriter writer, string indent)
 		{

@@ -1,5 +1,5 @@
 ﻿namespace SuperCode
 {
-	public class MemAst: Ast
+	public abstract class MemAst: Ast
 	{ }
 }

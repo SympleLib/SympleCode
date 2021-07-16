@@ -2,7 +2,6 @@
 {
 	public enum AstKind
 	{
-		Unknown,
 		Module,
 
 		FuncMem,

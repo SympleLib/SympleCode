@@ -2,7 +2,6 @@
 {
 	public enum NodeKind
 	{
-		Unknown,
 		Module,
 
 		FuncMem,
@@ -11,5 +10,6 @@
 
 		NumExpr,
 		BinExpr,
+		VarExpr,
 	}
 }

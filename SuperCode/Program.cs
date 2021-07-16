@@ -1,4 +1,4 @@
-﻿#define SYNTAX_ONLY
+﻿//#define SYNTAX_ONLY
 
 using System;
 using System.Runtime.InteropServices;
@@ -49,9 +49,7 @@ namespace SuperCode
 				Console.Write(tok.text);
 				pos += tok.text.Length;
 			}
-			Console.WriteLine();
-			Console.ReadKey();
-			return;
+			Console.WriteLine('\n');
 
 			var tree = parser.Parse();
 			tree.Print(Console.Out);
@@ -62,9 +60,8 @@ namespace SuperCode
 			var noder = new Noder(tree);
 			var node = noder.Nodify();
 
-			var module = LLVMModuleRef.CreateWithName("SympleCode");
-			var builder = LLVMBuilderRef.Create(module.Context);
-			node.Build(module, builder);
+			var cg = new CodeGen(node);
+			var module = cg.Gen();
 
 			Console.ForegroundColor = ConsoleColor.DarkGreen;
 			Console.WriteLine(module);
