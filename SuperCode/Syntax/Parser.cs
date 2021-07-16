@@ -9,7 +9,7 @@ namespace SuperCode
 		public readonly Token[] tokens;
 		private int pos;
 
-		private Token current => pos < tokens.Length ? tokens[pos] : Token.error;
+		private Token current => pos < tokens.Length ? tokens[pos] : default;
 		
 		public Parser(string file)
 		{
@@ -43,26 +43,29 @@ namespace SuperCode
 		{
 			var key = Match(TokenKind.FuncKey);
 			var name = Match(TokenKind.Iden);
-			var arrow = Match(TokenKind.Arrow);
+			var openArg = Match(TokenKind.LeftParen);
+			var closeArg = Match(TokenKind.RightParen);
 			var stmts = new List<StmtAst>();
 
-			if (current.Is(TokenKind.LeftBrace))
+			if (current.Is(TokenKind.Arrow))
 			{
-				var open = Next();
-				while (!current.Is(TokenKind.RightBrace))
-				{
-					if (current.Is(TokenKind.Eof))
-						throw new InvalidOperationException("Finish ur code dude");
+				var arrow = Next();
 
-					stmts.Add(Stmt());
-				}
-
-				var close = Next();
-				return new FuncMemAst(key, name, open, close, stmts.ToArray());
+				stmts.Add(Stmt());
+				return new FuncMemAst(key, name, openArg, closeArg, arrow, stmts.ToArray());
 			}
 
-			stmts.Add(Stmt());
-			return new FuncMemAst(key, name, arrow, stmts.ToArray());
+			var open = Match(TokenKind.LeftBrace);
+			while (!current.Is(TokenKind.RightBrace))
+			{
+				if (current.Is(TokenKind.Eof))
+					throw new InvalidOperationException("Finish ur code dude");
+
+				stmts.Add(Stmt());
+			}
+
+			var close = Next();
+			return new FuncMemAst(key, name, openArg, closeArg, open, close, stmts.ToArray());
 		}
 
 		private StmtAst Stmt()

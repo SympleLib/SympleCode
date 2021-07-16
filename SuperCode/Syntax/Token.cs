@@ -18,6 +18,10 @@ namespace SuperCode
 
 		LeftBrace,
 		RightBrace,
+		LeftParen,
+		RightParen,
+		LeftBracket,
+		RightBracket,
 
 		Semicol,
 
@@ -32,7 +36,6 @@ namespace SuperCode
 
 	public struct Token
 	{
-		public static readonly Token error = new(TokenKind.Unknown, "", "", 0, 0);
 		public int binPriority => kind.BinPriority();
 
 		public readonly TokenKind kind;
@@ -63,7 +66,7 @@ namespace SuperCode
 
 		public static readonly string[] puncs = {
 			"+", "-", "*", "/", "%",
-			"{", "}",
+			"{", "}", "(", ")", "[", "]",
 			";",
 			"=", "->",
 		};
