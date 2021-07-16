@@ -32,20 +32,22 @@ namespace SuperCode
 
 	public struct Token
 	{
-		public static readonly Token error = new(TokenKind.Unknown, "", "", 0);
+		public static readonly Token error = new(TokenKind.Unknown, "", "", 0, 0);
 		public int binPriority => kind.BinPriority();
 
 		public readonly TokenKind kind;
 		public readonly string text;
 		public readonly string file;
 		public readonly int line;
+		public readonly int pos;
 
-		public Token(TokenKind kind, string txt, string path, int ln)
+		public Token(TokenKind kind, string txt, string path, int ln, int pos)
 		{
 			this.kind = kind;
 			text = txt;
 			file = path;
 			line = ln;
+			this.pos = pos;
 		}
 
 		public bool Is(params TokenKind[] kinds)

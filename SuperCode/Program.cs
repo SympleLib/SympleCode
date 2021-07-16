@@ -1,4 +1,4 @@
-﻿//#define SYNTAX_ONLY
+﻿#define SYNTAX_ONLY
 
 using System;
 using System.Runtime.InteropServices;
@@ -14,10 +14,44 @@ namespace SuperCode
 		private static void Main(string[] _)
 		{
 			var parser = new Parser("Main.sy");
-			Console.ForegroundColor = ConsoleColor.DarkGreen;
+			// Console.ForegroundColor = ConsoleColor.DarkGreen;
+			int pos = 0;
 			foreach (var tok in parser.tokens)
-				Console.WriteLine(tok);
+			{
+				while (pos < tok.pos)
+					Console.Write(parser.lexer.src[pos++]);
+
+				switch (tok.kind)
+				{
+				case TokenKind.Iden:
+					Console.ForegroundColor = ConsoleColor.White;
+					break;
+				case TokenKind.Num:
+					Console.ForegroundColor = ConsoleColor.Yellow;
+					break;
+
+				default:
+					if (tok.kind >= TokenFacts.firstKey)
+					{
+						Console.ForegroundColor = ConsoleColor.Magenta;
+						break;
+					}
+					else if (tok.kind >= TokenFacts.firstPunc)
+					{
+						Console.ForegroundColor = ConsoleColor.Gray;
+						break;
+					}
+
+					Console.ForegroundColor = ConsoleColor.Red;
+					break;
+				}
+
+				Console.Write(tok.text);
+				pos += tok.text.Length;
+			}
 			Console.WriteLine();
+			Console.ReadKey();
+			return;
 
 			var tree = parser.Parse();
 			tree.Print(Console.Out);

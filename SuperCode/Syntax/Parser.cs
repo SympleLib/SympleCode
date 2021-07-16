@@ -5,6 +5,7 @@ namespace SuperCode
 {
 	public class Parser
 	{
+		public readonly Lexer lexer;
 		public readonly Token[] tokens;
 		private int pos;
 
@@ -12,7 +13,7 @@ namespace SuperCode
 		
 		public Parser(string file)
 		{
-			var lexer = new Lexer(file);
+			lexer = new Lexer(file);
 			tokens = lexer.Lex();
 		}
 

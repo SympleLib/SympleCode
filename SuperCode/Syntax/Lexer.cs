@@ -6,8 +6,8 @@ namespace SuperCode
 {
 	public class Lexer
 	{
-		private readonly string path;
-		private readonly string src;
+		public readonly string path;
+		public readonly string src;
 		private int line;
 		private int pos;
 
@@ -133,9 +133,9 @@ namespace SuperCode
 		}
 
 		private Token MakeToken(TokenKind kind, int begin) =>
-			new (kind, src[begin..pos], path, line);
+			new (kind, src[begin..pos], path, line, begin);
 
 		private Token MakeToken(TokenKind kind, string txt) =>
-			new(kind, txt, path, line);
+			new(kind, txt, path, line, pos - txt.Length);
 	}
 }
