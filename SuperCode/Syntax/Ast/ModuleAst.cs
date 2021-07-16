@@ -2,11 +2,13 @@
 {
 	public class ModuleAst: Ast
 	{
+		public string filename;
 		public readonly MemAst[] mems;
 		public readonly Token eof;
 
-		public ModuleAst(MemAst[] mems, Token eof)
+		public ModuleAst(string file, MemAst[] mems, Token eof)
 		{
+			filename = file;
 			this.mems = mems;
 			this.eof = eof;
 		}

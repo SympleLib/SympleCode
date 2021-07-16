@@ -136,6 +136,6 @@ namespace SuperCode
 			new (kind, src[begin..pos], path, line, begin);
 
 		private Token MakeToken(TokenKind kind, string txt) =>
-			new(kind, txt, path, line, pos - txt.Length);
+			new (kind, txt, path, line, pos - txt.Length);
 	}
 }

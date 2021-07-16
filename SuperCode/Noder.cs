@@ -15,7 +15,7 @@ namespace SuperCode
 			var mems = new List<MemNode>();
 			foreach (var mem in module.mems)
 				mems.Add(Nodify(mem));
-			return new ModuleNode(mems.ToArray());
+			return new ModuleNode(module.filename, mems.ToArray());
 		}
 
 		private MemNode Nodify(MemAst mem)

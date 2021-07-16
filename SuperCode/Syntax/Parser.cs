@@ -24,7 +24,7 @@ namespace SuperCode
 				mems.Add(Mem());
 
 			var eof = Next();
-			return new ModuleAst(mems.ToArray(), eof);
+			return new ModuleAst(lexer.path, mems.ToArray(), eof);
 		}
 
 		private MemAst Mem()
