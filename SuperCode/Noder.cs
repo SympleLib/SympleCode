@@ -56,7 +56,8 @@ namespace SuperCode
 
 		private VarStmtNode Nodify(VarStmtAst stmt)
 		{
-			new (stmt.name.text, Nodify(stmt.init));
+			var ty = stmt.type.builtinType;
+			return new (ty, stmt.name.text, Nodify(stmt.init));
 		}
 
 		private ExprNode Nodify(ExprAst expr)

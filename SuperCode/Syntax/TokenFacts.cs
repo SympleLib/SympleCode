@@ -1,4 +1,8 @@
-﻿namespace SuperCode
+﻿using System;
+
+using LLVMSharp.Interop;
+
+namespace SuperCode
 {
 	public partial struct Token
 	{
@@ -13,6 +17,39 @@
 					"char" or "wchar" or "bool")
 					return true;
 				return false;
+			}
+		}
+
+		public LLVMTypeRef builtinType {
+			get
+			{
+
+				if (kind != TokenKind.Iden)
+					throw new InvalidOperationException("Token is not built-in type");
+
+				switch (text)
+				{
+				case "void":
+					return LLVMTypeRef.Void;
+				case "byte":
+					return LLVMTypeRef.Int8;
+				case "short":
+					return LLVMTypeRef.Int16;
+				case "int":
+					return LLVMTypeRef.Int32;
+				case "long":
+					return LLVMTypeRef.Int64;
+
+				case "char":
+					return LLVMTypeRef.Int8;
+				case "wchar":
+					return LLVMTypeRef.Int32;
+				case "bool":
+					return LLVMTypeRef.Int1;
+
+				default:
+					throw new InvalidOperationException("Token is not built-in type");
+				}
 			}
 		}
 	}
