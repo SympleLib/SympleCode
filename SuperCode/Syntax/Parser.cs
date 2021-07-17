@@ -34,17 +34,16 @@ namespace SuperCode
 		{
 			switch (current.kind)
 			{
-			case TokenKind.FuncKey:
-				return FuncMem();
-
 			default:
+				if (current.isBuiltinType)
+					return FuncMem();
 				throw new InvalidOperationException("Invlid mem");
 			}
 		}
 
 		private FuncMemAst FuncMem()
 		{
-			var key = Match(TokenKind.FuncKey);
+			var ty = Type();
 			var name = Match(TokenKind.Iden);
 			var openArg = Match(TokenKind.LeftParen);
 			var closeArg = Match(TokenKind.RightParen);
@@ -55,7 +54,7 @@ namespace SuperCode
 				var arrow = Next();
 
 				stmts.Add(Stmt());
-				return new FuncMemAst(key, name, openArg, closeArg, arrow, stmts.ToArray());
+				return new FuncMemAst(ty, name, openArg, closeArg, arrow, stmts.ToArray());
 			}
 
 			var open = Match(TokenKind.LeftBrace);
@@ -68,7 +67,7 @@ namespace SuperCode
 			}
 
 			var close = Next();
-			return new FuncMemAst(key, name, openArg, closeArg, open, close, stmts.ToArray());
+			return new FuncMemAst(ty, name, openArg, closeArg, open, close, stmts.ToArray());
 		}
 
 		private StmtAst Stmt()

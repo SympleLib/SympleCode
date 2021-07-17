@@ -5,7 +5,7 @@ namespace SuperCode
 {
 	public class FuncMemAst: MemAst
 	{
-		public readonly Token key;
+		public readonly TypeAst retType;
 		public readonly Token name;
 
 		public readonly Token openArg;
@@ -17,9 +17,9 @@ namespace SuperCode
 		public readonly Token close;
 		public readonly StmtAst[] stmts;
 
-		public FuncMemAst(Token key, Token name, Token openArg, Token closeArg, Token arrow, StmtAst[] stmts)
+		public FuncMemAst(TypeAst retType, Token name, Token openArg, Token closeArg, Token arrow, StmtAst[] stmts)
 		{
-			this.key = key;
+			this.retType = retType;
 			this.name = name;
 
 			this.openArg = openArg;
@@ -29,9 +29,9 @@ namespace SuperCode
 			this.stmts = stmts;
 		}
 
-		public FuncMemAst(Token key, Token name, Token openArg, Token closeArg, Token open, Token close, StmtAst[] stmts)
+		public FuncMemAst(TypeAst retType, Token name, Token openArg, Token closeArg, Token open, Token close, StmtAst[] stmts)
 		{
-			this.key = key;
+			this.retType = retType;
 			this.name = name;
 
 			this.openArg = openArg;

@@ -70,6 +70,7 @@ namespace SuperCode
 			var fn = module.AddFunction(mem.name, ty);
 			var entry = fn.AppendBasicBlock("Entry");
 			builder.PositionAtEnd(entry);
+
 			foreach (var stmt in mem.stmts)
 				Gen(stmt);
 
@@ -124,7 +125,7 @@ namespace SuperCode
 				return builder.BuildSIToFP(val, to);
 			if (from.IsFloat() && to.IsFloat())
 				return builder.BuildFPCast(val, to);
-
+			
 			return builder.BuildIntCast(val, to); ;
 		}
 	}

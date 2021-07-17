@@ -34,12 +34,13 @@ namespace SuperCode
 
 		private FuncMemNode Nodify(FuncMemAst mem)
 		{
+			var ty = mem.retType.builtinType;
 			string name = mem.name.text;
 			var stmts = new List<StmtNode>();
 			foreach (var stmt in mem.stmts)
 				stmts.Add(Nodify(stmt));
 
-			return new FuncMemNode(name, stmts.ToArray());
+			return new FuncMemNode(ty, name, stmts.ToArray());
 		}
 
 		private StmtNode Nodify(StmtAst stmt)

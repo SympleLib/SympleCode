@@ -1,5 +1,7 @@
-﻿func Run()
+﻿int Run()
 {
 	float x = 6 * 9;
 	float y = x / 6;
+
+	ret x;
 }
