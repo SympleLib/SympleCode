@@ -1,2 +1,2 @@
 ﻿func Run() ->
-	var x = 6 * 9;
+	int x = 6 * 9;

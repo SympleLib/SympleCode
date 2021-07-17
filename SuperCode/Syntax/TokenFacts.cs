@@ -1,5 +1,22 @@
 ﻿namespace SuperCode
 {
+	public partial struct Token
+	{
+		public int binPriority => kind.BinPriority();
+		public bool isBuiltinType {
+			get
+			{
+				if (kind != TokenKind.Iden)
+					return false;
+
+				if (text is "void" or "byte" or "short" or "int" or "long" or
+					"char" or "wchar" or "bool")
+					return true;
+				return false;
+			}
+		}
+	}
+
 	public static class TokenFacts
 	{
 		public const TokenKind firstPunc = TokenKind.Plus;

@@ -24,7 +24,10 @@ namespace SuperCode
 				switch (tok.kind)
 				{
 				case TokenKind.Iden:
-					Console.ForegroundColor = ConsoleColor.White;
+					if (tok.isBuiltinType)
+						Console.ForegroundColor = ConsoleColor.Magenta;
+					else
+						Console.ForegroundColor = ConsoleColor.White;
 					break;
 				case TokenKind.Num:
 					Console.ForegroundColor = ConsoleColor.Yellow;

@@ -34,10 +34,8 @@ namespace SuperCode
 		Count,
 	}
 
-	public struct Token
+	public partial struct Token
 	{
-		public int binPriority => kind.BinPriority();
-
 		public readonly TokenKind kind;
 		public readonly string text;
 		public readonly string file;

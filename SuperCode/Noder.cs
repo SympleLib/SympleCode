@@ -54,8 +54,10 @@ namespace SuperCode
 			}
 		}
 
-		private VarStmtNode Nodify(VarStmtAst stmt) =>
+		private VarStmtNode Nodify(VarStmtAst stmt)
+		{
 			new (stmt.name.text, Nodify(stmt.init));
+		}
 
 		private ExprNode Nodify(ExprAst expr)
 		{

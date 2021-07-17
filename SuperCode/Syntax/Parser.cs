@@ -24,8 +24,11 @@ namespace SuperCode
 				mems.Add(Mem());
 
 			var eof = Next();
-			return new ModuleAst(lexer.path, mems.ToArray(), eof);
+			return new (lexer.path, mems.ToArray(), eof);
 		}
+
+		private TypeAst Type() =>
+			new (Next());
 
 		private MemAst Mem()
 		{
@@ -72,23 +75,23 @@ namespace SuperCode
 		{
 			switch (current.kind)
 			{
-			case TokenKind.VarKey:
-				return VarStmt();
-
 			default:
+				if (current.isBuiltinType)
+					return VarStmt();
 				return ExprStmt();
 			}
 		}
 
-		private VarStmtAst VarStmt()
+		private VarStmtAst VarStmt(TypeAst ty = null)
 		{
-			var key = Match(TokenKind.VarKey);
+			if (ty is null || current.isBuiltinType)
+				ty = Type();
 			var name = Match(TokenKind.Iden);
 			var eql = Match(TokenKind.Eql);
 			var init = Expr();
 			var semi = Match(TokenKind.Semicol);
 
-			return new (key, name, eql, init, semi);
+			return new (ty, name, eql, init, semi);
 		}
 
 		private ExprStmtAst ExprStmt() =>
