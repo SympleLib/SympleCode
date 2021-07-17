@@ -2,10 +2,13 @@
 {
 	public class VarExprNode: ExprNode
 	{
-		public readonly string name;
+		public readonly VarStmtNode symbol;
 
-		public VarExprNode(string name) =>
-			this.name = name;
+		public VarExprNode(VarStmtNode symbol)
+		{
+			this.symbol = symbol;
+			type = symbol.type;
+		}
 
 		public override NodeKind kind => NodeKind.VarExpr;
 	}

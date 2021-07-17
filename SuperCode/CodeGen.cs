@@ -7,8 +7,8 @@ namespace SuperCode
 {
 	public class CodeGen
 	{
-		private static readonly Dictionary<string, LLVMValueRef> vars = new ();
-		private static readonly Dictionary<string, LLVMValueRef> funcs = new ();
+		private static readonly Dictionary<VarStmtNode, LLVMValueRef> vars = new ();
+		private static readonly Dictionary<FuncMemNode, LLVMValueRef> funcs = new ();
 
 		public readonly ModuleNode modNode;
 		public readonly LLVMModuleRef module;
@@ -79,20 +79,20 @@ namespace SuperCode
 
 		private LLVMValueRef Gen(VarStmtNode stmt)
 		{
-			var ptr = builder.BuildAlloca(LLVMTypeRef.Int32);
+			var ptr = builder.BuildAlloca(stmt.type);
 			var init = Gen(stmt.init);
-			builder.BuildStore(init, ptr);
-			vars.Add(stmt.name, ptr);
+			builder.BuildStore(GenCast(init, stmt.type), ptr);
+			vars.Add(stmt, ptr);
 			return ptr;
 		}
 
 		private LLVMValueRef Gen(NumExprNode expr) =>
-			LLVMValueRef.CreateConstInt(LLVMTypeRef.Int32, expr.value);
+			LLVMValueRef.CreateConstInt(expr.type, expr.value);
 
 		private LLVMValueRef Gen(BinExprNode expr)
 		{
-			var left = Gen(expr.left);
-			var right = Gen(expr.right);
+			var left = GenCast(Gen(expr.left), expr.type);
+			var right = GenCast(Gen(expr.right), expr.type);
 
 			switch (expr.op)
 			{
@@ -113,6 +113,19 @@ namespace SuperCode
 		}
 
 		private LLVMValueRef Gen(VarExprNode expr) =>
-			builder.BuildLoad(vars[expr.name]);
+			builder.BuildLoad(vars[expr.symbol]);
+
+		private LLVMValueRef GenCast(LLVMValueRef val, LLVMTypeRef to)
+		{
+			var from = val.TypeOf;
+			if (from.IsFloat() && !to.IsFloat())
+				return builder.BuildFPToSI(val, to);
+			if (!from.IsFloat() && to.IsFloat())
+				return builder.BuildSIToFP(val, to);
+			if (from.IsFloat() && to.IsFloat())
+				return builder.BuildFPCast(val, to);
+
+			return builder.BuildIntCast(val, to); ;
+		}
 	}
 }

@@ -86,11 +86,17 @@ namespace SuperCode
 			LLVM.InitializeNativeDisassembler();
 
 			if (!module.TryVerify(LLVMVerifierFailureAction.LLVMPrintMessageAction, out string err))
+			{
 				Console.Error.WriteLine(err);
+				return;
+			}
 
 			var options = new LLVMMCJITCompilerOptions { NoFramePointerElim = 1 };
 			if (!module.TryCreateMCJITCompiler(out var engine, ref options, out err))
+			{
 				Console.Error.WriteLine(err);
+				return;
+			}
 
 			var exec = (Run) Marshal.GetDelegateForFunctionPointer(engine.GetPointerToGlobal(module.GetNamedFunction("Run")), typeof(Run));
 			exec();

@@ -14,6 +14,7 @@ namespace SuperCode
 					return false;
 
 				if (text is "void" or "byte" or "short" or "int" or "long" or
+					"float" or "double" or
 					"char" or "wchar" or "bool")
 					return true;
 				return false;
@@ -39,6 +40,11 @@ namespace SuperCode
 					return LLVMTypeRef.Int32;
 				case "long":
 					return LLVMTypeRef.Int64;
+
+				case "float":
+					return LLVMTypeRef.Float;
+				case "double":
+					return LLVMTypeRef.Double;
 
 				case "char":
 					return LLVMTypeRef.Int8;

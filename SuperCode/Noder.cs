@@ -7,6 +7,8 @@ namespace SuperCode
 	{
 		public readonly ModuleAst module;
 
+		private readonly Dictionary<string, VarStmtNode> vars = new ();
+
 		public Noder(ModuleAst module) =>
 			this.module = module;
 
@@ -57,7 +59,9 @@ namespace SuperCode
 		private VarStmtNode Nodify(VarStmtAst stmt)
 		{
 			var ty = stmt.type.builtinType;
-			return new (ty, stmt.name.text, Nodify(stmt.init));
+			var var = new VarStmtNode(ty, stmt.name.text, Nodify(stmt.init));
+			vars.Add(var.name, var);
+			return var;
 		}
 
 		private ExprNode Nodify(ExprAst expr)
@@ -79,7 +83,7 @@ namespace SuperCode
 			switch (expr.literal.kind)
 			{
 			case TokenKind.Iden:
-				return new VarExprNode(expr.literal.text);
+				return new VarExprNode(vars[expr.literal.text]);
 			case TokenKind.Num:
 				return new NumExprNode(ulong.Parse(expr.literal.text));
 
