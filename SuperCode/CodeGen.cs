@@ -7,8 +7,7 @@ namespace SuperCode
 {
 	public class CodeGen
 	{
-		private readonly Dictionary<VarStmtNode, LLVMValueRef> vars = new ();
-		private readonly Dictionary<FuncMemNode, LLVMValueRef> funcs = new ();
+		private readonly Dictionary<Symbol, LLVMValueRef> syms = new ();
 		private FuncMemNode func;
 
 		public readonly ModuleNode modNode;
@@ -37,9 +36,6 @@ namespace SuperCode
 			pass.AddCFGSimplificationPass();
 			pass.AddInstructionCombiningPass();
 			pass.InitializeFunctionPassManager();
-
-			foreach (var func in funcs)
-				pass.RunFunctionPassManager(func.Value);
 			pass.Run(module);
 		}
 
@@ -61,10 +57,8 @@ namespace SuperCode
 				return Gen((FNumExprNode) node);
 			case NodeKind.BinExpr:
 				return Gen((BinExprNode) node);
-			case NodeKind.VarExpr:
-				return Gen((VarExprNode) node);
-			case NodeKind.FuncExpr:
-				return Gen((FuncExprNode) node);
+			case NodeKind.SymExpr:
+				return Gen((SymExprNode) node);
 			case NodeKind.CallExpr:
 				return Gen((CallExprNode) node);
 
@@ -75,13 +69,14 @@ namespace SuperCode
 
 		private LLVMValueRef Gen(FuncMemNode mem)
 		{
-			vars.Clear();
-
 			func = mem;
 			var fn = module.AddFunction(mem.name, mem.type);
 			var entry = fn.AppendBasicBlock("Entry");
 			builder.PositionAtEnd(entry);
-			funcs.Add(func, fn);
+			syms.Add(func, fn);
+
+			for (int i = 0; i < mem.paramz.Length; i++)
+				syms.Add(mem.paramz[i], fn.Params[i]);
 
 			foreach (var stmt in mem.stmts)
 				Gen(stmt);
@@ -99,7 +94,7 @@ namespace SuperCode
 			var ptr = builder.BuildAlloca(stmt.type);
 			var init = Gen(stmt.init);
 			builder.BuildStore(GenCast(init, stmt.type), ptr);
-			vars.Add(stmt, ptr);
+			syms.Add(stmt, ptr);
 			return ptr;
 		}
 
@@ -132,11 +127,13 @@ namespace SuperCode
 			}
 		}
 
-		private LLVMValueRef Gen(VarExprNode expr) =>
-			builder.BuildLoad(vars[expr.symbol]);
-
-		private LLVMValueRef Gen(FuncExprNode expr) =>
-			funcs[expr.symbol];
+		private LLVMValueRef Gen(SymExprNode expr)
+		{
+			var sym = syms[expr.symbol];
+			if (((Node) expr.symbol).kind == NodeKind.VarStmt)
+				return builder.BuildLoad(sym);
+			return sym;
+		}
 
 		private LLVMValueRef Gen(CallExprNode expr)
 		{

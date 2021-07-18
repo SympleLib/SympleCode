@@ -1,5 +1,9 @@
-﻿int Test(int x) ->
-	ret x;
+﻿int Test(int x)
+{
+	int one = 1;
+	int plus-one = x + 1;
+	ret plus-one - one;
+}
 
 int Run() ->
 	ret Test(69);

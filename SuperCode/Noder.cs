@@ -9,8 +9,7 @@ namespace SuperCode
 	{
 		public readonly ModuleAst module;
 
-		private readonly Dictionary<string, VarStmtNode> vars = new ();
-		private readonly Dictionary<string, FuncMemNode> funcs = new ();
+		private readonly Dictionary<string, Symbol> syms = new ();
 
 		public Noder(ModuleAst module) =>
 			this.module = module;
@@ -22,6 +21,9 @@ namespace SuperCode
 				mems.Add(Nodify(mem));
 			return new ModuleNode(module.filename, mems.ToArray());
 		}
+
+		private ParamNode Nodify(ParamAst param) =>
+			new (param.type.builtinType, param.name.text);
 
 		private MemNode Nodify(MemAst mem)
 		{
@@ -37,18 +39,28 @@ namespace SuperCode
 
 		private FuncMemNode Nodify(FuncMemAst mem)
 		{
-			var paramz = new LLVMTypeRef[mem.paramz.Length];
-			for (int i = 0; i < paramz.Length; i++)
-				paramz[i] = mem.paramz[i].type.builtinType;
+			var paramTypes = new LLVMTypeRef[mem.paramz.Length];
+			for (int i = 0; i < paramTypes.Length; i++)
+				paramTypes[i] = mem.paramz[i].type.builtinType;
 
-			var ty = LLVMTypeRef.CreateFunction(mem.retType.builtinType, paramz);
+			var paramz = new List<ParamNode>();
+			foreach (var param in mem.paramz)
+			{
+				var paramNode = Nodify(param);
+				paramz.Add(paramNode);
+				syms.Add(paramNode.name, paramNode);
+			}
+
+			var ty = LLVMTypeRef.CreateFunction(mem.retType.builtinType, paramTypes);
 			string name = mem.name.text;
+
+
 			var stmts = new List<StmtNode>();
 			foreach (var stmt in mem.stmts)
 				stmts.Add(Nodify(stmt));
 
-			var func = new FuncMemNode(ty, name, stmts.ToArray());
-			funcs.Add(name, func);
+			var func = new FuncMemNode(ty, name, paramz.ToArray(), stmts.ToArray());
+			syms.Add(name, func);
 			return func;
 		}
 
@@ -75,7 +87,7 @@ namespace SuperCode
 		{
 			var ty = stmt.type.builtinType;
 			var var = new VarStmtNode(ty, stmt.name.text, Nodify(stmt.init));
-			vars.Add(var.name, var);
+			syms.Add(var.name, var);
 			return var;
 		}
 
@@ -101,11 +113,7 @@ namespace SuperCode
 			switch (expr.literal.kind)
 			{
 			case TokenKind.Iden:
-			{
-				if (vars.TryGetValue(literal, out var var))
-					 return new VarExprNode(var);
-				return new FuncExprNode(funcs[literal]);
-			}
+				return new SymExprNode(syms[literal]);
 			case TokenKind.Num:
 				if (literal.Contains('.'))
 				{

@@ -3,6 +3,7 @@
 	public enum NodeKind
 	{
 		Module,
+		Param,
 
 		FuncMem,
 
@@ -12,8 +13,7 @@
 		NumExpr,
 		FNumExpr,
 		BinExpr,
-		VarExpr,
 		CallExpr,
-		FuncExpr,
+		SymExpr,
 	}
 }
