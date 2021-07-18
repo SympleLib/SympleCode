@@ -220,15 +220,28 @@ namespace SuperCode
 			{
 			case TokenKind.Num:
 			case TokenKind.Iden:
-				return litExpr();
+				return LitExpr();
+			case TokenKind.LeftParen:
+				return CastExpr();
 
 			default:
 				throw new InvalidOperationException("Expected expr");
 			}
 		}
 
-		private LitExprAst litExpr() =>
+		private LitExprAst LitExpr() =>
 			new (Next());
+
+		private CastExprAst CastExpr()
+		{
+			var open = Match(TokenKind.LeftParen);
+			var ty = Type();
+			var close = Match(TokenKind.RightParen);
+
+			var value = MaybeCallExpr();
+
+			return new (open, ty, close, value);
+		}
 
 		private Token Next()
 		{

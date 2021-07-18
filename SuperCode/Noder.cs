@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Xml.Linq;
 
 using LLVMSharp.Interop;
 
@@ -128,6 +129,8 @@ namespace SuperCode
 				return Cast(Nodify((BinExprAst) expr), castTo);
 			case AstKind.CallExpr:
 				return Cast(Nodify((CallExprAst) expr), castTo);
+			case AstKind.CastExpr:
+				return Cast(Nodify((CastExprAst) expr), castTo);
 
 			default:
 				throw new InvalidOperationException("Invalid expr");
@@ -201,6 +204,9 @@ namespace SuperCode
 
 			return new CallExprNode(what, args.ToArray());
 		}
+
+		private ExprNode Nodify(CastExprAst expr) =>
+			Nodify(expr.value, expr.type.builtinType);
 
 		private ExprNode Cast(ExprNode node, LLVMTypeRef to)
 		{

@@ -16,6 +16,7 @@
 		LitExpr,
 		BinExpr,
 		CallExpr,
+		CastExpr,
 
 		Count,
 	}
