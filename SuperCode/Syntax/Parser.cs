@@ -30,6 +30,29 @@ namespace SuperCode
 		private TypeAst Type() =>
 			new (Next());
 
+		private ParamAst Param(TypeAst ty = null)
+		{
+			if (ty is null || current.isBuiltinType)
+				ty = Type();
+			var name = Match(TokenKind.Iden);
+			Token comma = default;
+			if (current.Is(TokenKind.Eql))
+			{
+				var eql = Next();
+				var defVal = Expr();
+
+				if (current.Is(TokenKind.Comma))
+					comma = Next();
+
+				return new (ty, name, eql, defVal, comma);
+			}
+
+			if (current.Is(TokenKind.Comma))
+				comma = Next();
+
+			return new (ty, name, comma);
+		}
+
 		private MemAst Mem()
 		{
 			switch (current.kind)
@@ -46,7 +69,16 @@ namespace SuperCode
 			var ty = Type();
 			var name = Match(TokenKind.Iden);
 			var openArg = Match(TokenKind.LeftParen);
-			var closeArg = Match(TokenKind.RightParen);
+			var paramz = new List<ParamAst>();
+			while (!current.Is(TokenKind.RightParen))
+			{
+				if (current.Is(TokenKind.Eof))
+					throw new InvalidOperationException("Invalid eof");
+
+				paramz.Add(Param());
+			}
+
+			var closeArg = Next();
 			var stmts = new List<StmtAst>();
 
 			if (current.Is(TokenKind.Arrow))
@@ -54,7 +86,7 @@ namespace SuperCode
 				var arrow = Next();
 
 				stmts.Add(Stmt());
-				return new FuncMemAst(ty, name, openArg, closeArg, arrow, stmts.ToArray());
+				return new FuncMemAst(ty, name, openArg, paramz.ToArray(), closeArg, arrow, stmts.ToArray());
 			}
 
 			var open = Match(TokenKind.LeftBrace);
@@ -67,7 +99,7 @@ namespace SuperCode
 			}
 
 			var close = Next();
-			return new FuncMemAst(ty, name, openArg, closeArg, open, close, stmts.ToArray());
+			return new FuncMemAst(ty, name, openArg, paramz.ToArray(), closeArg, open, close, stmts.ToArray());
 		}
 
 		private StmtAst Stmt()

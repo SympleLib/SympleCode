@@ -37,7 +37,11 @@ namespace SuperCode
 
 		private FuncMemNode Nodify(FuncMemAst mem)
 		{
-			var ty = LLVMTypeRef.CreateFunction(mem.retType.builtinType, Array.Empty<LLVMTypeRef>());
+			var paramz = new LLVMTypeRef[mem.paramz.Length];
+			for (int i = 0; i < paramz.Length; i++)
+				paramz[i] = mem.paramz[i].type.builtinType;
+
+			var ty = LLVMTypeRef.CreateFunction(mem.retType.builtinType, paramz);
 			string name = mem.name.text;
 			var stmts = new List<StmtNode>();
 			foreach (var stmt in mem.stmts)

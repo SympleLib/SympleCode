@@ -3,6 +3,7 @@
 	public enum AstKind
 	{
 		Module,
+		Param,
 		Type,
 
 		FuncMem,
