@@ -1,9 +1,7 @@
-﻿int Test(int x)
-{
-	int one = 1;
-	int plus-one = x + 1;
-	ret plus-one - one;
-}
+﻿decl void putchar(char);
 
-int Run() ->
-	ret Test(69);
+int Run()
+{
+	putchar(69);
+	ret 0;
+}

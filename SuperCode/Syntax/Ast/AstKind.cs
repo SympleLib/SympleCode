@@ -7,6 +7,7 @@
 		Type,
 
 		FuncMem,
+		DeclFuncMem,
 
 		RetStmt,
 		VarStmt,

@@ -31,6 +31,8 @@ namespace SuperCode
 			{
 			case AstKind.FuncMem:
 				return Nodify((FuncMemAst) mem);
+			case AstKind.DeclFuncMem:
+				return Nodify((DeclFuncMemAst) mem);
 
 			default:
 				throw new InvalidOperationException("Invalid mem");
@@ -62,6 +64,29 @@ namespace SuperCode
 			var func = new FuncMemNode(ty, name, paramz.ToArray(), stmts.ToArray());
 			syms.Add(name, func);
 			return func;
+		}
+
+		private DeclFuncMemNode Nodify(DeclFuncMemAst mem)
+		{
+			var paramTypes = new LLVMTypeRef[mem.paramz.Length];
+			for (int i = 0; i < paramTypes.Length; i++)
+				paramTypes[i] = mem.paramz[i].type.builtinType;
+
+			var paramz = new List<ParamNode>();
+			foreach (var param in mem.paramz)
+			{
+				var paramNode = Nodify(param);
+				paramz.Add(paramNode);
+				if (paramNode.name is not null)
+					syms.Add(paramNode.name, paramNode);
+			}
+
+			var ty = LLVMTypeRef.CreateFunction(mem.retType.builtinType, paramTypes);
+			string name = mem.name.text;
+
+			var decl = new DeclFuncMemNode(ty, name, paramz.ToArray());
+			syms.Add(name, decl);
+			return decl;
 		}
 
 		private StmtNode Nodify(StmtAst stmt)

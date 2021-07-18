@@ -34,7 +34,8 @@ namespace SuperCode
 		{
 			if (ty is null || current.isBuiltinType)
 				ty = Type();
-			var name = Match(TokenKind.Iden);
+			
+			var name = current.Is(TokenKind.Iden) ? Next() : default;
 			Token comma = default;
 			if (current.Is(TokenKind.Eql))
 			{
@@ -57,6 +58,9 @@ namespace SuperCode
 		{
 			switch (current.kind)
 			{
+			case TokenKind.DeclKey:
+				return DeclFuncMem();
+
 			default:
 				if (current.isBuiltinType)
 					return FuncMem();
@@ -100,6 +104,27 @@ namespace SuperCode
 
 			var close = Next();
 			return new FuncMemAst(ty, name, openArg, paramz.ToArray(), closeArg, open, close, stmts.ToArray());
+		}
+
+		private DeclFuncMemAst DeclFuncMem()
+		{
+			var key = Match(TokenKind.DeclKey);
+			var ret = Type();
+			var name = Match(TokenKind.Iden);
+			var open = Match(TokenKind.LeftParen);
+			var paramz = new List<ParamAst>();
+			while (!current.Is(TokenKind.RightParen))
+			{
+				if (current.Is(TokenKind.Eof))
+					throw new InvalidOperationException("Invalid eof");
+
+				paramz.Add(Param());
+			}
+
+			var close = Next();
+			var semi = Match(TokenKind.Semicol);
+
+			return new DeclFuncMemAst(key, ret, name, open, paramz.ToArray(), close, semi);
 		}
 
 		private StmtAst Stmt()

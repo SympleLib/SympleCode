@@ -35,6 +35,10 @@ namespace SuperCode
 				}
 				else if (field.FieldType == typeof(Token))
 				{
+					var token = (Token) field.GetValue(this);
+					if (token.kind == TokenKind.Unknown)
+						continue;
+
 					string prefix = indent + (fieldLast ? "└──" : "├──");
 
 					if (toConsole)
@@ -45,7 +49,6 @@ namespace SuperCode
 					writer.Write($"{field.Name}: ");
 					if (toConsole)
 						Console.ForegroundColor = ConsoleColor.DarkYellow;
-					var token = (Token)field.GetValue(this);
 					writer.WriteLine(token);
 				}
 			}

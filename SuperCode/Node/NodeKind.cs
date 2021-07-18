@@ -6,6 +6,7 @@
 		Param,
 
 		FuncMem,
+		DeclFuncMem,
 
 		RetStmt,
 		VarStmt,

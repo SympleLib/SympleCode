@@ -45,6 +45,8 @@ namespace SuperCode
 			{
 			case NodeKind.FuncMem:
 				return Gen((FuncMemNode) node);
+			case NodeKind.DeclFuncMem:
+				return Gen((DeclFuncMemNode) node);
 
 			case NodeKind.RetStmt:
 				return Gen((RetStmtNode) node);
@@ -73,7 +75,7 @@ namespace SuperCode
 			var fn = module.AddFunction(mem.name, mem.type);
 			var entry = fn.AppendBasicBlock("Entry");
 			builder.PositionAtEnd(entry);
-			syms.Add(func, fn);
+			syms.Add(mem, fn);
 
 			for (int i = 0; i < mem.paramz.Length; i++)
 				syms.Add(mem.paramz[i], fn.Params[i]);
@@ -83,6 +85,13 @@ namespace SuperCode
 
 			if (mem.type.ReturnType == LLVMTypeRef.Void)
 				builder.BuildRetVoid();
+			return fn;
+		}
+
+		private LLVMValueRef Gen(DeclFuncMemNode mem)
+		{
+			var fn = module.AddFunction(mem.name, mem.type);
+			syms.Add(mem, fn);
 			return fn;
 		}
 
@@ -139,8 +148,8 @@ namespace SuperCode
 		{
 			var what = Gen(expr.what);
 			var args = new List<LLVMValueRef>();
-			foreach (var arg in expr.args)
-				args.Add(Gen(arg));
+			for (int i = 0; i < what.Params.Length; i++)
+				args.Add(GenCast(Gen(expr.args[i]), what.Params[i].TypeOf));
 
 			return builder.BuildCall(what, args.ToArray());
 		}
