@@ -63,6 +63,10 @@ namespace SuperCode
 				return Gen((BinExprNode) node);
 			case NodeKind.VarExpr:
 				return Gen((VarExprNode) node);
+			case NodeKind.FuncExpr:
+				return Gen((FuncExprNode) node);
+			case NodeKind.CallExpr:
+				return Gen((CallExprNode) node);
 
 			default:
 				throw new InvalidOperationException("Invalid node");
@@ -74,21 +78,21 @@ namespace SuperCode
 			vars.Clear();
 
 			func = mem;
-			var ty = LLVMTypeRef.CreateFunction(mem.retType, Array.Empty<LLVMTypeRef>());
-			var fn = module.AddFunction(mem.name, ty);
+			var fn = module.AddFunction(mem.name, mem.type);
 			var entry = fn.AppendBasicBlock("Entry");
 			builder.PositionAtEnd(entry);
+			funcs.Add(func, fn);
 
 			foreach (var stmt in mem.stmts)
 				Gen(stmt);
 
-			if (mem.retType == LLVMTypeRef.Void)
+			if (mem.type.ReturnType == LLVMTypeRef.Void)
 				builder.BuildRetVoid();
 			return fn;
 		}
 
 		private LLVMValueRef Gen(RetStmtNode stmt) =>
-			builder.BuildRet(GenCast(Gen(stmt.value), func.retType));
+			builder.BuildRet(GenCast(Gen(stmt.value), func.type.ReturnType));
 
 		private LLVMValueRef Gen(VarStmtNode stmt)
 		{
@@ -130,6 +134,19 @@ namespace SuperCode
 
 		private LLVMValueRef Gen(VarExprNode expr) =>
 			builder.BuildLoad(vars[expr.symbol]);
+
+		private LLVMValueRef Gen(FuncExprNode expr) =>
+			funcs[expr.symbol];
+
+		private LLVMValueRef Gen(CallExprNode expr)
+		{
+			var what = Gen(expr.what);
+			var args = new List<LLVMValueRef>();
+			foreach (var arg in expr.args)
+				args.Add(Gen(arg));
+
+			return builder.BuildCall(what, args.ToArray());
+		}
 
 		private LLVMValueRef GenCast(LLVMValueRef val, LLVMTypeRef to)
 		{

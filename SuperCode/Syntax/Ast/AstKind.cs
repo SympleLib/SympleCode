@@ -13,9 +13,8 @@
 
 		LitExpr,
 		BinExpr,
+		CallExpr,
 
 		Count,
-		Stmt = VarStmt,
-		Expr = LitExpr,
 	}
 }

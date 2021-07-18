@@ -64,7 +64,7 @@ namespace SuperCode
 			writer.Write(prefix);
 			if (toConsole)
 				Console.ForegroundColor = ConsoleColor.Green;
-			writer.WriteLine(GetType().Name);
+			writer.WriteLine(kind);
 
 			indent += last ? "   " : "│  ";
 			PrintChildren(writer, indent);

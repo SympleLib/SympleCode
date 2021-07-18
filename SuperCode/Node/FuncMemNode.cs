@@ -4,13 +4,13 @@ namespace SuperCode
 {
 	public class FuncMemNode: MemNode
 	{
-		public readonly LLVMTypeRef retType;
+		public readonly LLVMTypeRef type;
 		public readonly string name;
 		public readonly StmtNode[] stmts;
 
-		public FuncMemNode(LLVMTypeRef retType, string name, StmtNode[] stmts)
+		public FuncMemNode(LLVMTypeRef ty, string name, StmtNode[] stmts)
 		{
-			this.retType = retType;
+			this.type = ty;
 			this.name = name;
 			this.stmts = stmts;
 		}

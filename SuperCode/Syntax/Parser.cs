@@ -113,7 +113,7 @@ namespace SuperCode
 
 		private ExprAst BinExpr(int parentPriority = 0)
 		{
-			var left = PrimExpr();
+			var left = MaybeCallExpr();
 			while (true)
 			{
 				int priority = current.binPriority;
@@ -126,6 +126,35 @@ namespace SuperCode
 			}
 
 			return left;
+		}
+
+		private ExprAst[] Args()
+		{
+			var args = new List<ExprAst>();
+			while (!current.Is(TokenKind.RightParen))
+			{
+				if (current.Is(TokenKind.Eof))
+					throw new InvalidOperationException("Invalid eof");
+				args.Add(Expr());
+				if (current.Is(TokenKind.Comma))
+					Next();
+			}
+
+			return args.ToArray();
+		}
+
+		private ExprAst MaybeCallExpr()
+		{
+			var expr = PrimExpr();
+			while (current.Is(TokenKind.LeftParen))
+			{
+				var open = Next();
+				var args = Args();
+				var close = Match(TokenKind.RightParen);
+				expr = new CallExprAst(expr, open, args, close);
+			}
+
+			return expr;
 		}
 
 		private ExprAst PrimExpr()

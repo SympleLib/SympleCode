@@ -10,6 +10,7 @@ namespace SuperCode
 		public readonly ModuleAst module;
 
 		private readonly Dictionary<string, VarStmtNode> vars = new ();
+		private readonly Dictionary<string, FuncMemNode> funcs = new ();
 
 		public Noder(ModuleAst module) =>
 			this.module = module;
@@ -36,13 +37,15 @@ namespace SuperCode
 
 		private FuncMemNode Nodify(FuncMemAst mem)
 		{
-			var ty = mem.retType.builtinType;
+			var ty = LLVMTypeRef.CreateFunction(mem.retType.builtinType, Array.Empty<LLVMTypeRef>());
 			string name = mem.name.text;
 			var stmts = new List<StmtNode>();
 			foreach (var stmt in mem.stmts)
 				stmts.Add(Nodify(stmt));
 
-			return new FuncMemNode(ty, name, stmts.ToArray());
+			var func = new FuncMemNode(ty, name, stmts.ToArray());
+			funcs.Add(name, func);
+			return func;
 		}
 
 		private StmtNode Nodify(StmtAst stmt)
@@ -80,6 +83,8 @@ namespace SuperCode
 				return Nodify((LitExprAst) expr);
 			case AstKind.BinExpr:
 				return Nodify((BinExprAst) expr);
+			case AstKind.CallExpr:
+				return Nodify((CallExprAst) expr);
 
 			default:
 				throw new InvalidOperationException("Invalid expr");
@@ -88,20 +93,25 @@ namespace SuperCode
 
 		private ExprNode Nodify(LitExprAst expr)
 		{
+			string literal = expr.literal.text;
 			switch (expr.literal.kind)
 			{
 			case TokenKind.Iden:
-				return new VarExprNode(vars[expr.literal.text]);
+			{
+				if (vars.TryGetValue(literal, out var var))
+					 return new VarExprNode(var);
+				return new FuncExprNode(funcs[literal]);
+			}
 			case TokenKind.Num:
-				if (expr.literal.text.Contains('.'))
+				if (literal.Contains('.'))
 				{
-					double num = double.Parse(expr.literal.text);
+					double num = double.Parse(literal);
 					var ty = num != (float) num ? LLVMTypeRef.Double : LLVMTypeRef.Float;
 					return new FNumExprNode(num, ty);
 				}
 				else
 				{
-					ulong num = ulong.Parse(expr.literal.text);
+					ulong num = ulong.Parse(literal);
 					var ty = num != (uint) num ? LLVMTypeRef.Int64 : LLVMTypeRef.Int32;
 					return new NumExprNode(num, ty);
 				}
@@ -141,6 +151,16 @@ namespace SuperCode
 		BinExpr:
 			var right = Nodify(expr.right);
 			return new BinExprNode(op, left, right);
+		}
+
+		private CallExprNode Nodify(CallExprAst expr)
+		{
+			var what = Nodify(expr.what);
+			var args = new List<ExprNode>();
+			foreach (var arg in expr.args)
+				args.Add(Nodify(arg));
+
+			return new CallExprNode(what, args.ToArray());
 		}
 	}
 }

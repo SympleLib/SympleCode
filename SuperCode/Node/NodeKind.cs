@@ -13,5 +13,7 @@
 		FNumExpr,
 		BinExpr,
 		VarExpr,
+		CallExpr,
+		FuncExpr,
 	}
 }

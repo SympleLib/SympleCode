@@ -1,2 +1,5 @@
-﻿int Run() ->
+﻿int Test() ->
 	ret 6.9;
+
+int Run() ->
+	ret Test();

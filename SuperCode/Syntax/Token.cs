@@ -23,6 +23,7 @@ namespace SuperCode
 		LeftBracket,
 		RightBracket,
 
+		Comma,
 		Semicol,
 
 		Eql,
@@ -68,7 +69,7 @@ namespace SuperCode
 		public static readonly string[] puncs = {
 			"+", "-", "*", "/", "%",
 			"{", "}", "(", ")", "[", "]",
-			";",
+			",", ";",
 			"=", "->",
 		};
 
