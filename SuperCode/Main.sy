@@ -1,7 +1,7 @@
-﻿decl void putchar(char);
+﻿decl char getchar();
 
 int Run()
 {
-	putchar(69);
-	ret 0;
+	int x = getchar() + 1;
+	ret x;
 }

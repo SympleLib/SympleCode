@@ -8,7 +8,6 @@ namespace SuperCode
 	public class CodeGen
 	{
 		private readonly Dictionary<Symbol, LLVMValueRef> syms = new ();
-		private FuncMemNode func;
 
 		public readonly ModuleNode modNode;
 		public readonly LLVMModuleRef module;
@@ -63,6 +62,8 @@ namespace SuperCode
 				return Gen((SymExprNode) node);
 			case NodeKind.CallExpr:
 				return Gen((CallExprNode) node);
+			case NodeKind.CastExpr:
+				return Gen((CastExprNode) node);
 
 			default:
 				throw new InvalidOperationException("Invalid node");
@@ -71,7 +72,6 @@ namespace SuperCode
 
 		private LLVMValueRef Gen(FuncMemNode mem)
 		{
-			func = mem;
 			var fn = module.AddFunction(mem.name, mem.type);
 			var entry = fn.AppendBasicBlock("Entry");
 			builder.PositionAtEnd(entry);
@@ -96,13 +96,13 @@ namespace SuperCode
 		}
 
 		private LLVMValueRef Gen(RetStmtNode stmt) =>
-			builder.BuildRet(GenCast(Gen(stmt.value), func.type.ReturnType));
+			builder.BuildRet(Gen(stmt.value));
 
 		private LLVMValueRef Gen(VarStmtNode stmt)
 		{
 			var ptr = builder.BuildAlloca(stmt.type);
 			var init = Gen(stmt.init);
-			builder.BuildStore(GenCast(init, stmt.type), ptr);
+			builder.BuildStore(init, ptr);
 			syms.Add(stmt, ptr);
 			return ptr;
 		}
@@ -115,8 +115,8 @@ namespace SuperCode
 
 		private LLVMValueRef Gen(BinExprNode expr)
 		{
-			var left = GenCast(Gen(expr.left), expr.type);
-			var right = GenCast(Gen(expr.right), expr.type);
+			var left = Gen(expr.left);
+			var right = Gen(expr.right);
 
 			switch (expr.op)
 			{
@@ -149,14 +149,16 @@ namespace SuperCode
 			var what = Gen(expr.what);
 			var args = new List<LLVMValueRef>();
 			for (int i = 0; i < what.Params.Length; i++)
-				args.Add(GenCast(Gen(expr.args[i]), what.Params[i].TypeOf));
+				args.Add(Gen(expr.args[i]));
 
 			return builder.BuildCall(what, args.ToArray());
 		}
 
-		private LLVMValueRef GenCast(LLVMValueRef val, LLVMTypeRef to)
+		private LLVMValueRef Gen(CastExprNode expr)
 		{
+			var val = Gen(expr.value);
 			var from = val.TypeOf;
+			var to = expr.type;
 			if (from.IsFloat() && !to.IsFloat())
 				return builder.BuildFPToSI(val, to);
 			if (!from.IsFloat() && to.IsFloat())

@@ -10,6 +10,7 @@ namespace SuperCode
 		public readonly ModuleAst module;
 
 		private readonly Dictionary<string, Symbol> syms = new ();
+		private LLVMTypeRef retType;
 
 		public Noder(ModuleAst module) =>
 			this.module = module;
@@ -54,6 +55,7 @@ namespace SuperCode
 			}
 
 			var ty = LLVMTypeRef.CreateFunction(mem.retType.builtinType, paramTypes);
+			retType = ty.ReturnType;
 			string name = mem.name.text;
 
 
@@ -106,26 +108,26 @@ namespace SuperCode
 		}
 
 		private RetStmtNode Nodify(RetStmtAst stmt) =>
-			new (Nodify(stmt.value));
+			new (Nodify(stmt.value, retType));
 
 		private VarStmtNode Nodify(VarStmtAst stmt)
 		{
 			var ty = stmt.type.builtinType;
-			var var = new VarStmtNode(ty, stmt.name.text, Nodify(stmt.init));
+			var var = new VarStmtNode(ty, stmt.name.text, Nodify(stmt.init, ty));
 			syms.Add(var.name, var);
 			return var;
 		}
 
-		private ExprNode Nodify(ExprAst expr)
+		private ExprNode Nodify(ExprAst expr, LLVMTypeRef castTo = default)
 		{
 			switch (expr.kind)
 			{
 			case AstKind.LitExpr:
-				return Nodify((LitExprAst) expr);
+				return Cast(Nodify((LitExprAst) expr), castTo);
 			case AstKind.BinExpr:
-				return Nodify((BinExprAst) expr);
+				return Cast(Nodify((BinExprAst) expr), castTo);
 			case AstKind.CallExpr:
-				return Nodify((CallExprAst) expr);
+				return Cast(Nodify((CallExprAst) expr), castTo);
 
 			default:
 				throw new InvalidOperationException("Invalid expr");
@@ -186,7 +188,7 @@ namespace SuperCode
 			}
 
 		BinExpr:
-			var right = Nodify(expr.right);
+			var right = Nodify(expr.right, left.type);
 			return new BinExprNode(op, left, right);
 		}
 
@@ -194,10 +196,17 @@ namespace SuperCode
 		{
 			var what = Nodify(expr.what);
 			var args = new List<ExprNode>();
-			foreach (var arg in expr.args)
-				args.Add(Nodify(arg));
+			for (int i = 0; i < expr.args.Length; i++)
+				args.Add(Nodify(expr.args[i], what.type.ParamTypes[i]));
 
 			return new CallExprNode(what, args.ToArray());
+		}
+
+		private ExprNode Cast(ExprNode node, LLVMTypeRef to)
+		{
+			if (to == default || node.type == to)
+				return node;
+			return new CastExprNode(node, to);
 		}
 	}
 }

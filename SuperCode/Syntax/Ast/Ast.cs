@@ -26,11 +26,12 @@ namespace SuperCode
 				}
 				else if (field.FieldType.IsArray)
 				{
-					foreach (var obj in (Ast[]) field.GetValue(this))
+					var arr = (Ast[]) field.GetValue(this);
+					foreach (var obj in arr)
 					{
 						var child = obj;
 						if (child is not null)
-							child.Print(writer, indent, $"[{field.Name[..^1]}] ", fieldLast);
+							child.Print(writer, indent, $"[{field.Name[..^1]}] ", fieldLast && obj == arr[^1]);
 					}
 				}
 				else if (field.FieldType == typeof(Token))

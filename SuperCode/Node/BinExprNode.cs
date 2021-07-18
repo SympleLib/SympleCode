@@ -21,6 +21,7 @@ namespace SuperCode
 		public BinExprNode(BinOp op, ExprNode lhs, ExprNode rhs)
 		{
 			this.op = op;
+			type = lhs.type;
 			left = lhs;
 			right = rhs;
 		}

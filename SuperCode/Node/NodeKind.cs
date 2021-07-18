@@ -15,6 +15,7 @@
 		FNumExpr,
 		BinExpr,
 		CallExpr,
+		CastExpr,
 		SymExpr,
 	}
 }
