@@ -74,11 +74,23 @@ namespace SuperCode
 		{
 			switch (current.kind)
 			{
+			case TokenKind.RetKey:
+				return RetStmt();
+
 			default:
 				if (current.isBuiltinType)
 					return VarStmt();
 				return ExprStmt();
 			}
+		}
+
+		private RetStmtAst RetStmt()
+		{
+			var key = Match(TokenKind.RetKey);
+			var val = Expr();
+			var semi = Match(TokenKind.Semicol);
+
+			return new (key, val, semi);
 		}
 
 		private VarStmtAst VarStmt(TypeAst ty = null)

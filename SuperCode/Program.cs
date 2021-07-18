@@ -9,7 +9,19 @@ namespace SuperCode
 	public class Program
 	{
 		[UnmanagedFunctionPointer(CallingConvention.Cdecl)]
-		public delegate void Run();
+		public delegate int Run();
+
+		[StructLayout(LayoutKind.Explicit)]
+		private struct FPIUnion
+		{
+			[FieldOffset(0)]
+			public float fval;
+			[FieldOffset(0)]
+			public int ival;
+
+			public override string ToString() =>
+				$"Int: {ival}, Float: {fval}";
+		}
 
 		private static void Main(string[] _)
 		{
@@ -99,7 +111,8 @@ namespace SuperCode
 			}
 
 			var exec = (Run) Marshal.GetDelegateForFunctionPointer(engine.GetPointerToGlobal(module.GetNamedFunction("Run")), typeof(Run));
-			exec();
+			var union = new FPIUnion { ival = exec() };
+			Console.WriteLine(union);
 		}
 #endif
 	}

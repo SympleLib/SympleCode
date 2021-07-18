@@ -7,6 +7,7 @@
 
 		FuncMem,
 
+		RetStmt,
 		VarStmt,
 		ExprStmt,
 

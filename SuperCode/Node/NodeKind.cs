@@ -6,9 +6,11 @@
 
 		FuncMem,
 
+		RetStmt,
 		VarStmt,
 
 		NumExpr,
+		FNumExpr,
 		BinExpr,
 		VarExpr,
 	}

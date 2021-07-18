@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 
+using LLVMSharp.Interop;
+
 namespace SuperCode
 {
 	public class Noder
@@ -47,6 +49,8 @@ namespace SuperCode
 		{
 			switch (stmt.kind)
 			{
+			case AstKind.RetStmt:
+				return Nodify((RetStmtAst) stmt);
 			case AstKind.VarStmt:
 				return Nodify((VarStmtAst) stmt);
 			case AstKind.ExprStmt:
@@ -56,6 +60,9 @@ namespace SuperCode
 				throw new InvalidOperationException("Invalid stmt");
 			}
 		}
+
+		private RetStmtNode Nodify(RetStmtAst stmt) =>
+			new (Nodify(stmt.value));
 
 		private VarStmtNode Nodify(VarStmtAst stmt)
 		{
@@ -86,7 +93,18 @@ namespace SuperCode
 			case TokenKind.Iden:
 				return new VarExprNode(vars[expr.literal.text]);
 			case TokenKind.Num:
-				return new NumExprNode(ulong.Parse(expr.literal.text));
+				if (expr.literal.text.Contains('.'))
+				{
+					double num = double.Parse(expr.literal.text);
+					var ty = num != (float) num ? LLVMTypeRef.Double : LLVMTypeRef.Float;
+					return new FNumExprNode(num, ty);
+				}
+				else
+				{
+					ulong num = ulong.Parse(expr.literal.text);
+					var ty = num != (uint) num ? LLVMTypeRef.Int64 : LLVMTypeRef.Int32;
+					return new NumExprNode(num, ty);
+				}
 
 			default:
 				throw new InvalidOperationException("Invalid lit-expr");

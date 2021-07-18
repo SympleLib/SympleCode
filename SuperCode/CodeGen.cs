@@ -7,8 +7,9 @@ namespace SuperCode
 {
 	public class CodeGen
 	{
-		private static readonly Dictionary<VarStmtNode, LLVMValueRef> vars = new ();
-		private static readonly Dictionary<FuncMemNode, LLVMValueRef> funcs = new ();
+		private readonly Dictionary<VarStmtNode, LLVMValueRef> vars = new ();
+		private readonly Dictionary<FuncMemNode, LLVMValueRef> funcs = new ();
+		private FuncMemNode func;
 
 		public readonly ModuleNode modNode;
 		public readonly LLVMModuleRef module;
@@ -48,10 +49,16 @@ namespace SuperCode
 			{
 			case NodeKind.FuncMem:
 				return Gen((FuncMemNode) node);
+
+			case NodeKind.RetStmt:
+				return Gen((RetStmtNode) node);
 			case NodeKind.VarStmt:
 				return Gen((VarStmtNode) node);
+
 			case NodeKind.NumExpr:
 				return Gen((NumExprNode) node);
+			case NodeKind.FNumExpr:
+				return Gen((FNumExprNode) node);
 			case NodeKind.BinExpr:
 				return Gen((BinExprNode) node);
 			case NodeKind.VarExpr:
@@ -66,7 +73,8 @@ namespace SuperCode
 		{
 			vars.Clear();
 
-			var ty = LLVMTypeRef.CreateFunction(LLVMTypeRef.Void, Array.Empty<LLVMTypeRef>());
+			func = mem;
+			var ty = LLVMTypeRef.CreateFunction(mem.retType, Array.Empty<LLVMTypeRef>());
 			var fn = module.AddFunction(mem.name, ty);
 			var entry = fn.AppendBasicBlock("Entry");
 			builder.PositionAtEnd(entry);
@@ -74,9 +82,13 @@ namespace SuperCode
 			foreach (var stmt in mem.stmts)
 				Gen(stmt);
 
-			builder.BuildRetVoid();
+			if (mem.retType == LLVMTypeRef.Void)
+				builder.BuildRetVoid();
 			return fn;
 		}
+
+		private LLVMValueRef Gen(RetStmtNode stmt) =>
+			builder.BuildRet(GenCast(Gen(stmt.value), func.retType));
 
 		private LLVMValueRef Gen(VarStmtNode stmt)
 		{
@@ -89,6 +101,9 @@ namespace SuperCode
 
 		private LLVMValueRef Gen(NumExprNode expr) =>
 			LLVMValueRef.CreateConstInt(expr.type, expr.value);
+
+		private LLVMValueRef Gen(FNumExprNode expr) =>
+			LLVMValueRef.CreateConstReal(expr.type, expr.value);
 
 		private LLVMValueRef Gen(BinExprNode expr)
 		{

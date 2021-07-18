@@ -32,6 +32,8 @@ namespace SuperCode
 		FuncKey,
 		DeclKey,
 
+		RetKey,
+
 		Count,
 	}
 
@@ -75,6 +77,8 @@ namespace SuperCode
 			{ "var", TokenKind.VarKey },
 			{ "func", TokenKind.FuncKey },
 			{ "decl", TokenKind.DeclKey },
+
+			{ "ret", TokenKind.RetKey },
 		};
 	}
 }
