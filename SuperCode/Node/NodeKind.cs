@@ -5,17 +5,17 @@
 		Module,
 		Param,
 
-		FuncMem,
 		DeclFuncMem,
+		FuncMem,
 
 		RetStmt,
 		VarStmt,
 
-		NumExpr,
-		FNumExpr,
-		BinExpr,
 		CallExpr,
 		CastExpr,
+		BinExpr,
+		FNumExpr,
+		NumExpr,
 		SymExpr,
 	}
 }

@@ -6,17 +6,17 @@
 		Param,
 		Type,
 
-		FuncMem,
 		DeclFuncMem,
+		FuncMem,
 
+		ExprStmt,
 		RetStmt,
 		VarStmt,
-		ExprStmt,
 
-		LitExpr,
 		BinExpr,
 		CallExpr,
 		CastExpr,
+		LitExpr,
 		ParenExpr,
 
 		Count,

@@ -29,8 +29,6 @@ namespace SuperCode
 		Eql,
 		Arrow,
 
-		VarKey,
-		FuncKey,
 		DeclKey,
 
 		RetKey,
@@ -43,15 +41,16 @@ namespace SuperCode
 		public readonly TokenKind kind;
 		public readonly string text;
 		public readonly string file;
-		public readonly int line;
+		public readonly int line, col;
 		public readonly int pos;
 
-		public Token(TokenKind kind, string txt, string path, int ln, int pos)
+		public Token(TokenKind kind, string txt, string path, int ln, int col, int pos)
 		{
 			this.kind = kind;
-			text = txt;
-			file = path;
-			line = ln;
+			this.text = txt;
+			this.file = path;
+			this.line = ln;
+			this.col = col;
 			this.pos = pos;
 		}
 
@@ -64,7 +63,7 @@ namespace SuperCode
 		}
 
 		public override string ToString() =>
-			$"{file}:{line}> {kind} `{text}`";
+			$"'{file}' {line}:{col}> {kind} `{text}`";
 
 		public static readonly string[] puncs = {
 			"+", "-", "*", "/", "%",
@@ -75,8 +74,6 @@ namespace SuperCode
 
 		public static readonly Dictionary<string, TokenKind> keys = new ()
 		{
-			{ "var", TokenKind.VarKey },
-			{ "func", TokenKind.FuncKey },
 			{ "decl", TokenKind.DeclKey },
 
 			{ "ret", TokenKind.RetKey },

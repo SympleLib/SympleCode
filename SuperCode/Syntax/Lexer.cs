@@ -8,7 +8,7 @@ namespace SuperCode
 	{
 		public readonly string path;
 		public readonly string src;
-		private int line;
+		private int line, col;
 		private int pos;
 
 		private char current => pos < src.Length ? src[pos] : '\0';
@@ -25,6 +25,7 @@ namespace SuperCode
 		public char Next()
 		{
 			char c = current;
+			col++;
 			pos++;
 			return c;
 		}
@@ -36,6 +37,7 @@ namespace SuperCode
 			{
 				if (current == '\n')
 				{
+					col = 0;
 					line++;
 					Next();
 					continue;
@@ -133,9 +135,9 @@ namespace SuperCode
 		}
 
 		private Token MakeToken(TokenKind kind, int begin) =>
-			new (kind, src[begin..pos], path, line, begin);
+			new (kind, src[begin..pos], path, line, col, begin);
 
 		private Token MakeToken(TokenKind kind, string txt) =>
-			new (kind, txt, path, line, pos - txt.Length);
+			new (kind, txt, path, line, col, pos - txt.Length);
 	}
 }

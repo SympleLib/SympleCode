@@ -1,4 +1,8 @@
-﻿int Run()
+﻿decl void putchar(char);
+
+int Run()
 {
-	ret (40 + 2) * 10;
+	char c = 69;
+	putchar(c);
+	ret c - 1;
 }
