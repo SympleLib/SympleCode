@@ -1,7 +1,4 @@
-﻿decl char getchar();
-
-int Run()
+﻿int Run()
 {
-	short tautological = (int) getchar();
-	ret tautological;
+	ret (40 + 2) * 10;
 }

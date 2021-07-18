@@ -17,6 +17,7 @@
 		BinExpr,
 		CallExpr,
 		CastExpr,
+		ParenExpr,
 
 		Count,
 	}

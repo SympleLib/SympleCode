@@ -131,6 +131,8 @@ namespace SuperCode
 				return Cast(Nodify((CallExprAst) expr), castTo);
 			case AstKind.CastExpr:
 				return Cast(Nodify((CastExprAst) expr), castTo);
+			case AstKind.ParenExpr:
+				return Cast(Nodify(((ParenExprAst) expr).expr), castTo);
 
 			default:
 				throw new InvalidOperationException("Invalid expr");

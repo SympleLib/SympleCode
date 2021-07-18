@@ -10,6 +10,7 @@ namespace SuperCode
 		private int pos;
 
 		private Token current => pos < tokens.Length ? tokens[pos] : default;
+		private Token next => pos + 1 < tokens.Length ? tokens[pos + 1] : default;
 		
 		public Parser(string file)
 		{
@@ -222,7 +223,9 @@ namespace SuperCode
 			case TokenKind.Iden:
 				return LitExpr();
 			case TokenKind.LeftParen:
-				return CastExpr();
+				if (next.isBuiltinType)
+					return CastExpr();
+				return ParenExpr();
 
 			default:
 				throw new InvalidOperationException("Expected expr");
@@ -241,6 +244,15 @@ namespace SuperCode
 			var value = MaybeCallExpr();
 
 			return new (open, ty, close, value);
+		}
+
+		private ParenExprAst ParenExpr()
+		{
+			var open = Match(TokenKind.LeftParen);
+			var expr = Expr();
+			var close = Match(TokenKind.RightParen);
+
+			return new (open, expr, close);
 		}
 
 		private Token Next()
