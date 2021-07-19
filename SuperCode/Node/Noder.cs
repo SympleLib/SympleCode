@@ -156,6 +156,8 @@ namespace SuperCode
 			{
 			case TokenKind.Iden:
 				return new SymExprNode(syms[literal]);
+			case TokenKind.Str:
+				return new StrExprNode(literal[1..^1]);
 			case TokenKind.Num:
 				if (literal.Contains('.'))
 				{

@@ -16,6 +16,7 @@
 		BinExpr,
 		FNumExpr,
 		NumExpr,
+		StrExpr,
 		SymExpr,
 		UnExpr,
 	}

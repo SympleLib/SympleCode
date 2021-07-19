@@ -59,20 +59,22 @@ namespace SuperCode
 			case NodeKind.VarStmt:
 				return Gen((VarStmtNode) node);
 
-			case NodeKind.NumExpr:
-				return Gen((NumExprNode) node);
-			case NodeKind.FNumExpr:
-				return Gen((FNumExprNode) node);
 			case NodeKind.BinExpr:
 				return Gen((BinExprNode) node);
-			case NodeKind.SymExpr:
-				return Gen((SymExprNode) node);
 			case NodeKind.CallExpr:
 				return Gen((CallExprNode) node);
 			case NodeKind.CastExpr:
 				return Gen((CastExprNode) node);
+			case NodeKind.FNumExpr:
+				return Gen((FNumExprNode) node);
+			case NodeKind.NumExpr:
+				return Gen((NumExprNode) node);
 			case NodeKind.UnExpr:
 				return Gen((UnExprNode) node);
+			case NodeKind.StrExpr:
+				return Gen((StrExprNode) node);
+			case NodeKind.SymExpr:
+				return Gen((SymExprNode) node);
 
 			default:
 				throw new InvalidOperationException("Invalid node");
@@ -144,6 +146,9 @@ namespace SuperCode
 				throw new InvalidOperationException("Invalid bin-expr");
 			}
 		}
+
+		private LLVMValueRef Gen(StrExprNode node) =>
+			builder.BuildGlobalStringPtr(node.str);
 
 		private LLVMValueRef Gen(SymExprNode expr)
 		{
