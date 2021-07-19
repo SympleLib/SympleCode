@@ -16,9 +16,7 @@ namespace SuperCode
 				if (kind is not TokenKind.Iden)
 					return false;
 
-				if (text is "void" or "byte" or "short" or "int" or "long" or
-					"float" or "double" or
-					"char" or "wchar" or "bool")
+				if (BuiltinTypes.types.ContainsKey(text))
 					return true;
 				return false;
 			}
@@ -27,38 +25,9 @@ namespace SuperCode
 		public LLVMTypeRef builtinType {
 			get
 			{
-
 				if (kind != TokenKind.Iden)
 					throw new InvalidOperationException("Token is not built-in type");
-
-				switch (text)
-				{
-				case "void":
-					return LLVMTypeRef.Void;
-				case "byte":
-					return LLVMTypeRef.Int8;
-				case "short":
-					return LLVMTypeRef.Int16;
-				case "int":
-					return LLVMTypeRef.Int32;
-				case "long":
-					return LLVMTypeRef.Int64;
-
-				case "float":
-					return LLVMTypeRef.Float;
-				case "double":
-					return LLVMTypeRef.Double;
-
-				case "char":
-					return LLVMTypeRef.Int8;
-				case "wchar":
-					return LLVMTypeRef.Int32;
-				case "bool":
-					return LLVMTypeRef.Int1;
-
-				default:
-					throw new InvalidOperationException("Token is not built-in type");
-				}
+				return BuiltinTypes.types[text];
 			}
 		}
 	}
