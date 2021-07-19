@@ -14,7 +14,6 @@ namespace SuperCode
 		private readonly LLVMBuilderRef builder;
 		private readonly LLVMDIBuilderRef dbuilder;
 		private LLVMMetadataRef file;
-		private LLVMMetadataRef unit;
 
 		public CodeGen(ModuleNode mod)
 		{
@@ -26,9 +25,9 @@ namespace SuperCode
 
 		public LLVMModuleRef Gen()
 		{
-			file = dbuilder.CreateFile("Main.sy", "../../../");
-			unit = dbuilder.CreateCompileUnit(LLVMDWARFSourceLanguage.LLVMDWARFSourceLanguageC, file,
-				"SuperCode", 0, "", 0, "", LLVMDWARFEmissionKind.LLVMDWARFEmissionFull, 0, 0, 1, "", "");
+			file = dbuilder.CreateFile("Code.sy", "../../../");
+			dbuilder.CreateCompileUnit(LLVMDWARFSourceLanguage.LLVMDWARFSourceLanguageC, file,
+				"SuperCode d1.0.0", 0, "", 0, "", LLVMDWARFEmissionKind.LLVMDWARFEmissionFull, 0, 0, 1, "", "");
 			foreach (var mem in modNode.mems)
 				Gen(mem);
 			dbuilder.DIBuilderFinalize();

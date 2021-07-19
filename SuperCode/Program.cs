@@ -25,7 +25,7 @@ namespace SuperCode
 
 		private static void Main(string[] _)
 		{
-			var parser = new Parser("Main.sy");
+			var parser = new Parser("Code.sy");
 			// Console.ForegroundColor = ConsoleColor.DarkGreen;
 			int pos = 0;
 			foreach (var tok in parser.tokens)
@@ -102,6 +102,12 @@ namespace SuperCode
 				Console.Error.WriteLine(err);
 				return;
 			}
+
+
+			var target = LLVMTargetRef.GetTargetFromTriple(LLVMTargetRef.DefaultTriple);
+			var targetMachine = target.CreateTargetMachine(LLVMTargetRef.DefaultTriple, "generic", "",
+				LLVMCodeGenOptLevel.LLVMCodeGenLevelAggressive, LLVMRelocMode.LLVMRelocDefault, LLVMCodeModel.LLVMCodeModelDefault);
+			targetMachine.EmitToFile(module, "Code.o", LLVMCodeGenFileType.LLVMObjectFile);
 
 			var options = new LLVMMCJITCompilerOptions { NoFramePointerElim = 1 };
 			if (!module.TryCreateMCJITCompiler(out var engine, ref options, out err))
