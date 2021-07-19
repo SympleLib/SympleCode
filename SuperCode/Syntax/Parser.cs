@@ -234,6 +234,7 @@ namespace SuperCode
 			switch (current.kind)
 			{
 			case TokenKind.Num:
+			case TokenKind.Str:
 			case TokenKind.Iden:
 				return LitExpr();
 			case TokenKind.LeftParen:

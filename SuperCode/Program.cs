@@ -1,4 +1,4 @@
-﻿//#define SYNTAX_ONLY
+﻿#define SYNTAX_ONLY
 
 using System;
 using System.Runtime.InteropServices;
@@ -12,7 +12,7 @@ namespace SuperCode
 		public delegate int Run();
 
 		[StructLayout(LayoutKind.Explicit)]
-		private struct FPIUnion
+		private unsafe struct FPIUnion
 		{
 			[FieldOffset(0)]
 			public float fval;
@@ -98,7 +98,7 @@ namespace SuperCode
 		}
 
 #if !SYNTAX_ONLY
-		private static void RunJIT(LLVMModuleRef module)
+		private static unsafe void RunJIT(LLVMModuleRef module)
 		{
 			var options = new LLVMMCJITCompilerOptions { NoFramePointerElim = 1 };
 			if (!module.TryCreateMCJITCompiler(out var engine, ref options, out string err))

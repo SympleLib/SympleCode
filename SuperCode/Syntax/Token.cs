@@ -10,6 +10,7 @@ namespace SuperCode
 		Eof,
 
 		Iden,
+		Str,
 		Num,
 
 		Plus,
@@ -78,7 +79,7 @@ namespace SuperCode
 		}
 
 		public override string ToString() =>
-			$"'{file}' {line}:{col}> {kind} `{text}`";
+			$"'{file}' {line}:{col}> {kind} `{(Is(TokenKind.Str) ? text[1..^1] : text)}`";
 
 		public static readonly string[] puncs = {
 			"+", "-", "*", "/", "%",

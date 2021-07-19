@@ -55,6 +55,12 @@ namespace SuperCode
 					continue;
 				}
 
+				if (current == '\'')
+				{
+					tokens.Add(String());
+					continue;
+				}
+
 				if (char.IsDigit(current) || current == '.')
 				{
 					tokens.Add(Number());
@@ -78,6 +84,20 @@ namespace SuperCode
 				(current == '-' && IsIden(next))) // <-- This ones for you, Swerdlow
 				Next();
 			return Keyword(src[begin..pos]);
+		}
+
+		private Token String()
+		{
+			int begin = pos;
+			Next();
+			while (current != '\'')
+			{
+				if (current == 0)
+					throw new InvalidOperationException("Finsh yer sentanze");
+				Next();
+			}
+			Next();
+			return MakeToken(TokenKind.Str, begin);
 		}
 
 		private Token Number()

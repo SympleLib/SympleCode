@@ -1,6 +1,7 @@
-﻿int Run()
+﻿decl void puts(char*);
+
+int Run()
 {
-	float x = 69;
-	int* y = @x;
-	ret %y;
+	puts('Hello, world!');
+	ret 0;
 }
