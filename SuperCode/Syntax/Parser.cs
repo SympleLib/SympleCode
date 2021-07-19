@@ -28,8 +28,15 @@ namespace SuperCode
 			return new (lexer.path, mems.ToArray(), eof);
 		}
 
-		private TypeAst Type() =>
-			new (Next());
+		private TypeAst Type()
+		{
+			var baze = Next();
+			var addons = new List<Token>();
+			while (current.isTypeAddon)
+				addons.Add(Next());
+
+			return new (baze, addons.ToArray());
+		}
 
 		private ParamAst Param(TypeAst ty = null)
 		{
@@ -171,7 +178,7 @@ namespace SuperCode
 
 		private ExprAst BinExpr(int parentPriority = 0)
 		{
-			var left = MaybeCallExpr();
+			var left = PreExpr();
 			while (true)
 			{
 				int priority = current.binPriority;
@@ -184,6 +191,13 @@ namespace SuperCode
 			}
 
 			return left;
+		}
+
+		private ExprAst PreExpr()
+		{
+			if (current.isPrefix)
+				return new PreExprAst(Next(), CallExpr());
+			return CallExpr();
 		}
 
 		private ExprAst[] Args()
@@ -201,7 +215,7 @@ namespace SuperCode
 			return args.ToArray();
 		}
 
-		private ExprAst MaybeCallExpr()
+		private ExprAst CallExpr()
 		{
 			var expr = PrimExpr();
 			while (current.Is(TokenKind.LeftParen))
@@ -241,7 +255,7 @@ namespace SuperCode
 			var ty = Type();
 			var close = Match(TokenKind.RightParen);
 
-			var value = MaybeCallExpr();
+			var value = PreExpr();
 
 			return new (open, ty, close, value);
 		}

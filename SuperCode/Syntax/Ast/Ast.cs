@@ -18,7 +18,7 @@ namespace SuperCode
 				bool fieldLast = i == fields.Length - 1;
 				var field = fields[i];
 
-				if (field.FieldType.IsSubclassOf(typeof(Ast)))
+				if (field.FieldType.IsAssignableTo(typeof(Ast)))
 				{
 					var child = (Ast)field.GetValue(this);
 					if (child is not null)
@@ -26,15 +26,55 @@ namespace SuperCode
 				}
 				else if (field.FieldType.IsArray)
 				{
-					var arr = (Ast[]) field.GetValue(this);
-					foreach (var obj in arr)
+					if (field.FieldType.IsAssignableTo(typeof(Ast[])))
 					{
-						var child = obj;
-						if (child is not null)
-							child.Print(writer, indent, $"[{field.Name[..^1]}] ", fieldLast && obj == arr[^1]);
+						var arr = (Ast[]) field.GetValue(this);
+						foreach (var obj in arr)
+						{
+							var child = obj;
+							if (child is not null)
+								child.Print(writer, indent, $"[{field.Name[..^1]}] ", fieldLast && obj == arr[^1]);
+						}
+					}
+					else if (field.FieldType.IsAssignableTo(typeof(Token[])))
+					{
+						var arr = (Token[]) field.GetValue(this);
+						if (arr.Length == 0)
+						{
+							string prefix = indent + (fieldLast ? "└──" : "├──");
+
+							if (toConsole)
+								Console.ForegroundColor = ConsoleColor.Cyan;
+							writer.Write(prefix);
+							if (toConsole)
+								Console.ForegroundColor = ConsoleColor.DarkGray;
+							writer.Write($"{field.Name}: ");
+							if (toConsole)
+								Console.ForegroundColor = ConsoleColor.DarkYellow;
+							writer.WriteLine("Empty");
+						}
+
+						foreach (var token in arr)
+						{
+							if (token.kind == TokenKind.Unknown)
+								continue;
+
+							bool last = fieldLast && (token == arr[^1]);
+							string prefix = indent + (last ? "└──" : "├──");
+
+							if (toConsole)
+								Console.ForegroundColor = ConsoleColor.Cyan;
+							writer.Write(prefix);
+							if (toConsole)
+								Console.ForegroundColor = ConsoleColor.DarkGray;
+							writer.Write($"[{field.Name[..^1]}] ");
+							if (toConsole)
+								Console.ForegroundColor = ConsoleColor.DarkYellow;
+							writer.WriteLine(token);
+						}
 					}
 				}
-				else if (field.FieldType == typeof(Token))
+				else if (field.FieldType.IsAssignableTo(typeof(Token)))
 				{
 					var token = (Token) field.GetValue(this);
 					if (token.kind == TokenKind.Unknown)

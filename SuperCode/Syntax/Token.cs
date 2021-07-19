@@ -16,6 +16,8 @@ namespace SuperCode
 		Slash,
 		Percent,
 
+		At,
+
 		LeftBrace,
 		RightBrace,
 		LeftParen,
@@ -54,6 +56,11 @@ namespace SuperCode
 			this.pos = pos;
 		}
 
+		public static bool operator ==(Token x, Token y) =>
+			x.line == y.line && x.col == y.col && x.file == y.file;
+		public static bool operator !=(Token x, Token y) =>
+			!(x == y);
+
 		public bool Is(params TokenKind[] kinds)
 		{
 			foreach (var kind in kinds)
@@ -67,6 +74,7 @@ namespace SuperCode
 
 		public static readonly string[] puncs = {
 			"+", "-", "*", "/", "%",
+			"@",
 			"{", "}", "(", ")", "[", "]",
 			",", ";",
 			"=", "->",

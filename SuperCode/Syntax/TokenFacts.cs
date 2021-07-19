@@ -7,10 +7,13 @@ namespace SuperCode
 	public partial struct Token
 	{
 		public int binPriority => kind.BinPriority();
+		public bool isPrefix => kind.IsPrefix();
+		public bool isTypeAddon => kind.IsTypeAddon();
+
 		public bool isBuiltinType {
 			get
 			{
-				if (kind != TokenKind.Iden)
+				if (kind is not TokenKind.Iden)
 					return false;
 
 				if (text is "void" or "byte" or "short" or "int" or "long" or
@@ -76,5 +79,11 @@ namespace SuperCode
 				_ =>
 					0,
 			};
+
+		public static bool IsPrefix(this TokenKind kind) =>
+			kind is TokenKind.Star or TokenKind.Percent or TokenKind.At;
+
+		public static bool IsTypeAddon(this TokenKind kind) =>
+			kind is TokenKind.Star;
 	}
 }

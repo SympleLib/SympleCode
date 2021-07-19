@@ -18,6 +18,7 @@
 		CastExpr,
 		LitExpr,
 		ParenExpr,
+		PreExpr,
 
 		Count,
 	}

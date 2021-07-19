@@ -1,4 +1,4 @@
-﻿//#define SYNTAX_ONLY
+﻿#define SYNTAX_ONLY
 
 using System;
 using System.Runtime.InteropServices;
