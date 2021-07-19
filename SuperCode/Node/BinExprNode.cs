@@ -9,8 +9,16 @@ namespace SuperCode
 		Add,
 		Sub,
 		Mul,
-		Div,
-		Mod,
+		SDiv,
+		SMod,
+		UDiv,
+		UMod,
+
+		FAdd,
+		FSub,
+		FMul,
+		FDiv,
+		FMod,
 	}
 
 	public class BinExprNode: ExprNode

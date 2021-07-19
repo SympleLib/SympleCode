@@ -111,7 +111,7 @@ namespace SuperCode
 
 		private LLVMValueRef Gen(VarStmtNode stmt)
 		{
-			var ptr = builder.BuildAlloca(stmt.type);
+			var ptr = builder.BuildAlloca(stmt.type, stmt.name);
 			var init = Gen(stmt.init);
 			builder.BuildStore(init, ptr);
 			syms.Add(stmt, ptr);
@@ -137,10 +137,21 @@ namespace SuperCode
 				return builder.BuildSub(left, right);
 			case BinOp.Mul:
 				return builder.BuildMul(left, right);
-			case BinOp.Div:
+			case BinOp.SDiv:
 				return builder.BuildSDiv(left, right);
-			case BinOp.Mod:
+			case BinOp.SMod:
 				return builder.BuildSRem(left, right);
+
+			case BinOp.FAdd:
+				return builder.BuildFAdd(left, right);
+			case BinOp.FSub:
+				return builder.BuildFSub(left, right);
+			case BinOp.FMul:
+				return builder.BuildFMul(left, right);
+			case BinOp.FDiv:
+				return builder.BuildFDiv(left, right);
+			case BinOp.FMod:
+				return builder.BuildFRem(left, right);
 
 			default:
 				throw new InvalidOperationException("Invalid bin-expr");
@@ -200,6 +211,8 @@ namespace SuperCode
 			{
 			case UnOp.Neg:
 				return builder.BuildNeg(expr);
+			case UnOp.FNeg:
+				return builder.BuildFNeg(expr);
 			case UnOp.Deref:
 				return builder.BuildLoad(expr);
 

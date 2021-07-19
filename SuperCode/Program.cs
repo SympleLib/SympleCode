@@ -20,7 +20,7 @@ namespace SuperCode
 			public int ival;
 
 			public override string ToString() =>
-				$"Int: {ival}, Float: {fval}";
+				$"Int: {ival}, Float: {fval.ToString("N2")}";
 		}
 
 		private static void Main(string[] _)

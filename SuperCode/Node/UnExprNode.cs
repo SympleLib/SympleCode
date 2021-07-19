@@ -5,6 +5,7 @@ namespace SuperCode
 	public enum UnOp
 	{
 		Neg,
+		FNeg,
 		Ref,
 		Deref,
 	}

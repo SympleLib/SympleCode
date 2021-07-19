@@ -181,24 +181,25 @@ namespace SuperCode
 		{
 			var left = Nodify(expr.left);
 			var right = Nodify(expr.right, left.type);
+			bool fp = left.type.IsFloat();
 
 			BinOp op;
 			switch (expr.op.kind)
 			{
 			case TokenKind.Plus:
-				op = BinOp.Add;
+				op = fp ? BinOp.FAdd : BinOp.Add;
 				goto BinExpr;
 			case TokenKind.Dash:
-				op = BinOp.Sub;
+				op = fp ? BinOp.FSub : BinOp.Sub;
 				goto BinExpr;
 			case TokenKind.Star:
-				op = BinOp.Mul;
+				op = fp ? BinOp.FMul : BinOp.Mul;
 				goto BinExpr;
 			case TokenKind.Slash:
-				op = BinOp.Div;
+				op = fp ? BinOp.FDiv : BinOp.SDiv;
 				goto BinExpr;
 			case TokenKind.Percent:
-				op = BinOp.Mod;
+				op = fp ? BinOp.FMod : BinOp.SMod;
 				goto BinExpr;
 
 			default:
@@ -230,11 +231,12 @@ namespace SuperCode
 			UnOp op;
 			var var = Nodify(expr.expr);
 			var ty = var.type;
+			bool fp = ty.IsFloat();
 
 			switch (expr.prefix.kind)
 			{
 			case TokenKind.Dash:
-				op = UnOp.Neg;
+				op = fp ? UnOp.FNeg : UnOp.Neg;
 				goto UnExpr;
 			case TokenKind.At:
 				op = UnOp.Ref;
