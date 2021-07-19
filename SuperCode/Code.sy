@@ -1,6 +1,6 @@
 ﻿int Run()
 {
-	int x = 69;
+	float x = 69;
 	int* y = @x;
 	ret %y;
 }

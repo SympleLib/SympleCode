@@ -236,11 +236,11 @@ namespace SuperCode
 				goto UnExpr;
 			case TokenKind.At:
 				op = UnOp.Ref;
-				ty = LLVMTypeRef.CreatePointer(ty, 0);
+				ty.Ref();
 				goto UnExpr;
 			case TokenKind.Percent:
 				op = UnOp.Deref;
-				ty = ty.ElementType;
+				ty = ty.Deref();
 				goto UnExpr;
 
 			default:

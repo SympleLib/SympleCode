@@ -174,7 +174,13 @@ namespace SuperCode
 				return builder.BuildSIToFP(val, to);
 			if (from.IsFloat() && to.IsFloat())
 				return builder.BuildFPCast(val, to);
-			
+
+			if (from.IsPtr() && to.IsPtr())
+				return builder.BuildPointerCast(val, to);
+			if (from.IsPtr() && !to.IsPtr())
+				return builder.BuildPtrToInt(val, to);
+			if (!from.IsPtr() && to.IsPtr())
+				return builder.BuildIntToPtr(val, to);
 			return builder.BuildIntCast(val, to); ;
 		}
 
