@@ -43,6 +43,19 @@ namespace SuperCode
 			{ "fp128", LLVMTypeRef.FP128 },
 
 
+			{ "i1", LLVMTypeRef.Int1 },
+			{ "i8", LLVMTypeRef.Int8 },
+			{ "i16", LLVMTypeRef.Int16 },
+			{ "i32", LLVMTypeRef.Int32 },
+			{ "i64", LLVMTypeRef.Int64 },
+
+			{ "u1", LLVMTypeRef.Int1 },
+			{ "u8", LLVMTypeRef.Int8 },
+			{ "u16", LLVMTypeRef.Int16 },
+			{ "u32", LLVMTypeRef.Int32 },
+			{ "u64", LLVMTypeRef.Int64 },
+
+
 			{ "int1", LLVMTypeRef.Int1 },
 			{ "int8", LLVMTypeRef.Int8 },
 			{ "int16", LLVMTypeRef.Int16 },

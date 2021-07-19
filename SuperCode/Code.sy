@@ -1,2 +1,5 @@
-﻿long Run() ->
-	ret [long]6.9;
+﻿i64 Run()
+{
+	fp64 x = 6.9;
+	ret [i64]x;
+}
