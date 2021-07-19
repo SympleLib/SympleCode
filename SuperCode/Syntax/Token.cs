@@ -1,4 +1,6 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 
 namespace SuperCode
 {
@@ -57,9 +59,15 @@ namespace SuperCode
 		}
 
 		public static bool operator ==(Token x, Token y) =>
-			x.line == y.line && x.col == y.col && x.file == y.file;
+			x.Equals(y);
 		public static bool operator !=(Token x, Token y) =>
-			!(x == y);
+			!x.Equals(y);
+
+		public override bool Equals([NotNullWhen(true)] object obj) =>
+			GetHashCode() == obj.GetHashCode();
+
+		public override int GetHashCode() =>
+			HashCode.Combine(kind, text, file, line, col, pos);
 
 		public bool Is(params TokenKind[] kinds)
 		{
