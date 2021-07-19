@@ -14,6 +14,5 @@ namespace SuperCode
 		}
 
 		public override AstKind kind => AstKind.Type;
-		public LLVMTypeRef builtinType => baze.builtinType;
 	}
 }

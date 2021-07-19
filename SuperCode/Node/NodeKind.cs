@@ -17,5 +17,6 @@
 		FNumExpr,
 		NumExpr,
 		SymExpr,
+		UnExpr,
 	}
 }

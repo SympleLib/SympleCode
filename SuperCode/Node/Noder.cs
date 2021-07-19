@@ -24,8 +24,16 @@ namespace SuperCode
 			return new ModuleNode(module.filename, mems.ToArray());
 		}
 
+		private LLVMTypeRef Nodify(TypeAst type)
+		{
+			var baze = type.baze.builtinType;
+			for (int i = 0; i < type.addons.Length; i++)
+				baze = LLVMTypeRef.CreatePointer(baze, 0);
+			return baze;
+		}
+
 		private ParamNode Nodify(ParamAst param) =>
-			new (param.type.builtinType, param.name.text);
+			new (Nodify(param.type), param.name.text);
 
 		private MemNode Nodify(MemAst mem)
 		{
@@ -45,7 +53,7 @@ namespace SuperCode
 		{
 			var paramTypes = new LLVMTypeRef[mem.paramz.Length];
 			for (int i = 0; i < paramTypes.Length; i++)
-				paramTypes[i] = mem.paramz[i].type.builtinType;
+				paramTypes[i] = Nodify(mem.paramz[i].type);
 
 			var paramz = new List<ParamNode>();
 			foreach (var param in mem.paramz)
@@ -55,7 +63,7 @@ namespace SuperCode
 				syms.Add(paramNode.name, paramNode);
 			}
 
-			var ty = LLVMTypeRef.CreateFunction(mem.retType.builtinType, paramTypes);
+			var ty = LLVMTypeRef.CreateFunction(Nodify(mem.retType), paramTypes);
 			retType = ty.ReturnType;
 			string name = mem.name.text;
 
@@ -73,7 +81,7 @@ namespace SuperCode
 		{
 			var paramTypes = new LLVMTypeRef[mem.paramz.Length];
 			for (int i = 0; i < paramTypes.Length; i++)
-				paramTypes[i] = mem.paramz[i].type.builtinType;
+				paramTypes[i] = Nodify(mem.paramz[i].type);
 
 			var paramz = new List<ParamNode>();
 			foreach (var param in mem.paramz)
@@ -84,7 +92,7 @@ namespace SuperCode
 					syms.Add(paramNode.name, paramNode);
 			}
 
-			var ty = LLVMTypeRef.CreateFunction(mem.retType.builtinType, paramTypes);
+			var ty = LLVMTypeRef.CreateFunction(Nodify(mem.retType), paramTypes);
 			string name = mem.name.text;
 
 			var decl = new DeclFuncMemNode(ty, name, paramz.ToArray());
@@ -113,7 +121,7 @@ namespace SuperCode
 
 		private VarStmtNode Nodify(VarStmtAst stmt)
 		{
-			var ty = stmt.type.builtinType;
+			var ty = Nodify(stmt.type);
 			var var = new VarStmtNode(ty, stmt.name.text, Nodify(stmt.init, ty));
 			syms.Add(var.name, var);
 			return var;
@@ -133,6 +141,8 @@ namespace SuperCode
 				return Cast(Nodify((CastExprAst) expr), castTo);
 			case AstKind.ParenExpr:
 				return Cast(Nodify(((ParenExprAst) expr).expr), castTo);
+			case AstKind.PreExpr:
+				return Cast(Nodify((PreExprAst) expr), castTo);
 
 			default:
 				throw new InvalidOperationException("Invalid expr");
@@ -168,6 +178,7 @@ namespace SuperCode
 		private BinExprNode Nodify(BinExprAst expr)
 		{
 			var left = Nodify(expr.left);
+			var right = Nodify(expr.right, left.type);
 
 			BinOp op;
 			switch (expr.op.kind)
@@ -193,7 +204,6 @@ namespace SuperCode
 			}
 
 		BinExpr:
-			var right = Nodify(expr.right, left.type);
 			return new BinExprNode(op, left, right);
 		}
 
@@ -208,7 +218,38 @@ namespace SuperCode
 		}
 
 		private ExprNode Nodify(CastExprAst expr) =>
-			Nodify(expr.value, expr.type.builtinType);
+			Nodify(expr.value, Nodify(expr.type));
+
+		private ExprNode Nodify(PreExprAst expr)
+		{
+			if (expr.prefix.Is(TokenKind.Plus))
+				return Nodify(expr.expr);
+
+			UnOp op;
+			var var = Nodify(expr.expr);
+			var ty = var.type;
+
+			switch (expr.prefix.kind)
+			{
+			case TokenKind.Dash:
+				op = UnOp.Neg;
+				goto UnExpr;
+			case TokenKind.At:
+				op = UnOp.Ref;
+				ty = LLVMTypeRef.CreatePointer(ty, 0);
+				goto UnExpr;
+			case TokenKind.Percent:
+				op = UnOp.Deref;
+				ty = ty.ElementType;
+				goto UnExpr;
+
+			default:
+				throw new InvalidOperationException("Invalid un-expr");
+			}
+
+		UnExpr:
+			return new UnExprNode(ty, op, var);
+		}
 
 		private ExprNode Cast(ExprNode node, LLVMTypeRef to)
 		{

@@ -81,7 +81,7 @@ namespace SuperCode
 			};
 
 		public static bool IsPrefix(this TokenKind kind) =>
-			kind is TokenKind.Star or TokenKind.Percent or TokenKind.At;
+			kind is TokenKind.Plus or TokenKind.Dash or TokenKind.Percent or TokenKind.At;
 
 		public static bool IsTypeAddon(this TokenKind kind) =>
 			kind is TokenKind.Star;

@@ -71,6 +71,8 @@ namespace SuperCode
 				return Gen((CallExprNode) node);
 			case NodeKind.CastExpr:
 				return Gen((CastExprNode) node);
+			case NodeKind.UnExpr:
+				return Gen((UnExprNode) node);
 
 			default:
 				throw new InvalidOperationException("Invalid node");
@@ -174,6 +176,32 @@ namespace SuperCode
 				return builder.BuildFPCast(val, to);
 			
 			return builder.BuildIntCast(val, to); ;
+		}
+
+		private LLVMValueRef Gen(UnExprNode node)
+		{
+			if (node.op is UnOp.Ref)
+				return GenAddr(node.expr);
+
+			var expr = Gen(node.expr);
+
+			switch (node.op)
+			{
+			case UnOp.Neg:
+				return builder.BuildNeg(expr);
+			case UnOp.Deref:
+				return builder.BuildLoad(expr);
+
+			default:
+				throw new InvalidOperationException("Invalid un-expr");
+			}
+		}
+
+		private LLVMValueRef GenAddr(Node node)
+		{
+			if (node.kind != NodeKind.SymExpr)
+				throw new InvalidOperationException("Not an addr");
+			return syms[((SymExprNode) node).symbol];
 		}
 	}
 }
