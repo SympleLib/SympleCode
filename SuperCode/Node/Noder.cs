@@ -24,52 +24,52 @@ namespace SuperCode
 			return new ModuleNode(module.filename, mems.ToArray());
 		}
 
-		private LLVMTypeRef Nodify(TypeAst type)
+		private LLVMTypeRef Nodify(TypeAst ast)
 		{
-			var baze = type.baze.builtinType;
-			for (int i = 0; i < type.addons.Length; i++)
+			var baze = ast.baze.builtinType;
+			for (int i = 0; i < ast.addons.Length; i++)
 				baze = LLVMTypeRef.CreatePointer(baze, 0);
 			return baze;
 		}
 
-		private ParamNode Nodify(ParamAst param) =>
-			new (Nodify(param.type), param.name.text);
+		private ParamNode Nodify(ParamAst ast) =>
+			new (Nodify(ast.type), ast.name.text);
 
-		private MemNode Nodify(MemAst mem)
+		private MemNode Nodify(MemAst ast)
 		{
-			switch (mem.kind)
+			switch (ast.kind)
 			{
 			case AstKind.FuncMem:
-				return Nodify((FuncMemAst) mem);
+				return Nodify((FuncMemAst) ast);
 			case AstKind.DeclFuncMem:
-				return Nodify((DeclFuncMemAst) mem);
+				return Nodify((DeclFuncMemAst) ast);
 
 			default:
 				throw new InvalidOperationException("Invalid mem");
 			}
 		}
 
-		private FuncMemNode Nodify(FuncMemAst mem)
+		private FuncMemNode Nodify(FuncMemAst ast)
 		{
-			var paramTypes = new LLVMTypeRef[mem.paramz.Length];
+			var paramTypes = new LLVMTypeRef[ast.paramz.Length];
 			for (int i = 0; i < paramTypes.Length; i++)
-				paramTypes[i] = Nodify(mem.paramz[i].type);
+				paramTypes[i] = Nodify(ast.paramz[i].type);
 
 			var paramz = new List<ParamNode>();
-			foreach (var param in mem.paramz)
+			foreach (var param in ast.paramz)
 			{
 				var paramNode = Nodify(param);
 				paramz.Add(paramNode);
 				syms.Add(paramNode.name, paramNode);
 			}
 
-			var ty = LLVMTypeRef.CreateFunction(Nodify(mem.retType), paramTypes);
+			var ty = LLVMTypeRef.CreateFunction(Nodify(ast.retType), paramTypes);
 			retType = ty.ReturnType;
-			string name = mem.name.text;
+			string name = ast.name.text;
 
 
 			var stmts = new List<StmtNode>();
-			foreach (var stmt in mem.stmts)
+			foreach (var stmt in ast.stmts)
 				stmts.Add(Nodify(stmt));
 
 			var func = new FuncMemNode(ty, name, paramz.ToArray(), stmts.ToArray());
@@ -77,14 +77,14 @@ namespace SuperCode
 			return func;
 		}
 
-		private DeclFuncMemNode Nodify(DeclFuncMemAst mem)
+		private DeclFuncMemNode Nodify(DeclFuncMemAst ast)
 		{
-			var paramTypes = new LLVMTypeRef[mem.paramz.Length];
+			var paramTypes = new LLVMTypeRef[ast.paramz.Length];
 			for (int i = 0; i < paramTypes.Length; i++)
-				paramTypes[i] = Nodify(mem.paramz[i].type);
+				paramTypes[i] = Nodify(ast.paramz[i].type);
 
 			var paramz = new List<ParamNode>();
-			foreach (var param in mem.paramz)
+			foreach (var param in ast.paramz)
 			{
 				var paramNode = Nodify(param);
 				paramz.Add(paramNode);
@@ -92,67 +92,69 @@ namespace SuperCode
 					syms.Add(paramNode.name, paramNode);
 			}
 
-			var ty = LLVMTypeRef.CreateFunction(Nodify(mem.retType), paramTypes);
-			string name = mem.name.text;
+			var ty = LLVMTypeRef.CreateFunction(Nodify(ast.retType), paramTypes);
+			string name = ast.name.text;
 
 			var decl = new DeclFuncMemNode(ty, name, paramz.ToArray());
 			syms.Add(name, decl);
 			return decl;
 		}
 
-		private StmtNode Nodify(StmtAst stmt)
+		private StmtNode Nodify(StmtAst ast)
 		{
-			switch (stmt.kind)
+			switch (ast.kind)
 			{
 			case AstKind.RetStmt:
-				return Nodify((RetStmtAst) stmt);
+				return Nodify((RetStmtAst) ast);
 			case AstKind.VarStmt:
-				return Nodify((VarStmtAst) stmt);
+				return Nodify((VarStmtAst) ast);
 			case AstKind.ExprStmt:
-				return Nodify(((ExprStmtAst) stmt).expr);
+				return Nodify(((ExprStmtAst) ast).expr);
 
 			default:
 				throw new InvalidOperationException("Invalid stmt");
 			}
 		}
 
-		private RetStmtNode Nodify(RetStmtAst stmt) =>
-			new (Nodify(stmt.value, retType));
+		private RetStmtNode Nodify(RetStmtAst ast) =>
+			new (Nodify(ast.value, retType));
 
-		private VarStmtNode Nodify(VarStmtAst stmt)
+		private VarStmtNode Nodify(VarStmtAst ast)
 		{
-			var ty = Nodify(stmt.type);
-			var var = new VarStmtNode(ty, stmt.name.text, Nodify(stmt.init, ty));
+			var ty = Nodify(ast.type);
+			var var = new VarStmtNode(ty, ast.name.text, Nodify(ast.init, ty));
 			syms.Add(var.name, var);
 			return var;
 		}
 
-		private ExprNode Nodify(ExprAst expr, LLVMTypeRef castTo = default)
+		private ExprNode Nodify(ExprAst ast, LLVMTypeRef castTo = default)
 		{
-			switch (expr.kind)
+			switch (ast.kind)
 			{
 			case AstKind.LitExpr:
-				return Cast(Nodify((LitExprAst) expr), castTo);
+				return Cast(Nodify((LitExprAst) ast), castTo);
 			case AstKind.BinExpr:
-				return Cast(Nodify((BinExprAst) expr), castTo);
+				return Cast(Nodify((BinExprAst) ast), castTo);
 			case AstKind.CallExpr:
-				return Cast(Nodify((CallExprAst) expr), castTo);
+				return Cast(Nodify((CallExprAst) ast), castTo);
 			case AstKind.CastExpr:
-				return Cast(Nodify((CastExprAst) expr), castTo);
+				return Cast(Nodify((CastExprAst) ast), castTo);
 			case AstKind.ParenExpr:
-				return Cast(Nodify(((ParenExprAst) expr).expr), castTo);
+				return Cast(Nodify(((ParenExprAst) ast).expr), castTo);
 			case AstKind.PreExpr:
-				return Cast(Nodify((PreExprAst) expr), castTo);
+				return Cast(Nodify((PreExprAst) ast), castTo);
+			case AstKind.TypePunExpr:
+				return Cast(Nodify((TypePunExprAst) ast), castTo);
 
 			default:
 				throw new InvalidOperationException("Invalid expr");
 			}
 		}
 
-		private ExprNode Nodify(LitExprAst expr)
+		private ExprNode Nodify(LitExprAst ast)
 		{
-			string literal = expr.literal.text;
-			switch (expr.literal.kind)
+			string literal = ast.literal.text;
+			switch (ast.literal.kind)
 			{
 			case TokenKind.Iden:
 				return new SymExprNode(syms[literal]);
@@ -161,8 +163,9 @@ namespace SuperCode
 			case TokenKind.Num:
 				if (literal.Contains('.'))
 				{
-					double num = double.Parse(literal);
-					var ty = num != (float) num ? LLVMTypeRef.Double : LLVMTypeRef.Float;
+					bool isF32 = literal.Contains('f') || literal.Contains('F');
+					double num = double.Parse(isF32 ? literal[..^1] : literal);
+					var ty = isF32 ? LLVMTypeRef.Float : LLVMTypeRef.Double;
 					return new FNumExprNode(num, ty);
 				}
 				else
@@ -177,14 +180,14 @@ namespace SuperCode
 			}
 		}
 
-		private BinExprNode Nodify(BinExprAst expr)
+		private BinExprNode Nodify(BinExprAst ast)
 		{
-			var left = Nodify(expr.left);
-			var right = Nodify(expr.right, left.type);
+			var left = Nodify(ast.left);
+			var right = Nodify(ast.right, left.type);
 			bool fp = left.type.IsFloat();
 
 			BinOp op;
-			switch (expr.op.kind)
+			switch (ast.op.kind)
 			{
 			case TokenKind.Plus:
 				op = fp ? BinOp.FAdd : BinOp.Add;
@@ -210,30 +213,30 @@ namespace SuperCode
 			return new BinExprNode(op, left, right);
 		}
 
-		private CallExprNode Nodify(CallExprAst expr)
+		private CallExprNode Nodify(CallExprAst ast)
 		{
-			var what = Nodify(expr.what);
+			var what = Nodify(ast.what);
 			var args = new List<ExprNode>();
-			for (int i = 0; i < expr.args.Length; i++)
-				args.Add(Nodify(expr.args[i], what.type.ParamTypes[i]));
+			for (int i = 0; i < ast.args.Length; i++)
+				args.Add(Nodify(ast.args[i], what.type.ParamTypes[i]));
 
 			return new CallExprNode(what, args.ToArray());
 		}
 
-		private ExprNode Nodify(CastExprAst expr) =>
-			Nodify(expr.value, Nodify(expr.type));
+		private ExprNode Nodify(CastExprAst ast) =>
+			Nodify(ast.expr, Nodify(ast.type));
 
-		private ExprNode Nodify(PreExprAst expr)
+		private ExprNode Nodify(PreExprAst ast)
 		{
-			if (expr.prefix.Is(TokenKind.Plus))
-				return Nodify(expr.expr);
+			if (ast.prefix.Is(TokenKind.Plus))
+				return Nodify(ast.expr);
 
 			UnOp op;
-			var var = Nodify(expr.expr);
+			var var = Nodify(ast.expr);
 			var ty = var.type;
 			bool fp = ty.IsFloat();
 
-			switch (expr.prefix.kind)
+			switch (ast.prefix.kind)
 			{
 			case TokenKind.Dash:
 				op = fp ? UnOp.FNeg : UnOp.Neg;
@@ -253,6 +256,15 @@ namespace SuperCode
 
 		UnExpr:
 			return new UnExprNode(ty, op, var);
+		}
+
+		private ExprNode Nodify(TypePunExprAst ast)
+		{
+			var ty = Nodify(ast.type);
+			var expr = Nodify(ast.expr);
+			if (ty == expr.type)
+				return expr;
+			return new TypePunExprNode(ty, expr);
 		}
 
 		private ExprNode Cast(ExprNode node, LLVMTypeRef to)

@@ -1,6 +1,2 @@
-﻿int Run()
-{
-	float x = 6.9 + 4.20 * 13.37;
-	int* y = @x;
-	ret %y;
-}
+﻿long Run() ->
+	ret [long]6.9;

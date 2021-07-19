@@ -1,13 +1,14 @@
 ﻿namespace SuperCode
 {
-	public class CastExprAst: ExprAst
+	public class TypePunExprAst: ExprAst
 	{
 		public Token open;
 		public TypeAst type;
 		public Token close;
+
 		public ExprAst expr;
 
-		public CastExprAst(Token open, TypeAst type, Token close, ExprAst expr)
+		public TypePunExprAst(Token open, TypeAst type, Token close, ExprAst expr)
 		{
 			this.open = open;
 			this.type = type;
@@ -15,6 +16,6 @@
 			this.expr = expr;
 		}
 
-		public override AstKind kind => AstKind.CastExpr;
+		public override AstKind kind => AstKind.TypePunExpr;
 	}
 }

@@ -18,6 +18,7 @@
 		NumExpr,
 		StrExpr,
 		SymExpr,
+		TypePunExpr,
 		UnExpr,
 	}
 }

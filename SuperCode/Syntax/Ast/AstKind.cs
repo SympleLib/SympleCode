@@ -19,6 +19,7 @@
 		LitExpr,
 		ParenExpr,
 		PreExpr,
+		TypePunExpr,
 
 		Count,
 	}

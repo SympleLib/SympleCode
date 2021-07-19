@@ -237,6 +237,8 @@ namespace SuperCode
 			case TokenKind.Str:
 			case TokenKind.Iden:
 				return LitExpr();
+			case TokenKind.LeftBracket:
+				return TypePun();
 			case TokenKind.LeftParen:
 				if (next.isBuiltinType)
 					return CastExpr();
@@ -256,9 +258,9 @@ namespace SuperCode
 			var ty = Type();
 			var close = Match(TokenKind.RightParen);
 
-			var value = PreExpr();
+			var expr = PreExpr();
 
-			return new (open, ty, close, value);
+			return new (open, ty, close, expr);
 		}
 
 		private ParenExprAst ParenExpr()
@@ -268,6 +270,17 @@ namespace SuperCode
 			var close = Match(TokenKind.RightParen);
 
 			return new (open, expr, close);
+		}
+
+		private TypePunExprAst TypePun()
+		{
+			var open = Match(TokenKind.LeftBracket);
+			var ty = Type();
+			var close = Match(TokenKind.RightBracket);
+
+			var expr = PreExpr();
+
+			return new (open, ty, close, expr);
 		}
 
 		private Token Next()

@@ -118,6 +118,9 @@ namespace SuperCode
 				Next();
 			}
 
+			if (current is 'f' or 'F')
+				Next();
+
 			return MakeToken(TokenKind.Num, begin);
 		}
 

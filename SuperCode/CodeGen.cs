@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Xml.Linq;
 
 using LLVMSharp.Interop;
 
@@ -69,6 +70,8 @@ namespace SuperCode
 				return Gen((FNumExprNode) node);
 			case NodeKind.NumExpr:
 				return Gen((NumExprNode) node);
+			case NodeKind.TypePunExpr:
+				return Gen((TypePunExprNode) node);
 			case NodeKind.UnExpr:
 				return Gen((UnExprNode) node);
 			case NodeKind.StrExpr:
@@ -106,30 +109,39 @@ namespace SuperCode
 			return fn;
 		}
 
-		private LLVMValueRef Gen(RetStmtNode stmt) =>
-			builder.BuildRet(Gen(stmt.value));
+		private LLVMValueRef Gen(RetStmtNode node) =>
+			builder.BuildRet(Gen(node.value));
 
-		private LLVMValueRef Gen(VarStmtNode stmt)
+		private LLVMValueRef Gen(VarStmtNode node)
 		{
-			var ptr = builder.BuildAlloca(stmt.type, stmt.name);
-			var init = Gen(stmt.init);
+			var ptr = builder.BuildAlloca(node.type, node.name);
+			var init = Gen(node.init);
 			builder.BuildStore(init, ptr);
-			syms.Add(stmt, ptr);
+			syms.Add(node, ptr);
 			return ptr;
 		}
 
-		private LLVMValueRef Gen(NumExprNode expr) =>
-			LLVMValueRef.CreateConstInt(expr.type, expr.value);
+		private LLVMValueRef Gen(NumExprNode node) =>
+			LLVMValueRef.CreateConstInt(node.type, node.value);
 
-		private LLVMValueRef Gen(FNumExprNode expr) =>
-			LLVMValueRef.CreateConstReal(expr.type, expr.value);
+		private LLVMValueRef Gen(FNumExprNode node) =>
+			LLVMValueRef.CreateConstReal(node.type, node.value);
 
-		private LLVMValueRef Gen(BinExprNode expr)
+		private LLVMValueRef Gen(TypePunExprNode node)
 		{
-			var left = Gen(expr.left);
-			var right = Gen(expr.right);
+			var expr = Gen(node.expr);
+			var fptr = builder.BuildAlloca(expr.TypeOf);
+			builder.BuildStore(expr, fptr);
+			var tptr = builder.BuildPointerCast(fptr, node.type.Ref());
+			return builder.BuildLoad(tptr);
+		}
 
-			switch (expr.op)
+		private LLVMValueRef Gen(BinExprNode node)
+		{
+			var left = Gen(node.left);
+			var right = Gen(node.right);
+
+			switch (node.op)
 			{
 			case BinOp.Add:
 				return builder.BuildAdd(left, right);
