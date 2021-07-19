@@ -185,6 +185,7 @@ namespace SuperCode
 			var left = Nodify(ast.left);
 			var right = Nodify(ast.right, left.type);
 			bool fp = left.type.IsFloat();
+			
 
 			BinOp op;
 			switch (ast.op.kind)

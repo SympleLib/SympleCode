@@ -54,6 +54,10 @@ namespace SuperCode
 			{ "uint16", LLVMTypeRef.Int16 },
 			{ "uint32", LLVMTypeRef.Int32 },
 			{ "uint64", LLVMTypeRef.Int64 },
+
+			{ "word", LLVMTypeRef.Int16 },
+			{ "dword", LLVMTypeRef.Int32 },
+			{ "qword", LLVMTypeRef.Int64 },
 		};
 	}
 }

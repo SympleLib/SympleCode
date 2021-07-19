@@ -153,6 +153,10 @@ namespace SuperCode
 				return builder.BuildSDiv(left, right);
 			case BinOp.SMod:
 				return builder.BuildSRem(left, right);
+			case BinOp.UDiv:
+				return builder.BuildUDiv(left, right);
+			case BinOp.UMod:
+				return builder.BuildURem(left, right);
 
 			case BinOp.FAdd:
 				return builder.BuildFAdd(left, right);
