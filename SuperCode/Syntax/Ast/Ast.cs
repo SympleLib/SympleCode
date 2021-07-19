@@ -29,30 +29,39 @@ namespace SuperCode
 					if (field.FieldType.IsAssignableTo(typeof(Ast[])))
 					{
 						var arr = (Ast[]) field.GetValue(this);
+						string prefix = indent + (fieldLast ? "└──" : "├──");
+
+						if (toConsole)
+							Console.ForegroundColor = ConsoleColor.Cyan;
+						writer.Write(prefix);
+						if (toConsole)
+							Console.ForegroundColor = ConsoleColor.DarkGray;
+						writer.WriteLine($"{field.Name}");
+
+						string eindent = indent + (fieldLast ? "   " : "│  ");
+
 						foreach (var obj in arr)
 						{
+							bool last = obj == arr[^1];
+
 							var child = obj;
 							if (child is not null)
-								child.Print(writer, indent, $"[{field.Name[..^1]}] ", fieldLast && obj == arr[^1]);
+								child.Print(writer, eindent, "", last);
 						}
 					}
 					else if (field.FieldType.IsAssignableTo(typeof(Token[])))
 					{
 						var arr = (Token[]) field.GetValue(this);
-						if (arr.Length == 0)
-						{
-							string prefix = indent + (fieldLast ? "└──" : "├──");
+						string prefix = indent + (fieldLast ? "└──" : "├──");
 
-							if (toConsole)
-								Console.ForegroundColor = ConsoleColor.Cyan;
-							writer.Write(prefix);
-							if (toConsole)
-								Console.ForegroundColor = ConsoleColor.DarkGray;
-							writer.Write($"{field.Name}: ");
-							if (toConsole)
-								Console.ForegroundColor = ConsoleColor.DarkYellow;
-							writer.WriteLine("Empty");
-						}
+						if (toConsole)
+							Console.ForegroundColor = ConsoleColor.Cyan;
+						writer.Write(prefix);
+						if (toConsole)
+							Console.ForegroundColor = ConsoleColor.DarkGray;
+						writer.WriteLine($"{field.Name}");
+
+						string eindent = indent + (fieldLast ? "   " : "│  ");
 
 						foreach (var token in arr)
 						{
@@ -60,14 +69,11 @@ namespace SuperCode
 								continue;
 
 							bool last = fieldLast && (token == arr[^1]);
-							string prefix = indent + (last ? "└──" : "├──");
+							string eprefix = eindent + (last ? "└──" : "├──");
 
 							if (toConsole)
 								Console.ForegroundColor = ConsoleColor.Cyan;
-							writer.Write(prefix);
-							if (toConsole)
-								Console.ForegroundColor = ConsoleColor.DarkGray;
-							writer.Write($"[{field.Name[..^1]}] ");
+							writer.Write(eprefix);
 							if (toConsole)
 								Console.ForegroundColor = ConsoleColor.DarkYellow;
 							writer.WriteLine(token);
