@@ -25,7 +25,10 @@ namespace SuperCode
 
 		private static void Main(string[] _)
 		{
-			var parser = new Parser("Code.sy");
+			//Console.Write("Input file: ");
+			//string file = Console.ReadLine();
+			string file = "Code.sy";
+			var parser = new Parser(file);
 			// Console.ForegroundColor = ConsoleColor.DarkGreen;
 			int pos = 0;
 			foreach (var tok in parser.tokens)
@@ -71,6 +74,11 @@ namespace SuperCode
 			Console.WriteLine();
 
 #if !SYNTAX_ONLY
+			LLVM.LinkInMCJIT();
+			LLVM.InitializeNativeTarget();
+			LLVM.InitializeNativeAsmParser();
+			LLVM.InitializeNativeAsmPrinter();
+			LLVM.InitializeNativeDisassembler();
 
 			var noder = new Noder(tree);
 			var node = noder.Nodify();
@@ -83,6 +91,7 @@ namespace SuperCode
 			Console.WriteLine(module);
 
 			Console.ForegroundColor = ConsoleColor.White;
+			Compile(module);
 			RunJIT(module);
 #endif
 			Console.ReadKey();
@@ -91,26 +100,8 @@ namespace SuperCode
 #if !SYNTAX_ONLY
 		private static void RunJIT(LLVMModuleRef module)
 		{
-			LLVM.LinkInMCJIT();
-			LLVM.InitializeNativeTarget();
-			LLVM.InitializeNativeAsmParser();
-			LLVM.InitializeNativeAsmPrinter();
-			LLVM.InitializeNativeDisassembler();
-
-			if (!module.TryVerify(LLVMVerifierFailureAction.LLVMPrintMessageAction, out string err))
-			{
-				Console.Error.WriteLine(err);
-				return;
-			}
-
-
-			var target = LLVMTargetRef.GetTargetFromTriple(LLVMTargetRef.DefaultTriple);
-			var targetMachine = target.CreateTargetMachine(LLVMTargetRef.DefaultTriple, "generic", "",
-				LLVMCodeGenOptLevel.LLVMCodeGenLevelAggressive, LLVMRelocMode.LLVMRelocDefault, LLVMCodeModel.LLVMCodeModelDefault);
-			targetMachine.EmitToFile(module, "Code.o", LLVMCodeGenFileType.LLVMObjectFile);
-
 			var options = new LLVMMCJITCompilerOptions { NoFramePointerElim = 1 };
-			if (!module.TryCreateMCJITCompiler(out var engine, ref options, out err))
+			if (!module.TryCreateMCJITCompiler(out var engine, ref options, out string err))
 			{
 				Console.Error.WriteLine(err);
 				return;
@@ -119,6 +110,20 @@ namespace SuperCode
 			var exec = (Run) Marshal.GetDelegateForFunctionPointer(engine.GetPointerToGlobal(module.GetNamedFunction("Run")), typeof(Run));
 			var union = new FPIUnion { ival = exec() };
 			Console.WriteLine(union);
+		}
+
+		private static void Compile(LLVMModuleRef module)
+		{
+			if (!module.TryVerify(LLVMVerifierFailureAction.LLVMPrintMessageAction, out string err))
+			{
+				Console.Error.WriteLine(err);
+				return;
+			}
+
+			var target = LLVMTargetRef.GetTargetFromTriple(LLVMTargetRef.DefaultTriple);
+			var targetMachine = target.CreateTargetMachine(LLVMTargetRef.DefaultTriple, "generic", "",
+				LLVMCodeGenOptLevel.LLVMCodeGenLevelAggressive, LLVMRelocMode.LLVMRelocDefault, LLVMCodeModel.LLVMCodeModelDefault);
+			targetMachine.EmitToFile(module, "Code.o", LLVMCodeGenFileType.LLVMObjectFile);
 		}
 #endif
 	}

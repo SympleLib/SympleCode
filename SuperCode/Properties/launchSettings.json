@@ -1,0 +1,8 @@
+{
+  "profiles": {
+    "SuperCode": {
+      "commandName": "Project",
+      "workingDirectory": "."
+    }
+  }
+}

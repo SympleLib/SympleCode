@@ -25,7 +25,7 @@ namespace SuperCode
 
 		public LLVMModuleRef Gen()
 		{
-			file = dbuilder.CreateFile("Code.sy", "../../../");
+			file = dbuilder.CreateFile(modNode.filename, "");
 			dbuilder.CreateCompileUnit(LLVMDWARFSourceLanguage.LLVMDWARFSourceLanguageC, file,
 				"SuperCode d1.0.0", 0, "", 0, "", LLVMDWARFEmissionKind.LLVMDWARFEmissionFull, 0, 0, 1, "", "");
 			foreach (var mem in modNode.mems)
@@ -80,7 +80,7 @@ namespace SuperCode
 		private LLVMValueRef Gen(FuncMemNode mem)
 		{
 			var fn = module.AddFunction(mem.name, mem.type);
-			var entry = fn.AppendBasicBlock("Entry");
+			var entry = fn.AppendBasicBlock();
 			builder.PositionAtEnd(entry);
 			syms.Add(mem, fn);
 

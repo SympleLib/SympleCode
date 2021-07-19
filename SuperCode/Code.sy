@@ -1,5 +1,6 @@
 ﻿int Run()
 {
-	int x = 6 + 9;
-	ret x;
+	int x = 69;
+	int* y = @x;
+	ret %y;
 }
