@@ -72,5 +72,73 @@ namespace SuperCode
 			{ "dword", LLVMTypeRef.Int32 },
 			{ "qword", LLVMTypeRef.Int64 },
 		};
+
+
+		public static readonly Dictionary<string, bool> utypes = new()
+		{
+			{ "void", false },
+
+			{ "sbyte", false },
+			{ "short", false },
+			{ "int", false },
+			{ "long", false },
+
+			{ "byte", true },
+			{ "ushort", true },
+			{ "uint", true },
+			{ "ulong", true },
+
+			{ "float", false },
+			{ "bfloat", false },
+
+			{ "half", false },
+			{ "single", false },
+			{ "double", false },
+			{ "triple", false },
+
+			{ "char", false },
+			{ "schar", false },
+			{ "wchar", false },
+			{ "bool", false },
+
+
+
+			{ "bf16", false },
+			{ "fp16", false },
+			{ "fp32", false },
+			{ "fp64", false },
+			{ "fp80", false },
+			{ "fp128", false },
+
+
+			{ "i1", false },
+			{ "i8", false },
+			{ "i16", false },
+			{ "i32", false },
+			{ "i64", false },
+
+			{ "u1", true },
+			{ "u8", true },
+			{ "u16", true },
+			{ "u32", true },
+			{ "u64", true },
+
+
+			{ "int1", false },
+			{ "int8", false },
+			{ "int16", false },
+			{ "int32", false },
+			{ "int64", false },
+
+			{ "uint1", true },
+			{ "uint8", true },
+			{ "uint16", true },
+			{ "uint32", true },
+			{ "uint64", true },
+
+			{ "word", true },
+			{ "dword", true },
+			{ "qword", true },
+		};
 	}
 }

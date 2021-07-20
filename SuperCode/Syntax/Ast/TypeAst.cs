@@ -15,7 +15,6 @@ namespace SuperCode
 			this.addons = addons;
 		}
 
-		public bool unsigned => Type
 		public override AstKind kind => AstKind.Type;
 	}
 }
