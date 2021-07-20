@@ -74,7 +74,7 @@ namespace SuperCode
 			foreach (var stmt in ast.stmts)
 				stmts.Add(Nodify(stmt));
 
-			var func = new FuncMemNode(ty, name, paramz.ToArray(), stmts.ToArray()) { syntax = ast };
+			var func = new FuncMemNode(ty, name, paramz.ToArray(), stmts.ToArray()) { unsigned = ast.retType.unsigned, syntax = ast };
 			syms.Add(name, func);
 			return func;
 		}
@@ -159,7 +159,7 @@ namespace SuperCode
 			switch (ast.literal.kind)
 			{
 			case TokenKind.Iden:
-				return new SymExprNode(syms[literal]) { syntax = ast };
+				return new SymExprNode(syms[literal]) { unsigned = syms[literal].unsigned, syntax = ast };
 			case TokenKind.Str:
 				return new StrExprNode(literal[1..^1]) { syntax = ast };
 			case TokenKind.Num:
@@ -202,10 +202,10 @@ namespace SuperCode
 				op = fp ? BinOp.FMul : BinOp.Mul;
 				goto BinExpr;
 			case TokenKind.Slash:
-				op = fp ? BinOp.FDiv : BinOp.SDiv;
+				op = fp ? BinOp.FDiv : left.unsigned ? BinOp.UDiv : BinOp.SDiv;
 				goto BinExpr;
 			case TokenKind.Percent:
-				op = fp ? BinOp.FMod : BinOp.SMod;
+				op = fp ? BinOp.FMod : left.unsigned ? BinOp.UMod : BinOp.SMod;
 				goto BinExpr;
 
 			default:
