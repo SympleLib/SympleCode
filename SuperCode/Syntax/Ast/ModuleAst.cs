@@ -8,6 +8,7 @@
 
 		public ModuleAst(string file, MemAst[] mems, Token eof)
 		{
+			token = eof;
 			filename = file;
 			this.mems = mems;
 			this.eof = eof;

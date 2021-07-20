@@ -10,6 +10,8 @@
 
 		public TypePunExprAst(Token open, TypeAst type, Token close, ExprAst expr)
 		{
+			token = open;
+
 			this.open = open;
 			this.type = type;
 			this.close = close;

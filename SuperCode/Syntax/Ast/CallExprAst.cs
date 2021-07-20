@@ -10,6 +10,8 @@
 
 		public CallExprAst(ExprAst what, Token open, ExprAst[] args, Token close)
 		{
+			token = open;
+
 			this.what = what;
 			this.open = open;
 			this.args = args;

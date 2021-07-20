@@ -9,6 +9,8 @@ namespace SuperCode
 
 		public TypeAst(Token baze, Token[] addons)
 		{
+			token = baze;
+
 			this.baze = baze;
 			this.addons = addons;
 		}

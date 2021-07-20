@@ -6,6 +6,7 @@ namespace SuperCode
 {
 	public abstract class Ast
 	{
+		public Token token { get; init; }
 		public abstract AstKind kind { get; }
 
 		private void PrintChildren(TextWriter writer, string indent)

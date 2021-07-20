@@ -7,6 +7,8 @@
 
 		public PreExprAst(Token prefix, ExprAst expr)
 		{
+			token = prefix;
+
 			this.prefix = prefix;
 			this.expr = expr;
 		}

@@ -10,6 +10,8 @@
 
 		public ParamAst(TypeAst ty, Token name, Token comma)
 		{
+			token = name;
+
 			this.type = ty;
 			this.name = name;
 			this.comma = comma;
@@ -17,6 +19,8 @@
 
 		public ParamAst(TypeAst ty, Token name, Token eql, ExprAst def, Token comma)
 		{
+			token = name;
+
 			this.type = ty;
 			this.name = name;
 			this.equal = eql;

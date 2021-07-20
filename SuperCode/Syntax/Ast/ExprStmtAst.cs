@@ -4,8 +4,11 @@
 	{
 		public readonly ExprAst expr;
 
-		public ExprStmtAst(ExprAst expr, Token semi): base(semi) =>
+		public ExprStmtAst(ExprAst expr, Token semi): base(semi)
+		{
+			token = semi;
 			this.expr = expr;
+		}
 
 		public override AstKind kind => AstKind.ExprStmt;
 	}

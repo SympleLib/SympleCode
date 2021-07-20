@@ -72,7 +72,11 @@ namespace SuperCode
 			}
 			Console.WriteLine('\n');
 
-			var tree = parser.Parse();
+			var safety = parser.Parse(out var tree);
+			safety.Print(Console.Out);
+			if (safety.MustSelfDestruct())
+				goto Stop;
+
 			tree.Print(Console.Out);
 			Console.WriteLine();
 
@@ -84,7 +88,10 @@ namespace SuperCode
 			LLVM.InitializeNativeDisassembler();
 
 			var noder = new Noder(tree);
-			var node = noder.Nodify();
+			safety = noder.Nodify(out var node);
+			safety.Print(Console.Out);
+			if (safety.MustSelfDestruct())
+				goto Stop;
 
 			var cg = new CodeGen(node);
 			var module = cg.Gen();
@@ -97,6 +104,7 @@ namespace SuperCode
 			Compile(module);
 			RunJIT(module);
 #endif
+		Stop:
 			Console.ReadKey();
 		}
 

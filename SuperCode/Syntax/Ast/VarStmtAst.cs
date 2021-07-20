@@ -9,6 +9,8 @@
 
 		public VarStmtAst(TypeAst ty, Token name, Token eql, ExprAst init, Token semi): base(semi)
 		{
+			token = eql == default ? name : eql;
+
 			this.type = ty;
 			this.name = name;
 			this.eql = eql;

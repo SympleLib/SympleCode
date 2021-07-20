@@ -15,6 +15,8 @@ namespace SuperCode
 
 		public DeclFuncMemAst(Token key, TypeAst retType, Token name, Token open, ParamAst[] paramz, Token close, Token semi)
 		{
+			token = key;
+
 			this.key = key;
 			this.retType = retType;
 			this.name = name;

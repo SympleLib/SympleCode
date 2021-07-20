@@ -8,6 +8,8 @@
 
 		public ParenExprAst(Token open, ExprAst expr, Token close)
 		{
+			token = open;
+
 			this.open = open;
 			this.expr = expr;
 			this.close = close;

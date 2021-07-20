@@ -5,5 +5,8 @@ using System.Collections.Generic;
 namespace SuperCode
 {
 	public abstract class Node
-	{ public abstract NodeKind kind { get; } }
+	{
+		public Ast syntax { get; init; }
+		public abstract NodeKind kind { get; }
+	}
 }

@@ -7,7 +7,7 @@ namespace SuperCode
 		public readonly Token literal;
 
 		public LitExprAst(Token lit) =>
-			literal = lit;
+			token = literal = lit;
 
 		public override AstKind kind => AstKind.LitExpr;
 	}

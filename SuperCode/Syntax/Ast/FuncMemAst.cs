@@ -21,6 +21,8 @@ namespace SuperCode
 
 		public FuncMemAst(TypeAst retType, Token name, Token openArg, ParamAst[] paramz, Token closeArg, Token arrow, StmtAst[] stmts)
 		{
+			token = name;
+
 			this.retType = retType;
 			this.name = name;
 
@@ -34,6 +36,8 @@ namespace SuperCode
 
 		public FuncMemAst(TypeAst retType, Token name, Token openArg, ParamAst[] paramz, Token closeArg, Token open, Token close, StmtAst[] stmts)
 		{
+			token = name;
+
 			this.retType = retType;
 			this.name = name;
 

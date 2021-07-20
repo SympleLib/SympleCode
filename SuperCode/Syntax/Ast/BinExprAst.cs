@@ -7,6 +7,8 @@
 
 		public BinExprAst(Token op, ExprAst lhs, ExprAst rhs)
 		{
+			token = op;
+
 			this.op = op;
 			left = lhs;
 			right = rhs;

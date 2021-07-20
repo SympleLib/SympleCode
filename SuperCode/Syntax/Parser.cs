@@ -5,6 +5,7 @@ namespace SuperCode
 {
 	public class Parser
 	{
+		public readonly PermaSafe safety = new ();
 		public readonly Lexer lexer;
 		public readonly Token[] tokens;
 		private int pos;
@@ -14,18 +15,19 @@ namespace SuperCode
 		
 		public Parser(string file)
 		{
-			lexer = new Lexer(file);
+			lexer = new (file);
 			tokens = lexer.Lex();
 		}
 
-		public ModuleAst Parse()
+		public PermaSafe Parse(out ModuleAst module)
 		{
 			var mems = new List<MemAst>();
 			while (!current.Is(TokenKind.Eof))
 				mems.Add(Mem());
 
 			var eof = Next();
-			return new (lexer.path, mems.ToArray(), eof);
+			module = new (lexer.path, mems.ToArray(), eof);
+			return safety;
 		}
 
 		private TypeAst Type()
@@ -85,7 +87,10 @@ namespace SuperCode
 			while (!current.Is(TokenKind.RightParen))
 			{
 				if (current.Is(TokenKind.Eof))
-					throw new InvalidOperationException("Invalid eof");
+				{
+					safety.ReportUnexpectedEof(openArg);
+					return null;
+				}
 
 				paramz.Add(Param());
 			}
@@ -105,13 +110,16 @@ namespace SuperCode
 			while (!current.Is(TokenKind.RightBrace))
 			{
 				if (current.Is(TokenKind.Eof))
-					throw new InvalidOperationException("Finish ur code dude");
+				{
+					safety.ReportUnexpectedEof(open);
+					return null;
+				}
 
 				stmts.Add(Stmt());
 			}
 
 			var close = Next();
-			return new FuncMemAst(ty, name, openArg, paramz.ToArray(), closeArg, open, close, stmts.ToArray());
+			return new (ty, name, openArg, paramz.ToArray(), closeArg, open, close, stmts.ToArray());
 		}
 
 		private DeclFuncMemAst DeclFuncMem()
@@ -124,7 +132,10 @@ namespace SuperCode
 			while (!current.Is(TokenKind.RightParen))
 			{
 				if (current.Is(TokenKind.Eof))
-					throw new InvalidOperationException("Invalid eof");
+				{
+					safety.ReportUnexpectedEof(open);
+					return null;
+				}
 
 				paramz.Add(Param());
 			}
@@ -132,7 +143,7 @@ namespace SuperCode
 			var close = Next();
 			var semi = Match(TokenKind.Semicol);
 
-			return new DeclFuncMemAst(key, ret, name, open, paramz.ToArray(), close, semi);
+			return new (key, ret, name, open, paramz.ToArray(), close, semi);
 		}
 
 		private StmtAst Stmt()
@@ -200,13 +211,17 @@ namespace SuperCode
 			return CallExpr();
 		}
 
-		private ExprAst[] Args()
+		private ExprAst[] Args(Token open)
 		{
 			var args = new List<ExprAst>();
 			while (!current.Is(TokenKind.RightParen))
 			{
 				if (current.Is(TokenKind.Eof))
-					throw new InvalidOperationException("Invalid eof");
+				{
+					safety.ReportUnexpectedEof(open);
+					return null;
+				}
+
 				args.Add(Expr());
 				if (current.Is(TokenKind.Comma))
 					Next();
@@ -221,7 +236,7 @@ namespace SuperCode
 			while (current.Is(TokenKind.LeftParen))
 			{
 				var open = Next();
-				var args = Args();
+				var args = Args(open);
 				var close = Match(TokenKind.RightParen);
 				expr = new CallExprAst(expr, open, args, close);
 			}
@@ -295,7 +310,8 @@ namespace SuperCode
 			if (current.Is(kind))
 				return Next();
 
-			throw new InvalidOperationException($"Expected {kind}, got {current}");
+			safety.ReportExpectedToken(kind, current);
+			return current;
 		}
 	}
 }
