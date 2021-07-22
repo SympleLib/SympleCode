@@ -1,0 +1,13 @@
+﻿; Registering the package
+[$RootKey$\InstalledProducts\TextMaityPackage]
+"Package"="{7cae37da-1618-40b8-ad2d-6f4c3025d926}"
+[$RootKey$\BindingPaths\{7cae37da-1618-40b8-ad2d-6f4c3025d926}]
+"$PackageFolder$"=""
+
+; Registering the TextMate grammar
+[$RootKey$\TextMate\Repositories]
+"TextMaity"="$PackageFolder$\Syntaxes"
+
+; Match file extensions with icons. See full icon list at https://glyphlist.azurewebsites.net/knownmonikers/
+[$RootKey$\ShellFileAssociations\.pkgdef]
+"DefaultIconMoniker"="KnownMonikers.ConfigurationEditor"
