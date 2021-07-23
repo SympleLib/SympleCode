@@ -9,7 +9,7 @@ namespace SuperCode
 		public StrExprNode(string str)
 		{
 			this.str = str;
-			type = LLVMTypeRef.Int8.Ref();
+			type = TypeNode.i8.Ref();
 		}
 
 		public override NodeKind kind => NodeKind.StrExpr;

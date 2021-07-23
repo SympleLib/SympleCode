@@ -6,7 +6,7 @@ namespace SuperCode
 	{
 		public readonly ParamNode[] paramz;
 
-		public DeclFuncMemNode(LLVMTypeRef type, string name, ParamNode[] paramz)
+		public DeclFuncMemNode(TypeNode type, string name, ParamNode[] paramz)
 		{
 			this.type = type;
 			this.name = name;
@@ -15,7 +15,7 @@ namespace SuperCode
 
 		public string name { get; init; }
 		public bool unsigned { get; init; }
-		public LLVMTypeRef type { get; init; }
+		public TypeNode type { get; init; }
 		public override NodeKind kind => NodeKind.DeclFuncMem;
 	}
 }

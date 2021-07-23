@@ -10,14 +10,27 @@ namespace SuperCode
 {
 	public class TypeNode
 	{
-		public LLVMTypeRef lltype;
-		public bool unsigned;
+		public readonly TypeNode elementType;
+		public readonly LLVMTypeRef lltype;
+		public readonly bool unsigned;
 
-		public TypeNode(LLVMTypeRef lltype, bool unsigned)
+		public TypeNode(TypeNode elementType)
+		{
+			this.elementType = elementType;
+			this.lltype = elementType.lltype.Ref();
+		}
+
+		public TypeNode(LLVMTypeRef lltype, bool unsigned = false)
 		{
 			this.lltype = lltype;
 			this.unsigned = unsigned;
+			this.elementType = new TypeNode(lltype.ElementType);
 		}
+
+		public bool isFloat => lltype.IsFloat();
+		public bool isPtr => elementType != default;
+
+		public static readonly TypeNode v = new TypeNode(LLVMTypeRef.Void, false);
 
 		public static readonly TypeNode i1 = new TypeNode(LLVMTypeRef.Int1, false);
 		public static readonly TypeNode i8 = new TypeNode(LLVMTypeRef.Int8, false);
@@ -36,5 +49,11 @@ namespace SuperCode
 		public static readonly TypeNode fp64 = new TypeNode(LLVMTypeRef.Double, false);
 		public static readonly TypeNode fp80 = new TypeNode(LLVMTypeRef.X86FP80, false);
 		public static readonly TypeNode fp128 = new TypeNode(LLVMTypeRef.FP128, false);
+
+		public TypeNode Ref() =>
+			new TypeNode(this);
+
+		public TypeNode Deref() =>
+			elementType;
 	}
 }

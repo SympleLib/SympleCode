@@ -15,7 +15,7 @@ namespace SuperCode
 		public readonly UnOp op;
 		public readonly ExprNode expr;
 
-		public UnExprNode(LLVMTypeRef type, UnOp op, ExprNode expr)
+		public UnExprNode(TypeNode type, UnOp op, ExprNode expr)
 		{
 			this.type = type;
 			this.op = op;

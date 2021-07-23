@@ -4,6 +4,8 @@ using System.Xml.Linq;
 
 using LLVMSharp.Interop;
 
+using static LLVMSharp.AtomicRMWInst;
+
 namespace SuperCode
 {
 	public class Noder
@@ -12,7 +14,7 @@ namespace SuperCode
 		public readonly ModuleAst module;
 
 		private readonly Dictionary<string, Symbol> syms = new ();
-		private LLVMTypeRef retType;
+		private TypeNode retType;
 
 		public Noder(ModuleAst module) =>
 			this.module = module;
@@ -26,12 +28,12 @@ namespace SuperCode
 			return safety;
 		}
 
-		private LLVMTypeRef Nodify(TypeAst ast)
+		private TypeNode Nodify(TypeAst ast)
 		{
-			var baze = ast.baze.builtinType;
+			var ty = ast.baze.builtinType;
 			for (int i = 0; i < ast.addons.Length; i++)
-				baze = LLVMTypeRef.CreatePointer(baze, 0);
-			return baze;
+				ty = ty.Ref();
+			return ty;
 		}
 
 		private ParamNode Nodify(ParamAst ast) =>
@@ -53,9 +55,10 @@ namespace SuperCode
 
 		private FuncMemNode Nodify(FuncMemAst ast)
 		{
-			var paramTypes = new LLVMTypeRef[ast.paramz.Length];
+			var paramTypes = new TypeNode[ast.paramz.Length];
+			var paramLLTypes = new LLVMTypeRef[ast.paramz.Length];
 			for (int i = 0; i < paramTypes.Length; i++)
-				paramTypes[i] = Nodify(ast.paramz[i].type);
+				paramLLTypes[i] = (paramTypes[i] = Nodify(ast.paramz[i].type)).lltype;
 
 			var paramz = new List<ParamNode>();
 			foreach (var param in ast.paramz)
@@ -65,8 +68,8 @@ namespace SuperCode
 				syms.Add(paramNode.name, paramNode);
 			}
 
-			var ty = LLVMTypeRef.CreateFunction(Nodify(ast.retType), paramTypes);
-			retType = ty.ReturnType;
+			retType = Nodify(ast.retType);
+			var ty = LLVMTypeRef.CreateFunction(retType.lltype, paramLLTypes);
 			string name = ast.name.text;
 
 
@@ -74,16 +77,17 @@ namespace SuperCode
 			foreach (var stmt in ast.stmts)
 				stmts.Add(Nodify(stmt));
 
-			var func = new FuncMemNode(ty, name, paramz.ToArray(), stmts.ToArray()) { syntax = ast };
+			var func = new FuncMemNode(new TypeNode(ty), name, paramz.ToArray(), stmts.ToArray()) { syntax = ast };
 			syms.Add(name, func);
 			return func;
 		}
 
 		private DeclFuncMemNode Nodify(DeclFuncMemAst ast)
 		{
-			var paramTypes = new LLVMTypeRef[ast.paramz.Length];
+			var paramTypes = new TypeNode[ast.paramz.Length];
+			var paramLLTypes = new LLVMTypeRef[ast.paramz.Length];
 			for (int i = 0; i < paramTypes.Length; i++)
-				paramTypes[i] = Nodify(ast.paramz[i].type);
+				paramLLTypes[i] = (paramTypes[i] = Nodify(ast.paramz[i].type)).lltype;
 
 			var paramz = new List<ParamNode>();
 			foreach (var param in ast.paramz)
@@ -94,10 +98,11 @@ namespace SuperCode
 					syms.Add(paramNode.name, paramNode);
 			}
 
-			var ty = LLVMTypeRef.CreateFunction(Nodify(ast.retType), paramTypes);
+			retType = Nodify(ast.retType);
+			var ty = LLVMTypeRef.CreateFunction(retType.lltype, paramLLTypes);
 			string name = ast.name.text;
 
-			var decl = new DeclFuncMemNode(ty, name, paramz.ToArray()) { syntax = ast };
+			var decl = new DeclFuncMemNode(new TypeNode(ty), name, paramz.ToArray()) { syntax = ast };
 			syms.Add(name, decl);
 			return decl;
 		}
@@ -129,7 +134,7 @@ namespace SuperCode
 			return var;
 		}
 
-		private ExprNode Nodify(ExprAst ast, LLVMTypeRef castTo = default)
+		private ExprNode Nodify(ExprAst ast, TypeNode castTo = default)
 		{
 			switch (ast.kind)
 			{
@@ -167,13 +172,13 @@ namespace SuperCode
 				{
 					bool isF32 = literal.Contains('f') || literal.Contains('F');
 					double num = double.Parse(isF32 ? literal[..^1] : literal);
-					var ty = isF32 ? LLVMTypeRef.Float : LLVMTypeRef.Double;
+					var ty = isF32 ? TypeNode.fp32 : TypeNode.fp64;
 					return new FNumExprNode(num, ty) { syntax = ast };
 				}
 				else
 				{
 					ulong num = ulong.Parse(literal);
-					var ty = num != (uint) num ? LLVMTypeRef.Int64 : LLVMTypeRef.Int32;
+					var ty = num != (uint) num ? TypeNode.i64 : TypeNode.i32;
 					return new NumExprNode(num, ty) { syntax = ast };
 				}
 
@@ -186,9 +191,9 @@ namespace SuperCode
 		{
 			var left = Nodify(ast.left);
 			var right = Nodify(ast.right, left.type);
-			bool fp = left.type.IsFloat();
+			bool fp = left.type.isFloat;
+			bool us = left.type.unsigned;
 			
-
 			BinOp op;
 			switch (ast.op.kind)
 			{
@@ -202,10 +207,10 @@ namespace SuperCode
 				op = fp ? BinOp.FMul : BinOp.Mul;
 				goto BinExpr;
 			case TokenKind.Slash:
-				op = fp ? BinOp.FDiv : BinOp.SDiv;
+				op = fp ? BinOp.FDiv : us ? BinOp.UDiv : BinOp.SDiv;
 				goto BinExpr;
 			case TokenKind.Percent:
-				op = fp ? BinOp.FMod : BinOp.SMod;
+				op = fp ? BinOp.FMod : us ? BinOp.UMod : BinOp.SMod;
 				goto BinExpr;
 
 			default:
@@ -221,7 +226,7 @@ namespace SuperCode
 			var what = Nodify(ast.what);
 			var args = new List<ExprNode>();
 			for (int i = 0; i < ast.args.Length; i++)
-				args.Add(Nodify(ast.args[i], what.type.ParamTypes[i]));
+				args.Add(Nodify(ast.args[i], new TypeNode(what.type.lltype.ParamTypes[i])));
 
 			return new CallExprNode(what, args.ToArray()) { syntax = ast };
 		}
@@ -243,7 +248,7 @@ namespace SuperCode
 			UnOp op;
 			var var = Nodify(ast.expr);
 			var ty = var.type;
-			bool fp = ty.IsFloat();
+			bool fp = ty.isFloat;
 
 			switch (ast.prefix.kind)
 			{
@@ -276,12 +281,12 @@ namespace SuperCode
 			return new TypePunExprNode(ty, expr) { syntax = ast };
 		}
 
-		private ExprNode Cast(ExprNode node, LLVMTypeRef to)
+		private ExprNode Cast(ExprNode node, TypeNode to)
 		{
 			if (to == default || node.type == to)
 				return node;
 
-			if (to.IntWidth < node.type.IntWidth && !to.IsFloat() && !to.IsPtr())
+			if (to.lltype.IntWidth < node.type.lltype.IntWidth && !to.isFloat && !to.isPtr)
 				safety.ReportPossibleLossOfData(node.syntax.token);
 			return new CastExprNode(node, to);
 		}

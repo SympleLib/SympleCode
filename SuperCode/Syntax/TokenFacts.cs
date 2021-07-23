@@ -22,7 +22,7 @@ namespace SuperCode
 			}
 		}
 
-		public LLVMTypeRef builtinType {
+		public TypeNode builtinType {
 			get
 			{
 				if (kind != TokenKind.Iden)
