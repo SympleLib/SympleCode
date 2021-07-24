@@ -209,6 +209,12 @@ namespace SuperCode
 			case TokenKind.Percent:
 				op = fp ? BinOp.FMod : BinOp.SMod;
 				goto BinExpr;
+			case TokenKind.SlashDash:
+				op = BinOp.UDiv;
+				goto BinExpr;
+			case TokenKind.PercentDash:
+				op = BinOp.UMod;
+				goto BinExpr;
 
 			default:
 				throw new InvalidOperationException("Invalid lit-expr");
