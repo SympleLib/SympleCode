@@ -3,5 +3,5 @@
 namespace SuperCode
 {
 	public abstract class ExprNode: StmtNode
-	{ public TypeNode type { get; protected init; } = TypeNode.i32; }
+	{ public LLVMTypeRef type { get; protected init; } = LLVMTypeRef.Int32; }
 }

@@ -7,7 +7,7 @@ namespace SuperCode
 		public readonly ParamNode[] paramz;
 		public readonly StmtNode[] stmts;
 
-		public FuncMemNode(TypeNode ty, string name, ParamNode[] paramz, StmtNode[] stmts)
+		public FuncMemNode(LLVMTypeRef ty, string name, ParamNode[] paramz, StmtNode[] stmts)
 		{
 			this.type = ty;
 			this.name = name;
@@ -17,7 +17,7 @@ namespace SuperCode
 
 		public string name { get; init; }
 		public bool unsigned { get; init; }
-		public TypeNode type { get; init; }
+		public LLVMTypeRef type { get; init; }
 		public override NodeKind kind => NodeKind.FuncMem;
 	}
 }

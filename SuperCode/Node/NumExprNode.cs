@@ -6,7 +6,7 @@ namespace SuperCode
 	{
 		public readonly ulong value;
 
-		public NumExprNode(ulong val, TypeNode ty)
+		public NumExprNode(ulong val, LLVMTypeRef ty)
 		{
 			value = val;
 			type = ty;

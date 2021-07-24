@@ -4,7 +4,7 @@ namespace SuperCode
 {
 	public class ParamNode: Node, Symbol
 	{
-		public ParamNode(TypeNode ty, string name)
+		public ParamNode(LLVMTypeRef ty, string name)
 		{
 			this.type = ty;
 			this.name = name;
@@ -12,7 +12,7 @@ namespace SuperCode
 
 		public string name { get; init; }
 		public bool unsigned { get; init; }
-		public TypeNode type { get; init; }
+		public LLVMTypeRef type { get; init; }
 		public override NodeKind kind => NodeKind.Param;
 	}
 }

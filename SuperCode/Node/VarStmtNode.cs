@@ -6,7 +6,7 @@ namespace SuperCode
 	{
 		public readonly ExprNode init;
 
-		public VarStmtNode(TypeNode ty, string name, ExprNode init)
+		public VarStmtNode(LLVMTypeRef ty, string name, ExprNode init)
 		{
 			this.type = ty;
 			this.name = name;
@@ -15,7 +15,7 @@ namespace SuperCode
 
 		public string name { get; init; }
 		public bool unsigned { get; init; }
-		public TypeNode type { get; init; }
+		public LLVMTypeRef type { get; init; }
 		public override NodeKind kind => NodeKind.VarStmt;
 	}
 }

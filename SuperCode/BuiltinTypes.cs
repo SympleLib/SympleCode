@@ -6,133 +6,71 @@ namespace SuperCode
 	public static class BuiltinTypes
 	{
 		// Subject to change...
-		public static readonly Dictionary<string, TypeNode> types = new()
+		public static readonly Dictionary<string, LLVMTypeRef> types = new()
 		{
-			{ "void", TypeNode.v },
+			{ "void", LLVMTypeRef.Void },
 
-			{ "sbyte", TypeNode.i8 },
-			{ "short", TypeNode.i16 },
-			{ "int", TypeNode.i32 },
-			{ "long", TypeNode.i64 },
+			{ "sbyte", LLVMTypeRef.Int8 },
+			{ "short", LLVMTypeRef.Int16 },
+			{ "int", LLVMTypeRef.Int32 },
+			{ "long", LLVMTypeRef.Int64 },
 
-			{ "byte", TypeNode.u8 },
-			{ "ushort", TypeNode.u16 },
-			{ "uint", TypeNode.u32 },
-			{ "ulong", TypeNode.u64 },
-			
-			{ "float", TypeNode.fp32 },
-			{ "bfloat", TypeNode.fb16 },
+			{ "byte", LLVMTypeRef.Int8 },
+			{ "ushort", LLVMTypeRef.Int16 },
+			{ "uint", LLVMTypeRef.Int32 },
+			{ "ulong", LLVMTypeRef.Int64 },
 
-			{ "half", TypeNode.fp16 },
-			{ "single", TypeNode.fp32 },
-			{ "double", TypeNode.fp64 },
-			{ "triple", TypeNode.fp128 },
+			{ "float", LLVMTypeRef.Float },
+			{ "bfloat", LLVMTypeRef.BFloat },
 
-			{ "char", TypeNode.i16 },
-			{ "schar", TypeNode.i8 },
-			{ "wchar", TypeNode.i32 },
-			{ "bool", TypeNode.i1 },
+			{ "half", LLVMTypeRef.Half },
+			{ "single", LLVMTypeRef.Float },
+			{ "double", LLVMTypeRef.Double },
+			{ "triple", LLVMTypeRef.FP128 },
 
-			{ "bit", TypeNode.i1 },
-			{ "word", TypeNode.u16 },
-			{ "dword", TypeNode.u32 },
-			{ "qword", TypeNode.u64 },
+			{ "char", LLVMTypeRef.Int16 },
+			{ "schar", LLVMTypeRef.Int8 },
+			{ "wchar", LLVMTypeRef.Int32 },
+			{ "bool", LLVMTypeRef.Int1 },
 
 
 
-			{ "bf16", TypeNode.fb16 },
-			{ "fp16", TypeNode.fp16 },
-			{ "fp32", TypeNode.fp32 },
-			{ "fp64", TypeNode.fp64 },
-			{ "fp80", TypeNode.fp80 },
-			{ "fp128", TypeNode.fp128 },
+			{ "bf16", LLVMTypeRef.BFloat },
+			{ "fp16", LLVMTypeRef.Half },
+			{ "fp32", LLVMTypeRef.Float },
+			{ "fp64", LLVMTypeRef.Double },
+			{ "fp80", LLVMTypeRef.X86FP80 },
+			{ "fp128", LLVMTypeRef.FP128 },
 
 
-			{ "i1", TypeNode.i1 },
-			{ "i8", TypeNode.i8 },
-			{ "i16", TypeNode.i16 },
-			{ "i32", TypeNode.i32 },
-			{ "i64", TypeNode.i64 },
+			{ "i1", LLVMTypeRef.Int1 },
+			{ "i8", LLVMTypeRef.Int8 },
+			{ "i16", LLVMTypeRef.Int16 },
+			{ "i32", LLVMTypeRef.Int32 },
+			{ "i64", LLVMTypeRef.Int64 },
 
-			{ "u8", TypeNode.u8 },
-			{ "u16", TypeNode.u16 },
-			{ "u32", TypeNode.u32 },
-			{ "u64", TypeNode.u64 },
-
-
-			{ "i1", TypeNode.i1 },
-			{ "i8", TypeNode.i8 },
-			{ "i16", TypeNode.i16 },
-			{ "i32", TypeNode.i32 },
-			{ "i64", TypeNode.i64 },
-		};
+			{ "u1", LLVMTypeRef.Int1 },
+			{ "u8", LLVMTypeRef.Int8 },
+			{ "u16", LLVMTypeRef.Int16 },
+			{ "u32", LLVMTypeRef.Int32 },
+			{ "u64", LLVMTypeRef.Int64 },
 
 
-		public static readonly Dictionary<string, bool> utypes = new()
-		{
-			{ "void", false },
+			{ "int1", LLVMTypeRef.Int1 },
+			{ "int8", LLVMTypeRef.Int8 },
+			{ "int16", LLVMTypeRef.Int16 },
+			{ "int32", LLVMTypeRef.Int32 },
+			{ "int64", LLVMTypeRef.Int64 },
 
-			{ "sbyte", false },
-			{ "short", false },
-			{ "i", false },
-			{ "long", false },
+			{ "uint1", LLVMTypeRef.Int1 },
+			{ "uint8", LLVMTypeRef.Int8 },
+			{ "uint16", LLVMTypeRef.Int16 },
+			{ "uint32", LLVMTypeRef.Int32 },
+			{ "uint64", LLVMTypeRef.Int64 },
 
-			{ "byte", true },
-			{ "ushort", true },
-			{ "ui", true },
-			{ "ulong", true },
-
-			{ "float", false },
-			{ "bfloat", false },
-
-			{ "half", false },
-			{ "single", false },
-			{ "double", false },
-			{ "triple", false },
-
-			{ "char", false },
-			{ "schar", false },
-			{ "wchar", false },
-			{ "bool", false },
-
-
-
-			{ "bf16", false },
-			{ "fp16", false },
-			{ "fp32", false },
-			{ "fp64", false },
-			{ "fp80", false },
-			{ "fp128", false },
-
-
-			{ "i1", false },
-			{ "i8", false },
-			{ "i16", false },
-			{ "i32", false },
-			{ "i64", false },
-
-			{ "u1", true },
-			{ "u8", true },
-			{ "u16", true },
-			{ "u32", true },
-			{ "u64", true },
-
-
-			{ "i1", false },
-			{ "i8", false },
-			{ "i16", false },
-			{ "i32", false },
-			{ "i64", false },
-
-			{ "ui1", true },
-			{ "ui8", true },
-			{ "ui16", true },
-			{ "ui32", true },
-			{ "ui64", true },
-
-			{ "word", true },
-			{ "dword", true },
-			{ "qword", true },
+			{ "word", LLVMTypeRef.Int16 },
+			{ "dword", LLVMTypeRef.Int32 },
+			{ "qword", LLVMTypeRef.Int64 },
 		};
 	}
 }

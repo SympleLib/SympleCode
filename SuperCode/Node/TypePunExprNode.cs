@@ -6,7 +6,7 @@ namespace SuperCode
 	{
 		public ExprNode expr;
 
-		public TypePunExprNode(TypeNode type, ExprNode expr)
+		public TypePunExprNode(LLVMTypeRef type, ExprNode expr)
 		{
 			this.type = type;
 			this.expr = expr;

@@ -6,7 +6,7 @@ namespace SuperCode
 	{
 		public readonly ExprNode value;
 
-		public CastExprNode(ExprNode val, TypeNode to)
+		public CastExprNode(ExprNode val, LLVMTypeRef to)
 		{
 			this.value = val;
 			type = to;
