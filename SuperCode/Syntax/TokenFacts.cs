@@ -9,6 +9,7 @@ namespace SuperCode
 		public int binPriority => kind.BinPriority();
 		public bool isPrefix => kind.IsPrefix();
 		public bool isTypeAddon => kind.IsTypeAddon();
+		public bool isComment => kind.IsComment();
 
 		public bool isBuiltinType {
 			get
@@ -55,5 +56,8 @@ namespace SuperCode
 
 		public static bool IsTypeAddon(this TokenKind kind) =>
 			kind is TokenKind.Star;
+
+		public static bool IsComment(this TokenKind kind) =>
+			kind is TokenKind.LongComment;
 	}
 }

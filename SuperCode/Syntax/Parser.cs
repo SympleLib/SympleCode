@@ -22,6 +22,8 @@ namespace SuperCode
 		public PermaSafe Parse(out ModuleAst module)
 		{
 			var mems = new List<MemAst>();
+			while (current.isComment)
+				Next();
 			while (!current.Is(TokenKind.Eof))
 				mems.Add(Mem());
 
@@ -74,7 +76,7 @@ namespace SuperCode
 			default:
 				if (current.isBuiltinType)
 					return FuncMem();
-				throw new InvalidOperationException("Invlid mem");
+				throw new InvalidOperationException("Invalid mem");
 			}
 		}
 
@@ -302,6 +304,8 @@ namespace SuperCode
 		{
 			Token tok = current;
 			pos++;
+			while (current.isComment)
+				pos++;
 			return tok;
 		}
 

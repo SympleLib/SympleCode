@@ -47,6 +47,9 @@ namespace SuperCode
 				case TokenKind.Str:
 					Console.ForegroundColor = ConsoleColor.Green;
 					break;
+				case TokenKind.LongComment:
+					Console.ForegroundColor = ConsoleColor.DarkGreen;
+					break;
 				case TokenKind.Num:
 					Console.ForegroundColor = ConsoleColor.Yellow;
 					break;

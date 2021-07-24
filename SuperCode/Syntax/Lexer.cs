@@ -35,13 +35,8 @@ namespace SuperCode
 			var tokens = new List<Token>();
 			while (pos < src.Length)
 			{
-				if (current == '\n')
-				{
-					col = 0;
-					line++;
-					Next();
+				if (CheckNewLine())
 					continue;
-				}
 
 				if (char.IsWhiteSpace(current))
 				{
@@ -61,6 +56,12 @@ namespace SuperCode
 					continue;
 				}
 
+				if (current == '/' && next == '*')
+				{
+					tokens.Add(LongComment());
+					continue;
+				}
+
 				if (char.IsDigit(current) || current == '.')
 				{
 					tokens.Add(Number());
@@ -72,6 +73,18 @@ namespace SuperCode
 
 			tokens.Add(MakeToken(TokenKind.Eof, "\0"));
 			return tokens.ToArray();
+		}
+
+		private bool CheckNewLine()
+		{
+			if (current == '\n')
+			{
+				col = 0;
+				line++;
+				Next();
+				return true;
+			}
+			return false;
 		}
 
 		private Token Identifier()
@@ -94,7 +107,8 @@ namespace SuperCode
 			{
 				if (current == 0)
 					throw new InvalidOperationException("Finsh yer sentanze");
-				Next();
+				if (!CheckNewLine())
+					Next();
 			}
 			Next();
 			return MakeToken(TokenKind.Str, begin);
@@ -122,6 +136,18 @@ namespace SuperCode
 				Next();
 
 			return MakeToken(TokenKind.Num, begin);
+		}
+
+		private Token LongComment()
+		{
+			int begin = pos;
+			while (!(current == '*' && next == '/'))
+				if (!CheckNewLine())
+					Next();
+			Next();
+			Next();
+
+			return MakeToken(TokenKind.LongComment, begin);
 		}
 
 		private Token Punctuator()
@@ -158,9 +184,9 @@ namespace SuperCode
 		}
 
 		private Token MakeToken(TokenKind kind, int begin) =>
-			new (kind, src[begin..pos], path, line, col, begin);
+			new(kind, src[begin..pos], path, line, col, begin);
 
 		private Token MakeToken(TokenKind kind, string txt) =>
-			new (kind, txt, path, line, col, pos - txt.Length);
+			new(kind, txt, path, line, col, pos - txt.Length);
 	}
 }

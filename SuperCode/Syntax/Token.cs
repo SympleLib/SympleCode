@@ -7,6 +7,7 @@ namespace SuperCode
 	public enum TokenKind
 	{
 		Unknown,
+		LongComment,
 		Eof,
 
 		Iden,
