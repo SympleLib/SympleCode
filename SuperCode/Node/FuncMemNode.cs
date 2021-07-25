@@ -4,10 +4,10 @@ namespace SuperCode
 {
 	public class FuncMemNode: MemNode, Symbol
 	{
-		public readonly ParamNode[] paramz;
+		public readonly FieldNode[] paramz;
 		public readonly StmtNode[] stmts;
 
-		public FuncMemNode(LLVMTypeRef ty, string name, ParamNode[] paramz, StmtNode[] stmts)
+		public FuncMemNode(LLVMTypeRef ty, string name, FieldNode[] paramz, StmtNode[] stmts)
 		{
 			this.type = ty;
 			this.name = name;
@@ -15,9 +15,8 @@ namespace SuperCode
 			this.stmts = stmts;
 		}
 
-		public string name { get; init; }
-		public bool unsigned { get; init; }
-		public LLVMTypeRef type { get; init; }
+		public string name { get; }
+		public LLVMTypeRef type { get; }
 		public override NodeKind kind => NodeKind.FuncMem;
 	}
 }

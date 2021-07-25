@@ -14,6 +14,7 @@ namespace SuperCode
 		public readonly ModuleAst module;
 
 		private readonly Dictionary<string, Symbol> syms = new ();
+		private readonly Dictionary<string, LLVMTypeRef> types = new ();
 		private LLVMTypeRef retType;
 
 		public Noder(ModuleAst module) =>
@@ -36,13 +37,15 @@ namespace SuperCode
 			return ty;
 		}
 
-		private ParamNode Nodify(ParamAst ast) =>
+		private FieldNode Nodify(FieldAst ast) =>
 			new (Nodify(ast.type), ast.name.text) { syntax = ast };
 
 		private MemNode Nodify(MemAst ast)
 		{
 			switch (ast.kind)
 			{
+			case AstKind.StructMem:
+				return Nodify((StructMemAst) ast);
 			case AstKind.FuncMem:
 				return Nodify((FuncMemAst) ast);
 			case AstKind.DeclFuncMem:
@@ -53,17 +56,35 @@ namespace SuperCode
 			}
 		}
 
+		private StructMemNode Nodify(StructMemAst ast)
+		{
+			var fields = new FieldNode[ast.fields.Length];
+			var fieldTypes = new LLVMTypeRef[ast.fields.Length];
+			for (int i = 0; i < fields.Length; i++)
+			{
+				var field = Nodify(ast.fields[i]);
+				fields[i] = field;
+				fieldTypes[i] = field.type;
+			}
+
+			string name = ast.name.text;
+			var type = LLVMTypeRef.CreateStruct(fieldTypes, true);
+			var node = new StructMemNode(type, name, fields);
+			types.Add(name, type);
+			return node;
+		}
+
 		private FuncMemNode Nodify(FuncMemAst ast)
 		{
 			var paramTypes = new LLVMTypeRef[ast.paramz.Length];
 			for (int i = 0; i < paramTypes.Length; i++)
 				paramTypes[i] = Nodify(ast.paramz[i].type);
 
-			var paramz = new List<ParamNode>();
-			foreach (var param in ast.paramz)
+			var paramz = new FieldNode[ast.paramz.Length];
+			for (int i = 0; i < paramz.Length; i++)
 			{
-				var paramNode = Nodify(param);
-				paramz.Add(paramNode);
+				var paramNode = Nodify(ast.paramz[i]);
+				paramz[i] = paramNode;
 				syms.Add(paramNode.name, paramNode);
 			}
 
@@ -72,11 +93,11 @@ namespace SuperCode
 			string name = ast.name.text;
 
 
-			var stmts = new List<StmtNode>();
-			foreach (var stmt in ast.stmts)
-				stmts.Add(Nodify(stmt));
+			var stmts = new StmtNode[ast.stmts.Length];
+			for (int i = 0; i < stmts.Length; i++)
+				stmts[i] = Nodify(ast.stmts[i]);
 
-			var func = new FuncMemNode(ty, name, paramz.ToArray(), stmts.ToArray()) { syntax = ast };
+			var func = new FuncMemNode(ty, name, paramz, stmts) { syntax = ast };
 			syms.Add(name, func);
 			return func;
 		}
@@ -87,7 +108,7 @@ namespace SuperCode
 			for (int i = 0; i < paramTypes.Length; i++)
 				paramTypes[i] = Nodify(ast.paramz[i].type);
 
-			var paramz = new List<ParamNode>();
+			var paramz = new List<FieldNode>();
 			foreach (var param in ast.paramz)
 			{
 				var paramNode = Nodify(param);
@@ -236,7 +257,7 @@ namespace SuperCode
 
 		private ExprNode Nodify(CastExprAst ast)
 		{
-			var node = Nodify(ast);
+			var node = Nodify(ast.expr);
 			var to = Nodify(ast.type);
 			if (to == default || node.type == to)
 				return node;

@@ -3,9 +3,10 @@
 	public enum NodeKind
 	{
 		Module,
-		Param,
+		Field,
 
 		DeclFuncMem,
+		StructMem,
 		FuncMem,
 
 		RetStmt,

@@ -9,11 +9,11 @@ namespace SuperCode
 		public readonly TypeAst retType;
 		public readonly Token name;
 		public readonly Token open;
-		public readonly ParamAst[] paramz;
+		public readonly FieldAst[] paramz;
 		public readonly Token close;
 		public readonly Token semicol;
 
-		public DeclFuncMemAst(Token key, TypeAst retType, Token name, Token open, ParamAst[] paramz, Token close, Token semi)
+		public DeclFuncMemAst(Token key, TypeAst retType, Token name, Token open, FieldAst[] paramz, Token close, Token semi)
 		{
 			token = key;
 

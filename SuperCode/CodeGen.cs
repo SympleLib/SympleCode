@@ -50,6 +50,8 @@ namespace SuperCode
 		{
 			switch (node.kind)
 			{
+			case NodeKind.StructMem:
+				return Gen((StructMemNode) node);
 			case NodeKind.FuncMem:
 				return Gen((FuncMemNode) node);
 			case NodeKind.DeclFuncMem:
@@ -83,6 +85,9 @@ namespace SuperCode
 				throw new InvalidOperationException("Invalid node");
 			}
 		}
+
+		private LLVMValueRef Gen(StructMemNode node) =>
+			null;
 
 		private LLVMValueRef Gen(FuncMemNode mem)
 		{

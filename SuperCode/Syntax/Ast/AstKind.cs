@@ -2,12 +2,13 @@
 {
 	public enum AstKind
 	{
+		Field,
 		Module,
-		Param,
 		Type,
 
 		DeclFuncMem,
 		FuncMem,
+		StructMem,
 
 		ExprStmt,
 		RetStmt,

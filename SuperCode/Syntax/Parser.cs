@@ -42,7 +42,7 @@ namespace SuperCode
 			return new (baze, addons.ToArray());
 		}
 
-		private ParamAst Param(TypeAst ty = null)
+		private FieldAst Field(TypeAst ty = null)
 		{
 			if (ty is null || current.isBuiltinType)
 				ty = Type();
@@ -72,6 +72,8 @@ namespace SuperCode
 			{
 			case TokenKind.DeclKey:
 				return DeclFuncMem();
+			case TokenKind.StructKey:
+				return StructMem();
 
 			default:
 				if (current.isBuiltinType)
@@ -80,12 +82,33 @@ namespace SuperCode
 			}
 		}
 
+		private StructMemAst StructMem()
+		{
+			var key = Match(TokenKind.StructKey);
+			var name = Match(TokenKind.Iden);
+			var open = Match(TokenKind.LeftBrace);
+			var fields = new List<FieldAst>();
+			while (!current.Is(TokenKind.RightBrace))
+			{
+				if (current.Is(TokenKind.Eof))
+				{
+					safety.ReportUnexpectedEof(open);
+					return null;
+				}
+
+				fields.Add(Field());
+			}
+			var close = Next();
+
+			return new StructMemAst(key, name, open, fields.ToArray(), close);
+		}
+
 		private FuncMemAst FuncMem()
 		{
 			var ty = Type();
 			var name = Match(TokenKind.Iden);
 			var openArg = Match(TokenKind.LeftParen);
-			var paramz = new List<ParamAst>();
+			var paramz = new List<FieldAst>();
 			while (!current.Is(TokenKind.RightParen))
 			{
 				if (current.Is(TokenKind.Eof))
@@ -94,7 +117,7 @@ namespace SuperCode
 					return null;
 				}
 
-				paramz.Add(Param());
+				paramz.Add(Field());
 			}
 
 			var closeArg = Next();
@@ -130,7 +153,7 @@ namespace SuperCode
 			var ret = Type();
 			var name = Match(TokenKind.Iden);
 			var open = Match(TokenKind.LeftParen);
-			var paramz = new List<ParamAst>();
+			var paramz = new List<FieldAst>();
 			while (!current.Is(TokenKind.RightParen))
 			{
 				if (current.Is(TokenKind.Eof))
@@ -139,7 +162,7 @@ namespace SuperCode
 					return null;
 				}
 
-				paramz.Add(Param());
+				paramz.Add(Field());
 			}
 
 			var close = Next();

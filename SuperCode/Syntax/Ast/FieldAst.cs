@@ -1,6 +1,6 @@
 ﻿namespace SuperCode
 {
-	public class ParamAst: Ast
+	public class FieldAst: Ast
 	{
 		public readonly TypeAst type;
 		public readonly Token name;
@@ -8,7 +8,7 @@
 		public readonly ExprAst defVal;
 		public readonly Token comma;
 
-		public ParamAst(TypeAst ty, Token name, Token comma)
+		public FieldAst(TypeAst ty, Token name, Token comma)
 		{
 			token = name;
 
@@ -17,7 +17,7 @@
 			this.comma = comma;
 		}
 
-		public ParamAst(TypeAst ty, Token name, Token eql, ExprAst def, Token comma)
+		public FieldAst(TypeAst ty, Token name, Token eql, ExprAst def, Token comma)
 		{
 			token = name;
 
@@ -28,6 +28,6 @@
 			this.comma = comma;
 		}
 
-		public override AstKind kind => AstKind.Param;
+		public override AstKind kind => AstKind.Field;
 	}
 }

@@ -1,13 +1,8 @@
-﻿/*
-struct Type
+﻿struct Type
 {
 	char* name,
 	uint size,
 }
-*/
 
-i64 Run()
-{
-	u64 x = -5;
-	ret x /- 5;
-}
+long Run() ->
+	ret 0;
