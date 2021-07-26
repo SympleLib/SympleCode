@@ -22,10 +22,10 @@ namespace SuperCode
 
 		public PermaSafe Nodify(out ModuleNode node)
 		{
-			var mems = new List<MemNode>();
-			foreach (var mem in module.mems)
-				mems.Add(Nodify(mem));
-			node = new (module.filename, mems.ToArray()) { syntax = module };
+			var mems = new MemNode[module.mems.Length];
+			for (int i = 0; i < mems.Length; i++)
+				mems[i] = Nodify(module.mems[i]);
+			node = new (module.filename, mems) { syntax = module };
 			return safety;
 		}
 
@@ -108,11 +108,11 @@ namespace SuperCode
 			for (int i = 0; i < paramTypes.Length; i++)
 				paramTypes[i] = Nodify(ast.paramz[i].type);
 
-			var paramz = new List<FieldNode>();
-			foreach (var param in ast.paramz)
+			var paramz = new FieldNode[ast.paramz.Length];
+			for (int i = 0; i < paramz.Length; i++)
 			{
-				var paramNode = Nodify(param);
-				paramz.Add(paramNode);
+				var paramNode = Nodify(ast.paramz[i]);
+				paramz[i] = paramNode;
 				if (paramNode.name is not null)
 					syms.Add(paramNode.name, paramNode);
 			}
@@ -121,7 +121,7 @@ namespace SuperCode
 			var ty = LLVMTypeRef.CreateFunction(retType, paramTypes);
 			string name = ast.name.text;
 
-			var decl = new DeclFuncMemNode(ty, name, paramz.ToArray()) { syntax = ast };
+			var decl = new DeclFuncMemNode(ty, name, paramz) { syntax = ast };
 			syms.Add(name, decl);
 			return decl;
 		}
@@ -248,11 +248,11 @@ namespace SuperCode
 		private CallExprNode Nodify(CallExprAst ast)
 		{
 			var what = Nodify(ast.what);
-			var args = new List<ExprNode>();
-			for (int i = 0; i < ast.args.Length; i++)
-				args.Add(Nodify(ast.args[i], what.type.ParamTypes[i]));
+			var args = new ExprNode[ast.args.Length];
+			for (int i = 0; i < args.Length; i++)
+				args[i] = Nodify(ast.args[i], what.type.ParamTypes[i]);
 
-			return new CallExprNode(what, args.ToArray()) { syntax = ast };
+			return new CallExprNode(what, args) { syntax = ast };
 		}
 
 		private ExprNode Nodify(CastExprAst ast)
