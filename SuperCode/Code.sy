@@ -4,5 +4,9 @@
 	uint size,
 }
 
-long Run() ->
+long Run()
+{
+	Type ty;
+
 	ret 0;
+}

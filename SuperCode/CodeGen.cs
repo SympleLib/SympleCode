@@ -48,10 +48,14 @@ namespace SuperCode
 
 		private LLVMValueRef Gen(Node node)
 		{
+			if (node is null)
+				return null;
+
 			switch (node.kind)
 			{
 			case NodeKind.StructMem:
-				return Gen((StructMemNode) node);
+				Gen((StructMemNode) node);
+				return null;
 			case NodeKind.FuncMem:
 				return Gen((FuncMemNode) node);
 			case NodeKind.DeclFuncMem:
@@ -86,8 +90,7 @@ namespace SuperCode
 			}
 		}
 
-		private LLVMValueRef Gen(StructMemNode node) =>
-			null;
+		private void Gen(StructMemNode node) {}
 
 		private LLVMValueRef Gen(FuncMemNode mem)
 		{
@@ -121,7 +124,8 @@ namespace SuperCode
 		{
 			var ptr = builder.BuildAlloca(node.type, node.name);
 			var init = Gen(node.init);
-			builder.BuildStore(init, ptr);
+			if (init != null)
+				builder.BuildStore(init, ptr);
 			syms.Add(node, ptr);
 			return ptr;
 		}

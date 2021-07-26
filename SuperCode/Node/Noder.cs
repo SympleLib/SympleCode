@@ -4,34 +4,40 @@ using System.Xml.Linq;
 
 using LLVMSharp.Interop;
 
-using static LLVMSharp.AtomicRMWInst;
-
 namespace SuperCode
 {
 	public class Noder
 	{
 		public readonly PermaSafe safety = new ();
 		public readonly ModuleAst module;
+		public readonly LLVMContextRef ctx;
 
 		private readonly Dictionary<string, Symbol> syms = new ();
 		private readonly Dictionary<string, LLVMTypeRef> types = new ();
 		private LLVMTypeRef retType;
 
-		public Noder(ModuleAst module) =>
+		public Noder(ModuleAst module)
+		{
 			this.module = module;
+			ctx = LLVMContextRef.Global;
+		}
 
 		public PermaSafe Nodify(out ModuleNode node)
 		{
 			var mems = new MemNode[module.mems.Length];
 			for (int i = 0; i < mems.Length; i++)
 				mems[i] = Nodify(module.mems[i]);
-			node = new (module.filename, mems) { syntax = module };
+			node = new ModuleNode(module.filename, mems) { syntax = module };
 			return safety;
 		}
 
 		private LLVMTypeRef Nodify(TypeAst ast)
 		{
-			var ty = ast.baze.builtinType;
+			LLVMTypeRef ty;
+			if (ast.baze.isBuiltinType)
+				ty = ast.baze.builtinType;
+			else
+				ty = types[ast.baze.text];
 			for (int i = 0; i < ast.addons.Length; i++)
 				ty = ty.Ref();
 			return ty;
@@ -68,9 +74,10 @@ namespace SuperCode
 			}
 
 			string name = ast.name.text;
-			var type = LLVMTypeRef.CreateStruct(fieldTypes, true);
-			var node = new StructMemNode(type, name, fields);
+			var type = ctx.CreateNamedStruct(name);
+			type.StructSetBody(fieldTypes, true);
 			types.Add(name, type);
+			var node = new StructMemNode(type, name, fields);
 			return node;
 		}
 
@@ -91,7 +98,6 @@ namespace SuperCode
 			retType = Nodify(ast.retType);
 			var ty = LLVMTypeRef.CreateFunction(retType, paramTypes);
 			string name = ast.name.text;
-
 
 			var stmts = new StmtNode[ast.stmts.Length];
 			for (int i = 0; i < stmts.Length; i++)
@@ -155,6 +161,9 @@ namespace SuperCode
 
 		private ExprNode Nodify(ExprAst ast, LLVMTypeRef castTo = default)
 		{
+			if (ast is null)
+				return null;
+
 			switch (ast.kind)
 			{
 			case AstKind.LitExpr:

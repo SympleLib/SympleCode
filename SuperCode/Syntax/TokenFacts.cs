@@ -23,14 +23,7 @@ namespace SuperCode
 			}
 		}
 
-		public LLVMTypeRef builtinType {
-			get
-			{
-				if (kind != TokenKind.Iden)
-					throw new InvalidOperationException("Token is not built-in type");
-				return BuiltinTypes.types[text];
-			}
-		}
+		public LLVMTypeRef builtinType => BuiltinTypes.types[text];
 	}
 
 	public static class TokenFacts

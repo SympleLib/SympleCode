@@ -5,9 +5,10 @@ namespace SuperCode
 {
 	public class Parser
 	{
-		public readonly PermaSafe safety = new ();
+		public readonly PermaSafe safety = new PermaSafe();
 		public readonly Lexer lexer;
 		public readonly Token[] tokens;
+		public readonly List<string> types = new List<string>();
 		private int pos;
 
 		private Token current => pos < tokens.Length ? tokens[pos] : default;
@@ -15,7 +16,7 @@ namespace SuperCode
 		
 		public Parser(string file)
 		{
-			lexer = new (file);
+			lexer = new Lexer(file);
 			tokens = lexer.Lex();
 		}
 
@@ -28,7 +29,7 @@ namespace SuperCode
 				mems.Add(Mem());
 
 			var eof = Next();
-			module = new (lexer.path, mems.ToArray(), eof);
+			module = new ModuleAst(lexer.path, mems.ToArray(), eof);
 			return safety;
 		}
 
@@ -39,7 +40,7 @@ namespace SuperCode
 			while (current.isTypeAddon)
 				addons.Add(Next());
 
-			return new (baze, addons.ToArray());
+			return new TypeAst(baze, addons.ToArray());
 		}
 
 		private FieldAst Field(TypeAst ty = null)
@@ -57,13 +58,13 @@ namespace SuperCode
 				if (current.Is(TokenKind.Comma))
 					comma = Next();
 
-				return new (ty, name, eql, defVal, comma);
+				return new FieldAst(ty, name, eql, defVal, comma);
 			}
 
 			if (current.Is(TokenKind.Comma))
 				comma = Next();
 
-			return new (ty, name, comma);
+			return new FieldAst(ty, name, comma);
 		}
 
 		private MemAst Mem()
@@ -100,6 +101,7 @@ namespace SuperCode
 			}
 			var close = Next();
 
+			types.Add(name.text);
 			return new StructMemAst(key, name, open, fields.ToArray(), close);
 		}
 
@@ -179,7 +181,7 @@ namespace SuperCode
 				return RetStmt();
 
 			default:
-				if (current.isBuiltinType)
+				if (current.isBuiltinType || types.Contains(current.text))
 					return VarStmt();
 				return ExprStmt();
 			}
@@ -196,14 +198,19 @@ namespace SuperCode
 
 		private VarStmtAst VarStmt(TypeAst ty = null)
 		{
-			if (ty is null || current.isBuiltinType)
+			if (ty is null || current.isBuiltinType || types.Contains(current.text))
 				ty = Type();
 			var name = Match(TokenKind.Iden);
-			var eql = Match(TokenKind.Eql);
-			var init = Expr();
-			var semi = Match(TokenKind.Semicol);
 
-			return new (ty, name, eql, init, semi);
+			if (current.Is(TokenKind.Eql))
+			{
+				var eql = Next();
+				var init = Expr();
+
+				return new VarStmtAst(ty, name, eql, init, Match(TokenKind.Semicol));
+			}
+
+			return new VarStmtAst(ty, name, default, default, Match(TokenKind.Semicol));
 		}
 
 		private ExprStmtAst ExprStmt() =>
