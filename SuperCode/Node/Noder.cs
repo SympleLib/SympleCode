@@ -71,12 +71,7 @@ namespace SuperCode
 
 			var paramz = new FieldNode[ast.paramz.Length];
 			for (int i = 0; i < paramz.Length; i++)
-			{
-				var paramNode = Nodify(ast.paramz[i]);
-				paramz[i] = paramNode;
-				if (paramNode.name is not null)
-					syms.Add(paramNode.name, paramNode);
-			}
+				paramz[i] = Nodify(ast.paramz[i]);
 
 			retType = Nodify(ast.retType);
 			var ty = LLVMTypeRef.CreateFunction(retType, paramTypes);
