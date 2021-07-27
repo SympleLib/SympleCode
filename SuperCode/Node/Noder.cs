@@ -267,7 +267,19 @@ namespace SuperCode
 			case TokenKind.Iden:
 				return new SymExprNode(syms[literal]) { syntax = ast };
 			case TokenKind.Str:
-				return new StrExprNode(literal[1..^1]) { syntax = ast };
+			{
+				int start = literal[0] == '\'' ? 1 : 2;
+				StrType type = literal[0] switch
+				{
+					's' => StrType.Short,
+					'u' => StrType.Unicode,
+					'w' => StrType.Wide,
+
+					_ => StrType.Unicode,
+				};
+
+				return new StrExprNode(type, literal[start..^1]) { syntax = ast };
+			}
 			case TokenKind.Num:
 				if (literal.Contains('.'))
 				{

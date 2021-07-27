@@ -1,8 +1,8 @@
-﻿decl void MessageBoxA(byte*, char* content, char* title, uint type);
+﻿decl void MessageBoxA(byte*, schar* content, schar* title, uint type);
 
 long Run()
 {
-	MessageBoxA(0, 'Test 😉', 'Hello!', 0);
+	MessageBoxA(0, s'Test 😉', s'Hello!', 0);
 
 	ret 0;
 }

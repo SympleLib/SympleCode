@@ -228,12 +228,14 @@ namespace SuperCode
 
 		private LLVMValueRef Gen(StrExprNode node)
 		{
-			var vals = new LLVMValueRef[node.str.Length + 1];
-			for (int i = 0; i < node.str.Length; i++)
-				vals[i] = LLVMValueRef.CreateConstInt(node.type.ElementType, node.str[i]);
-			vals[vals.Length - 1] = LLVMValueRef.CreateConstInt(node.type.ElementType, 0);
-			var arr = LLVMValueRef.CreateConstArray(node.type.ElementType, vals);
-			
+			switch (node.strType)
+			{
+			case StrType.Short:
+				return builder.BuildGlobalStringPtr(node.str);
+
+			default:
+				throw new InvalidOperationException("Invalid str-type");
+			}
 		}
 
 		private LLVMValueRef Gen(SymExprNode expr)

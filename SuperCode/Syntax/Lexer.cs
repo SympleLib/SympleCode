@@ -39,6 +39,12 @@ namespace SuperCode
 				if (CheckNewLine())
 					continue;
 
+				if (current == '\'' || (next == '\'' && current is 's' or 'u' or 'w'))
+				{
+					tokens.Add(String());
+					continue;
+				}
+
 				if (char.IsWhiteSpace(current))
 				{
 					Next();
@@ -48,12 +54,6 @@ namespace SuperCode
 				if (char.IsLetter(current))
 				{
 					tokens.Add(Identifier());
-					continue;
-				}
-
-				if (current == '\'')
-				{
-					tokens.Add(String());
 					continue;
 				}
 
@@ -105,6 +105,8 @@ namespace SuperCode
 			var sb = new StringBuilder();
 
 			int begin = pos;
+			if (current is 's' or 'u' or 'w')
+				sb.Append(Next());
 			sb.Append(Next());
 			while (current != '\'')
 			{
