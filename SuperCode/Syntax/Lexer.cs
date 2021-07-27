@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Text;
 
 namespace SuperCode
 {
@@ -101,17 +102,59 @@ namespace SuperCode
 
 		private Token String()
 		{
+			var sb = new StringBuilder();
+
 			int begin = pos;
-			Next();
+			sb.Append(Next());
 			while (current != '\'')
 			{
 				if (current == 0)
 					throw new InvalidOperationException("Finsh yer sentanze");
 				if (!CheckNewLine())
-					Next();
+				{
+					if (current == '\\')
+					{
+						Next();
+						switch (Next())
+						{
+						case '\a':
+							sb.Append('\a');
+							break;
+						case 'b':
+							sb.Append('\b');
+							break;
+						case 'f':
+							sb.Append('\f');
+							break;
+						case 'n':
+							sb.Append('\n');
+							break;
+						case 'r':
+							sb.Append('\r');
+							break;
+						case 't':
+							sb.Append('\t');
+							break;
+						case 'v':
+							sb.Append('\v');
+							break;
+						case '\\':
+							sb.Append('\\');
+							break;
+						case '\'':
+							sb.Append('\'');
+							break;
+
+						default:
+							throw new InvalidOperationException("Unrecognized escape sequence");
+						}
+					}
+					else
+						sb.Append(Next());
+				}
 			}
-			Next();
-			return MakeToken(TokenKind.Str, begin);
+			sb.Append(Next());
+			return MakeToken(TokenKind.Str, sb.ToString());
 		}
 
 		private Token Number()

@@ -11,8 +11,7 @@ long Run()
 	Type ty;
 	ty.name = 'int';
 	ty.size = 32;
-	printf('Name: `%s`, Size: %u
-', ty.name, ty.size);
+	printf('Name: \'%s\', Size: %u\n', ty.name, ty.size);
 
 	ret 0;
 }
