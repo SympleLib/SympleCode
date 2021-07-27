@@ -29,12 +29,52 @@ namespace SuperCode
 			//string file = Console.ReadLine();
 			string file = "Code.sy";
 			var parser = new Parser(file);
-			// Console.ForegroundColor = ConsoleColor.DarkGreen;
+			SyntaxColors(parser.lexer.src, parser.tokens);
+			Console.WriteLine();
+
+			var safety = parser.Parse(out var tree);
+			safety.Print(Console.Out);
+			if (safety.MustSelfDestruct())
+				goto Stop;
+
+			tree.Print(Console.Out);
+			Console.WriteLine();
+
+#if !SYNTAX_ONLY
+			LLVM.LinkInMCJIT();
+			LLVM.InitializeNativeTarget();
+			LLVM.InitializeNativeAsmParser();
+			LLVM.InitializeNativeAsmPrinter();
+			LLVM.InitializeNativeDisassembler();
+
+			var noder = new Noder(tree);
+			safety = noder.Nodify(out var node);
+			safety.Print(Console.Out);
+			if (safety.MustSelfDestruct())
+				goto Stop;
+
+			var cg = new CodeGen(node);
+			var module = cg.Gen();
+			// cg.Optimize();
+
+			Console.ForegroundColor = ConsoleColor.DarkGreen;
+			Console.WriteLine(module);
+
+			Console.ForegroundColor = ConsoleColor.White;
+			Compile(module);
+			RunJIT(module);
+#endif
+		Stop:
+			Console.ReadKey();
+		}
+
+		private static void SyntaxColors(string src, Token[] tokens)
+		{
 			int pos = 0;
-			foreach (var tok in parser.tokens)
+			foreach (var tok in tokens)
 			{
 				while (pos < tok.pos)
-					Console.Write(parser.lexer.src[pos++]);
+					Console.Write(src[pos++]);
 
 				switch (tok.kind)
 				{
@@ -73,46 +113,11 @@ namespace SuperCode
 				Console.Write(tok.text);
 				pos += tok.text.Length;
 			}
-			Console.WriteLine('\n');
-
-			var safety = parser.Parse(out var tree);
-			safety.Print(Console.Out);
-			if (safety.MustSelfDestruct())
-				goto Stop;
-
-			tree.Print(Console.Out);
 			Console.WriteLine();
-
-#if !SYNTAX_ONLY
-			LLVM.LinkInMCJIT();
-			LLVM.InitializeNativeTarget();
-			LLVM.InitializeNativeAsmParser();
-			LLVM.InitializeNativeAsmPrinter();
-			LLVM.InitializeNativeDisassembler();
-
-			var noder = new Noder(tree);
-			safety = noder.Nodify(out var node);
-			safety.Print(Console.Out);
-			if (safety.MustSelfDestruct())
-				goto Stop;
-
-			var cg = new CodeGen(node);
-			var module = cg.Gen();
-			// cg.Optimize();
-
-			Console.ForegroundColor = ConsoleColor.DarkGreen;
-			Console.WriteLine(module);
-
-			Console.ForegroundColor = ConsoleColor.White;
-			Compile(module);
-			RunJIT(module);
-#endif
-		Stop:
-			Console.ReadKey();
 		}
 
 #if !SYNTAX_ONLY
-		private static unsafe void RunJIT(LLVMModuleRef module)
+		private static void RunJIT(LLVMModuleRef module)
 		{
 			var options = new LLVMMCJITCompilerOptions { NoFramePointerElim = 1 };
 			if (!module.TryCreateMCJITCompiler(out var engine, ref options, out string err))

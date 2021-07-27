@@ -33,6 +33,26 @@ namespace SuperCode
 			return safety;
 		}
 
+
+		private ExprAst[] Args(Token open)
+		{
+			var args = new List<ExprAst>();
+			while (!current.Is(TokenKind.RightParen))
+			{
+				if (current.Is(TokenKind.Eof))
+				{
+					safety.ReportUnexpectedEof(open);
+					return null;
+				}
+
+				args.Add(Expr());
+				if (current.Is(TokenKind.Comma))
+					Next();
+			}
+
+			return args.ToArray();
+		}
+
 		private TypeAst Type()
 		{
 			var baze = Next();
@@ -67,6 +87,7 @@ namespace SuperCode
 			return new FieldAst(ty, name, comma);
 		}
 
+
 		private MemAst Mem()
 		{
 			switch (current.kind)
@@ -83,13 +104,14 @@ namespace SuperCode
 			}
 		}
 
-		private StructMemAst StructMem()
+		private DeclFuncMemAst DeclFuncMem()
 		{
-			var key = Match(TokenKind.StructKey);
+			var key = Match(TokenKind.DeclKey);
+			var ret = Type();
 			var name = Match(TokenKind.Iden);
-			var open = Match(TokenKind.LeftBrace);
-			var fields = new List<FieldAst>();
-			while (!current.Is(TokenKind.RightBrace))
+			var open = Match(TokenKind.LeftParen);
+			var paramz = new List<FieldAst>();
+			while (!current.Is(TokenKind.RightParen))
 			{
 				if (current.Is(TokenKind.Eof))
 				{
@@ -97,12 +119,13 @@ namespace SuperCode
 					return null;
 				}
 
-				fields.Add(Field());
+				paramz.Add(Field());
 			}
-			var close = Next();
 
-			types.Add(name.text);
-			return new StructMemAst(key, name, open, fields.ToArray(), close);
+			var close = Next();
+			var semi = Match(TokenKind.Semicol);
+
+			return new (key, ret, name, open, paramz.ToArray(), close, semi);
 		}
 
 		private FuncMemAst FuncMem()
@@ -149,14 +172,13 @@ namespace SuperCode
 			return new (ty, name, openArg, paramz.ToArray(), closeArg, open, close, stmts.ToArray());
 		}
 
-		private DeclFuncMemAst DeclFuncMem()
+		private StructMemAst StructMem()
 		{
-			var key = Match(TokenKind.DeclKey);
-			var ret = Type();
+			var key = Match(TokenKind.StructKey);
 			var name = Match(TokenKind.Iden);
-			var open = Match(TokenKind.LeftParen);
-			var paramz = new List<FieldAst>();
-			while (!current.Is(TokenKind.RightParen))
+			var open = Match(TokenKind.LeftBrace);
+			var fields = new List<FieldAst>();
+			while (!current.Is(TokenKind.RightBrace))
 			{
 				if (current.Is(TokenKind.Eof))
 				{
@@ -164,14 +186,14 @@ namespace SuperCode
 					return null;
 				}
 
-				paramz.Add(Field());
+				fields.Add(Field());
 			}
-
 			var close = Next();
-			var semi = Match(TokenKind.Semicol);
 
-			return new (key, ret, name, open, paramz.ToArray(), close, semi);
+			types.Add(name.text);
+			return new StructMemAst(key, name, open, fields.ToArray(), close);
 		}
+
 
 		private StmtAst Stmt()
 		{
@@ -216,6 +238,7 @@ namespace SuperCode
 		private ExprStmtAst ExprStmt() =>
 			new (Expr(), Match(TokenKind.Semicol));
 
+
 		private ExprAst Expr() =>
 			BinExpr();
 
@@ -236,30 +259,15 @@ namespace SuperCode
 			return left;
 		}
 
-		private ExprAst PreExpr()
+		private CastExprAst CastExpr()
 		{
-			if (current.isPrefix)
-				return new PreExprAst(Next(), CallExpr());
-			return CallExpr();
-		}
+			var open = Match(TokenKind.LeftParen);
+			var ty = Type();
+			var close = Match(TokenKind.RightParen);
 
-		private ExprAst[] Args(Token open)
-		{
-			var args = new List<ExprAst>();
-			while (!current.Is(TokenKind.RightParen))
-			{
-				if (current.Is(TokenKind.Eof))
-				{
-					safety.ReportUnexpectedEof(open);
-					return null;
-				}
+			var expr = PreExpr();
 
-				args.Add(Expr());
-				if (current.Is(TokenKind.Comma))
-					Next();
-			}
-
-			return args.ToArray();
+			return new (open, ty, close, expr);
 		}
 
 		private ExprAst CallExpr()
@@ -276,39 +284,8 @@ namespace SuperCode
 			return expr;
 		}
 
-		private ExprAst PrimExpr()
-		{
-			switch (current.kind)
-			{
-			case TokenKind.Num:
-			case TokenKind.Str:
-			case TokenKind.Iden:
-				return LitExpr();
-			case TokenKind.LeftBracket:
-				return TypePun();
-			case TokenKind.LeftParen:
-				if (next.isBuiltinType)
-					return CastExpr();
-				return ParenExpr();
-
-			default:
-				throw new InvalidOperationException("Expected expr");
-			}
-		}
-
 		private LitExprAst LitExpr() =>
-			new (Next());
-
-		private CastExprAst CastExpr()
-		{
-			var open = Match(TokenKind.LeftParen);
-			var ty = Type();
-			var close = Match(TokenKind.RightParen);
-
-			var expr = PreExpr();
-
-			return new (open, ty, close, expr);
-		}
+			new LitExprAst(Next());
 
 		private ParenExprAst ParenExpr()
 		{
@@ -317,6 +294,33 @@ namespace SuperCode
 			var close = Match(TokenKind.RightParen);
 
 			return new (open, expr, close);
+		}
+
+		private ExprAst PreExpr()
+		{
+			if (current.isPrefix)
+				return new PreExprAst(Next(), CallExpr());
+			return CallExpr();
+		}
+
+		private ExprAst PrimExpr()
+		{
+			switch (current.kind)
+			{
+			case TokenKind.LeftParen:
+				if (next.isBuiltinType)
+					return CastExpr();
+				return ParenExpr();
+			case TokenKind.Num:
+			case TokenKind.Str:
+			case TokenKind.Iden:
+				return LitExpr();
+			case TokenKind.LeftBracket:
+				return TypePun();
+
+			default:
+				throw new InvalidOperationException("Expected expr");
+			}
 		}
 
 		private TypePunExprAst TypePun()
@@ -329,6 +333,7 @@ namespace SuperCode
 
 			return new (open, ty, close, expr);
 		}
+
 
 		private Token Next()
 		{

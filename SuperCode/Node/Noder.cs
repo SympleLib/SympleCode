@@ -51,36 +51,40 @@ namespace SuperCode
 		{
 			switch (ast.kind)
 			{
-			case AstKind.StructMem:
-				return Nodify((StructMemAst) ast);
-			case AstKind.FuncMem:
-				return Nodify((FuncMemAst) ast);
 			case AstKind.DeclFuncMem:
 				return Nodify((DeclFuncMemAst) ast);
+			case AstKind.FuncMem:
+				return Nodify((FuncMemAst) ast);
+			case AstKind.StructMem:
+				return Nodify((StructMemAst) ast);
 
 			default:
 				throw new InvalidOperationException("Invalid mem");
 			}
 		}
 
-		private StructMemNode Nodify(StructMemAst ast)
+		private DeclFuncMemNode Nodify(DeclFuncMemAst ast)
 		{
-			var fields = new FieldNode[ast.fields.Length];
-			var fieldTypes = new LLVMTypeRef[ast.fields.Length];
-			for (int i = 0; i < fields.Length; i++)
+			var paramTypes = new LLVMTypeRef[ast.paramz.Length];
+			for (int i = 0; i < paramTypes.Length; i++)
+				paramTypes[i] = Nodify(ast.paramz[i].type);
+
+			var paramz = new FieldNode[ast.paramz.Length];
+			for (int i = 0; i < paramz.Length; i++)
 			{
-				var field = Nodify(ast.fields[i]);
-				fields[i] = field;
-				fieldTypes[i] = field.type;
+				var paramNode = Nodify(ast.paramz[i]);
+				paramz[i] = paramNode;
+				if (paramNode.name is not null)
+					syms.Add(paramNode.name, paramNode);
 			}
 
+			retType = Nodify(ast.retType);
+			var ty = LLVMTypeRef.CreateFunction(retType, paramTypes);
 			string name = ast.name.text;
-			var type = ctx.CreateNamedStruct(name);
-			type.StructSetBody(fieldTypes, true);
-			var node = new StructMemNode(type, name, fields);
-			ztructs.Add(type, node);
-			types.Add(name, type);
-			return node;
+
+			var decl = new DeclFuncMemNode(ty, name, paramz) { syntax = ast };
+			syms.Add(name, decl);
+			return decl;
 		}
 
 		private FuncMemNode Nodify(FuncMemAst ast)
@@ -110,40 +114,37 @@ namespace SuperCode
 			return func;
 		}
 
-		private DeclFuncMemNode Nodify(DeclFuncMemAst ast)
+		private StructMemNode Nodify(StructMemAst ast)
 		{
-			var paramTypes = new LLVMTypeRef[ast.paramz.Length];
-			for (int i = 0; i < paramTypes.Length; i++)
-				paramTypes[i] = Nodify(ast.paramz[i].type);
-
-			var paramz = new FieldNode[ast.paramz.Length];
-			for (int i = 0; i < paramz.Length; i++)
+			var fields = new FieldNode[ast.fields.Length];
+			var fieldTypes = new LLVMTypeRef[ast.fields.Length];
+			for (int i = 0; i < fields.Length; i++)
 			{
-				var paramNode = Nodify(ast.paramz[i]);
-				paramz[i] = paramNode;
-				if (paramNode.name is not null)
-					syms.Add(paramNode.name, paramNode);
+				var field = Nodify(ast.fields[i]);
+				fields[i] = field;
+				fieldTypes[i] = field.type;
 			}
 
-			retType = Nodify(ast.retType);
-			var ty = LLVMTypeRef.CreateFunction(retType, paramTypes);
 			string name = ast.name.text;
-
-			var decl = new DeclFuncMemNode(ty, name, paramz) { syntax = ast };
-			syms.Add(name, decl);
-			return decl;
+			var type = ctx.CreateNamedStruct(name);
+			type.StructSetBody(fieldTypes, true);
+			var node = new StructMemNode(type, name, fields);
+			ztructs.Add(type, node);
+			types.Add(name, type);
+			return node;
 		}
+
 
 		private StmtNode Nodify(StmtAst ast)
 		{
 			switch (ast.kind)
 			{
+			case AstKind.ExprStmt:
+				return Nodify(((ExprStmtAst) ast).expr);
 			case AstKind.RetStmt:
 				return Nodify((RetStmtAst) ast);
 			case AstKind.VarStmt:
 				return Nodify((VarStmtAst) ast);
-			case AstKind.ExprStmt:
-				return Nodify(((ExprStmtAst) ast).expr);
 
 			default:
 				throw new InvalidOperationException("Invalid stmt");
@@ -168,14 +169,14 @@ namespace SuperCode
 
 			switch (ast.kind)
 			{
-			case AstKind.LitExpr:
-				return Cast(Nodify((LitExprAst) ast), castTo);
 			case AstKind.BinExpr:
 				return Cast(Nodify((BinExprAst) ast), castTo);
 			case AstKind.CallExpr:
 				return Cast(Nodify((CallExprAst) ast), castTo);
 			case AstKind.CastExpr:
 				return Cast(Nodify((CastExprAst) ast), castTo);
+			case AstKind.LitExpr:
+				return Cast(Nodify((LitExprAst) ast), castTo);
 			case AstKind.ParenExpr:
 				return Cast(Nodify(((ParenExprAst) ast).expr), castTo);
 			case AstKind.PreExpr:
@@ -185,35 +186,6 @@ namespace SuperCode
 
 			default:
 				throw new InvalidOperationException("Invalid expr");
-			}
-		}
-
-		private ExprNode Nodify(LitExprAst ast)
-		{
-			string literal = ast.literal.text;
-			switch (ast.literal.kind)
-			{
-			case TokenKind.Iden:
-				return new SymExprNode(syms[literal]) { syntax = ast };
-			case TokenKind.Str:
-				return new StrExprNode(literal[1..^1]) { syntax = ast };
-			case TokenKind.Num:
-				if (literal.Contains('.'))
-				{
-					bool isF32 = literal.Contains('f') || literal.Contains('F');
-					double num = double.Parse(isF32 ? literal[..^1] : literal);
-					var ty = isF32 ? LLVMTypeRef.Float : LLVMTypeRef.Double;
-					return new FNumExprNode(num, ty) { syntax = ast };
-				}
-				else
-				{
-					ulong num = ulong.Parse(literal);
-					var ty = num != (uint) num ? LLVMTypeRef.Int64 : LLVMTypeRef.Int32;
-					return new NumExprNode(num, ty) { syntax = ast };
-				}
-
-			default:
-				throw new InvalidOperationException("Invalid lit-expr");
 			}
 		}
 
@@ -285,6 +257,35 @@ namespace SuperCode
 			if (to == default || node.type == to)
 				return node;
 			return new CastExprNode(node, to) { syntax = ast };
+		}
+
+		private ExprNode Nodify(LitExprAst ast)
+		{
+			string literal = ast.literal.text;
+			switch (ast.literal.kind)
+			{
+			case TokenKind.Iden:
+				return new SymExprNode(syms[literal]) { syntax = ast };
+			case TokenKind.Str:
+				return new StrExprNode(literal[1..^1]) { syntax = ast };
+			case TokenKind.Num:
+				if (literal.Contains('.'))
+				{
+					bool isF32 = literal.Contains('f') || literal.Contains('F');
+					double num = double.Parse(isF32 ? literal[..^1] : literal);
+					var ty = isF32 ? LLVMTypeRef.Float : LLVMTypeRef.Double;
+					return new FNumExprNode(num, ty) { syntax = ast };
+				}
+				else
+				{
+					ulong num = ulong.Parse(literal);
+					var ty = num != (uint) num ? LLVMTypeRef.Int64 : LLVMTypeRef.Int32;
+					return new NumExprNode(num, ty) { syntax = ast };
+				}
+
+			default:
+				throw new InvalidOperationException("Invalid lit-expr");
+			}
 		}
 
 		private ExprNode Nodify(PreExprAst ast)

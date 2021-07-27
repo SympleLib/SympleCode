@@ -53,13 +53,13 @@ namespace SuperCode
 
 			switch (node.kind)
 			{
+			case NodeKind.DeclFuncMem:
+				return Gen((DeclFuncMemNode) node);
+			case NodeKind.FuncMem:
+				return Gen((FuncMemNode) node);
 			case NodeKind.StructMem:
 				Gen((StructMemNode) node);
 				return null;
-			case NodeKind.FuncMem:
-				return Gen((FuncMemNode) node);
-			case NodeKind.DeclFuncMem:
-				return Gen((DeclFuncMemNode) node);
 
 			case NodeKind.RetStmt:
 				return Gen((RetStmtNode) node);
@@ -80,14 +80,14 @@ namespace SuperCode
 				return Gen((MemExprNode) node);
 			case NodeKind.NumExpr:
 				return Gen((NumExprNode) node);
-			case NodeKind.TypePunExpr:
-				return Gen((TypePunExprNode) node);
-			case NodeKind.UnExpr:
-				return Gen((UnExprNode) node);
 			case NodeKind.StrExpr:
 				return Gen((StrExprNode) node);
 			case NodeKind.SymExpr:
 				return Gen((SymExprNode) node);
+			case NodeKind.TypePunExpr:
+				return Gen((TypePunExprNode) node);
+			case NodeKind.UnExpr:
+				return Gen((UnExprNode) node);
 
 			default:
 				throw new InvalidOperationException("Invalid node");
@@ -120,6 +120,7 @@ namespace SuperCode
 			syms.Add(mem, fn);
 			return fn;
 		}
+		
 
 		private LLVMValueRef Gen(RetStmtNode node) =>
 			builder.BuildRet(Gen(node.value));
@@ -132,28 +133,6 @@ namespace SuperCode
 				builder.BuildStore(init, ptr);
 			syms.Add(node, ptr);
 			return ptr;
-		}
-
-		private LLVMValueRef Gen(MemExprNode node)
-		{
-			var ptr = GenAddr(node.expr);
-			var field = builder.BuildStructGEP(ptr, (uint) node.index);
-			return builder.BuildLoad(field);
-		}
-
-		private LLVMValueRef Gen(NumExprNode node) =>
-			LLVMValueRef.CreateConstInt(node.type, node.value);
-
-		private LLVMValueRef Gen(FNumExprNode node) =>
-			LLVMValueRef.CreateConstReal(node.type, node.value);
-
-		private LLVMValueRef Gen(TypePunExprNode node)
-		{
-			var expr = Gen(node.expr);
-			var fptr = builder.BuildAlloca(expr.TypeOf);
-			builder.BuildStore(expr, fptr);
-			var tptr = builder.BuildPointerCast(fptr, node.type.Ref());
-			return builder.BuildLoad(tptr);
 		}
 
 
@@ -202,17 +181,6 @@ namespace SuperCode
 			}
 		}
 
-		private LLVMValueRef Gen(StrExprNode node) =>
-			builder.BuildGlobalStringPtr(node.str);
-
-		private LLVMValueRef Gen(SymExprNode expr)
-		{
-			var sym = syms[expr.symbol];
-			if (((Node) expr.symbol).kind == NodeKind.VarStmt)
-				return builder.BuildLoad(sym);
-			return sym;
-		}
-
 		private LLVMValueRef Gen(CallExprNode expr)
 		{
 			var what = Gen(expr.what);
@@ -244,6 +212,39 @@ namespace SuperCode
 			return builder.BuildIntCast(val, to); ;
 		}
 
+		private LLVMValueRef Gen(FNumExprNode node) =>
+			LLVMValueRef.CreateConstReal(node.type, node.value);
+
+		private LLVMValueRef Gen(MemExprNode node)
+		{
+			var ptr = GenAddr(node.expr);
+			var field = builder.BuildStructGEP(ptr, (uint) node.index);
+			return builder.BuildLoad(field);
+		}
+
+		private LLVMValueRef Gen(NumExprNode node) =>
+			LLVMValueRef.CreateConstInt(node.type, node.value);
+
+		private LLVMValueRef Gen(StrExprNode node) =>
+			builder.BuildGlobalStringPtr(node.str);
+
+		private LLVMValueRef Gen(SymExprNode expr)
+		{
+			var sym = syms[expr.symbol];
+			if (((Node) expr.symbol).kind == NodeKind.VarStmt)
+				return builder.BuildLoad(sym);
+			return sym;
+		}
+
+		private LLVMValueRef Gen(TypePunExprNode node)
+		{
+			var expr = Gen(node.expr);
+			var fptr = builder.BuildAlloca(expr.TypeOf);
+			builder.BuildStore(expr, fptr);
+			var tptr = builder.BuildPointerCast(fptr, node.type.Ref());
+			return builder.BuildLoad(tptr);
+		}
+
 		private LLVMValueRef Gen(UnExprNode node)
 		{
 			if (node.op is UnOp.Ref)
@@ -265,27 +266,28 @@ namespace SuperCode
 			}
 		}
 
+
 		private LLVMValueRef GenAddr(Node node)
 		{
 			switch (node.kind)
 			{
-			case NodeKind.SymExpr:
-				return GenAddr((SymExprNode) node);
 			case NodeKind.MemExpr:
 				return GenAddr((MemExprNode) node);
+			case NodeKind.SymExpr:
+				return GenAddr((SymExprNode) node);
 
 			default:
 				throw new InvalidOperationException("Not an addr");
 			}
 		}
 
-		private LLVMValueRef GenAddr(SymExprNode node) =>
-			syms[node.symbol];
-
 		private LLVMValueRef GenAddr(MemExprNode node)
 		{
 			var ptr = GenAddr(node.expr);
 			return builder.BuildStructGEP(ptr, (uint) node.index);
 		}
+
+		private LLVMValueRef GenAddr(SymExprNode node) =>
+			syms[node.symbol];
 	}
 }
