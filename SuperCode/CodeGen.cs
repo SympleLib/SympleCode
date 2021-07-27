@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Text;
 using System.Xml.Linq;
 
 using LLVMSharp.Interop;
@@ -8,7 +9,7 @@ namespace SuperCode
 {
 	public class CodeGen
 	{
-		private readonly Dictionary<Symbol, LLVMValueRef> syms = new ();
+		private readonly Dictionary<Symbol, LLVMValueRef> syms = new();
 
 		public readonly ModuleNode modNode;
 		public readonly LLVMModuleRef module;
@@ -94,7 +95,7 @@ namespace SuperCode
 			}
 		}
 
-		private void Gen(StructMemNode node) {}
+		private void Gen(StructMemNode node) { }
 
 		private LLVMValueRef Gen(FuncMemNode mem)
 		{
@@ -120,7 +121,7 @@ namespace SuperCode
 			syms.Add(mem, fn);
 			return fn;
 		}
-		
+
 
 		private LLVMValueRef Gen(RetStmtNode node) =>
 			builder.BuildRet(Gen(node.value));
@@ -225,8 +226,15 @@ namespace SuperCode
 		private LLVMValueRef Gen(NumExprNode node) =>
 			LLVMValueRef.CreateConstInt(node.type, node.value);
 
-		private LLVMValueRef Gen(StrExprNode node) =>
-			builder.BuildGlobalStringPtr(node.str);
+		private LLVMValueRef Gen(StrExprNode node)
+		{
+			var vals = new LLVMValueRef[node.str.Length + 1];
+			for (int i = 0; i < node.str.Length; i++)
+				vals[i] = LLVMValueRef.CreateConstInt(node.type.ElementType, node.str[i]);
+			vals[vals.Length - 1] = LLVMValueRef.CreateConstInt(node.type.ElementType, 0);
+			var arr = LLVMValueRef.CreateConstArray(node.type.ElementType, vals);
+			
+		}
 
 		private LLVMValueRef Gen(SymExprNode expr)
 		{

@@ -309,7 +309,7 @@ namespace SuperCode
 				goto UnExpr;
 			case TokenKind.Percent:
 				op = UnOp.Deref;
-				ty = ty.Deref();
+				ty = ty.ElementType;
 				goto UnExpr;
 
 			default:

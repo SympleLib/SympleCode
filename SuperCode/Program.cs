@@ -61,8 +61,8 @@ namespace SuperCode
 			Console.WriteLine(module);
 
 			Console.ForegroundColor = ConsoleColor.White;
-			Compile(module);
-			RunJIT(module);
+			if (Compile(module))
+				RunJIT(module);
 #endif
 		Stop:
 			Console.ReadKey();
@@ -131,18 +131,20 @@ namespace SuperCode
 			Console.WriteLine(union);
 		}
 
-		private static void Compile(LLVMModuleRef module)
+		private static bool Compile(LLVMModuleRef module)
 		{
 			if (!module.TryVerify(LLVMVerifierFailureAction.LLVMPrintMessageAction, out string err))
 			{
 				Console.Error.WriteLine(err);
-				return;
+				return false;
 			}
 
 			var target = LLVMTargetRef.GetTargetFromTriple(LLVMTargetRef.DefaultTriple);
 			var targetMachine = target.CreateTargetMachine(LLVMTargetRef.DefaultTriple, "generic", "",
 				LLVMCodeGenOptLevel.LLVMCodeGenLevelAggressive, LLVMRelocMode.LLVMRelocDefault, LLVMCodeModel.LLVMCodeModelDefault);
 			targetMachine.EmitToFile(module, "Code.o", LLVMCodeGenFileType.LLVMObjectFile);
+
+			return true;
 		}
 #endif
 	}

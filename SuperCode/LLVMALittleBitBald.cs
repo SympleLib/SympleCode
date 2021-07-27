@@ -16,7 +16,7 @@ namespace SuperCode
 		public static LLVMTypeRef Ref(this LLVMTypeRef type) =>
 			LLVMTypeRef.CreatePointer(type, 0);
 
-		public static LLVMTypeRef Deref(this LLVMTypeRef type) =>
-			type.ElementType;
+		public static LLVMValueRef AddGlobal(this LLVMModuleRef module, LLVMTypeRef ty) =>
+			module.AddGlobal(ty, "");
 	}
 }

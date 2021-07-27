@@ -1,17 +1,8 @@
-﻿struct Type
-{
-	char* name,
-	uint size,
-}
-
-decl void printf(char* fmt, char*, uint);
+﻿decl void MessageBoxA(byte*, char* content, char* title, uint type);
 
 long Run()
 {
-	Type ty;
-	ty.name = 'int';
-	ty.size = 32;
-	printf('Name: \'%s\', Size: %u\n', ty.name, ty.size);
+	MessageBoxA(0, 'Test 😉', 'Hello!', 0);
 
 	ret 0;
 }
