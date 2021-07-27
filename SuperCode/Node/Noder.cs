@@ -14,6 +14,7 @@ namespace SuperCode
 
 		private readonly Dictionary<string, Symbol> syms = new ();
 		private readonly Dictionary<string, LLVMTypeRef> types = new ();
+		private readonly Dictionary<LLVMTypeRef, StructMemNode> ztructs = new ();
 		private LLVMTypeRef retType;
 
 		public Noder(ModuleAst module)
@@ -76,8 +77,9 @@ namespace SuperCode
 			string name = ast.name.text;
 			var type = ctx.CreateNamedStruct(name);
 			type.StructSetBody(fieldTypes, true);
-			types.Add(name, type);
 			var node = new StructMemNode(type, name, fields);
+			ztructs.Add(type, node);
+			types.Add(name, type);
 			return node;
 		}
 
@@ -215,15 +217,27 @@ namespace SuperCode
 			}
 		}
 
-		private BinExprNode Nodify(BinExprAst ast)
+		private ExprNode Nodify(BinExprAst ast)
 		{
 			var left = Nodify(ast.left);
+			switch (ast.op.kind)
+			{
+			case TokenKind.Dot:
+			{
+				string name = ast.right.token.text;
+				return new MemExprNode(left, name, MemI(left.type, name), MemTy(left.type, name));
+			}
+			}
+
 			var right = Nodify(ast.right, left.type);
 			bool fp = left.type.IsFloat();
 			
 			BinOp op;
 			switch (ast.op.kind)
 			{
+			case TokenKind.Eql:
+				return new AssignExprNode(left, right);
+
 			case TokenKind.Plus:
 				op = fp ? BinOp.FAdd : BinOp.Add;
 				goto BinExpr;
@@ -322,6 +336,24 @@ namespace SuperCode
 			if (to.IntWidth < node.type.IntWidth && !to.IsFloat() && !to.IsPtr())
 				safety.ReportPossibleLossOfData(node.syntax.token);
 			return new CastExprNode(node, to);
+		}
+
+		private LLVMTypeRef MemTy(LLVMTypeRef ty, string name)
+		{
+			var ztruct = ztructs[ty];
+			foreach (var field in ztruct.fields)
+				if (field.name == name)
+					return field.type;
+			throw new InvalidOperationException("Member not found");
+		}
+
+		private int MemI(LLVMTypeRef ty, string name)
+		{
+			var ztruct = ztructs[ty];
+			for (int i = 0; i < ztruct.fields.Length; i++)
+				if (ztruct.fields[i].name == name)
+					return i;
+			throw new InvalidOperationException("Member not found");
 		}
 	}
 }

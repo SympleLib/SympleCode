@@ -32,6 +32,7 @@ namespace SuperCode
 		LeftBracket,
 		RightBracket,
 
+		Dot,
 		Comma,
 		Semicol,
 
@@ -91,7 +92,7 @@ namespace SuperCode
 			"/-", "%-",
 			"@",
 			"{", "}", "(", ")", "[", "]",
-			",", ";",
+			".", ",", ";",
 			"=", "->",
 		};
 

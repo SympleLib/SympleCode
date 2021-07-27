@@ -126,8 +126,8 @@ namespace SuperCode
 					if (didDot)
 						throw new InvalidOperationException("Tooo many dots for poor number to handle");
 					didDot = true;
-					if (!char.IsDigit(next))
-						break;
+					if (!char.IsDigit(next) && char.IsLetter(next))
+						return Punctuator();
 				}
 				Next();
 			}
@@ -155,20 +155,15 @@ namespace SuperCode
 			for (int i = Token.puncs.Length - 1; i >= 0; i--)
 			{
 				string punc = Token.puncs[i];
-				bool works = true;
 				for (int j = 0; j < punc.Length; j++)
 					if (src[pos + j] != punc[j])
-					{
-						works = false;
-						break;
-					}
+						goto NextOne;
 
-				if (works)
-				{
-					int begin = pos;
-					pos += punc.Length;
-					return MakeToken(TokenFacts.firstPunc + i, begin);
-				}
+				int begin = pos;
+				pos += punc.Length;
+				return MakeToken(TokenFacts.firstPunc + i, begin);
+			NextOne:
+				continue;
 			}
 
 			Next();

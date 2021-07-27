@@ -34,11 +34,15 @@ namespace SuperCode
 		public static int BinPriority(this TokenKind kind) =>
 			kind switch
 			{
-				TokenKind.Plus or TokenKind.Dash =>
+				TokenKind.Eql =>
 					1,
+				TokenKind.Plus or TokenKind.Dash =>
+					2,
 				TokenKind.Star or TokenKind.Slash or TokenKind.Percent or
 					TokenKind.SlashDash or TokenKind.PercentDash =>
-					2,
+					3,
+				TokenKind.Dot =>
+					4,
 
 				_ =>
 					0,

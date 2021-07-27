@@ -12,10 +12,12 @@
 		RetStmt,
 		VarStmt,
 
+		AssignExpr,
 		CallExpr,
 		CastExpr,
 		BinExpr,
 		FNumExpr,
+		MemExpr,
 		NumExpr,
 		StrExpr,
 		SymExpr,

@@ -66,6 +66,8 @@ namespace SuperCode
 			case NodeKind.VarStmt:
 				return Gen((VarStmtNode) node);
 
+			case NodeKind.AssignExpr:
+				return Gen((AssignExprNode) node);
 			case NodeKind.BinExpr:
 				return Gen((BinExprNode) node);
 			case NodeKind.CallExpr:
@@ -74,6 +76,8 @@ namespace SuperCode
 				return Gen((CastExprNode) node);
 			case NodeKind.FNumExpr:
 				return Gen((FNumExprNode) node);
+			case NodeKind.MemExpr:
+				return Gen((MemExprNode) node);
 			case NodeKind.NumExpr:
 				return Gen((NumExprNode) node);
 			case NodeKind.TypePunExpr:
@@ -130,6 +134,13 @@ namespace SuperCode
 			return ptr;
 		}
 
+		private LLVMValueRef Gen(MemExprNode node)
+		{
+			var ptr = GenAddr(node.expr);
+			var field = builder.BuildStructGEP(ptr, (uint) node.index);
+			return builder.BuildLoad(field);
+		}
+
 		private LLVMValueRef Gen(NumExprNode node) =>
 			LLVMValueRef.CreateConstInt(node.type, node.value);
 
@@ -143,6 +154,14 @@ namespace SuperCode
 			builder.BuildStore(expr, fptr);
 			var tptr = builder.BuildPointerCast(fptr, node.type.Ref());
 			return builder.BuildLoad(tptr);
+		}
+
+
+		private LLVMValueRef Gen(AssignExprNode node)
+		{
+			var val = GenAddr(node.value);
+			var expr = Gen(node.expr);
+			return builder.BuildStore(expr, val);
 		}
 
 		private LLVMValueRef Gen(BinExprNode node)
@@ -248,9 +267,15 @@ namespace SuperCode
 
 		private LLVMValueRef GenAddr(Node node)
 		{
-			if (node.kind != NodeKind.SymExpr)
-				throw new InvalidOperationException("Not an addr");
-			return syms[((SymExprNode) node).symbol];
+			if (node.kind is NodeKind.SymExpr)
+				return syms[((SymExprNode) node).symbol];
+			if (node is MemExprNode n)
+			{
+				var ptr = GenAddr(n.expr);
+				return builder.BuildStructGEP(ptr, (uint) n.index);
+			}
+
+			throw new InvalidOperationException("Not an addr");
 		}
 	}
 }
