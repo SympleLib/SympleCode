@@ -267,15 +267,25 @@ namespace SuperCode
 
 		private LLVMValueRef GenAddr(Node node)
 		{
-			if (node.kind is NodeKind.SymExpr)
-				return syms[((SymExprNode) node).symbol];
-			if (node is MemExprNode n)
+			switch (node.kind)
 			{
-				var ptr = GenAddr(n.expr);
-				return builder.BuildStructGEP(ptr, (uint) n.index);
-			}
+			case NodeKind.SymExpr:
+				return GenAddr((SymExprNode) node);
+			case NodeKind.MemExpr:
+				return GenAddr((MemExprNode) node);
 
-			throw new InvalidOperationException("Not an addr");
+			default:
+				throw new InvalidOperationException("Not an addr");
+			}
+		}
+
+		private LLVMValueRef GenAddr(SymExprNode node) =>
+			syms[node.symbol];
+
+		private LLVMValueRef GenAddr(MemExprNode node)
+		{
+			var ptr = GenAddr(node.expr);
+			return builder.BuildStructGEP(ptr, (uint) node.index);
 		}
 	}
 }
