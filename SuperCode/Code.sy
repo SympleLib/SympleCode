@@ -1,12 +1,14 @@
 ﻿using byte* as Handle;
 
 decl Handle GetStdHandle(dword);
-decl void WriteConsole WriteConsoleW(Handle, char*, dword, dword*, byte*);
+decl void WriteConsole WriteConsoleW(Handle os, char* msg, dword nChars, dword* nCharsWritten, byte* RESERVED);
+decl void SetConsoleTitle SetConsoleTitleW(char* name);
 
 int Run()
 {
 	Handle stdout = GetStdHandle(-11);
 	WriteConsole(stdout, 'Hello, world!\n', 14, null, null);
+	SetConsoleTitle('syc has taken over!!!');
 
 	ret 0;
 }
