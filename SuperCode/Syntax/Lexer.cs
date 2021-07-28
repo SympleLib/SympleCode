@@ -97,12 +97,14 @@ namespace SuperCode
 		private Token Identifier()
 		{
 			bool IsIden(char c) =>
-				char.IsLetterOrDigit(c) || c == '$';
+				char.IsLetterOrDigit(c) || c is '$';
 
 			int begin = pos;
 			while (IsIden(current) ||
-				(current == '-' && IsIden(next))) // <-- This ones for you, Swerdlow
+				(current is '-' && IsIden(next))) // <-- This ones for you, Swerdlow
 				Next();
+			if (current is '_' && IsIden(next))
+				throw new InvalidOperationException("Sorry, but get your snake breath outta here");
 			return Keyword(src[begin..pos]);
 		}
 

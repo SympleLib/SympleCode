@@ -10,6 +10,7 @@
 		FuncMem,
 
 		RetStmt,
+		TypedefStmt,
 		VarStmt,
 
 		AssignExpr,

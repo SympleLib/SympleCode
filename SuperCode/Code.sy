@@ -1,18 +1,18 @@
-﻿using schar* as CString;
+﻿using char* as String;
 
-decl int Print printf(CString str, CString, int);
+decl int Print wprintf(String str, String, int);
 
 struct Human
 {
-	CString name,
+	String name,
 	int coolness,
 }
 
 int Run()
 {
 	Human best;
-	best.name = s'Treidex';
+	best.name = 'Treidex';
 	best.coolness = 99999;
-	Print(s'Name: \'%s\', Coolness (100%% Accurate): %i\n', best.name, best.coolness);
+	Print('Name: \'%s\', Coolness (100%% Accurate): %i\n', best.name, best.coolness);
 	ret 0;
 }

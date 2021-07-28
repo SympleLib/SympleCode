@@ -164,8 +164,13 @@ namespace SuperCode
 			return var;
 		}
 
-		private void Nodify(UsingStmtAst ast) =>
-			types.Add(ast.alias.text, Nodify(ast.real));
+		private TypedefStmtNode Nodify(UsingStmtAst ast)
+		{
+			string alias = ast.alias.text;
+			var real = Nodify(ast.real);
+			types.Add(alias, real);
+			return new TypedefStmtNode(alias, real);
+		}
 
 		
 		private ExprNode Nodify(ExprAst ast, LLVMTypeRef castTo = default)

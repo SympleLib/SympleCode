@@ -64,6 +64,8 @@ namespace SuperCode
 
 			case NodeKind.RetStmt:
 				return Gen((RetStmtNode) node);
+			case NodeKind.TypedefStmt:
+				return Gen((TypedefStmtNode) node);
 			case NodeKind.VarStmt:
 				return Gen((VarStmtNode) node);
 
@@ -125,6 +127,9 @@ namespace SuperCode
 
 		private LLVMValueRef Gen(RetStmtNode node) =>
 			builder.BuildRet(Gen(node.value));
+
+		private LLVMValueRef Gen(TypedefStmtNode node) =>
+			null;
 
 		private LLVMValueRef Gen(VarStmtNode node)
 		{
