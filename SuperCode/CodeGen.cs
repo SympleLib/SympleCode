@@ -232,6 +232,7 @@ namespace SuperCode
 			{
 			case StrType.Short:
 				return builder.BuildGlobalStringPtr(node.str);
+			case StrType.Unicode:
 			case StrType.Wide:
 			{
 				var values = new LLVMValueRef[node.str.Length + 1];
@@ -239,7 +240,10 @@ namespace SuperCode
 					values[i] = LLVMValueRef.CreateConstInt(node.type.ElementType, node.str[i]);
 				values[values.Length - 1] = LLVMValueRef.CreateConstInt(node.type.ElementType, 0);
 				var arr = LLVMValueRef.CreateConstArray(node.type.ElementType, values);
-				return builder.BuildInBoundsGEP(arr, Array.Empty<LLVMValueRef>());
+
+				var ptr = builder.BuildAlloca(LLVMTypeRef.CreateArray(node.type.ElementType, (uint) node.str.Length + 1));
+				builder.BuildStore(arr, ptr);
+				return builder.BuildBitCast(ptr, node.type);
 			}
 
 			default:

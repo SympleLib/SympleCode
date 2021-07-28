@@ -1,6 +1,7 @@
 ﻿//#define SYNTAX_ONLY
 
 using System;
+using System.IO;
 using System.Runtime.InteropServices;
 using LLVMSharp.Interop;
 
@@ -58,7 +59,8 @@ namespace SuperCode
 			// cg.Optimize();
 
 			Console.ForegroundColor = ConsoleColor.DarkGreen;
-			Console.WriteLine(module);
+			File.WriteAllText("Code.ll", module.ToString());
+			module.Dump();
 
 			Console.ForegroundColor = ConsoleColor.White;
 			if (Compile(module))
