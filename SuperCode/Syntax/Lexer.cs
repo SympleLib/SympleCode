@@ -119,6 +119,9 @@ namespace SuperCode
 						Next();
 						switch (Next())
 						{
+						case '0':
+							sb.Append('\0');
+							break;
 						case '\a':
 							sb.Append('\a');
 							break;

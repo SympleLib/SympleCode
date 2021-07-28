@@ -234,11 +234,12 @@ namespace SuperCode
 				return builder.BuildGlobalStringPtr(node.str);
 			case StrType.Wide:
 			{
-				// var values = new LLVMValueRef[node.str.Length + 1];
-				// for (int i = 0; i < node.str.Length; i++)
-				// 	values[i] = LLVMValueRef.CreateConstInt(node.type.ElementType, node.str[i]);
-				// values[values.Length - 1] = LLVMValueRef.CreateConstInt(node.type.ElementType, 0);
-				// var arr = LLVMValueRef.CreateConstArray(node.type.ElementType, values);
+				var values = new LLVMValueRef[node.str.Length + 1];
+				for (int i = 0; i < node.str.Length; i++)
+					values[i] = LLVMValueRef.CreateConstInt(node.type.ElementType, node.str[i]);
+				values[values.Length - 1] = LLVMValueRef.CreateConstInt(node.type.ElementType, 0);
+				var arr = LLVMValueRef.CreateConstArray(node.type.ElementType, values);
+				return builder.BuildInBoundsGEP(arr, Array.Empty<LLVMValueRef>());
 			}
 
 			default:
