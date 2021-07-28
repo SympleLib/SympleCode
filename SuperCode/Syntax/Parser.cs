@@ -320,6 +320,7 @@ namespace SuperCode
 			case TokenKind.Num:
 			case TokenKind.Str:
 			case TokenKind.Iden:
+			case TokenKind.NullKey:
 				return LitExpr();
 			case TokenKind.LeftBracket:
 				return TypePun();

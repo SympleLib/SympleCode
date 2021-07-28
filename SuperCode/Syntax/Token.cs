@@ -7,6 +7,7 @@ namespace SuperCode
 	public enum TokenKind
 	{
 		Unknown,
+		LineComment,
 		LongComment,
 		Eof,
 
@@ -42,6 +43,7 @@ namespace SuperCode
 		DeclKey,
 		StructKey,
 
+		NullKey,
 		RetKey,
 
 		Count,
@@ -101,6 +103,7 @@ namespace SuperCode
 			{ "decl", TokenKind.DeclKey },
 			{ "struct", TokenKind.StructKey },
 
+			{ "null", TokenKind.NullKey },
 			{ "ret", TokenKind.RetKey },
 		};
 	}

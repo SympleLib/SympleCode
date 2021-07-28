@@ -259,6 +259,9 @@ namespace SuperCode
 			string literal = ast.literal.text;
 			switch (ast.literal.kind)
 			{
+			case TokenKind.NullKey:
+				// Chez
+				return new NumExprNode(0, LLVMTypeRef.Int64) { syntax = ast };
 			case TokenKind.Iden:
 				return new SymExprNode(syms[literal]) { syntax = ast };
 			case TokenKind.Str:

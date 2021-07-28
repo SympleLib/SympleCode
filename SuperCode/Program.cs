@@ -10,15 +10,15 @@ namespace SuperCode
 	public class Program
 	{
 		[UnmanagedFunctionPointer(CallingConvention.Cdecl)]
-		public delegate long Run();
+		public delegate int Run();
 
 		[StructLayout(LayoutKind.Explicit)]
 		private unsafe struct FPIUnion
 		{
 			[FieldOffset(0)]
-			public double fval;
+			public float fval;
 			[FieldOffset(0)]
-			public long ival;
+			public int ival;
 
 			public override string ToString() =>
 				$"Int: {ival}, Float: {fval}";
@@ -89,6 +89,7 @@ namespace SuperCode
 				case TokenKind.Str:
 					Console.ForegroundColor = ConsoleColor.Green;
 					break;
+				case TokenKind.LineComment:
 				case TokenKind.LongComment:
 					Console.ForegroundColor = ConsoleColor.DarkGreen;
 					break;
@@ -145,7 +146,6 @@ namespace SuperCode
 			var targetMachine = target.CreateTargetMachine(LLVMTargetRef.DefaultTriple, "generic", "",
 				LLVMCodeGenOptLevel.LLVMCodeGenLevelAggressive, LLVMRelocMode.LLVMRelocDefault, LLVMCodeModel.LLVMCodeModelDefault);
 			targetMachine.EmitToFile(module, "Code.o", LLVMCodeGenFileType.LLVMObjectFile);
-
 			return true;
 		}
 #endif

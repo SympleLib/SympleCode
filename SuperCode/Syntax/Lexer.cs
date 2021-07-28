@@ -63,6 +63,12 @@ namespace SuperCode
 					continue;
 				}
 
+				if (current == '/' && next == '/')
+				{
+					tokens.Add(LineComment());
+					continue;
+				}
+
 				if (char.IsDigit(current) || current == '.')
 				{
 					tokens.Add(Number());
@@ -189,6 +195,8 @@ namespace SuperCode
 		private Token LongComment()
 		{
 			int begin = pos;
+			Next();
+			Next();
 			while (!(current == '*' && next == '/'))
 				if (!CheckNewLine())
 					Next();
@@ -196,6 +204,17 @@ namespace SuperCode
 			Next();
 
 			return MakeToken(TokenKind.LongComment, begin);
+		}
+
+		private Token LineComment()
+		{
+			int begin = pos;
+			Next();
+			Next();
+			while (!CheckNewLine())
+				Next();
+
+			return MakeToken(TokenKind.LineComment, begin);
 		}
 
 		private Token Punctuator()

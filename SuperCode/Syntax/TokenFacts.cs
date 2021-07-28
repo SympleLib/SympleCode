@@ -55,6 +55,6 @@ namespace SuperCode
 			kind is TokenKind.Star;
 
 		public static bool IsComment(this TokenKind kind) =>
-			kind is TokenKind.LongComment;
+			kind is TokenKind.LineComment or TokenKind.LongComment;
 	}
 }

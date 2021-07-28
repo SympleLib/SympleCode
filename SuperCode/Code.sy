@@ -1,8 +1,4 @@
-﻿decl void MessageBox MessageBoxW(byte*, char* content, char* title, uint type);
+﻿decl int Println puts(char* str);
 
-long Run()
-{
-	MessageBox(0, '😉', 'It works!', 0);
-
-	ret 0;
-}
+int Run() ->
+	ret Println(s'Hello, world!');
