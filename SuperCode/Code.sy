@@ -1,13 +1,13 @@
-﻿decl void println puts(char*);
+﻿decl void println _putws(char*);
 
 int Run()
 {
 	int x = 5;
 
 	if x == 35 ->
-		println(s'Hello, world');
+		println('Hello, world');
 	else
-		println(s'Hello World!');
+		println('Hello World!');
 
 	ret 0;
 }

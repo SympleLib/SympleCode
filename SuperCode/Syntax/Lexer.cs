@@ -100,6 +100,8 @@ namespace SuperCode
 				char.IsLetterOrDigit(c) || c is '$';
 
 			int begin = pos;
+			while (current is '_')
+				Next();
 			while (IsIden(current) ||
 				(current is '-' && IsIden(next))) // <-- This ones for you, Swerdlow
 				Next();

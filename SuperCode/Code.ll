@@ -1,27 +1,30 @@
 ; ModuleID = 'Code.sy'
 source_filename = "Code.sy"
 
-@0 = private unnamed_addr constant [13 x i8] c"Hello, world\00", align 1
-@1 = private unnamed_addr constant [13 x i8] c"Hello World!\00", align 1
-
-declare void @puts(i16*)
+declare void @_putws(i16*)
 
 define i32 @Run() {
   %x = alloca i32, align 4
   store i32 5, i32* %x, align 4
   %1 = load i32, i32* %x, align 4
   %2 = icmp eq i32 %1, 35
-  br i1 %2, label %3, label %4
+  br i1 %2, label %3, label %6
 
 3:                                                ; preds = %0
-  call void @puts(i16* bitcast ([13 x i8]* @0 to i16*))
-  br label %5
+  %4 = alloca [13 x i16], align 2
+  store [13 x i16] [i16 72, i16 101, i16 108, i16 108, i16 111, i16 44, i16 32, i16 119, i16 111, i16 114, i16 108, i16 100, i16 0], [13 x i16]* %4, align 2
+  %5 = bitcast [13 x i16]* %4 to i16*
+  call void @_putws(i16* %5)
+  br label %9
 
-4:                                                ; preds = %0
-  call void @puts(i16* bitcast ([13 x i8]* @1 to i16*))
-  br label %5
+6:                                                ; preds = %0
+  %7 = alloca [13 x i16], align 2
+  store [13 x i16] [i16 72, i16 101, i16 108, i16 108, i16 111, i16 32, i16 87, i16 111, i16 114, i16 108, i16 100, i16 33, i16 0], [13 x i16]* %7, align 2
+  %8 = bitcast [13 x i16]* %7 to i16*
+  call void @_putws(i16* %8)
+  br label %9
 
-5:                                                ; preds = %4, %3
+9:                                                ; preds = %6, %3
   ret i32 0
 }
 
