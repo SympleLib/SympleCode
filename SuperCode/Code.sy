@@ -1,13 +1,12 @@
-﻿decl void println _putws(char*);
+﻿using byte* as Handle;
+
+decl Handle GetStdHandle(dword);
+decl void WriteConsole WriteConsoleW(Handle, char*, dword, dword*, byte*);
 
 int Run()
 {
-	int x = 5;
-
-	if x == 35 ->
-		println('Hello, world');
-	else
-		println('Hello World!');
+	Handle stdout = GetStdHandle(-11);
+	WriteConsole(stdout, 'Hello, world!\n', 14, null, null);
 
 	ret 0;
 }
