@@ -2,7 +2,7 @@
 
 long Run()
 {
-	MessageBoxW(0, 'Test', 'Hello!', 0);
+	MessageBoxW(0, '😉', 'It works!', 0);
 
 	ret 0;
 }
