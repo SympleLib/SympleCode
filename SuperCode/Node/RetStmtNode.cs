@@ -1,6 +1,6 @@
 ﻿namespace SuperCode
 {
-	public class RetStmtNode: StmtNode
+	public class RetStmtNode: Node
 	{
 		public readonly ExprNode value;
 

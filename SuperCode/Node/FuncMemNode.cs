@@ -2,12 +2,12 @@
 
 namespace SuperCode
 {
-	public class FuncMemNode: MemNode, Symbol
+	public class FuncMemNode: Node, Symbol
 	{
 		public readonly FieldNode[] paramz;
-		public readonly StmtNode[] stmts;
+		public readonly Node[] stmts;
 
-		public FuncMemNode(LLVMTypeRef ty, string name, FieldNode[] paramz, StmtNode[] stmts)
+		public FuncMemNode(LLVMTypeRef ty, string name, FieldNode[] paramz, Node[] stmts)
 		{
 			this.type = ty;
 			this.name = name;

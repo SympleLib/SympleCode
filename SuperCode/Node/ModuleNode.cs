@@ -6,9 +6,9 @@ namespace SuperCode
 	public class ModuleNode: Node
 	{
 		public readonly string filename;
-		public readonly MemNode[] mems;
+		public readonly Node[] mems;
 
-		public ModuleNode(string file, MemNode[] mems)
+		public ModuleNode(string file, Node[] mems)
 		{
 			filename = file;
 			this.mems = mems;

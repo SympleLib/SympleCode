@@ -2,7 +2,7 @@
 
 namespace SuperCode
 {
-	public class VarStmtNode: StmtNode, Symbol
+	public class VarStmtNode: Node, Symbol
 	{
 		public readonly ExprNode init;
 

@@ -1,13 +1,25 @@
 ; ModuleID = 'Code.sy'
 source_filename = "Code.sy"
 
-@0 = private unnamed_addr constant [14 x i8] c"Hello, world!\00", align 1
+%Human = type <{ i8*, i32 }>
 
-declare i32 @puts(i16*)
+@0 = private unnamed_addr constant [8 x i8] c"Treidex\00", align 1
+@1 = private unnamed_addr constant [43 x i8] c"Name: '%s', Coolness (100%% Accurate): %i\0A\00", align 1
+
+declare i32 @printf(i8*, i8*, i32)
 
 define i32 @Run() {
-  %1 = call i32 @puts(i16* bitcast ([14 x i8]* @0 to i16*))
-  ret i32 %1
+  %best = alloca %Human, align 8
+  %1 = getelementptr inbounds %Human, %Human* %best, i32 0, i32 0
+  store i8* getelementptr inbounds ([8 x i8], [8 x i8]* @0, i32 0, i32 0), i8** %1, align 8
+  %2 = getelementptr inbounds %Human, %Human* %best, i32 0, i32 1
+  store i32 99999, i32* %2, align 4
+  %3 = getelementptr inbounds %Human, %Human* %best, i32 0, i32 0
+  %4 = load i8*, i8** %3, align 8
+  %5 = getelementptr inbounds %Human, %Human* %best, i32 0, i32 1
+  %6 = load i32, i32* %5, align 4
+  %7 = call i32 @printf(i8* getelementptr inbounds ([43 x i8], [43 x i8]* @1, i32 0, i32 0), i8* %4, i32 %6)
+  ret i32 0
 }
 
 !llvm.dbg.cu = !{!0}

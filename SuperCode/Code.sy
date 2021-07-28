@@ -1,4 +1,18 @@
-﻿decl int Println puts(char* str);
+﻿using schar* as CString;
 
-int Run() ->
-	ret Println(s'Hello, world!');
+decl int Print printf(CString str, CString, int);
+
+struct Human
+{
+	CString name,
+	int coolness,
+}
+
+int Run()
+{
+	Human best;
+	best.name = s'Treidex';
+	best.coolness = 99999;
+	Print(s'Name: \'%s\', Coolness (100%% Accurate): %i\n', best.name, best.coolness);
+	ret 0;
+}

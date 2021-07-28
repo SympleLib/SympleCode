@@ -2,7 +2,7 @@
 
 namespace SuperCode
 {
-	public class StructMemNode: MemNode, Symbol
+	public class StructMemNode: Node, Symbol
 	{
 		public readonly FieldNode[] fields;
 

@@ -13,6 +13,7 @@
 
 		ExprStmt,
 		RetStmt,
+		UsingStmt,
 		VarStmt,
 
 		BinExpr,

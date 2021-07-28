@@ -2,7 +2,7 @@
 
 namespace SuperCode
 {
-	public class DeclFuncMemNode: MemNode, Symbol
+	public class DeclFuncMemNode: Node, Symbol
 	{
 		public readonly FieldNode[] paramz;
 

@@ -25,7 +25,7 @@ namespace SuperCode
 
 		public PermaSafe Nodify(out ModuleNode node)
 		{
-			var mems = new MemNode[module.mems.Length];
+			var mems = new Node[module.mems.Length];
 			for (int i = 0; i < mems.Length; i++)
 				mems[i] = Nodify(module.mems[i]);
 			node = new ModuleNode(module.filename, mems) { syntax = module };
@@ -45,9 +45,9 @@ namespace SuperCode
 		}
 
 		private FieldNode Nodify(FieldAst ast) =>
-			new (Nodify(ast.type), ast.name.text) { syntax = ast };
+			new FieldNode(Nodify(ast.type), ast.name.text) { syntax = ast };
 
-		private MemNode Nodify(MemAst ast)
+		private Node Nodify(MemAst ast)
 		{
 			switch (ast.kind)
 			{
@@ -55,6 +55,8 @@ namespace SuperCode
 				return Nodify((DeclFuncMemAst) ast);
 			case AstKind.FuncMem:
 				return Nodify((FuncMemAst) ast);
+			case AstKind.StmtMem:
+				return Nodify((StmtMemAst) ast);
 			case AstKind.StructMem:
 				return Nodify((StructMemAst) ast);
 
@@ -100,7 +102,7 @@ namespace SuperCode
 			var ty = LLVMTypeRef.CreateFunction(retType, paramTypes);
 			string name = ast.asmTag.Is(TokenKind.Unknown) ? ast.name.text : ast.asmTag.text;
 
-			var stmts = new StmtNode[ast.stmts.Length];
+			var stmts = new Node[ast.stmts.Length];
 			for (int i = 0; i < stmts.Length; i++)
 				stmts[i] = Nodify(ast.stmts[i]);
 
@@ -108,6 +110,9 @@ namespace SuperCode
 			syms.Add(ast.name.text, func);
 			return func;
 		}
+
+		private Node Nodify(StmtMemAst ast) =>
+			Nodify(ast.stmt);
 
 		private StructMemNode Nodify(StructMemAst ast)
 		{
@@ -130,7 +135,7 @@ namespace SuperCode
 		}
 
 
-		private StmtNode Nodify(StmtAst ast)
+		private Node Nodify(StmtAst ast)
 		{
 			switch (ast.kind)
 			{
@@ -140,6 +145,8 @@ namespace SuperCode
 				return Nodify((RetStmtAst) ast);
 			case AstKind.VarStmt:
 				return Nodify((VarStmtAst) ast);
+			case AstKind.UsingStmt:
+				return Nodify((UsingStmtAst) ast);
 
 			default:
 				throw new InvalidOperationException("Invalid stmt");
@@ -157,6 +164,10 @@ namespace SuperCode
 			return var;
 		}
 
+		private void Nodify(UsingStmtAst ast) =>
+			types.Add(ast.alias.text, Nodify(ast.real));
+
+		
 		private ExprNode Nodify(ExprAst ast, LLVMTypeRef castTo = default)
 		{
 			if (ast is null)

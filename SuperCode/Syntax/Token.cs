@@ -41,10 +41,12 @@ namespace SuperCode
 		Arrow,
 
 		DeclKey,
+		UsingKey,
 		StructKey,
 
 		NullKey,
 		RetKey,
+		AsKey,
 
 		Count,
 	}
@@ -101,10 +103,12 @@ namespace SuperCode
 		public static readonly Dictionary<string, TokenKind> keys = new ()
 		{
 			{ "decl", TokenKind.DeclKey },
+			{ "using", TokenKind.UsingKey },
 			{ "struct", TokenKind.StructKey },
 
 			{ "null", TokenKind.NullKey },
 			{ "ret", TokenKind.RetKey },
+			{ "as", TokenKind.AsKey },
 		};
 	}
 }

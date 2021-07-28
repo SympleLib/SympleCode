@@ -51,7 +51,7 @@ namespace SuperCode
 					continue;
 				}
 
-				if (char.IsLetter(current))
+				if (char.IsLetter(current) || current is '_')
 				{
 					tokens.Add(Identifier());
 					continue;
@@ -97,7 +97,7 @@ namespace SuperCode
 		private Token Identifier()
 		{
 			bool IsIden(char c) =>
-				char.IsLetterOrDigit(c) || c == '_' || c == '$';
+				char.IsLetterOrDigit(c) || c == '$';
 
 			int begin = pos;
 			while (IsIden(current) ||

@@ -100,7 +100,7 @@ namespace SuperCode
 			default:
 				if (current.isBuiltinType)
 					return FuncMem();
-				throw new InvalidOperationException("Invalid mem");
+				return new StmtMemAst(Stmt());
 			}
 		}
 
@@ -205,6 +205,8 @@ namespace SuperCode
 		{
 			switch (current.kind)
 			{
+			case TokenKind.UsingKey:
+				return UsingStmt();
 			case TokenKind.RetKey:
 				return RetStmt();
 
@@ -239,6 +241,17 @@ namespace SuperCode
 			}
 
 			return new VarStmtAst(ty, name, default, default, Match(TokenKind.Semicol));
+		}
+
+		private UsingStmtAst UsingStmt()
+		{
+			var key = Match(TokenKind.UsingKey);
+			var real = Type();
+			var asKey = Match(TokenKind.AsKey);
+			var alias = Match(TokenKind.Iden);
+			var semi = Match(TokenKind.Semicol);
+			types.Add(alias.text);
+			return new UsingStmtAst(key, real, asKey, alias, semi);
 		}
 
 		private ExprStmtAst ExprStmt() =>
