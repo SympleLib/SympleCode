@@ -40,6 +40,8 @@ namespace SuperCode
 		Eql,
 		Arrow,
 
+		EqlEql,
+
 		DeclKey,
 		UsingKey,
 		StructKey,
@@ -47,6 +49,9 @@ namespace SuperCode
 		NullKey,
 		RetKey,
 		AsKey,
+
+		IfKey,
+		ElseKey,
 
 		Count,
 	}
@@ -98,6 +103,7 @@ namespace SuperCode
 			"{", "}", "(", ")", "[", "]",
 			".", ",", ";",
 			"=", "->",
+			"==",
 		};
 
 		public static readonly Dictionary<string, TokenKind> keys = new ()
@@ -105,6 +111,9 @@ namespace SuperCode
 			{ "decl", TokenKind.DeclKey },
 			{ "using", TokenKind.UsingKey },
 			{ "struct", TokenKind.StructKey },
+
+			{ "if", TokenKind.IfKey },
+			{ "else", TokenKind.ElseKey },
 
 			{ "null", TokenKind.NullKey },
 			{ "ret", TokenKind.RetKey },

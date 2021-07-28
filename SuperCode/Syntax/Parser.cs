@@ -175,7 +175,7 @@ namespace SuperCode
 			}
 
 			var close = Next();
-			return new (ty, name, asmTag, openArg, paramz.ToArray(), closeArg, open, close, stmts.ToArray());
+			return new FuncMemAst(ty, name, asmTag, openArg, paramz.ToArray(), closeArg, open, close, stmts.ToArray());
 		}
 
 		private StructMemAst StructMem()
@@ -209,12 +209,59 @@ namespace SuperCode
 				return UsingStmt();
 			case TokenKind.RetKey:
 				return RetStmt();
+			case TokenKind.IfKey:
+				return IfStmt();
 
 			default:
 				if (current.isBuiltinType || types.Contains(current.text))
 					return VarStmt();
 				return ExprStmt();
 			}
+		}
+
+		private IfStmtAst IfStmt()
+		{
+			var ifKey = Match(TokenKind.IfKey);
+			var cond = Expr();
+
+			if (current.Is(TokenKind.Arrow))
+			{
+				var arrow = Next();
+				var then = Stmt();
+
+				if (current.Is(TokenKind.ElseKey))
+				{
+					var elseKey = Next();
+					var elze = Stmt();
+
+					return new IfStmtAst(ifKey, cond, arrow, then, elseKey, elze);
+				}
+
+				return new IfStmtAst(ifKey, cond, arrow, then, default, default);
+			}
+
+			var open = Match(TokenKind.LeftBrace);
+			var stmts = new List<StmtAst>();
+			while (!current.Is(TokenKind.RightBrace))
+			{
+				if (current.Is(TokenKind.Eof))
+				{
+					safety.ReportUnexpectedEof(current);
+					break;
+				}
+
+				stmts.Add(Stmt());
+			}
+			var close = Next();
+
+			if (current.Is(TokenKind.ElseKey))
+			{
+				var elseKey = Next();
+				var elze = Stmt();
+				return new IfStmtAst(ifKey, cond, open, stmts.ToArray(), close, elseKey, elze);
+			}
+
+			return new IfStmtAst(ifKey, cond, open, stmts.ToArray(), close, default, default);
 		}
 
 		private RetStmtAst RetStmt()

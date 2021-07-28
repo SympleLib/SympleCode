@@ -9,6 +9,7 @@
 		StructMem,
 		FuncMem,
 
+		IfStmt,
 		RetStmt,
 		TypedefStmt,
 		VarStmt,

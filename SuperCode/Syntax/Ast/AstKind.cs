@@ -12,6 +12,7 @@
 		StructMem,
 
 		ExprStmt,
+		IfStmt,
 		RetStmt,
 		UsingStmt,
 		VarStmt,

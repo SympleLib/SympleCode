@@ -9,6 +9,7 @@ namespace SuperCode
 {
 	public class CodeGen
 	{
+		private LLVMValueRef func;
 		private readonly Dictionary<Symbol, LLVMValueRef> syms = new();
 
 		public readonly ModuleNode modNode;
@@ -62,6 +63,8 @@ namespace SuperCode
 				Gen((StructMemNode) node);
 				return null;
 
+			case NodeKind.IfStmt:
+				return Gen((IfStmtNode) node);
 			case NodeKind.RetStmt:
 				return Gen((RetStmtNode) node);
 			case NodeKind.TypedefStmt:
@@ -101,20 +104,20 @@ namespace SuperCode
 
 		private LLVMValueRef Gen(FuncMemNode mem)
 		{
-			var fn = module.AddFunction(mem.name, mem.type);
-			var entry = fn.AppendBasicBlock();
+			func = module.AddFunction(mem.name, mem.type);
+			var entry = func.AppendBasicBlock();
 			builder.PositionAtEnd(entry);
-			syms.Add(mem, fn);
+			syms.Add(mem, func);
 
 			for (int i = 0; i < mem.paramz.Length; i++)
-				syms.Add(mem.paramz[i], fn.Params[i]);
+				syms.Add(mem.paramz[i], func.Params[i]);
 
 			foreach (var stmt in mem.stmts)
 				Gen(stmt);
 
 			if (mem.type.ReturnType == LLVMTypeRef.Void)
 				builder.BuildRetVoid();
-			return fn;
+			return func;
 		}
 
 		private LLVMValueRef Gen(DeclFuncMemNode mem)
@@ -124,6 +127,31 @@ namespace SuperCode
 			return fn;
 		}
 
+
+		private LLVMValueRef Gen(IfStmtNode node)
+		{
+			var cond = Gen(node.cond);
+			var then = func.AppendBasicBlock();
+			var elze = func.AppendBasicBlock();
+			var end = func.AppendBasicBlock();
+			var branch = builder.BuildCondBr(cond, then, elze);
+
+			builder.PositionAtEnd(then);
+			foreach (var stmt in node.then)
+				Gen(stmt);
+			builder.BuildBr(end);
+			builder.PositionAtEnd(elze);
+
+			if (node.elze != default)
+			{
+				Gen(node.elze);
+				builder.BuildBr(end);
+				builder.PositionAtEnd(end);
+			}
+
+			builder.PositionAtEnd(end);
+			return branch;
+		}
 
 		private LLVMValueRef Gen(RetStmtNode node) =>
 			builder.BuildRet(Gen(node.value));
@@ -181,6 +209,9 @@ namespace SuperCode
 				return builder.BuildFDiv(left, right);
 			case BinOp.FMod:
 				return builder.BuildFRem(left, right);
+
+			case BinOp.Eql:
+				return builder.BuildICmp(LLVMIntPredicate.LLVMIntEQ, left, right);
 
 			default:
 				throw new InvalidOperationException("Invalid bin-expr");

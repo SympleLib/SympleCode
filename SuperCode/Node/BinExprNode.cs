@@ -19,6 +19,10 @@ namespace SuperCode
 		FMul,
 		FDiv,
 		FMod,
+
+		Eql,
+		Gt,
+		Lt,
 	}
 
 	public class BinExprNode: ExprNode
@@ -26,10 +30,10 @@ namespace SuperCode
 		public readonly BinOp op;
 		public readonly ExprNode left, right;
 
-		public BinExprNode(BinOp op, ExprNode lhs, ExprNode rhs)
+		public BinExprNode(BinOp op, ExprNode lhs, ExprNode rhs, LLVMTypeRef type)
 		{
 			this.op = op;
-			type = lhs.type;
+			this.type = type;
 			left = lhs;
 			right = rhs;
 		}

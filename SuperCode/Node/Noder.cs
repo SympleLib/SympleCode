@@ -137,10 +137,15 @@ namespace SuperCode
 
 		private Node Nodify(StmtAst ast)
 		{
+			if (ast is null)
+				return null;
+
 			switch (ast.kind)
 			{
 			case AstKind.ExprStmt:
 				return Nodify(((ExprStmtAst) ast).expr);
+			case AstKind.IfStmt:
+				return Nodify(((IfStmtAst) ast));
 			case AstKind.RetStmt:
 				return Nodify((RetStmtAst) ast);
 			case AstKind.VarStmt:
@@ -151,6 +156,17 @@ namespace SuperCode
 			default:
 				throw new InvalidOperationException("Invalid stmt");
 			}
+		}
+
+		private IfStmtNode Nodify(IfStmtAst ast)
+		{
+			var cond = Nodify(ast.cond);
+			var then = new Node[ast.then.Length];
+			for (int i = 0; i < then.Length; i++)
+				then[i] = Nodify(ast.then[i]);
+			var elze = Nodify(ast.elze);
+
+			return new IfStmtNode(cond, then, elze);
 		}
 
 		private RetStmtNode Nodify(RetStmtAst ast) =>
@@ -221,6 +237,10 @@ namespace SuperCode
 			case TokenKind.Eql:
 				return new AssignExprNode(left, right);
 
+			case TokenKind.EqlEql:
+				op = BinOp.Eql;
+				goto LogExpr;
+
 			case TokenKind.Plus:
 				op = fp ? BinOp.FAdd : BinOp.Add;
 				goto BinExpr;
@@ -244,11 +264,13 @@ namespace SuperCode
 				goto BinExpr;
 
 			default:
-				throw new InvalidOperationException("Invalid lit-expr");
+				throw new InvalidOperationException("Invalid bin-expr");
 			}
 
+		LogExpr:
+			return new BinExprNode(op, left, right, LLVMTypeRef.Int1);
 		BinExpr:
-			return new BinExprNode(op, left, right) { syntax = ast };
+			return new BinExprNode(op, left, right, left.type) { syntax = ast };
 		}
 
 		private CallExprNode Nodify(CallExprAst ast)

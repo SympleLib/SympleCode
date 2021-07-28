@@ -1,18 +1,13 @@
-﻿using char* as String;
-
-decl int Print wprintf(String str, String, int);
-
-struct Human
-{
-	String name,
-	int coolness,
-}
+﻿decl void println puts(char*);
 
 int Run()
 {
-	Human best;
-	best.name = 'Treidex';
-	best.coolness = 99999;
-	Print('Name: \'%s\', Coolness (100%% Accurate): %i\n', best.name, best.coolness);
+	int x = 5;
+
+	if x == 35 ->
+		println(s'Hello, world');
+	else
+		println(s'Hello World!');
+
 	ret 0;
 }

@@ -36,13 +36,15 @@ namespace SuperCode
 			{
 				TokenKind.Eql =>
 					1,
-				TokenKind.Plus or TokenKind.Dash =>
+				TokenKind.EqlEql =>
 					2,
+				TokenKind.Plus or TokenKind.Dash =>
+					3,
 				TokenKind.Star or TokenKind.Slash or TokenKind.Percent or
 					TokenKind.SlashDash or TokenKind.PercentDash =>
-					3,
-				TokenKind.Dot =>
 					4,
+				TokenKind.Dot =>
+					5,
 
 				_ =>
 					0,
