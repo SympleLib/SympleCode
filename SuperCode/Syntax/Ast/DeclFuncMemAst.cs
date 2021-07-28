@@ -8,18 +8,20 @@ namespace SuperCode
 		public readonly Token key;
 		public readonly TypeAst retType;
 		public readonly Token name;
+		public readonly Token asmTag;
 		public readonly Token open;
 		public readonly FieldAst[] paramz;
 		public readonly Token close;
 		public readonly Token semicol;
 
-		public DeclFuncMemAst(Token key, TypeAst retType, Token name, Token open, FieldAst[] paramz, Token close, Token semi)
+		public DeclFuncMemAst(Token key, TypeAst retType, Token name, Token asmTag, Token open, FieldAst[] paramz, Token close, Token semi)
 		{
 			token = key;
 
 			this.key = key;
 			this.retType = retType;
 			this.name = name;
+			this.asmTag = asmTag;
 			this.open = open;
 			this.paramz = paramz;
 			this.close = close;

@@ -109,6 +109,9 @@ namespace SuperCode
 			var key = Match(TokenKind.DeclKey);
 			var ret = Type();
 			var name = Match(TokenKind.Iden);
+			Token asmTag = default;
+			if (current.Is(TokenKind.Iden, TokenKind.Str))
+				asmTag = Next();
 			var open = Match(TokenKind.LeftParen);
 			var paramz = new List<FieldAst>();
 			while (!current.Is(TokenKind.RightParen))
@@ -125,13 +128,16 @@ namespace SuperCode
 			var close = Next();
 			var semi = Match(TokenKind.Semicol);
 
-			return new (key, ret, name, open, paramz.ToArray(), close, semi);
+			return new DeclFuncMemAst(key, ret, name, asmTag, open, paramz.ToArray(), close, semi);
 		}
 
 		private FuncMemAst FuncMem()
 		{
 			var ty = Type();
 			var name = Match(TokenKind.Iden);
+			Token asmTag = default;
+			if (current.Is(TokenKind.Iden, TokenKind.Str))
+				asmTag = Next();
 			var openArg = Match(TokenKind.LeftParen);
 			var paramz = new List<FieldAst>();
 			while (!current.Is(TokenKind.RightParen))
@@ -153,7 +159,7 @@ namespace SuperCode
 				var arrow = Next();
 
 				stmts.Add(Stmt());
-				return new FuncMemAst(ty, name, openArg, paramz.ToArray(), closeArg, arrow, stmts.ToArray());
+				return new FuncMemAst(ty, name, asmTag, openArg, paramz.ToArray(), closeArg, arrow, stmts.ToArray());
 			}
 
 			var open = Match(TokenKind.LeftBrace);
@@ -169,7 +175,7 @@ namespace SuperCode
 			}
 
 			var close = Next();
-			return new (ty, name, openArg, paramz.ToArray(), closeArg, open, close, stmts.ToArray());
+			return new (ty, name, asmTag, openArg, paramz.ToArray(), closeArg, open, close, stmts.ToArray());
 		}
 
 		private StructMemAst StructMem()

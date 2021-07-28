@@ -75,10 +75,10 @@ namespace SuperCode
 
 			retType = Nodify(ast.retType);
 			var ty = LLVMTypeRef.CreateFunction(retType, paramTypes);
-			string name = ast.name.text;
+			string name = ast.asmTag.Is(TokenKind.Unknown) ? ast.name.text : ast.asmTag.text;
 
 			var decl = new DeclFuncMemNode(ty, name, paramz) { syntax = ast };
-			syms.Add(name, decl);
+			syms.Add(ast.name.text, decl);
 			return decl;
 		}
 
@@ -98,14 +98,14 @@ namespace SuperCode
 
 			retType = Nodify(ast.retType);
 			var ty = LLVMTypeRef.CreateFunction(retType, paramTypes);
-			string name = ast.name.text;
+			string name = ast.asmTag.Is(TokenKind.Unknown) ? ast.name.text : ast.asmTag.text;
 
 			var stmts = new StmtNode[ast.stmts.Length];
 			for (int i = 0; i < stmts.Length; i++)
 				stmts[i] = Nodify(ast.stmts[i]);
 
 			var func = new FuncMemNode(ty, name, paramz, stmts) { syntax = ast };
-			syms.Add(name, func);
+			syms.Add(ast.name.text, func);
 			return func;
 		}
 
