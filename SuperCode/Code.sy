@@ -1,7 +1,7 @@
-﻿decl void system(schar*);
+﻿decl void Exec _wsystem(char*);
 
 int Run()
 {
-	system(s'start "C:\\Program Files\\Google\\Chrome\\Application\\Chrome.exe" "https://youtu.be/dQw4w9WgXcQ"');
+	Exec('start "C:\\Program Files\\Google\\Chrome\\Application\\Chrome.exe" "https://youtu.be/dQw4w9WgXcQ"');
 	ret 0;
 }
