@@ -32,7 +32,7 @@ namespace SuperCode
 			var parser = new Parser(file);
 			SyntaxColors(parser.lexer.src, parser.tokens);
 			Console.WriteLine();
-
+			
 			var safety = parser.Parse(out var tree);
 			safety.Print(Console.Out);
 			if (safety.MustSelfDestruct())
