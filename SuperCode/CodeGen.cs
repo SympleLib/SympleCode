@@ -60,8 +60,9 @@ namespace SuperCode
 			case NodeKind.FuncMem:
 				return Gen((FuncMemNode) node);
 			case NodeKind.StructMem:
-				Gen((StructMemNode) node);
-				return null;
+				return Gen((StructMemNode) node);
+			case NodeKind.VarMem:
+				return Gen((VarMemNode) node);
 
 			case NodeKind.IfStmt:
 				return Gen((IfStmtNode) node);
@@ -100,7 +101,12 @@ namespace SuperCode
 			}
 		}
 
-		private void Gen(StructMemNode node) { }
+		private LLVMValueRef Gen(DeclFuncMemNode mem)
+		{
+			var fn = module.AddFunction(mem.name, mem.type);
+			syms.Add(mem, fn);
+			return fn;
+		}
 
 		private LLVMValueRef Gen(FuncMemNode mem)
 		{
@@ -117,14 +123,23 @@ namespace SuperCode
 
 			if (mem.type.ReturnType == LLVMTypeRef.Void)
 				builder.BuildRetVoid();
-			return func;
+			var fn = func;
+			func = null;
+			return fn;
 		}
 
-		private LLVMValueRef Gen(DeclFuncMemNode mem)
+		private LLVMValueRef Gen(StructMemNode node) =>
+			null;
+
+		private LLVMValueRef Gen(VarMemNode node)
 		{
-			var fn = module.AddFunction(mem.name, mem.type);
-			syms.Add(mem, fn);
-			return fn;
+			var var = module.AddGlobal(node.type, node.name);
+			if (node.init is null)
+				var.Initializer = LLVMValueRef.CreateConstNull(node.type);
+			else
+				var.Initializer = Gen(node.init);
+			syms.Add(node, var);
+			return var;
 		}
 
 
@@ -268,7 +283,6 @@ namespace SuperCode
 			switch (node.strType)
 			{
 			case StrType.Short:
-				return builder.BuildGlobalStringPtr(node.str);
 			case StrType.Unicode:
 			case StrType.Wide:
 			{
@@ -278,9 +292,11 @@ namespace SuperCode
 				values[values.Length - 1] = LLVMValueRef.CreateConstInt(node.type.ElementType, 0);
 				var arr = LLVMValueRef.CreateConstArray(node.type.ElementType, values);
 
-				var ptr = builder.BuildAlloca(LLVMTypeRef.CreateArray(node.type.ElementType, (uint) node.str.Length + 1));
-				builder.BuildStore(arr, ptr);
-				return builder.BuildBitCast(ptr, node.type);
+				var str = module.AddGlobal(arr.TypeOf);
+				str.Linkage = LLVMLinkage.LLVMPrivateLinkage;
+				str.HasUnnamedAddr = true;
+				str.Initializer = arr;
+				return builder.BuildBitCast(str, node.type);
 			}
 
 			default:
@@ -291,7 +307,8 @@ namespace SuperCode
 		private LLVMValueRef Gen(SymExprNode expr)
 		{
 			var sym = syms[expr.symbol];
-			if (((Node) expr.symbol).kind == NodeKind.VarStmt)
+			var symbol = (Node) expr.symbol;
+			if (symbol.kind is NodeKind.VarStmt or NodeKind.VarMem)
 				return builder.BuildLoad(sym);
 			return sym;
 		}

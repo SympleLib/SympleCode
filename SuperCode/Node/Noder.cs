@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Xml.Linq;
 
 using LLVMSharp.Interop;
 
@@ -59,6 +58,8 @@ namespace SuperCode
 				return Nodify((StmtMemAst) ast);
 			case AstKind.StructMem:
 				return Nodify((StructMemAst) ast);
+			case AstKind.VarMem:
+				return Nodify((VarMemAst) ast);
 
 			default:
 				throw new InvalidOperationException("Invalid mem");
@@ -136,6 +137,14 @@ namespace SuperCode
 			ztructs.Add(type, node);
 			types.Add(name, type);
 			return node;
+		}
+
+		private VarMemNode Nodify(VarMemAst ast)
+		{
+			var ty = Nodify(ast.type);
+			var var = new VarMemNode(ty, ast.name.text, Nodify(ast.init, ty)) { syntax = ast };
+			syms.Add(var.name, var);
+			return var;
 		}
 
 

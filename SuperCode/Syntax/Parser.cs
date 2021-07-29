@@ -86,7 +86,7 @@ namespace SuperCode
 
 			return new FieldAst(ty, name, comma);
 		}
-
+		
 
 		private MemAst Mem()
 		{
@@ -98,8 +98,8 @@ namespace SuperCode
 				return StructMem();
 
 			default:
-				if (current.isBuiltinType)
-					return FuncMem();
+				if (IsType(current))
+					return FuncOrVarMem();
 				return new StmtMemAst(Stmt());
 			}
 		}
@@ -187,6 +187,14 @@ namespace SuperCode
 			return new FuncMemAst(ret, name, asmTag, openArg, paramz.ToArray(), closeArg, open, close, stmts.ToArray());
 		}
 
+		// TODO: stuff
+		private MemAst FuncOrVarMem()
+		{
+			if (Peek(2).Is(TokenKind.LeftParen) || Peek(3).Is(TokenKind.LeftParen))
+				return FuncMem();
+			return VarMem();
+		}
+
 		private StructMemAst StructMem()
 		{
 			var key = Match(TokenKind.StructKey);
@@ -214,6 +222,22 @@ namespace SuperCode
 			return new StructMemAst(key, name, open, fields.ToArray(), close);
 		}
 
+
+		private VarMemAst VarMem()
+		{
+			var type = Type();
+			var name = Match(TokenKind.Iden);
+			if (current.Is(TokenKind.Semicol))
+			{
+				var semi = Next();
+				return new VarMemAst(type, name, default, default, semi);
+			}
+
+			var eql = Match(TokenKind.Eql);
+			var init = Expr();
+			var semicol = Match(TokenKind.Semicol);
+			return new VarMemAst(type, name, eql, init, semicol);
+		}
 
 		private StmtAst Stmt()
 		{
@@ -418,6 +442,16 @@ namespace SuperCode
 
 		private bool IsType(Token tok) =>
 			tok.Is(TokenKind.Iden) && (tok.isBuiltinType || types.Contains(tok.text));
+
+		private Token Peek(int off)
+		{
+			int i = pos + off;
+			if (i < 0)
+				return tokens[0];
+			if (i >= tokens.Length)
+				return tokens[^1];
+			return tokens[i];
+		}
 
 		private Token Next()
 		{

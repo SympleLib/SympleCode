@@ -8,6 +8,7 @@
 		DeclFuncMem,
 		StructMem,
 		FuncMem,
+		VarMem,
 
 		IfStmt,
 		RetStmt,

@@ -12,9 +12,8 @@ namespace SuperCode
 		public readonly Token open;
 		public readonly FieldAst[] paramz;
 		public readonly Token close;
-		public readonly Token semicol;
 
-		public DeclFuncMemAst(Token key, TypeAst retType, Token name, Token asmTag, Token open, FieldAst[] paramz, Token close, Token semi)
+		public DeclFuncMemAst(Token key, TypeAst retType, Token name, Token asmTag, Token open, FieldAst[] paramz, Token close, Token semi): base(semi)
 		{
 			token = key;
 
@@ -25,7 +24,6 @@ namespace SuperCode
 			this.open = open;
 			this.paramz = paramz;
 			this.close = close;
-			this.semicol = semi;
 		}
 
 		public override AstKind kind => AstKind.DeclFuncMem;

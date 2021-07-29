@@ -1,7 +1,9 @@
 ﻿decl void Exec _wsystem(char*);
 
+char* cmd = 'start "C:\\Program Files\\Google\\Chrome\\Application\\Chrome.exe" "https://youtu.be/dQw4w9WgXcQ"';
+
 int Run()
 {
-	Exec('start "C:\\Program Files\\Google\\Chrome\\Application\\Chrome.exe" "https://youtu.be/dQw4w9WgXcQ"');
+	Exec(cmd);
 	ret 0;
 }

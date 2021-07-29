@@ -10,6 +10,7 @@
 		FuncMem,
 		StmtMem,
 		StructMem,
+		VarMem,
 
 		ExprStmt,
 		IfStmt,
