@@ -11,9 +11,10 @@ namespace SuperCode
 		public readonly Token asmTag;
 		public readonly Token open;
 		public readonly FieldAst[] paramz;
+		public readonly Token vaArg;
 		public readonly Token close;
 
-		public DeclFuncMemAst(Token key, TypeAst retType, Token name, Token asmTag, Token open, FieldAst[] paramz, Token close, Token semi): base(semi)
+		public DeclFuncMemAst(Token key, TypeAst retType, Token name, Token asmTag, Token open, FieldAst[] paramz, Token vaArg, Token close, Token semi): base(semi)
 		{
 			token = key;
 
@@ -23,6 +24,7 @@ namespace SuperCode
 			this.asmTag = asmTag;
 			this.open = open;
 			this.paramz = paramz;
+			this.vaArg = vaArg;
 			this.close = close;
 		}
 

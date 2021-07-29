@@ -4,8 +4,8 @@ namespace SuperCode
 {
 	public class TypedefStmtNode: Node
 	{
-		public string alias;
-		public LLVMTypeRef real;
+		public readonly string alias;
+		public readonly LLVMTypeRef real;
 
 		public TypedefStmtNode(string alias, LLVMTypeRef real)
 		{

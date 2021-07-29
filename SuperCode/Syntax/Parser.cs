@@ -100,8 +100,8 @@ namespace SuperCode
 				return new FieldAst(ty, name, eql, defVal, comma);
 			}
 
-			if (current.Is(TokenKind.Comma))
-				comma = Next();
+			if (!current.Is(TokenKind.RightBrace, TokenKind.RightBracket, TokenKind.RightParen))
+				comma = Match(TokenKind.Comma);
 
 			return new FieldAst(ty, name, comma);
 		}
@@ -134,6 +134,7 @@ namespace SuperCode
 			var open = Match(TokenKind.LeftParen);
 			var paramz = new List<FieldAst>();
 
+			Token vaArg = default;
 			TypeAst ty = null;
 			while (!current.Is(TokenKind.RightParen))
 			{
@@ -143,15 +144,21 @@ namespace SuperCode
 					return null;
 				}
 
+				if (current.Is(TokenKind.DotDotDot))
+				{
+					vaArg = Next();
+					break;
+				}
+
 				var field = Field(ty);
 				ty = field.type;
 				paramz.Add(field);
 			}
 
-			var close = Next();
+			var close = Match(TokenKind.RightParen);
 			var semi = Match(TokenKind.Semicol);
 
-			return new DeclFuncMemAst(key, ret, name, asmTag, open, paramz.ToArray(), close, semi);
+			return new DeclFuncMemAst(key, ret, name, asmTag, open, paramz.ToArray(), vaArg, close, semi);
 		}
 
 		private FuncMemAst FuncMem()
@@ -164,6 +171,7 @@ namespace SuperCode
 			var openArg = Match(TokenKind.LeftParen);
 			var paramz = new List<FieldAst>();
 
+			Token vaArg = default;
 			TypeAst ty = null;
 			while (!current.Is(TokenKind.RightParen))
 			{
@@ -173,6 +181,11 @@ namespace SuperCode
 					return null;
 				}
 
+				if (current.Is(TokenKind.DotDotDot))
+				{
+					vaArg = Next();
+					break;
+				}
 
 				var field = Field(ty);
 				ty = field.type;
@@ -187,7 +200,7 @@ namespace SuperCode
 				var arrow = Next();
 
 				stmts.Add(Stmt());
-				return new FuncMemAst(ret, name, asmTag, openArg, paramz.ToArray(), closeArg, arrow, stmts.ToArray());
+				return new FuncMemAst(ret, name, asmTag, openArg, paramz.ToArray(), vaArg, closeArg, arrow, stmts.ToArray());
 			}
 
 			var open = Match(TokenKind.LeftBrace);
@@ -203,7 +216,7 @@ namespace SuperCode
 			}
 
 			var close = Next();
-			return new FuncMemAst(ret, name, asmTag, openArg, paramz.ToArray(), closeArg, open, close, stmts.ToArray());
+			return new FuncMemAst(ret, name, asmTag, openArg, paramz.ToArray(), vaArg, closeArg, open, close, stmts.ToArray());
 		}
 
 		// TODO: stuff
@@ -443,7 +456,8 @@ namespace SuperCode
 				return TypePun();
 
 			default:
-				throw new InvalidOperationException("Expected expr");
+				safety.ReportExpectedExpr(current);
+				return null;
 			}
 		}
 

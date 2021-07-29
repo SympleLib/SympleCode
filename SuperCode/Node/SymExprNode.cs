@@ -2,7 +2,7 @@
 {
 	public class SymExprNode: ExprNode
 	{
-		public Symbol symbol;
+		public readonly Symbol symbol;
 
 		public SymExprNode(Symbol symbol)
 		{

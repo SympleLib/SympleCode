@@ -2,7 +2,7 @@
 {
 	public class ModuleAst: Ast
 	{
-		public string filename;
+		public readonly string filename;
 		public readonly MemAst[] mems;
 		public readonly Token eof;
 

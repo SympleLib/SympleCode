@@ -129,7 +129,7 @@ namespace SuperCode
 				return;
 			}
 
-			var exec = (Run) Marshal.GetDelegateForFunctionPointer(engine.GetPointerToGlobal(module.GetNamedFunction("Run")), typeof(Run));
+			var exec = (Run) Marshal.GetDelegateForFunctionPointer(engine.GetPointerToGlobal(module.GetNamedFunction("run")), typeof(Run));
 			var union = new FPIUnion { ival = exec() };
 			Console.ForegroundColor = ConsoleColor.DarkGray;
 			Console.WriteLine(union);

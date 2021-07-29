@@ -16,11 +16,12 @@ namespace SuperCode
 
 		public readonly Token open;
 		public readonly FieldAst[] paramz;
+		public readonly Token vaArg;
 		public readonly Token close;
 
 		public readonly StmtAst[] stmts;
 
-		public FuncMemAst(TypeAst retType, Token name, Token asmTag, Token openArg, FieldAst[] paramz, Token closeArg, Token arrow, StmtAst[] stmts)
+		public FuncMemAst(TypeAst retType, Token name, Token asmTag, Token openArg, FieldAst[] paramz, Token vaArg, Token closeArg, Token arrow, StmtAst[] stmts)
 		{
 			token = name;
 
@@ -30,13 +31,14 @@ namespace SuperCode
 
 			this.openArg = openArg;
 			this.paramz = paramz;
+			this.vaArg = vaArg;
 			this.closeArg = closeArg;
 
 			this.arrow = arrow;
 			this.stmts = stmts;
 		}
 
-		public FuncMemAst(TypeAst retType, Token name, Token asmTag, Token openArg, FieldAst[] paramz, Token closeArg, Token open, Token close, StmtAst[] stmts)
+		public FuncMemAst(TypeAst retType, Token name, Token asmTag, Token openArg, FieldAst[] paramz, Token vaArg, Token closeArg, Token open, Token close, StmtAst[] stmts)
 		{
 			token = name;
 
@@ -46,6 +48,7 @@ namespace SuperCode
 
 			this.openArg = openArg;
 			this.paramz = paramz;
+			this.vaArg = vaArg;
 			this.closeArg = closeArg;
 
 			this.open = open;

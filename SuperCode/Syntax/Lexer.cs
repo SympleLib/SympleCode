@@ -184,7 +184,7 @@ namespace SuperCode
 					if (didDot)
 						throw new InvalidOperationException("Tooo many dots for poor number to handle");
 					didDot = true;
-					if (!char.IsDigit(next) && char.IsLetter(next))
+					if (!char.IsDigit(next))
 						return Punctuator();
 				}
 				Next();

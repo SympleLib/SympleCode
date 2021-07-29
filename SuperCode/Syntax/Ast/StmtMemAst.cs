@@ -4,7 +4,7 @@
 	{
 		public readonly StmtAst stmt;
 
-		public StmtMemAst(StmtAst stmt)
+		public StmtMemAst(StmtAst stmt): base(stmt.semicol)
 		{
 			token = stmt.token;
 			this.stmt = stmt;

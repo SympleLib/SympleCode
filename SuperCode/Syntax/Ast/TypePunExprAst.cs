@@ -2,11 +2,11 @@
 {
 	public class TypePunExprAst: ExprAst
 	{
-		public Token open;
-		public TypeAst type;
-		public Token close;
+		public readonly Token open;
+		public readonly TypeAst type;
+		public readonly Token close;
 
-		public ExprAst expr;
+		public readonly ExprAst expr;
 
 		public TypePunExprAst(Token open, TypeAst type, Token close, ExprAst expr)
 		{

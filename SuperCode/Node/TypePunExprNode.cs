@@ -4,7 +4,7 @@ namespace SuperCode
 {
 	public class TypePunExprNode: ExprNode
 	{
-		public ExprNode expr;
+		public readonly ExprNode expr;
 
 		public TypePunExprNode(LLVMTypeRef type, ExprNode expr)
 		{

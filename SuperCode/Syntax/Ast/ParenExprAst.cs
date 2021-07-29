@@ -2,9 +2,9 @@
 {
 	public class ParenExprAst: ExprAst
 	{
-		public Token open;
-		public ExprAst expr;
-		public Token close;
+		public readonly Token open;
+		public readonly ExprAst expr;
+		public readonly Token close;
 
 		public ParenExprAst(Token open, ExprAst expr, Token close)
 		{

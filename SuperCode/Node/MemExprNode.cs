@@ -4,9 +4,9 @@ namespace SuperCode
 {
 	public class MemExprNode: ExprNode
 	{
-		public ExprNode expr;
-		public string name;
-		public int index;
+		public readonly ExprNode expr;
+		public readonly string name;
+		public readonly int index;
 
 		public MemExprNode(ExprNode expr, string name, int index, LLVMTypeRef type)
 		{

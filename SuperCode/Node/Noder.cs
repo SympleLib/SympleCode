@@ -86,7 +86,7 @@ namespace SuperCode
 				paramz[i] = Nodify(ast.paramz[i]);
 
 			retType = Nodify(ast.retType);
-			var ty = LLVMTypeRef.CreateFunction(retType, paramTypes);
+			var ty = LLVMTypeRef.CreateFunction(retType, paramTypes, ast.vaArg != default);
 			string name = ast.asmTag.Is(TokenKind.Unknown) ? ast.name.text : ast.asmTag.text;
 			if (ast.asmTag.Is(TokenKind.Str))
 				name = name[1..^1];
@@ -111,7 +111,7 @@ namespace SuperCode
 			}
 
 			retType = Nodify(ast.retType);
-			var ty = LLVMTypeRef.CreateFunction(retType, paramTypes);
+			var ty = LLVMTypeRef.CreateFunction(retType, paramTypes, ast.vaArg != default);
 			string name = ast.asmTag.Is(TokenKind.Unknown) ? ast.name.text : ast.asmTag.text;
 			if (ast.asmTag.Is(TokenKind.Str))
 				name = name[1..^1];
@@ -245,8 +245,8 @@ namespace SuperCode
 			{
 			case TokenKind.Dot:
 			{
-				string name = ast.right.token.text;
-				return new MemExprNode(left, name, MemI(left.type, name), MemTy(left.type, name));
+				var name = ast.right.token;
+				return new MemExprNode(left, name.text, MemI(left.type, name), MemTy(left.type, name));
 			}
 			}
 
@@ -298,9 +298,16 @@ namespace SuperCode
 		private CallExprNode Nodify(CallExprAst ast)
 		{
 			var what = Nodify(ast.what);
+			var paramTypes = what.type.IsPtr() ? what.type.ElementType.ParamTypes : what.type.ParamTypes;
+
 			var args = new ExprNode[ast.args.Length];
 			for (int i = 0; i < args.Length; i++)
-				args[i] = Nodify(ast.args[i], what.type.ElementType == null ? what.type.ParamTypes[i] : what.type.ElementType.ParamTypes[i]);
+			{
+				LLVMTypeRef type = default;
+				if (i < paramTypes.Length)
+					type = paramTypes[i];
+				args[i] = Nodify(ast.args[i], type);
+			}
 
 			return new CallExprNode(what, args) { syntax = ast };
 		}
@@ -409,22 +416,24 @@ namespace SuperCode
 			return new CastExprNode(node, to);
 		}
 
-		private LLVMTypeRef MemTy(LLVMTypeRef ty, string name)
+		private LLVMTypeRef MemTy(LLVMTypeRef ty, Token name)
 		{
 			var ztruct = ztructs[ty];
 			foreach (var field in ztruct.fields)
-				if (field.name == name)
+				if (field.name == name.text)
 					return field.type;
-			throw new InvalidOperationException("Member not found");
+			safety.ReportNSField(name);
+			return null;
 		}
 
-		private int MemI(LLVMTypeRef ty, string name)
+		private int MemI(LLVMTypeRef ty, Token name)
 		{
 			var ztruct = ztructs[ty];
 			for (int i = 0; i < ztruct.fields.Length; i++)
-				if (ztruct.fields[i].name == name)
+				if (ztruct.fields[i].name == name.text)
 					return i;
-			throw new InvalidOperationException("Member not found");
+			// safety.ReportNSField(name); <-- Don't repeat urself
+			return -1;
 		}
 	}
 }

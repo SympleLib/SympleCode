@@ -10,6 +10,8 @@
 
 		public StructMemAst(Token key, Token name, Token open, FieldAst[] fields, Token close)
 		{
+			token = key;
+
 			this.key = key;
 			this.name = name;
 			this.open = open;

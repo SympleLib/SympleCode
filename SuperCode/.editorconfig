@@ -1,7 +1,0 @@
-﻿[*.cs]
-
-# CA1822: Mark members as static
-dotnet_diagnostic.CA1822.severity = none
-
-# IDE0071: Simplify interpolation
-dotnet_diagnostic.IDE0071.severity = none

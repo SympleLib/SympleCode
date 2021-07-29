@@ -1,11 +1,22 @@
-﻿using char* as String;
-
-decl void println _putws(String);
-
-int Run()
+﻿struct Time
 {
-	void(String)* print-fn = println;
-	print-fn('Function Pointers!');
+	int second, minute, hour, day, month, year,
+	week-day, day-of-year, is-daylight-savings
+}
+
+using ulong as RawTime;
+
+decl RawTime rawTime time(RawTime* timer);
+decl Time* localTime localtime(RawTime* timer);
+
+decl void printf wprintf(char* fmt, ...);
+
+int run()
+{
+	RawTime rt = rawTime(null);
+	Time time = %localTime(@rt);
+
+	printf('The date is %.2i/%.2i/%i\n', time.month, time.day, 1900 /* <-- Year of the Epoch  */ + time.year);
 
 	ret 0;
 }

@@ -41,6 +41,7 @@ namespace SuperCode
 		Arrow,
 
 		EqlEql,
+		DotDotDot,
 
 		DeclKey,
 		UsingKey,
@@ -103,7 +104,7 @@ namespace SuperCode
 			"{", "}", "(", ")", "[", "]",
 			".", ",", ";",
 			"=", "->",
-			"==",
+			"==", "...",
 		};
 
 		public static readonly Dictionary<string, TokenKind> keys = new ()

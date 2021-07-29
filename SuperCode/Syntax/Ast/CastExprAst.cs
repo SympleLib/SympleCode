@@ -2,10 +2,10 @@
 {
 	public class CastExprAst: ExprAst
 	{
-		public Token open;
-		public TypeAst type;
-		public Token close;
-		public ExprAst expr;
+		public readonly Token open;
+		public readonly TypeAst type;
+		public readonly Token close;
+		public readonly ExprAst expr;
 
 		public CastExprAst(Token open, TypeAst type, Token close, ExprAst expr)
 		{

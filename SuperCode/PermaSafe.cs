@@ -78,7 +78,13 @@ namespace SuperCode
 
 		public void ReportExpectedToken(TokenKind expected, Token got) =>
 			Report(Threat.Level.Avengers, $"Expected {expected}, got {got.kind}", got);
-		
+
+		public void ReportExpectedExpr(Token where) =>
+			Report(Threat.Level.Avengers, "Expected expression", where);
+
+		public void ReportNSField(Token where) =>
+			Report(Threat.Level.Avengers, "No such field found", where);
+
 		public void ReportPossibleLossOfData(Token where) =>
 			Report(Threat.Level.Think, "Possible loss of data", where);
 

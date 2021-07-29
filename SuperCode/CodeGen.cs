@@ -352,8 +352,11 @@ namespace SuperCode
 				return GenAddr((MemExprNode) node);
 			case NodeKind.SymExpr:
 				return GenAddr((SymExprNode) node);
+			case NodeKind.UnExpr:
+				return GenAddr((UnExprNode) node);
 
 			default:
+				// TODO: PermaSafe
 				throw new InvalidOperationException("Not an addr");
 			}
 		}
@@ -366,5 +369,13 @@ namespace SuperCode
 
 		private LLVMValueRef GenAddr(SymExprNode node) =>
 			syms[node.symbol];
+
+		private LLVMValueRef GenAddr(UnExprNode node)
+		{
+			if (node.op is not UnOp.Deref)
+				// TODO: PermaSafe
+				throw new InvalidOperationException("Not an addr");
+			return Gen(node.expr);
+		}
 	}
 }
