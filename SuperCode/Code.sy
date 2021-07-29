@@ -1,9 +1,7 @@
-﻿decl void See SetConsoleTitleW(char*);
-decl void Mies _putws(char*);
+﻿decl void system(schar*);
 
 int Run()
 {
-	See('Hah! Your syc program hacked you!!!!');
-	Mies('Look at the title ^');
-	ret 'HackDEEZNUTZ';
+	system(s'start "C:\\Program Files\\Google\\Chrome\\Application\\Chrome.exe" "https://youtu.be/dQw4w9WgXcQ"');
+	ret 0;
 }
