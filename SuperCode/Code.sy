@@ -1,12 +1,9 @@
-﻿decl char Read getwchar();
-decl void Println _putws(char*);
-decl void Print wprintf(char* fmt, char*);
+﻿decl void See SetConsoleTitleW(char*);
+decl void Mies _putws(char*);
 
 int Run()
 {
-	Println('What is your favorite letter?');
-	char str = Read();
-	Print('Hello, %c!\n', str);
-	Read();
-	ret 0;
+	See('Hah! Your syc program hacked you!!!!');
+	Mies('Look at the title ^');
+	ret 'HackDEEZNUTZ';
 }
