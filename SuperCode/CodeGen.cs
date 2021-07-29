@@ -130,23 +130,24 @@ namespace SuperCode
 
 		private LLVMValueRef Gen(IfStmtNode node)
 		{
+			bool hasElse = node.elze != default;
+
 			var cond = Gen(node.cond);
 			var then = func.AppendBasicBlock();
-			var elze = func.AppendBasicBlock();
+			var elze = hasElse ? func.AppendBasicBlock() : default;
 			var end = func.AppendBasicBlock();
-			var branch = builder.BuildCondBr(cond, then, elze);
+			var branch = builder.BuildCondBr(cond, then, hasElse ? elze : end);
 
 			builder.PositionAtEnd(then);
 			foreach (var stmt in node.then)
 				Gen(stmt);
 			builder.BuildBr(end);
-			builder.PositionAtEnd(elze);
 
-			if (node.elze != default)
+			if (hasElse)
 			{
+				builder.PositionAtEnd(elze);
 				Gen(node.elze);
 				builder.BuildBr(end);
-				builder.PositionAtEnd(end);
 			}
 
 			builder.PositionAtEnd(end);
@@ -221,11 +222,11 @@ namespace SuperCode
 		private LLVMValueRef Gen(CallExprNode expr)
 		{
 			var what = Gen(expr.what);
-			var args = new List<LLVMValueRef>();
-			for (int i = 0; i < what.Params.Length; i++)
-				args.Add(Gen(expr.args[i]));
+			var args = new LLVMValueRef[expr.args.Length];
+			for (int i = 0; i < args.Length; i++)
+				args[i] = Gen(expr.args[i]);
 
-			return builder.BuildCall(what, args.ToArray());
+			return builder.BuildCall(what, args);
 		}
 
 		private LLVMValueRef Gen(CastExprNode expr)

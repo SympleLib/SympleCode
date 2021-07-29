@@ -65,7 +65,7 @@ namespace SuperCode
 
 		private FieldAst Field(TypeAst ty = null)
 		{
-			if (ty is null || current.isBuiltinType)
+			if (ty is null || IsType(current))
 				ty = Type();
 			
 			var name = current.Is(TokenKind.Iden) ? Next() : default;
@@ -114,6 +114,8 @@ namespace SuperCode
 				asmTag = Next();
 			var open = Match(TokenKind.LeftParen);
 			var paramz = new List<FieldAst>();
+
+			TypeAst ty = null;
 			while (!current.Is(TokenKind.RightParen))
 			{
 				if (current.Is(TokenKind.Eof))
@@ -122,7 +124,9 @@ namespace SuperCode
 					return null;
 				}
 
-				paramz.Add(Field());
+				var field = Field(ty);
+				ty = field.type;
+				paramz.Add(field);
 			}
 
 			var close = Next();
@@ -133,13 +137,15 @@ namespace SuperCode
 
 		private FuncMemAst FuncMem()
 		{
-			var ty = Type();
+			var ret = Type();
 			var name = Match(TokenKind.Iden);
 			Token asmTag = default;
 			if (current.Is(TokenKind.Iden, TokenKind.Str))
 				asmTag = Next();
 			var openArg = Match(TokenKind.LeftParen);
 			var paramz = new List<FieldAst>();
+
+			TypeAst ty = null;
 			while (!current.Is(TokenKind.RightParen))
 			{
 				if (current.Is(TokenKind.Eof))
@@ -148,7 +154,10 @@ namespace SuperCode
 					return null;
 				}
 
-				paramz.Add(Field());
+
+				var field = Field(ty);
+				ty = field.type;
+				paramz.Add(field);
 			}
 
 			var closeArg = Next();
@@ -159,7 +168,7 @@ namespace SuperCode
 				var arrow = Next();
 
 				stmts.Add(Stmt());
-				return new FuncMemAst(ty, name, asmTag, openArg, paramz.ToArray(), closeArg, arrow, stmts.ToArray());
+				return new FuncMemAst(ret, name, asmTag, openArg, paramz.ToArray(), closeArg, arrow, stmts.ToArray());
 			}
 
 			var open = Match(TokenKind.LeftBrace);
@@ -175,7 +184,7 @@ namespace SuperCode
 			}
 
 			var close = Next();
-			return new FuncMemAst(ty, name, asmTag, openArg, paramz.ToArray(), closeArg, open, close, stmts.ToArray());
+			return new FuncMemAst(ret, name, asmTag, openArg, paramz.ToArray(), closeArg, open, close, stmts.ToArray());
 		}
 
 		private StructMemAst StructMem()
@@ -184,6 +193,8 @@ namespace SuperCode
 			var name = Match(TokenKind.Iden);
 			var open = Match(TokenKind.LeftBrace);
 			var fields = new List<FieldAst>();
+
+			TypeAst ty = null;
 			while (!current.Is(TokenKind.RightBrace))
 			{
 				if (current.Is(TokenKind.Eof))
@@ -192,7 +203,10 @@ namespace SuperCode
 					return null;
 				}
 
-				fields.Add(Field());
+
+				var field = Field(ty);
+				ty = field.type;
+				fields.Add(field);
 			}
 			var close = Next();
 
@@ -401,6 +415,9 @@ namespace SuperCode
 			return new (open, ty, close, expr);
 		}
 
+
+		private bool IsType(Token tok) =>
+			tok.Is(TokenKind.Iden) && (tok.isBuiltinType || types.Contains(tok.text));
 
 		private Token Next()
 		{

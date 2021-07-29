@@ -1,14 +1,12 @@
-﻿using byte* as Handle;
-
-decl Handle GetStdHandle(dword);
-decl void WriteConsole WriteConsoleW(Handle os, char* msg, dword nChars, dword* nCharsWritten, byte* RESERVED);
-decl void SetConsoleTitle SetConsoleTitleW(char* name);
+﻿decl char Read getwchar();
+decl void Println _putws(char*);
+decl void Print wprintf(char* fmt, char*);
 
 int Run()
 {
-	Handle stdout = GetStdHandle(-11);
-	WriteConsole(stdout, 'Hello, world!\n', 14, null, null);
-	SetConsoleTitle('syc has taken over!!!');
-
+	Println('What is your favorite letter?');
+	char str = Read();
+	Print('Hello, %c!\n', str);
+	Read();
 	ret 0;
 }
