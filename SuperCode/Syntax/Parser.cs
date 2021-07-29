@@ -56,11 +56,30 @@ namespace SuperCode
 		private TypeAst Type()
 		{
 			var baze = Next();
+			var args = new List<TypeAst>();
+			Token open, close;
+			open = close = default;
+			if (current.Is(TokenKind.LeftParen))
+			{
+				open = Next();
+				while (!current.Is(TokenKind.RightParen))
+				{
+					if (current.Is(TokenKind.Eof))
+					{
+						safety.ReportUnexpectedEof(open);
+						return null;
+					}
+
+					args.Add(Type());
+				}
+				close = Next();
+			}
+
 			var addons = new List<Token>();
 			while (current.isTypeAddon)
 				addons.Add(Next());
 
-			return new TypeAst(baze, addons.ToArray());
+			return new TypeAst(baze, open, args.ToArray(), close, addons.ToArray());
 		}
 
 		private FieldAst Field(TypeAst ty = null)
@@ -285,7 +304,7 @@ namespace SuperCode
 				if (current.Is(TokenKind.Eof))
 				{
 					safety.ReportUnexpectedEof(current);
-					break;
+					return null;
 				}
 
 				stmts.Add(Stmt());

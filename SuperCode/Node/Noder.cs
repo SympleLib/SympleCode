@@ -38,6 +38,15 @@ namespace SuperCode
 				ty = ast.baze.builtinType;
 			else
 				ty = types[ast.baze.text];
+
+			if (ast.args.Length > 0)
+			{
+				var args = new LLVMTypeRef[ast.args.Length];
+				for (int i = 0; i < args.Length; i++)
+					args[i] = Nodify(ast.args[i]);
+				ty = LLVMTypeRef.CreateFunction(ty, args);
+			}
+
 			for (int i = 0; i < ast.addons.Length; i++)
 				ty = ty.Ref();
 			return ty;
@@ -291,7 +300,7 @@ namespace SuperCode
 			var what = Nodify(ast.what);
 			var args = new ExprNode[ast.args.Length];
 			for (int i = 0; i < args.Length; i++)
-				args[i] = Nodify(ast.args[i], what.type.ParamTypes[i]);
+				args[i] = Nodify(ast.args[i], what.type.ElementType == null ? what.type.ParamTypes[i] : what.type.ElementType.ParamTypes[i]);
 
 			return new CallExprNode(what, args) { syntax = ast };
 		}
