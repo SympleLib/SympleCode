@@ -49,6 +49,8 @@ namespace SuperCode
 
 			for (int i = 0; i < ast.addons.Length; i++)
 				ty = ty.Ref();
+			if (ast.refTok != default)
+				ty = ty.Ref();
 			return ty;
 		}
 
