@@ -78,8 +78,11 @@ namespace SuperCode
 			var addons = new List<Token>();
 			while (current.isTypeAddon)
 				addons.Add(Next());
+			Token refTok = default;
+			if (current.Is(TokenKind.RefKey))
+				refTok = Next();
 
-			return new TypeAst(baze, open, args.ToArray(), close, addons.ToArray());
+			return new TypeAst(baze, open, args.ToArray(), close, addons.ToArray(), refTok);
 		}
 
 		private FieldAst Field(TypeAst ty = null)
@@ -161,9 +164,8 @@ namespace SuperCode
 			return new DeclFuncMemAst(key, ret, name, asmTag, open, paramz.ToArray(), vaArg, close, semi);
 		}
 
-		private FuncMemAst FuncMem()
+		private FuncMemAst FuncMem(TypeAst ret)
 		{
-			var ret = Type();
 			var name = Match(TokenKind.Iden);
 			Token asmTag = default;
 			if (current.Is(TokenKind.Iden, TokenKind.Str))
@@ -219,12 +221,12 @@ namespace SuperCode
 			return new FuncMemAst(ret, name, asmTag, openArg, paramz.ToArray(), vaArg, closeArg, open, close, stmts.ToArray());
 		}
 
-		// TODO: stuff
 		private MemAst FuncOrVarMem()
 		{
-			if (Peek(2).Is(TokenKind.LeftParen) || Peek(3).Is(TokenKind.LeftParen))
-				return FuncMem();
-			return VarMem();
+			var type = Type();
+			if (Peek(1).Is(TokenKind.LeftParen) || Peek(2).Is(TokenKind.LeftParen))
+				return FuncMem(type);
+			return VarMem(type);
 		}
 
 		private StructMemAst StructMem()
@@ -255,9 +257,8 @@ namespace SuperCode
 		}
 
 
-		private VarMemAst VarMem()
+		private VarMemAst VarMem(TypeAst type)
 		{
-			var type = Type();
 			var name = Match(TokenKind.Iden);
 			if (current.Is(TokenKind.Semicol))
 			{

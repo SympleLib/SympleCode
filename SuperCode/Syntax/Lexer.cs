@@ -78,7 +78,7 @@ namespace SuperCode
 				tokens.Add(Punctuator());
 			}
 
-			tokens.Add(MakeToken(TokenKind.Eof, "\0"));
+			tokens.Add(MakeToken(TokenKind.Eof, pos, "\0"));
 			return tokens.ToArray();
 		}
 
@@ -107,7 +107,7 @@ namespace SuperCode
 				Next();
 			if (current is '_' && IsIden(next))
 				throw new InvalidOperationException("Sorry, but get your snake breath outta here");
-			return Keyword(src[begin..pos]);
+			return Keyword(begin, src[begin..pos]);
 		}
 
 		private Token String()
@@ -169,7 +169,7 @@ namespace SuperCode
 				}
 			}
 			sb.Append(Next());
-			return MakeToken(TokenKind.Str, sb.ToString());
+			return MakeToken(TokenKind.Str, begin, sb.ToString());
 		}
 
 		private Token Number()
@@ -241,18 +241,18 @@ namespace SuperCode
 			return MakeToken(TokenKind.Unknown, pos - 1);
 		}
 
-		private Token Keyword(string txt)
+		private Token Keyword(int begin, string txt)
 		{
 			foreach (var key in Token.keys)
 				if (key.Key == txt)
-					return MakeToken(key.Value, txt);
-			return MakeToken(TokenKind.Iden, txt);
+					return MakeToken(key.Value, begin, txt);
+			return MakeToken(TokenKind.Iden, begin, txt);
 		}
 
 		private Token MakeToken(TokenKind kind, int begin) =>
-			new(kind, src[begin..pos], path, line, col, begin);
+			new Token(kind, src[begin..pos], src[begin..pos], path, line, col, begin);
 
-		private Token MakeToken(TokenKind kind, string txt) =>
-			new(kind, txt, path, line, col, pos - txt.Length);
+		private Token MakeToken(TokenKind kind, int begin, string txt) =>
+			new Token(kind, txt, src[begin..pos], path, line, col, begin);
 	}
 }

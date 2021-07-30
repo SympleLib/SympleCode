@@ -239,7 +239,7 @@ namespace SuperCode
 				return builder.BuildICmp(LLVMIntPredicate.LLVMIntEQ, left, right);
 
 			case BinOp.Index:
-				return builder.BuildLoad(builder.BuildGEP(left, new LLVMValueRef[] { right }));
+				return builder.BuildLoad(builder.BuildInBoundsGEP(left, new LLVMValueRef[] { right }));
 
 			default:
 				throw new InvalidOperationException("Invalid bin-expr");
@@ -364,6 +364,8 @@ namespace SuperCode
 				return GenAddr((MemExprNode) node);
 			case NodeKind.SymExpr:
 				return GenAddr((SymExprNode) node);
+			case NodeKind.BinExpr:
+				return GenAddr((BinExprNode) node);
 			case NodeKind.UnExpr:
 				return GenAddr((UnExprNode) node);
 
@@ -388,6 +390,16 @@ namespace SuperCode
 				// TODO: PermaSafe
 				throw new InvalidOperationException("Not an addr");
 			return Gen(node.expr);
+		}
+
+		private LLVMValueRef GenAddr(BinExprNode node)
+		{
+			if (node.op is not BinOp.Index)
+				// TODO: PermaSafe
+				throw new InvalidOperationException("Not an addr");
+			var left = Gen(node.left);
+			var right = Gen(node.right);
+			return builder.BuildInBoundsGEP(left, new LLVMValueRef[] { right });
 		}
 	}
 }

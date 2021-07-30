@@ -49,6 +49,7 @@ namespace SuperCode
 
 		NullKey,
 		RetKey,
+		RefKey,
 		AsKey,
 
 		IfKey,
@@ -61,14 +62,16 @@ namespace SuperCode
 	{
 		public readonly TokenKind kind;
 		public readonly string text;
+		public readonly string rawText;
 		public readonly string file;
 		public readonly int line, col;
 		public readonly int pos;
 
-		public Token(TokenKind kind, string txt, string path, int ln, int col, int pos)
+		public Token(TokenKind kind, string txt, string rawText, string path, int ln, int col, int pos)
 		{
 			this.kind = kind;
 			this.text = txt;
+			this.rawText = rawText;
 			this.file = path;
 			this.line = ln;
 			this.col = col;
@@ -95,7 +98,7 @@ namespace SuperCode
 		}
 
 		public override string ToString() =>
-			$"'{file}' {line}:{col}> {kind} `{(Is(TokenKind.Str) ? text[1..^1] : text)}`";
+			$"'{file}' {line}:{col}> {kind} {(Is(TokenKind.Str) ? rawText : ($"'{rawText}'"))}";
 
 		public static readonly string[] puncs = {
 			"+", "-", "*", "/", "%",
@@ -118,6 +121,7 @@ namespace SuperCode
 
 			{ "null", TokenKind.NullKey },
 			{ "ret", TokenKind.RetKey },
+			{ "ref", TokenKind.RefKey },
 			{ "as", TokenKind.AsKey },
 		};
 	}

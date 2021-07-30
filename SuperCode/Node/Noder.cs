@@ -121,6 +121,8 @@ namespace SuperCode
 				stmts[i] = Nodify(ast.stmts[i]);
 
 			var func = new FuncMemNode(ty, name, paramz, stmts) { syntax = ast };
+			if (syms.ContainsKey(ast.name.text))
+				syms.Remove(ast.name.text);
 			syms.Add(ast.name.text, func);
 			return func;
 		}

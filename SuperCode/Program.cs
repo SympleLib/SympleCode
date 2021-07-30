@@ -1,4 +1,4 @@
-﻿//#define SYNTAX_ONLY
+﻿#define SYNTAX_ONLY
 
 using System;
 using System.IO;
@@ -10,7 +10,7 @@ namespace SuperCode
 	public class Program
 	{
 		[UnmanagedFunctionPointer(CallingConvention.Cdecl)]
-		public delegate int Run();
+		public delegate void Run();
 
 		[StructLayout(LayoutKind.Explicit)]
 		private unsafe struct FPIUnion
@@ -113,8 +113,8 @@ namespace SuperCode
 					break;
 				}
 
-				Console.Write(tok.text);
-				pos += tok.text.Length;
+				Console.Write(tok.rawText);
+				pos += tok.rawText.Length;
 			}
 			Console.WriteLine();
 		}
@@ -130,9 +130,7 @@ namespace SuperCode
 			}
 
 			var exec = (Run) Marshal.GetDelegateForFunctionPointer(engine.GetPointerToGlobal(module.GetNamedFunction("run")), typeof(Run));
-			var union = new FPIUnion { ival = exec() };
-			Console.ForegroundColor = ConsoleColor.DarkGray;
-			Console.WriteLine(union);
+			exec();
 		}
 
 		private static bool Compile(LLVMModuleRef module)

@@ -1,14 +1,9 @@
-﻿struct S
-{
-	int x, y,
-}
+﻿decl void printf wprintf(char*, ...);
 
-int run()
+void run()
 {
-	S s;
-	s.x = 69;
-	s.y = 420;
-	int* arr = @s;
-
-	ret arr[1];
+	int x = 6;
+	int ref y = x;
+	y = 9;
+	printf(u'%i\n', x);
 }
