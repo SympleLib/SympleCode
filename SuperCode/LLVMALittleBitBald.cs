@@ -1,9 +1,13 @@
-﻿using LLVMSharp.Interop;
+﻿using System.Collections.Generic;
+
+using LLVMSharp.Interop;
 
 namespace SuperCode
 {
 	public static class LLVMALittleBitBald
 	{
+		public static readonly List<LLVMTypeRef> refTypes = new List<LLVMTypeRef>();
+
 		public static LLVMBasicBlockRef AppendBasicBlock(this LLVMValueRef fn) =>
 			fn.AppendBasicBlock(null);
 
@@ -15,6 +19,9 @@ namespace SuperCode
 
 		public static LLVMTypeRef Ref(this LLVMTypeRef type) =>
 			LLVMTypeRef.CreatePointer(type, 0);
+
+		public static bool IsRef(this LLVMTypeRef type) =>
+			refTypes.Contains(type);
 
 		public static LLVMValueRef AddGlobal(this LLVMModuleRef module, LLVMTypeRef ty) =>
 			module.AddGlobal(ty, null);

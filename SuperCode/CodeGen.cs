@@ -187,7 +187,12 @@ namespace SuperCode
 		private LLVMValueRef Gen(VarStmtNode node)
 		{
 			var ptr = builder.BuildAlloca(node.type, node.name);
-			var init = Gen(node.init);
+			LLVMValueRef init;
+			if (node.type.IsRef())
+				init = GenAddr(node.init);
+			else
+				init = Gen(node.init);
+
 			if (init != null)
 				builder.BuildStore(init, ptr);
 			syms.Add(node, ptr);
@@ -381,8 +386,13 @@ namespace SuperCode
 			return builder.BuildStructGEP(ptr, (uint) node.index);
 		}
 
-		private LLVMValueRef GenAddr(SymExprNode node) =>
-			syms[node.symbol];
+		private LLVMValueRef GenAddr(SymExprNode node)
+		{
+			var sym = syms[node.symbol];
+			if (sym.TypeOf.IsRef())
+				return builder.BuildLoad(sym);
+			return sym;
+		}
 
 		private LLVMValueRef GenAddr(UnExprNode node)
 		{

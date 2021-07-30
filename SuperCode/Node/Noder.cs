@@ -50,7 +50,10 @@ namespace SuperCode
 			for (int i = 0; i < ast.addons.Length; i++)
 				ty = ty.Ref();
 			if (ast.refTok != default)
+			{
 				ty = ty.Ref();
+				LLVMALittleBitBald.refTypes.Add(ty);
+			}
 			return ty;
 		}
 
@@ -155,7 +158,7 @@ namespace SuperCode
 		private VarMemNode Nodify(VarMemAst ast)
 		{
 			var ty = Nodify(ast.type);
-			var var = new VarMemNode(ty, ast.name.text, Nodify(ast.init, ty)) { syntax = ast };
+			var var = new VarMemNode(ty, ast.name.text, Nodify(ast.init, ty.IsRef() ? default : ty)) { syntax = ast };
 			syms.Add(var.name, var);
 			return var;
 		}
@@ -215,7 +218,7 @@ namespace SuperCode
 		private VarStmtNode Nodify(VarStmtAst ast)
 		{
 			var ty = Nodify(ast.type);
-			var var = new VarStmtNode(ty, ast.name.text, Nodify(ast.init, ty)) { syntax = ast };
+			var var = new VarStmtNode(ty, ast.name.text, Nodify(ast.init, ty.IsRef() ? default : ty)) { syntax = ast };
 			syms.Add(var.name, var);
 			return var;
 		}
