@@ -85,6 +85,9 @@ namespace SuperCode
 		public void ReportNSField(Token where) =>
 			Report(Threat.Level.Avengers, "No such field found", where);
 
+		public void ReportUS(Token where) =>
+			Report(Threat.Level.Avengers, $"Undefined symbol `{where.text}`", where);
+
 		public void ReportPossibleLossOfData(Token where) =>
 			Report(Threat.Level.Think, "Possible loss of data", where);
 

@@ -11,7 +11,7 @@ namespace SuperCode
 		public readonly ModuleAst module;
 		public readonly LLVMContextRef ctx;
 
-		private readonly Dictionary<string, Symbol> syms = new ();
+		private Dictionary<string, Symbol> syms = new Dictionary<string, Symbol>();
 		private readonly Dictionary<string, LLVMTypeRef> types = new ();
 		private readonly Dictionary<LLVMTypeRef, StructMemNode> ztructs = new ();
 		private LLVMTypeRef retType;
@@ -164,6 +164,8 @@ namespace SuperCode
 
 			switch (ast.kind)
 			{
+			case AstKind.BlockStmt:
+				return Nodify(((BlockStmtAst) ast));
 			case AstKind.ExprStmt:
 				return Nodify(((ExprStmtAst) ast).expr);
 			case AstKind.IfStmt:
@@ -178,6 +180,18 @@ namespace SuperCode
 			default:
 				throw new InvalidOperationException("Invalid stmt");
 			}
+		}
+
+		private BlockStmtNode Nodify(BlockStmtAst ast)
+		{
+			var psyms = new Dictionary<string, Symbol>(syms);
+
+			var stmts = new Node[ast.stmts.Length];
+			for (int i = 0; i < stmts.Length; i++)
+				stmts[i] = Nodify(ast.stmts[i]);
+
+			syms = psyms;
+			return new BlockStmtNode(stmts);
 		}
 
 		private IfStmtNode Nodify(IfStmtAst ast)
@@ -330,7 +344,10 @@ namespace SuperCode
 				// Chez
 				return new NumExprNode(0, LLVMTypeRef.Int64) { syntax = ast };
 			case TokenKind.Iden:
-				return new SymExprNode(syms[literal]) { syntax = ast };
+				if (syms.TryGetValue(literal, out var sym))
+					return new SymExprNode(sym) { syntax = ast };
+				safety.ReportUS(ast.literal);
+				return new SymExprNode(new BadSymbol()) { syntax = ast };
 			case TokenKind.Str:
 			{
 				int start = literal[0] == '\'' ? 1 : 2;
@@ -418,6 +435,8 @@ namespace SuperCode
 
 		private LLVMTypeRef MemTy(LLVMTypeRef ty, Token name)
 		{
+			if (ty == null)
+				return null;
 			var ztruct = ztructs[ty];
 			foreach (var field in ztruct.fields)
 				if (field.name == name.text)
@@ -428,6 +447,8 @@ namespace SuperCode
 
 		private int MemI(LLVMTypeRef ty, Token name)
 		{
+			if (ty == null)
+				return -1;
 			var ztruct = ztructs[ty];
 			for (int i = 0; i < ztruct.fields.Length; i++)
 				if (ztruct.fields[i].name == name.text)

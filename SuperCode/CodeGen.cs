@@ -64,6 +64,8 @@ namespace SuperCode
 			case NodeKind.VarMem:
 				return Gen((VarMemNode) node);
 
+			case NodeKind.BlockStmt:
+				return Gen((BlockStmtNode) node);
 			case NodeKind.IfStmt:
 				return Gen((IfStmtNode) node);
 			case NodeKind.RetStmt:
@@ -142,6 +144,13 @@ namespace SuperCode
 			return var;
 		}
 
+
+		private LLVMValueRef Gen(BlockStmtNode node)
+		{
+			foreach (var stmt in node.stmts)
+				Gen(stmt);
+			return null;
+		}
 
 		private LLVMValueRef Gen(IfStmtNode node)
 		{
@@ -292,7 +301,7 @@ namespace SuperCode
 				values[values.Length - 1] = LLVMValueRef.CreateConstInt(node.type.ElementType, 0);
 				var arr = LLVMValueRef.CreateConstArray(node.type.ElementType, values);
 
-				var str = module.AddGlobal(arr.TypeOf);
+				var str = module.AddGlobal(arr.TypeOf, "..str");
 				str.Linkage = LLVMLinkage.LLVMPrivateLinkage;
 				str.HasUnnamedAddr = true;
 				str.Initializer = arr;

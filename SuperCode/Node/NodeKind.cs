@@ -10,6 +10,7 @@
 		FuncMem,
 		VarMem,
 
+		BlockStmt,
 		IfStmt,
 		RetStmt,
 		TypedefStmt,

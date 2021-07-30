@@ -275,6 +275,8 @@ namespace SuperCode
 		{
 			switch (current.kind)
 			{
+			case TokenKind.LeftBrace:
+				return BlockStmt();
 			case TokenKind.UsingKey:
 				return UsingStmt();
 			case TokenKind.RetKey:
@@ -287,6 +289,25 @@ namespace SuperCode
 					return VarStmt();
 				return ExprStmt();
 			}
+		}
+
+		private BlockStmtAst BlockStmt()
+		{
+			var open = Match(TokenKind.LeftBrace);
+			var stmts = new List<StmtAst>();
+			while (!current.Is(TokenKind.RightBrace))
+			{
+				if (current.Is(TokenKind.Eof))
+				{
+					safety.ReportUnexpectedEof(current);
+					return null;
+				}
+
+				stmts.Add(Stmt());
+			}
+			var close = Next();
+
+			return new BlockStmtAst(open, stmts.ToArray(), close);
 		}
 
 		private IfStmtAst IfStmt()
