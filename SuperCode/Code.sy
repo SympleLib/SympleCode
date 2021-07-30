@@ -2,8 +2,7 @@
 
 void run()
 {
-	int x = 6;
+	int x = 5;
 	int ref y = x;
-	y = 9;
-	printf(u'%i\n', x);
+	printf(u'%i\n', x + y);
 }
