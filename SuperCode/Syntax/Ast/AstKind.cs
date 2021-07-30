@@ -22,6 +22,7 @@
 		BinExpr,
 		CallExpr,
 		CastExpr,
+		IndexExpr,
 		LitExpr,
 		ParenExpr,
 		PreExpr,

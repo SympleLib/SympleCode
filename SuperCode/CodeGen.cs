@@ -238,6 +238,9 @@ namespace SuperCode
 			case BinOp.Eql:
 				return builder.BuildICmp(LLVMIntPredicate.LLVMIntEQ, left, right);
 
+			case BinOp.Index:
+				return builder.BuildLoad(builder.BuildGEP(left, new LLVMValueRef[] { right }));
+
 			default:
 				throw new InvalidOperationException("Invalid bin-expr");
 			}

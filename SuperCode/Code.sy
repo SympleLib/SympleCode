@@ -1,23 +1,14 @@
-﻿struct DateTime
+﻿struct S
 {
-	int second, minute, hour, day, month, year,
-	week-day, day-of-year, is-daylight-savings
+	int x, y,
 }
-
-using ulong as RawTime;
-
-decl RawTime rawTime time(RawTime* timer);
-decl DateTime* localTime localtime(RawTime* timer);
-
-decl void printf wprintf(char* fmt, ...);
 
 int run()
 {
-	RawTime rt = rawTime(null);
-	DateTime time = %localTime(@rt);
+	S s;
+	s.x = 69;
+	s.y = 420;
+	int* arr = @s;
 
-	printf('The date is %.2i/%.2i/%i\n', time.month, time.day,
-		1900 /* <-- Year of the Epoch  */ + time.year);
-
-	ret 0;
+	ret arr[1];
 }

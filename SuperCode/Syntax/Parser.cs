@@ -427,18 +427,20 @@ namespace SuperCode
 			return new (open, ty, close, expr);
 		}
 
-		private ExprAst CallExpr()
+		private CallExprAst CallExpr(ExprAst expr)
 		{
-			var expr = PrimExpr();
-			while (current.Is(TokenKind.LeftParen))
-			{
-				var open = Next();
-				var args = Args(open);
-				var close = Match(TokenKind.RightParen);
-				expr = new CallExprAst(expr, open, args, close);
-			}
+			var open = Match(TokenKind.LeftParen);
+			var args = Args(open);
+			var close = Match(TokenKind.RightParen);
+			return new CallExprAst(expr, open, args, close);
+		}
 
-			return expr;
+		private IndexExprAst IndexExpr(ExprAst expr)
+		{
+			var open = Match(TokenKind.LeftBracket);
+			var index = Expr();
+			var close = Match(TokenKind.RightBracket);
+			return new IndexExprAst(expr, open, index, close);
 		}
 
 		private LitExprAst LitExpr() =>
@@ -456,8 +458,22 @@ namespace SuperCode
 		private ExprAst PreExpr()
 		{
 			if (current.isPrefix)
-				return new PreExprAst(Next(), CallExpr());
-			return CallExpr();
+				return new PreExprAst(Next(), PostExpr());
+			return PostExpr();
+		}
+
+		private ExprAst PostExpr()
+		{
+			var expr = PrimExpr();
+			while (true)
+				if (current.Is(TokenKind.LeftParen))
+					expr = CallExpr(expr);
+				else if (current.Is(TokenKind.LeftBracket))
+					expr = IndexExpr(expr);
+				else
+					break;
+
+			return expr;
 		}
 
 		private ExprAst PrimExpr()

@@ -23,6 +23,8 @@ namespace SuperCode
 		Eql,
 		Gt,
 		Lt,
+
+		Index,
 	}
 
 	public class BinExprNode: ExprNode

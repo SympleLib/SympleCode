@@ -238,6 +238,8 @@ namespace SuperCode
 				return Cast(Nodify((CallExprAst) ast), castTo);
 			case AstKind.CastExpr:
 				return Cast(Nodify((CastExprAst) ast), castTo);
+			case AstKind.IndexExpr:
+				return Cast(Nodify((IndexExprAst) ast), castTo);
 			case AstKind.LitExpr:
 				return Cast(Nodify((LitExprAst) ast), castTo);
 			case AstKind.ParenExpr:
@@ -333,6 +335,15 @@ namespace SuperCode
 			if (to == default || node.type == to)
 				return node;
 			return new CastExprNode(node, to) { syntax = ast };
+		}
+
+		private BinExprNode Nodify(IndexExprAst ast)
+		{
+			var expr = Nodify(ast.expr);
+			var index = Nodify(ast.index);
+			var type = expr.type.ElementType;
+
+			return new BinExprNode(BinOp.Index, expr, index, type);
 		}
 
 		private ExprNode Nodify(LitExprAst ast)
