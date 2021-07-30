@@ -48,12 +48,9 @@ namespace SuperCode
 			}
 
 			for (int i = 0; i < ast.addons.Length; i++)
-				ty = ty.Ref();
+				ty = ty.Ptr();
 			if (ast.refTok != default)
-			{
 				ty = ty.Ref();
-				LLVMALittleBitBald.refTypes.Add(ty);
-			}
 			return ty;
 		}
 
@@ -218,7 +215,8 @@ namespace SuperCode
 		private VarStmtNode Nodify(VarStmtAst ast)
 		{
 			var ty = Nodify(ast.type);
-			var var = new VarStmtNode(ty, ast.name.text, Nodify(ast.init, ty.IsRef() ? default : ty)) { syntax = ast };
+			var initTy = ty.IsRef() ? default : ty;
+			var var = new VarStmtNode(ty, ast.name.text, Nodify(ast.init, initTy)) { syntax = ast };
 			syms.Add(var.name, var);
 			return var;
 		}
@@ -271,6 +269,11 @@ namespace SuperCode
 				var name = ast.right.token;
 				return new MemExprNode(left, name.text, MemI(left.type, name), MemTy(left.type, name));
 			}
+			case TokenKind.Eql:
+			{
+				var val = Nodify(ast.right);
+				return new AssignExprNode(left, Cast(val, left.type.IsRef() ? left.type.ElementType : left.type));
+			}
 			}
 
 			var right = Nodify(ast.right, left.type);
@@ -279,8 +282,6 @@ namespace SuperCode
 			BinOp op;
 			switch (ast.op.kind)
 			{
-			case TokenKind.Eql:
-				return new AssignExprNode(left, right);
 
 			case TokenKind.EqlEql:
 				op = BinOp.Eql;
@@ -417,7 +418,7 @@ namespace SuperCode
 				goto UnExpr;
 			case TokenKind.At:
 				op = UnOp.Ref;
-				ty.Ref();
+				ty.Ptr();
 				goto UnExpr;
 			case TokenKind.Percent:
 				op = UnOp.Deref;

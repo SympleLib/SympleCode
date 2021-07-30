@@ -21,13 +21,13 @@ namespace SuperCode
 			switch (strType)
 			{
 			case StrType.Short:
-				type = LLVMTypeRef.Int8.Ref();
+				type = LLVMTypeRef.Int8.Ptr();
 				break;
 			case StrType.Unicode:
-				type = LLVMTypeRef.Int16.Ref();
+				type = LLVMTypeRef.Int16.Ptr();
 				break;
 			case StrType.Wide:
-				type = LLVMTypeRef.Int32.Ref();
+				type = LLVMTypeRef.Int32.Ptr();
 				break;
 			}
 		}

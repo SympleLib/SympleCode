@@ -273,6 +273,9 @@ namespace SuperCode
 			if (from.IsFloat() && to.IsFloat())
 				return builder.BuildFPCast(val, to);
 
+			if (from.IsRef())
+				return builder.BuildLoad(val);
+
 			if (from.IsPtr() && to.IsPtr())
 				return builder.BuildPointerCast(val, to);
 			if (from.IsPtr() && !to.IsPtr())
@@ -335,7 +338,7 @@ namespace SuperCode
 			var expr = Gen(node.expr);
 			var fptr = builder.BuildAlloca(expr.TypeOf);
 			builder.BuildStore(expr, fptr);
-			var tptr = builder.BuildPointerCast(fptr, node.type.Ref());
+			var tptr = builder.BuildPointerCast(fptr, node.type.Ptr());
 			return builder.BuildLoad(tptr);
 		}
 
@@ -389,7 +392,7 @@ namespace SuperCode
 		private LLVMValueRef GenAddr(SymExprNode node)
 		{
 			var sym = syms[node.symbol];
-			if (sym.TypeOf.IsRef())
+			if (sym.TypeOf.ElementType.IsRef())
 				return builder.BuildLoad(sym);
 			return sym;
 		}

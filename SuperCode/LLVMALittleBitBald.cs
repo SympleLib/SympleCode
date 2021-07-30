@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 
 using LLVMSharp.Interop;
 
@@ -6,7 +7,7 @@ namespace SuperCode
 {
 	public static class LLVMALittleBitBald
 	{
-		public static readonly List<LLVMTypeRef> refTypes = new List<LLVMTypeRef>();
+		public static readonly List<IntPtr> refTypes = new List<IntPtr>();
 
 		public static LLVMBasicBlockRef AppendBasicBlock(this LLVMValueRef fn) =>
 			fn.AppendBasicBlock(null);
@@ -14,14 +15,26 @@ namespace SuperCode
 		public static bool IsFloat(this LLVMTypeRef type) =>
 			type == LLVMTypeRef.BFloat || type == LLVMTypeRef.Half || type == LLVMTypeRef.Float || type == LLVMTypeRef.Double || type == LLVMTypeRef.Double;
 
-		public static bool IsPtr(this LLVMTypeRef type) =>
-			type.ElementType != null;
+		public static bool IsPtr(this LLVMTypeRef type)
+		{
+			if (type.IsRef())
+				return type.ElementType.ElementType != default;
+			return type.ElementType != default;
+		}
 
-		public static LLVMTypeRef Ref(this LLVMTypeRef type) =>
+		public static LLVMTypeRef Ptr(this LLVMTypeRef type) =>
 			LLVMTypeRef.CreatePointer(type, 0);
 
+		public static LLVMTypeRef Ref(this LLVMTypeRef type)
+		{
+			var newType = LLVMTypeRef.CreatePointer(type, 0);
+			refTypes.Add(newType.Handle);
+			Console.WriteLine(newType.Handle + " " + type.Handle);
+			return newType;
+		}
+
 		public static bool IsRef(this LLVMTypeRef type) =>
-			refTypes.Contains(type);
+			refTypes.Contains(type.Handle);
 
 		public static LLVMValueRef AddGlobal(this LLVMModuleRef module, LLVMTypeRef ty) =>
 			module.AddGlobal(ty, null);
