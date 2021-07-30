@@ -78,11 +78,8 @@ namespace SuperCode
 			var addons = new List<Token>();
 			while (current.isTypeAddon)
 				addons.Add(Next());
-			Token refTok = default;
-			if (current.Is(TokenKind.RefKey))
-				refTok = Next();
 
-			return new TypeAst(baze, open, args.ToArray(), close, addons.ToArray(), refTok);
+			return new TypeAst(baze, open, args.ToArray(), close, addons.ToArray());
 		}
 
 		private FieldAst Field(TypeAst ty = null)

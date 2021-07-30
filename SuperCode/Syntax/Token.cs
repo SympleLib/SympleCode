@@ -49,7 +49,6 @@ namespace SuperCode
 
 		NullKey,
 		RetKey,
-		RefKey,
 		AsKey,
 
 		IfKey,
@@ -121,7 +120,6 @@ namespace SuperCode
 
 			{ "null", TokenKind.NullKey },
 			{ "ret", TokenKind.RetKey },
-			{ "ref", TokenKind.RefKey },
 			{ "as", TokenKind.AsKey },
 		};
 	}
