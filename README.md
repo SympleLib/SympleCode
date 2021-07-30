@@ -14,7 +14,7 @@ Symple C is a programming language based on the [C Family](https://en.wikipedia.
 2) Clone the repository
    - `git clone --recursive https://github.com/SympleLib/SympleCode.git`
 3) Open the Solution
-    - You should see a file called **SympleCode.sln**, open it and you can view, edit, and compile the source code.
+    - In the folder **_SuperCode_**, you should see a file called **_SuperCode.sln_**, open it and you can view, edit, and compile the source code.
   
 ## Remarks
   
