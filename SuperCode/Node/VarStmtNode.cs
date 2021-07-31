@@ -13,9 +13,9 @@ namespace SuperCode
 			this.init = init;
 		}
 
-		public string name { get; init; }
-		public bool unsigned { get; init; }
-		public LLVMTypeRef type { get; init; }
+		public bool mut { get; }
+		public string name { get; }
+		public LLVMTypeRef type { get; }
 		public override NodeKind kind => NodeKind.VarStmt;
 	}
 }

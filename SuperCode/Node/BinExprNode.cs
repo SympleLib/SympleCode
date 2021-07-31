@@ -39,6 +39,7 @@ namespace SuperCode
 			right = rhs;
 		}
 
+		public override bool mut => op is BinOp.Index && left.mut;
 		public override NodeKind kind => NodeKind.BinExpr;
 	}
 }

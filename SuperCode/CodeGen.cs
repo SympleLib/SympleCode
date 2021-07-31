@@ -290,7 +290,7 @@ namespace SuperCode
 		private LLVMValueRef Gen(MemExprNode node)
 		{
 			var ptr = GenAddr(node.expr);
-			var field = builder.BuildStructGEP(ptr, (uint) node.index);
+			var field = builder.BuildStructGEP(ptr, (uint) node.field.index);
 			return builder.BuildLoad(field);
 		}
 
@@ -373,7 +373,7 @@ namespace SuperCode
 		private LLVMValueRef GenAddr(MemExprNode node)
 		{
 			var ptr = GenAddr(node.expr);
-			return builder.BuildStructGEP(ptr, (uint) node.index);
+			return builder.BuildStructGEP(ptr, (uint) node.field.index);
 		}
 
 		private LLVMValueRef GenAddr(SymExprNode node)

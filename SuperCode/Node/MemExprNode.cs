@@ -5,16 +5,15 @@ namespace SuperCode
 	public class MemExprNode: ExprNode
 	{
 		public readonly ExprNode expr;
-		public readonly string name;
-		public readonly int index;
+		public readonly FieldNode field;
 
-		public MemExprNode(ExprNode expr, string name, int index, LLVMTypeRef type): base(type)
+		public MemExprNode(ExprNode expr, FieldNode field): base(field.type)
 		{
 			this.expr = expr;
-			this.name = name;
-			this.index = index;
+			this.field = field;
 		}
 
+		public override bool mut => expr.mut && field.mut;
 		public override NodeKind kind => NodeKind.MemExpr;
 	}
 }

@@ -54,8 +54,8 @@ namespace SuperCode
 			return ty;
 		}
 
-		private FieldNode Nodify(FieldAst ast) =>
-			new FieldNode(Nodify(ast.type), ast.name.text) { syntax = ast };
+		private FieldNode Nodify(FieldAst ast, int index) =>
+			new FieldNode(Nodify(ast.type), index, ast.name.text) { syntax = ast };
 
 		private Node Nodify(MemAst ast)
 		{
@@ -85,7 +85,7 @@ namespace SuperCode
 
 			var paramz = new FieldNode[ast.paramz.Length];
 			for (int i = 0; i < paramz.Length; i++)
-				paramz[i] = Nodify(ast.paramz[i]);
+				paramz[i] = Nodify(ast.paramz[i], i);
 
 			retType = Nodify(ast.retType);
 			var ty = LLVMTypeRef.CreateFunction(retType, paramTypes, ast.vaArg != default);
@@ -112,7 +112,7 @@ namespace SuperCode
 			var paramz = new FieldNode[ast.paramz.Length];
 			for (int i = 0; i < paramz.Length; i++)
 			{
-				var paramNode = Nodify(ast.paramz[i]);
+				var paramNode = Nodify(ast.paramz[i], i);
 				paramz[i] = paramNode;
 				syms.Add(paramNode.name, paramNode);
 			}
@@ -143,7 +143,7 @@ namespace SuperCode
 			var fieldTypes = new LLVMTypeRef[ast.fields.Length];
 			for (int i = 0; i < fields.Length; i++)
 			{
-				var field = Nodify(ast.fields[i]);
+				var field = Nodify(ast.fields[i], i);
 				fields[i] = field;
 				fieldTypes[i] = field.type;
 			}
@@ -269,10 +269,13 @@ namespace SuperCode
 			case TokenKind.Dot:
 			{
 				var name = ast.right.token;
-				return new MemExprNode(left, name.text, MemI(left.type, name), MemTy(left.type, name));
+				var field = Mem(left.type, name);
+				return new MemExprNode(left, field);
 			}
 			case TokenKind.Eql:
 			{
+				if (!left.mut)
+					throw new Exception("Assignee must be mutable");
 				var val = Nodify(ast.right);
 				return new AssignExprNode(left, Cast(val, left.type.IsRef() ? left.type.ElementType : left.type));
 			}
@@ -449,28 +452,16 @@ namespace SuperCode
 			return new CastExprNode(node, to);
 		}
 
-		private LLVMTypeRef MemTy(LLVMTypeRef ty, Token name)
+		private FieldNode Mem(LLVMTypeRef ty, Token name)
 		{
 			if (ty == null)
 				return null;
 			var ztruct = ztructs[ty];
 			foreach (var field in ztruct.fields)
 				if (field.name == name.text)
-					return field.type;
+					return field;
 			safety.ReportNSField(name);
 			return null;
-		}
-
-		private int MemI(LLVMTypeRef ty, Token name)
-		{
-			if (ty == null)
-				return -1;
-			var ztruct = ztructs[ty];
-			for (int i = 0; i < ztruct.fields.Length; i++)
-				if (ztruct.fields[i].name == name.text)
-					return i;
-			// safety.ReportNSField(name); <-- Don't repeat urself
-			return -1;
 		}
 	}
 }

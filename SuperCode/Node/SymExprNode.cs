@@ -7,6 +7,7 @@
 		public SymExprNode(Symbol symbol): base(symbol.type) =>
 			this.symbol = symbol;
 
+		public override bool mut => symbol.mut;
 		public override NodeKind kind => NodeKind.SymExpr;
 	}
 }

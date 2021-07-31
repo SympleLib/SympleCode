@@ -2,13 +2,13 @@
 {
 	public class AssignExprNode: ExprNode
 	{
-		public readonly ExprNode value;
 		public readonly ExprNode expr;
+		public readonly ExprNode value;
 
-		public AssignExprNode(ExprNode value, ExprNode expr): base(expr.type)
+		public AssignExprNode(ExprNode expr, ExprNode value): base(expr.type)
 		{
-			this.value = value;
 			this.expr = expr;
+			this.value = value;
 		}
 
 		public override NodeKind kind => NodeKind.AssignExpr;

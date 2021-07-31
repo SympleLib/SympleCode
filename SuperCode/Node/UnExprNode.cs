@@ -21,6 +21,7 @@ namespace SuperCode
 			this.expr = expr;
 		}
 
+		public override bool mut => op is UnOp.Deref && expr.mut;
 		public override NodeKind kind => NodeKind.UnExpr;
 	}
 }
