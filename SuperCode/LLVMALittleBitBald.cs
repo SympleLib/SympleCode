@@ -7,10 +7,20 @@ namespace SuperCode
 {
 	public static class LLVMALittleBitBald
 	{
+		public static readonly LLVMTypeRef uint8 = LLVMTypeRef.CreateInt(8);
+		public static readonly LLVMTypeRef uint16 = LLVMTypeRef.CreateInt(16);
+		public static readonly LLVMTypeRef uint32 = LLVMTypeRef.CreateInt(32);
+		public static readonly LLVMTypeRef uint64 = LLVMTypeRef.CreateInt(64);
+
 		public static readonly List<IntPtr> refTypes = new List<IntPtr>();
+		public static readonly List<IntPtr> usTypes = new List<IntPtr>()
+		{ uint8.Handle, uint16.Handle, uint32.Handle, uint64.Handle, };
 
 		public static LLVMBasicBlockRef AppendBasicBlock(this LLVMValueRef fn) =>
 			fn.AppendBasicBlock(null);
+
+		public static bool IsUnsigned(this LLVMTypeRef type) =>
+			usTypes.Contains(type.Handle);
 
 		public static bool IsFloat(this LLVMTypeRef type) =>
 			type == LLVMTypeRef.BFloat || type == LLVMTypeRef.Half || type == LLVMTypeRef.Float || type == LLVMTypeRef.Double || type == LLVMTypeRef.Double;

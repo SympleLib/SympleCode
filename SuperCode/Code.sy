@@ -1,10 +1,7 @@
-﻿decl ulong time(byte*);
-decl ulong rand();
-decl void seed srand(ulong seed);
-decl void printf wprintf(char ref, ...);
+﻿decl void printf wprintf(char*, ...);
 
 void run()
 {
-	seed(time(null));
-	printf('%llu\n', rand() % 10 + 1);
+	uint x = -5;
+	printf('%u, %u\n', x / 5);
 }

@@ -40,8 +40,7 @@ namespace SuperCode
 					2,
 				TokenKind.Plus or TokenKind.Dash =>
 					3,
-				TokenKind.Star or TokenKind.Slash or TokenKind.Percent or
-					TokenKind.SlashDash or TokenKind.PercentDash =>
+				TokenKind.Star or TokenKind.Slash or TokenKind.Percent =>
 					4,
 				TokenKind.Dot =>
 					5,

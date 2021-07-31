@@ -21,9 +21,6 @@ namespace SuperCode
 		Slash,
 		Percent,
 
-		SlashDash,
-		PercentDash,
-
 		At,
 
 		LeftBrace,
@@ -102,7 +99,6 @@ namespace SuperCode
 
 		public static readonly string[] puncs = {
 			"+", "-", "*", "/", "%",
-			"/-", "%-",
 			"@",
 			"{", "}", "(", ")", "[", "]",
 			".", ",", ";",
