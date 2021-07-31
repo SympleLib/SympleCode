@@ -10,7 +10,7 @@ namespace SuperCode
 	public class CodeGen
 	{
 		private LLVMValueRef func;
-		private readonly Dictionary<Symbol, LLVMValueRef> syms = new();
+		private readonly Dictionary<Symbol, LLVMValueRef> syms = new Dictionary<Symbol, LLVMValueRef>();
 
 		public readonly ModuleNode modNode;
 		public readonly LLVMModuleRef module;

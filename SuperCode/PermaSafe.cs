@@ -60,7 +60,7 @@ namespace SuperCode
 
 	public class PermaSafe
 	{
-		public readonly List<Threat> threats = new ();
+		public readonly List<Threat> threats = new List<Threat>();
 
 		public bool MustSelfDestruct()
 		{

@@ -6,7 +6,7 @@ namespace SuperCode
 	public static class BuiltinTypes
 	{
 		// Subject to change...
-		public static readonly Dictionary<string, LLVMTypeRef> types = new()
+		public static readonly Dictionary<string, LLVMTypeRef> types = new Dictionary<string, LLVMTypeRef>()
 		{
 			{ "void", LLVMTypeRef.Void },
 			{ "bit", LLVMTypeRef.Int8 },

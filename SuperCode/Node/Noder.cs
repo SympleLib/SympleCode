@@ -7,13 +7,13 @@ namespace SuperCode
 {
 	public class Noder
 	{
-		public readonly PermaSafe safety = new ();
+		public readonly PermaSafe safety = new PermaSafe();
 		public readonly ModuleAst module;
 		public readonly LLVMContextRef ctx;
 
 		private Dictionary<string, Symbol> syms = new Dictionary<string, Symbol>();
-		private readonly Dictionary<string, LLVMTypeRef> types = new ();
-		private readonly Dictionary<LLVMTypeRef, StructMemNode> ztructs = new ();
+		private readonly Dictionary<string, LLVMTypeRef> types = new Dictionary<string, LLVMTypeRef>();
+		private readonly Dictionary<LLVMTypeRef, StructMemNode> ztructs = new Dictionary<LLVMTypeRef, StructMemNode>();
 		private LLVMTypeRef retType;
 
 		public Noder(ModuleAst module)
@@ -210,7 +210,7 @@ namespace SuperCode
 		}
 
 		private RetStmtNode Nodify(RetStmtAst ast) =>
-			new (Nodify(ast.value, retType));
+			new RetStmtNode(Nodify(ast.value, retType));
 
 		private VarStmtNode Nodify(VarStmtAst ast)
 		{

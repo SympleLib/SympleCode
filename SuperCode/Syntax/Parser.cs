@@ -362,7 +362,7 @@ namespace SuperCode
 			var val = Expr();
 			var semi = Match(TokenKind.Semicol);
 
-			return new (key, val, semi);
+			return new RetStmtAst(key, val, semi);
 		}
 
 		private VarStmtAst VarStmt(TypeAst ty = null)
@@ -394,7 +394,7 @@ namespace SuperCode
 		}
 
 		private ExprStmtAst ExprStmt() =>
-			new (Expr(), Match(TokenKind.Semicol));
+			new ExprStmtAst(Expr(), Match(TokenKind.Semicol));
 
 
 		private ExprAst Expr() =>
@@ -425,7 +425,7 @@ namespace SuperCode
 
 			var expr = PreExpr();
 
-			return new (open, ty, close, expr);
+			return new CastExprAst(open, ty, close, expr);
 		}
 
 		private CallExprAst CallExpr(ExprAst expr)
@@ -453,7 +453,7 @@ namespace SuperCode
 			var expr = Expr();
 			var close = Match(TokenKind.RightParen);
 
-			return new (open, expr, close);
+			return new ParenExprAst(open, expr, close);
 		}
 
 		private ExprAst PreExpr()
@@ -507,7 +507,7 @@ namespace SuperCode
 
 			var expr = PreExpr();
 
-			return new (open, ty, close, expr);
+			return new TypePunExprAst(open, ty, close, expr);
 		}
 
 

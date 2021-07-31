@@ -106,7 +106,7 @@ namespace SuperCode
 			"==", "...",
 		};
 
-		public static readonly Dictionary<string, TokenKind> keys = new ()
+		public static readonly Dictionary<string, TokenKind> keys = new Dictionary<string, TokenKind>()
 		{
 			{ "decl", TokenKind.DeclKey },
 			{ "using", TokenKind.UsingKey },
