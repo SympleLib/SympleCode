@@ -88,7 +88,7 @@ namespace SuperCode
 				else if (field.FieldType.IsAssignableTo(typeof(Token)))
 				{
 					var token = (Token?) field.GetValue(this);
-					if (token is null)
+					if (token is null || token.Value.Is(TokenKind.Unknown))
 						continue;
 
 					string prefix = indent + (fieldLast ? "└──" : "├──");

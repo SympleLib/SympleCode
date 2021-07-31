@@ -49,7 +49,7 @@ namespace SuperCode
 
 			for (int i = 0; i < ast.addons.Length; i++)
 				ty = ty.Ptr();
-			if (ast.refTok != default)
+			if (ast.refTok is not null)
 				ty = ty.Ref();
 			return ty;
 		}
@@ -92,7 +92,7 @@ namespace SuperCode
 			string name = ast.name.text;
 			if (ast.asmTag is not null)
 			{
-				var asmTag = (Token) ast.asmTag;
+				var asmTag = ast.asmTag.Value;
 				name = asmTag.text;
 				if (asmTag.Is(TokenKind.Str))
 					name = name[1..^1];

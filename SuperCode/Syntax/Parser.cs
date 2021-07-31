@@ -57,8 +57,8 @@ namespace SuperCode
 		{
 			var baze = Next();
 			var args = new List<TypeAst>();
-			Token open, close;
-			open = close = default;
+			Token? open, close;
+			open = close = null;
 			if (current.Is(TokenKind.LeftParen))
 			{
 				open = Next();
@@ -66,7 +66,7 @@ namespace SuperCode
 				{
 					if (current.Is(TokenKind.Eof))
 					{
-						safety.ReportUnexpectedEof(open);
+						safety.ReportUnexpectedEof(open.Value);
 						return null;
 					}
 
@@ -78,7 +78,7 @@ namespace SuperCode
 			var addons = new List<Token>();
 			while (current.isTypeAddon)
 				addons.Add(Next());
-			Token refTok = default;
+			Token? refTok = null;
 			if (current.Is(TokenKind.RefKey))
 				refTok = Next();
 

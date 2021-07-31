@@ -123,7 +123,7 @@ namespace SuperCode
 			foreach (var stmt in mem.stmts)
 				Gen(stmt);
 
-			if (mem.type.ReturnType == LLVMTypeRef.Void)
+			if (mem.retType == LLVMTypeRef.Void)
 				builder.BuildRetVoid();
 			var fn = func;
 			func = null;
