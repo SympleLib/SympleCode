@@ -13,8 +13,8 @@ namespace SuperCode
 			this.fields = fields;
 		}
 
-		public override NodeKind kind => NodeKind.StructMem;
-		public LLVMTypeRef type { get; }
 		public string name { get; }
+		public LLVMTypeRef type { get; }
+		public override NodeKind kind => NodeKind.StructMem;
 	}
 }

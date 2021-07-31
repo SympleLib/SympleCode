@@ -1,7 +1,4 @@
 ﻿decl void printf wprintf(char*, ...);
 
-void run()
-{
-	void x = 6;
-	printf('%u%u\n', test.why);
-}
+void run() ->
+	printf('%u%u\n', 6, 9);

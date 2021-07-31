@@ -154,7 +154,7 @@ namespace SuperCode
 
 		private LLVMValueRef Gen(IfStmtNode node)
 		{
-			bool hasElse = node.elze != default;
+			bool hasElse = node.elze is not null;
 
 			var cond = Gen(node.cond);
 			var then = func.AppendBasicBlock();
@@ -163,11 +163,10 @@ namespace SuperCode
 			var branch = builder.BuildCondBr(cond, then, hasElse ? elze : end);
 
 			builder.PositionAtEnd(then);
-			foreach (var stmt in node.then)
-				Gen(stmt);
+			Gen(node.then);
 			builder.BuildBr(end);
 
-			if (hasElse)
+			if (node.elze is not null)
 			{
 				builder.PositionAtEnd(elze);
 				Gen(node.elze);
@@ -303,7 +302,7 @@ namespace SuperCode
 			var values = new LLVMValueRef[node.str.Length + 1];
 			for (int i = 0; i < node.str.Length; i++)
 				values[i] = LLVMValueRef.CreateConstInt(node.type.ElementType, node.str[i]);
-			values[values.Length - 1] = LLVMValueRef.CreateConstInt(node.type.ElementType, 0);
+			values[^1] = LLVMValueRef.CreateConstInt(node.type.ElementType, 0);
 			var arr = LLVMValueRef.CreateConstArray(node.type.ElementType, values);
 
 			var str = module.AddGlobal(arr.TypeOf, "..str");
@@ -367,7 +366,6 @@ namespace SuperCode
 				return GenAddr((UnExprNode) node);
 
 			default:
-				// TODO: PermaSafe
 				throw new InvalidOperationException("Not an addr");
 			}
 		}
@@ -389,7 +387,6 @@ namespace SuperCode
 		private LLVMValueRef GenAddr(UnExprNode node)
 		{
 			if (node.op is not UnOp.Deref)
-				// TODO: PermaSafe
 				throw new InvalidOperationException("Not an addr");
 			return Gen(node.expr);
 		}
@@ -397,7 +394,6 @@ namespace SuperCode
 		private LLVMValueRef GenAddr(BinExprNode node)
 		{
 			if (node.op is not BinOp.Index)
-				// TODO: PermaSafe
 				throw new InvalidOperationException("Not an addr");
 			var left = Gen(node.left);
 			var right = Gen(node.right);

@@ -2,10 +2,9 @@
 {
 	public abstract class MemAst: Ast
 	{
-		public readonly Token semicol;
+		public readonly Token? semicol;
 
-		public MemAst() { }
-		public MemAst(Token semi) =>
+		public MemAst(Token? semi = null) =>
 			semicol = semi;
 	}
 }

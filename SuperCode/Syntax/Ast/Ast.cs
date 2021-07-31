@@ -21,7 +21,7 @@ namespace SuperCode
 
 				if (field.FieldType.IsAssignableTo(typeof(Ast)))
 				{
-					var child = (Ast)field.GetValue(this);
+					var child = (Ast) field.GetValue(this);
 					if (child is not null)
 						child.Print(writer, indent, $"{field.Name}: ", fieldLast);
 				}
@@ -30,6 +30,8 @@ namespace SuperCode
 					if (field.FieldType.IsAssignableTo(typeof(Ast[])))
 					{
 						var arr = (Ast[]) field.GetValue(this);
+						if (arr is null)
+							continue;
 						string prefix = indent + (fieldLast ? "└──" : "├──");
 
 						if (toConsole)
@@ -53,6 +55,8 @@ namespace SuperCode
 					else if (field.FieldType.IsAssignableTo(typeof(Token[])))
 					{
 						var arr = (Token[]) field.GetValue(this);
+						if (arr is null)
+							continue;
 						string prefix = indent + (fieldLast ? "└──" : "├──");
 
 						if (toConsole)
@@ -83,8 +87,8 @@ namespace SuperCode
 				}
 				else if (field.FieldType.IsAssignableTo(typeof(Token)))
 				{
-					var token = (Token) field.GetValue(this);
-					if (token.kind == TokenKind.Unknown)
+					var token = (Token?) field.GetValue(this);
+					if (token is null)
 						continue;
 
 					string prefix = indent + (fieldLast ? "└──" : "├──");

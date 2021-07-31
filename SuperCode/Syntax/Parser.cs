@@ -329,7 +329,7 @@ namespace SuperCode
 					return new IfStmtAst(ifKey, cond, arrow, then, elseKey, elze);
 				}
 
-				return new IfStmtAst(ifKey, cond, arrow, then, default, default);
+				return new IfStmtAst(ifKey, cond, arrow, then, null, null);
 			}
 
 			var open = Match(TokenKind.LeftBrace);
@@ -379,7 +379,7 @@ namespace SuperCode
 				return new VarStmtAst(ty, name, eql, init, Match(TokenKind.Semicol));
 			}
 
-			return new VarStmtAst(ty, name, default, default, Match(TokenKind.Semicol));
+			return new VarStmtAst(ty, name, default, null, Match(TokenKind.Semicol));
 		}
 
 		private UsingStmtAst UsingStmt()

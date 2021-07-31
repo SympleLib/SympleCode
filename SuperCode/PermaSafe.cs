@@ -88,6 +88,9 @@ namespace SuperCode
 		public void ReportUS(Token where) =>
 			Report(Threat.Level.Avengers, $"Undefined symbol `{where.text}`", where);
 
+		public void ReportNMod(Token where) =>
+			Report(Threat.Level.Avengers, "No a modifiable value", where);
+
 		public void ReportPossibleLossOfData(Token where) =>
 			Report(Threat.Level.Think, "Possible loss of data", where);
 

@@ -89,9 +89,14 @@ namespace SuperCode
 
 			retType = Nodify(ast.retType);
 			var ty = LLVMTypeRef.CreateFunction(retType, paramTypes, ast.vaArg != default);
-			string name = ast.asmTag.Is(TokenKind.Unknown) ? ast.name.text : ast.asmTag.text;
-			if (ast.asmTag.Is(TokenKind.Str))
-				name = name[1..^1];
+			string name = ast.name.text;
+			if (ast.asmTag is not null)
+			{
+				var asmTag = (Token) ast.asmTag;
+				name = asmTag.text;
+				if (asmTag.Is(TokenKind.Str))
+					name = name[1..^1];
+			}
 
 			var decl = new DeclFuncMemNode(ty, name, paramz) { syntax = ast };
 			syms.Add(ast.name.text, decl);
@@ -155,7 +160,8 @@ namespace SuperCode
 		private VarMemNode Nodify(VarMemAst ast)
 		{
 			var ty = Nodify(ast.type);
-			var var = new VarMemNode(ty, ast.name.text, Nodify(ast.init, ty.IsRef() ? default : ty)) { syntax = ast };
+			var init = Nodify(ast.init, ty.IsRef() ? default : ty);
+			var var = new VarMemNode(ty, ast.name.text, init) { syntax = ast };
 			syms.Add(var.name, var);
 			return var;
 		}
@@ -163,9 +169,6 @@ namespace SuperCode
 
 		private Node Nodify(StmtAst ast)
 		{
-			if (ast is null)
-				return null;
-
 			switch (ast.kind)
 			{
 			case AstKind.BlockStmt:
@@ -201,9 +204,10 @@ namespace SuperCode
 		private IfStmtNode Nodify(IfStmtAst ast)
 		{
 			var cond = Nodify(ast.cond);
-			var then = new Node[ast.then.Length];
-			for (int i = 0; i < then.Length; i++)
-				then[i] = Nodify(ast.then[i]);
+			var stmts = new Node[ast.then.Length];
+			for (int i = 0; i < stmts.Length; i++)
+				stmts[i] = Nodify(ast.then[i]);
+			var then = new BlockStmtNode(stmts);
 			var elze = Nodify(ast.elze);
 
 			return new IfStmtNode(cond, then, elze);
@@ -216,7 +220,8 @@ namespace SuperCode
 		{
 			var ty = Nodify(ast.type);
 			var initTy = ty.IsRef() ? default : ty;
-			var var = new VarStmtNode(ty, ast.name.text, Nodify(ast.init, initTy)) { syntax = ast };
+			var init = Nodify(ast.init, initTy);
+			var var = new VarStmtNode(ty, ast.name.text, init) { syntax = ast };
 			syms.Add(var.name, var);
 			return var;
 		}
@@ -232,9 +237,6 @@ namespace SuperCode
 		
 		private ExprNode Nodify(ExprAst ast, LLVMTypeRef castTo = default)
 		{
-			if (ast is null)
-				return null;
-
 			switch (ast.kind)
 			{
 			case AstKind.BinExpr:
