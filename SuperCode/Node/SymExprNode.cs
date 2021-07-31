@@ -4,11 +4,8 @@
 	{
 		public readonly Symbol symbol;
 
-		public SymExprNode(Symbol symbol)
-		{
+		public SymExprNode(Symbol symbol): base(symbol.type) =>
 			this.symbol = symbol;
-			type = symbol.type;
-		}
 
 		public override NodeKind kind => NodeKind.SymExpr;
 	}

@@ -6,11 +6,8 @@ namespace SuperCode
 	{
 		public readonly ExprNode expr;
 
-		public TypePunExprNode(LLVMTypeRef type, ExprNode expr)
-		{
-			this.type = type;
+		public TypePunExprNode(LLVMTypeRef type, ExprNode expr): base(type) =>
 			this.expr = expr;
-		}
 
 		public override NodeKind kind => NodeKind.TypePunExpr;
 	}

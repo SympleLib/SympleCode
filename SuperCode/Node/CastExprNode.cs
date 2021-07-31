@@ -6,11 +6,8 @@ namespace SuperCode
 	{
 		public readonly ExprNode value;
 
-		public CastExprNode(ExprNode val, LLVMTypeRef to)
-		{
-			this.value = val;
-			type = to;
-		}
+		public CastExprNode(ExprNode val, LLVMTypeRef to): base(to) =>
+			value = val;
 		
 		public override NodeKind kind => NodeKind.CastExpr;
 	}

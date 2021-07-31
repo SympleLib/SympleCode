@@ -5,9 +5,8 @@
 		public readonly ExprNode value;
 		public readonly ExprNode expr;
 
-		public AssignExprNode(ExprNode value, ExprNode expr)
+		public AssignExprNode(ExprNode value, ExprNode expr): base(expr.type)
 		{
-			type = expr.type;
 			this.value = value;
 			this.expr = expr;
 		}

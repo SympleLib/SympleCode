@@ -6,11 +6,8 @@ namespace SuperCode
 	{
 		public readonly double value;
 
-		public FNumExprNode(double val, LLVMTypeRef ty)
-		{
+		public FNumExprNode(double val, LLVMTypeRef ty): base(ty) =>
 			value = val;
-			type = ty;
-		}
 
 		public override NodeKind kind => NodeKind.FNumExpr;
 	}

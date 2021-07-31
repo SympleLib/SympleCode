@@ -365,13 +365,13 @@ namespace SuperCode
 			case TokenKind.Str:
 			{
 				int start = literal[0] == '\'' ? 1 : 2;
-				StrType type = literal[0] switch
+				var type = literal[0] switch
 				{
-					's' => StrType.Short,
-					'u' => StrType.Unicode,
-					'w' => StrType.Wide,
+					's' => BuiltinTypes.types["schar"].Ptr(),
+					'u' => BuiltinTypes.types["char"].Ptr(),
+					'w' => BuiltinTypes.types["wchar"].Ptr(),
 
-					_ => StrType.Unicode,
+					_ => BuiltinTypes.types["char"].Ptr(),
 				};
 
 				return new StrExprNode(type, literal[start..^1]) { syntax = ast };

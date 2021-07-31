@@ -300,28 +300,17 @@ namespace SuperCode
 
 		private LLVMValueRef Gen(StrExprNode node)
 		{
-			switch (node.strType)
-			{
-			case StrType.Short:
-			case StrType.Unicode:
-			case StrType.Wide:
-			{
-				var values = new LLVMValueRef[node.str.Length + 1];
-				for (int i = 0; i < node.str.Length; i++)
-					values[i] = LLVMValueRef.CreateConstInt(node.type.ElementType, node.str[i]);
-				values[values.Length - 1] = LLVMValueRef.CreateConstInt(node.type.ElementType, 0);
-				var arr = LLVMValueRef.CreateConstArray(node.type.ElementType, values);
+			var values = new LLVMValueRef[node.str.Length + 1];
+			for (int i = 0; i < node.str.Length; i++)
+				values[i] = LLVMValueRef.CreateConstInt(node.type.ElementType, node.str[i]);
+			values[values.Length - 1] = LLVMValueRef.CreateConstInt(node.type.ElementType, 0);
+			var arr = LLVMValueRef.CreateConstArray(node.type.ElementType, values);
 
-				var str = module.AddGlobal(arr.TypeOf, "..str");
-				str.Linkage = LLVMLinkage.LLVMPrivateLinkage;
-				str.HasUnnamedAddr = true;
-				str.Initializer = arr;
-				return builder.BuildBitCast(str, node.type);
-			}
-
-			default:
-				throw new InvalidOperationException("Invalid str-type");
-			}
+			var str = module.AddGlobal(arr.TypeOf, "..str");
+			str.Linkage = LLVMLinkage.LLVMPrivateLinkage;
+			str.HasUnnamedAddr = true;
+			str.Initializer = arr;
+			return builder.BuildBitCast(str, node.type);
 		}
 
 		private LLVMValueRef Gen(SymExprNode expr)

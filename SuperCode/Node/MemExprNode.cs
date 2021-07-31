@@ -8,12 +8,11 @@ namespace SuperCode
 		public readonly string name;
 		public readonly int index;
 
-		public MemExprNode(ExprNode expr, string name, int index, LLVMTypeRef type)
+		public MemExprNode(ExprNode expr, string name, int index, LLVMTypeRef type): base(type)
 		{
 			this.expr = expr;
 			this.name = name;
 			this.index = index;
-			this.type = type;
 		}
 
 		public override NodeKind kind => NodeKind.MemExpr;

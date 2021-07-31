@@ -6,11 +6,8 @@ namespace SuperCode
 	{
 		public readonly ulong value;
 
-		public NumExprNode(ulong val, LLVMTypeRef ty)
-		{
+		public NumExprNode(ulong val, LLVMTypeRef ty): base(ty) =>
 			value = val;
-			type = ty;
-		}
 
 		public override NodeKind kind => NodeKind.NumExpr;
 	}

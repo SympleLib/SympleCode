@@ -3,5 +3,10 @@
 namespace SuperCode
 {
 	public abstract class ExprNode: Node
-	{ public LLVMTypeRef type { get; protected init; } = LLVMTypeRef.Int32; }
+	{
+		public readonly LLVMTypeRef type;
+
+		public ExprNode(LLVMTypeRef type) =>
+			this.type = type;
+	}
 }

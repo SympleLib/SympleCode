@@ -7,9 +7,8 @@ namespace SuperCode
 		public readonly ExprNode what;
 		public readonly ExprNode[] args;
 
-		public CallExprNode(ExprNode what, ExprNode[] args)
+		public CallExprNode(ExprNode what, ExprNode[] args): base(what.type.ReturnType)
 		{
-			type = what.type.ReturnType;
 			this.what = what;
 			this.args = args;
 		}

@@ -2,6 +2,5 @@
 
 void run()
 {
-	uint x = -5;
-	printf('%u, %u\n', x / 5);
+	printf('%u%u\n', 6, 9);
 }

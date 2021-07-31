@@ -32,10 +32,9 @@ namespace SuperCode
 		public readonly BinOp op;
 		public readonly ExprNode left, right;
 
-		public BinExprNode(BinOp op, ExprNode lhs, ExprNode rhs, LLVMTypeRef type)
+		public BinExprNode(BinOp op, ExprNode lhs, ExprNode rhs, LLVMTypeRef type): base(type)
 		{
 			this.op = op;
-			this.type = type;
 			left = lhs;
 			right = rhs;
 		}
