@@ -29,7 +29,6 @@ namespace SuperCode
 		{
 			var newType = LLVMTypeRef.CreatePointer(type, 0);
 			refTypes.Add(newType.Handle);
-			Console.WriteLine(newType.Handle + " " + type.Handle);
 			return newType;
 		}
 
