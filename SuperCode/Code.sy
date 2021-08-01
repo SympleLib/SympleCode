@@ -1,7 +1,11 @@
 ﻿decl void print _putws(char*);
 decl void printf wprintf(char*, ...);
 
-char* str = 'Hello, world!';
+char* fmt = 'Cool Number: %i\n';
 
-pub void run() ->
-	print(str);
+pub void run()
+{
+	mut int x = 60;
+	x = x + 9;
+	printf(fmt, x);
+}
