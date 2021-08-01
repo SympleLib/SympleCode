@@ -55,7 +55,7 @@ namespace SuperCode
 		}
 
 		private FieldNode Nodify(FieldAst ast, int index) =>
-			new FieldNode(Nodify(ast.type), ast.mutKey.HasValue, index, ast.name.text) { syntax = ast };
+			new FieldNode(Nodify(ast.type), !(ast.mutKey.HasValue && ast.mutKey.Value.Is(TokenKind.ConstKey)), index, ast.name.text) { syntax = ast };
 
 		private Node Nodify(MemAst ast)
 		{
@@ -166,7 +166,7 @@ namespace SuperCode
 		{
 			var ty = Nodify(ast.type);
 			var init = Nodify(ast.init, ty.IsRef() ? default : ty);
-			var var = new VarMemNode(ty, ast.mutKey.HasValue, ast.name.text, init) { syntax = ast };
+			var var = new VarMemNode(ty, !(ast.mutKey.HasValue && ast.mutKey.Value.Is(TokenKind.ConstKey)), ast.name.text, init) { syntax = ast };
 			syms.Add(var.name, var);
 			return var;
 		}
@@ -226,7 +226,7 @@ namespace SuperCode
 			var ty = Nodify(ast.type);
 			var initTy = ty.IsRef() ? default : ty;
 			var init = Nodify(ast.init, initTy);
-			var var = new VarStmtNode(ty, ast.mutKey.HasValue, ast.name.text, init) { syntax = ast };
+			var var = new VarStmtNode(ty, !(ast.mutKey.HasValue && ast.mutKey.Value.Is(TokenKind.ConstKey)), ast.name.text, init) { syntax = ast };
 			syms.Add(var.name, var);
 			return var;
 		}

@@ -87,7 +87,7 @@ namespace SuperCode
 
 		private FieldAst Field(Token? mutKey = null, TypeAst ty = null)
 		{
-			if (current.Is(TokenKind.MutKey))
+			if (current.Is(TokenKind.MutKey, TokenKind.ConstKey))
 				mutKey = Next();
 			if (ty is null || IsType(current))
 				ty = Type();
@@ -117,6 +117,7 @@ namespace SuperCode
 			switch (current.kind)
 			{
 			case TokenKind.MutKey:
+			case TokenKind.ConstKey:
 				return VarMem(Next(), Type());
 			case TokenKind.DeclKey:
 				return DeclFuncMem();
@@ -287,6 +288,7 @@ namespace SuperCode
 			switch (current.kind)
 			{
 			case TokenKind.MutKey:
+			case TokenKind.ConstKey:
 				return VarStmt();
 			case TokenKind.LeftBrace:
 				return BlockStmt();
@@ -379,7 +381,7 @@ namespace SuperCode
 
 		private VarStmtAst VarStmt(Token? mutKey = null, TypeAst ty = null)
 		{
-			if (current.Is(TokenKind.MutKey))
+			if (current.Is(TokenKind.MutKey, TokenKind.ConstKey))
 				mutKey = Next();
 			if (ty is null || current.isBuiltinType || types.Contains(current.text))
 				ty = Type();

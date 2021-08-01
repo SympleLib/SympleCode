@@ -53,6 +53,7 @@ namespace SuperCode
 		ElseKey,
 
 		MutKey,
+		ConstKey,
 
 		Count,
 	}
@@ -123,6 +124,7 @@ namespace SuperCode
 			{ "as", TokenKind.AsKey },
 
 			{ "mut", TokenKind.MutKey },
+			{ "const", TokenKind.ConstKey },
 		};
 	}
 }
