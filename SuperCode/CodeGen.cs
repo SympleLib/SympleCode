@@ -201,9 +201,9 @@ namespace SuperCode
 
 		private LLVMValueRef Gen(AssignExprNode node)
 		{
-			var val = GenAddr(node.value);
-			var expr = Gen(node.expr);
-			return builder.BuildStore(expr, val);
+			var expr = GenAddr(node.expr);
+			var val = Gen(node.value);
+			return builder.BuildStore(val, expr);
 		}
 
 		private LLVMValueRef Gen(BinExprNode node)

@@ -1,4 +1,10 @@
 ﻿decl void printf wprintf(char*, ...);
 
-void run() ->
-	printf('%u%u\n', 6, 9);
+void run()
+{
+	mut int x = 4;
+	x = 5;
+
+	int y = 5;
+	y = 4;
+}

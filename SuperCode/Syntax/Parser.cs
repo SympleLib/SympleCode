@@ -85,8 +85,10 @@ namespace SuperCode
 			return new TypeAst(baze, open, args.ToArray(), close, addons.ToArray(), refTok);
 		}
 
-		private FieldAst Field(TypeAst ty = null)
+		private FieldAst Field(Token? mutKey = null, TypeAst ty = null)
 		{
+			if (current.Is(TokenKind.MutKey))
+				mutKey = Next();
 			if (ty is null || IsType(current))
 				ty = Type();
 			
@@ -100,13 +102,13 @@ namespace SuperCode
 				if (current.Is(TokenKind.Comma))
 					comma = Next();
 
-				return new FieldAst(ty, name, eql, defVal, comma);
+				return new FieldAst(mutKey, ty, name, eql, defVal, comma);
 			}
 
 			if (!current.Is(TokenKind.RightBrace, TokenKind.RightBracket, TokenKind.RightParen))
 				comma = Match(TokenKind.Comma);
 
-			return new FieldAst(ty, name, comma);
+			return new FieldAst(mutKey, ty, name, comma);
 		}
 		
 
@@ -114,6 +116,8 @@ namespace SuperCode
 		{
 			switch (current.kind)
 			{
+			case TokenKind.MutKey:
+				return VarMem(Next(), Type());
 			case TokenKind.DeclKey:
 				return DeclFuncMem();
 			case TokenKind.StructKey:
@@ -131,13 +135,14 @@ namespace SuperCode
 			var key = Match(TokenKind.DeclKey);
 			var ret = Type();
 			var name = Match(TokenKind.Iden);
-			Token asmTag = default;
+			Token? asmTag = null;
 			if (current.Is(TokenKind.Iden, TokenKind.Str))
 				asmTag = Next();
 			var open = Match(TokenKind.LeftParen);
 			var paramz = new List<FieldAst>();
 
-			Token vaArg = default;
+			Token? mutKey = null;
+			Token? vaArg = null;
 			TypeAst ty = null;
 			while (!current.Is(TokenKind.RightParen))
 			{
@@ -153,8 +158,9 @@ namespace SuperCode
 					break;
 				}
 
-				var field = Field(ty);
+				var field = Field(mutKey, ty);
 				ty = field.type;
+				mutKey = field.mutKey;
 				paramz.Add(field);
 			}
 
@@ -167,13 +173,14 @@ namespace SuperCode
 		private FuncMemAst FuncMem(TypeAst ret)
 		{
 			var name = Match(TokenKind.Iden);
-			Token asmTag = default;
+			Token? asmTag = null;
 			if (current.Is(TokenKind.Iden, TokenKind.Str))
 				asmTag = Next();
 			var openArg = Match(TokenKind.LeftParen);
 			var paramz = new List<FieldAst>();
 
-			Token vaArg = default;
+			Token? mutKey = null;
+			Token? vaArg = null;
 			TypeAst ty = null;
 			while (!current.Is(TokenKind.RightParen))
 			{
@@ -189,8 +196,9 @@ namespace SuperCode
 					break;
 				}
 
-				var field = Field(ty);
+				var field = Field(mutKey, ty);
 				ty = field.type;
+				mutKey = field.mutKey;
 				paramz.Add(field);
 			}
 
@@ -226,7 +234,7 @@ namespace SuperCode
 			var type = Type();
 			if (Peek(1).Is(TokenKind.LeftParen) || Peek(2).Is(TokenKind.LeftParen))
 				return FuncMem(type);
-			return VarMem(type);
+			return VarMem(null, type);
 		}
 
 		private StructMemAst StructMem()
@@ -236,6 +244,7 @@ namespace SuperCode
 			var open = Match(TokenKind.LeftBrace);
 			var fields = new List<FieldAst>();
 
+			Token? mutKey = null;
 			TypeAst ty = null;
 			while (!current.Is(TokenKind.RightBrace))
 			{
@@ -246,8 +255,9 @@ namespace SuperCode
 				}
 
 
-				var field = Field(ty);
+				var field = Field(mutKey, ty);
 				ty = field.type;
+				mutKey = field.mutKey;
 				fields.Add(field);
 			}
 			var close = Next();
@@ -257,25 +267,27 @@ namespace SuperCode
 		}
 
 
-		private VarMemAst VarMem(TypeAst type)
+		private VarMemAst VarMem(Token? mutKey, TypeAst type)
 		{
 			var name = Match(TokenKind.Iden);
 			if (current.Is(TokenKind.Semicol))
 			{
 				var semi = Next();
-				return new VarMemAst(type, name, default, default, semi);
+				return new VarMemAst(mutKey, type, name, default, default, semi);
 			}
 
 			var eql = Match(TokenKind.Eql);
 			var init = Expr();
 			var semicol = Match(TokenKind.Semicol);
-			return new VarMemAst(type, name, eql, init, semicol);
+			return new VarMemAst(mutKey, type, name, eql, init, semicol);
 		}
 
 		private StmtAst Stmt()
 		{
 			switch (current.kind)
 			{
+			case TokenKind.MutKey:
+				return VarStmt();
 			case TokenKind.LeftBrace:
 				return BlockStmt();
 			case TokenKind.UsingKey:
@@ -365,8 +377,10 @@ namespace SuperCode
 			return new RetStmtAst(key, val, semi);
 		}
 
-		private VarStmtAst VarStmt(TypeAst ty = null)
+		private VarStmtAst VarStmt(Token? mutKey = null, TypeAst ty = null)
 		{
+			if (current.Is(TokenKind.MutKey))
+				mutKey = Next();
 			if (ty is null || current.isBuiltinType || types.Contains(current.text))
 				ty = Type();
 			var name = Match(TokenKind.Iden);
@@ -376,10 +390,10 @@ namespace SuperCode
 				var eql = Next();
 				var init = Expr();
 
-				return new VarStmtAst(ty, name, eql, init, Match(TokenKind.Semicol));
+				return new VarStmtAst(mutKey, ty, name, eql, init, Match(TokenKind.Semicol));
 			}
 
-			return new VarStmtAst(ty, name, default, null, Match(TokenKind.Semicol));
+			return new VarStmtAst(mutKey, ty, name, default, null, Match(TokenKind.Semicol));
 		}
 
 		private UsingStmtAst UsingStmt()

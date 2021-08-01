@@ -55,7 +55,7 @@ namespace SuperCode
 		}
 
 		private FieldNode Nodify(FieldAst ast, int index) =>
-			new FieldNode(Nodify(ast.type), index, ast.name.text) { syntax = ast };
+			new FieldNode(Nodify(ast.type), ast.mutKey.HasValue, index, ast.name.text) { syntax = ast };
 
 		private Node Nodify(MemAst ast)
 		{
@@ -119,9 +119,14 @@ namespace SuperCode
 
 			retType = Nodify(ast.retType);
 			var ty = LLVMTypeRef.CreateFunction(retType, paramTypes, ast.vaArg != default);
-			string name = ast.asmTag.Is(TokenKind.Unknown) ? ast.name.text : ast.asmTag.text;
-			if (ast.asmTag.Is(TokenKind.Str))
-				name = name[1..^1];
+			string name = ast.name.text;
+			if (ast.asmTag is not null)
+			{
+				var asmTag = ast.asmTag.Value;
+				name = asmTag.text;
+				if (asmTag.Is(TokenKind.Str))
+					name = name[1..^1];
+			}
 
 			var stmts = new Node[ast.stmts.Length];
 			for (int i = 0; i < stmts.Length; i++)
@@ -161,7 +166,7 @@ namespace SuperCode
 		{
 			var ty = Nodify(ast.type);
 			var init = Nodify(ast.init, ty.IsRef() ? default : ty);
-			var var = new VarMemNode(ty, ast.name.text, init) { syntax = ast };
+			var var = new VarMemNode(ty, ast.mutKey.HasValue, ast.name.text, init) { syntax = ast };
 			syms.Add(var.name, var);
 			return var;
 		}
@@ -221,7 +226,7 @@ namespace SuperCode
 			var ty = Nodify(ast.type);
 			var initTy = ty.IsRef() ? default : ty;
 			var init = Nodify(ast.init, initTy);
-			var var = new VarStmtNode(ty, ast.name.text, init) { syntax = ast };
+			var var = new VarStmtNode(ty, ast.mutKey.HasValue, ast.name.text, init) { syntax = ast };
 			syms.Add(var.name, var);
 			return var;
 		}
@@ -275,7 +280,7 @@ namespace SuperCode
 			case TokenKind.Eql:
 			{
 				if (!left.mut)
-					throw new Exception("Assignee must be mutable");
+					safety.ReportNotMut(left);
 				var val = Nodify(ast.right);
 				return new AssignExprNode(left, Cast(val, left.type.IsRef() ? left.type.ElementType : left.type));
 			}

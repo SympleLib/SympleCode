@@ -15,7 +15,7 @@ namespace SuperCode
 			this.paramz = paramz;
 		}
 
-		public bool mut { get; }
+		public bool mut => false;
 		public string name { get; }
 		public LLVMTypeRef type { get; }
 		public override NodeKind kind => NodeKind.DeclFuncMem;

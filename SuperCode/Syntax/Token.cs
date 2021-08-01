@@ -52,6 +52,8 @@ namespace SuperCode
 		IfKey,
 		ElseKey,
 
+		MutKey,
+
 		Count,
 	}
 
@@ -119,6 +121,8 @@ namespace SuperCode
 			{ "ret", TokenKind.RetKey },
 			{ "ref", TokenKind.RefKey },
 			{ "as", TokenKind.AsKey },
+
+			{ "mut", TokenKind.MutKey },
 		};
 	}
 }

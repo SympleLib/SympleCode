@@ -6,9 +6,10 @@ namespace SuperCode
 	{
 		public readonly ExprNode init;
 
-		public VarMemNode(LLVMTypeRef ty, string name, ExprNode init)
+		public VarMemNode(LLVMTypeRef ty, bool mut, string name, ExprNode init)
 		{
 			this.type = ty;
+			this.mut = mut;
 			this.name = name;
 			this.init = init;
 		}

@@ -6,9 +6,10 @@ namespace SuperCode
 	{
 		public readonly int index;
 
-		public FieldNode(LLVMTypeRef type, int index, string name)
+		public FieldNode(LLVMTypeRef type, bool mut, int index, string name)
 		{
 			this.type = type;
+			this.mut = mut;
 			this.index = index;
 			this.name = name;
 		}
