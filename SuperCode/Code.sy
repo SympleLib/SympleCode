@@ -1,3 +1,7 @@
-﻿decl void printf wprintf(char*, ...);
+﻿decl void print _putws(char*);
+decl void printf wprintf(char*, ...);
 
-void run() {}
+char* str = 'Hello, world!';
+
+pub void run() ->
+	print(str);

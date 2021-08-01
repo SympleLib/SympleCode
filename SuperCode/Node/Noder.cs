@@ -48,7 +48,9 @@ namespace SuperCode
 					args[i] = Nodify(ast.args[i]);
 				ty = LLVMTypeRef.CreateFunction(ty, args);
 			}
-
+			
+			if (ast.addons.Length > 0 && !syc.allUnsafe)
+					safety.ReportEvilPtr(ast);
 			for (int i = 0; i < ast.addons.Length; i++)
 				ty = ty.Ptr();
 			if (ast.refTok is not null)
@@ -82,12 +84,13 @@ namespace SuperCode
 		private DeclFuncMemNode Nodify(DeclFuncMemAst ast)
 		{
 			var paramTypes = new LLVMTypeRef[ast.paramz.Length];
-			for (int i = 0; i < paramTypes.Length; i++)
-				paramTypes[i] = Nodify(ast.paramz[i].type);
-
 			var paramz = new FieldNode[ast.paramz.Length];
 			for (int i = 0; i < paramz.Length; i++)
-				paramz[i] = Nodify(ast.paramz[i], i);
+			{
+				var param = Nodify(ast.paramz[i], i);
+				paramz[i] = param;
+				paramTypes[i] = param.type;
+			}
 
 			retType = Nodify(ast.retType);
 			var ty = LLVMTypeRef.CreateFunction(retType, paramTypes, ast.vaArg != default);
@@ -134,7 +137,7 @@ namespace SuperCode
 			for (int i = 0; i < stmts.Length; i++)
 				stmts[i] = Nodify(ast.stmts[i]);
 
-			var func = new FuncMemNode(ty, syc.defaultVis, name, paramz, stmts) { syntax = ast };
+			var func = new FuncMemNode(ty, Vis(ast.vis), name, paramz, stmts) { syntax = ast };
 			if (syms.ContainsKey(ast.name.text))
 				syms.Remove(ast.name.text);
 			syms.Add(ast.name.text, func);
@@ -168,7 +171,7 @@ namespace SuperCode
 		{
 			var ty = Nodify(ast.type);
 			var init = Nodify(ast.init, ty.IsRef() ? default : ty);
-			var var = new VarMemNode(ty, syc.defaultVis, IsMut(ast.mutKey), ast.name.text, init) { syntax = ast };
+			var var = new VarMemNode(ty, Vis(ast.vis), IsMut(ast.mutKey), ast.name.text, init) { syntax = ast };
 			syms.Add(var.name, var);
 			return var;
 		}
@@ -474,14 +477,28 @@ namespace SuperCode
 		private bool IsMut(Token? mutKey)
 		{
 			if (mutKey is null)
-				return !syc.defaultConst;
-			var token = mutKey.Value;
-			if (token.kind is TokenKind.MutKey)
-				return true;
-			if (token.kind is TokenKind.ConstKey)
-				return false;
+				return !syc.defConst;
+			return mutKey.Value.kind is TokenKind.MutKey;
 
 			throw new InvalidOperationException("Can't deduce whether mutable");
+		}
+
+		private Visibility Vis(Token? token)
+		{
+			if (token is null)
+				return syc.defVis;
+			switch (token?.kind)
+			{
+			case TokenKind.PubKey:
+				return Visibility.Public;
+			case TokenKind.ProtKey:
+				return Visibility.Protected;
+			case TokenKind.PrivKey:
+				return Visibility.Private;
+
+			default:
+				return syc.defVis;
+			}
 		}
 	}
 }

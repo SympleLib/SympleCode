@@ -2,6 +2,8 @@
 using System.Collections.Generic;
 using System.IO;
 
+using static SuperCode.Threat;
+
 namespace SuperCode
 {
 	public struct Threat
@@ -70,32 +72,35 @@ namespace SuperCode
 			return false;
 		}
 
-		public void Report(Threat.Level lvl, string msg, Token tok) =>
+		public void Report(Level lvl, string msg, Token tok) =>
 			threats.Add(new Threat(lvl, msg, tok));
 
 		public void ReportUnexpectedEof(Token where) =>
-			Report(Threat.Level.Avengers, "Unexpected end of file", where);
+			Report(Level.Avengers, "Unexpected end of file", where);
 
 		public void ReportExpectedToken(TokenKind expected, Token got) =>
-			Report(Threat.Level.Avengers, $"Expected {expected}, got {got.kind}", got);
+			Report(Level.Avengers, $"Expected {expected}, got {got.kind}", got);
 
 		public void ReportExpectedExpr(Token where) =>
-			Report(Threat.Level.Avengers, "Expected expression", where);
+			Report(Level.Avengers, "Expected expression", where);
 
 		public void ReportNSField(Token where) =>
-			Report(Threat.Level.Avengers, "No such field found", where);
+			Report(Level.Avengers, "No such field found", where);
 
 		public void ReportUS(Token where) =>
-			Report(Threat.Level.Avengers, $"Undefined symbol `{where.text}`", where);
+			Report(Level.Avengers, $"Undefined symbol `{where.text}`", where);
+
+		public void ReportEvilPtr(TypeAst ast) =>
+			Report(Level.Avengers, $"Pointers can only be used in unsafe context", ast.baze);
 
 		public void ReportNotMut(ExprNode expr)
 		{
-			Report(Threat.Level.Avengers, "Can only re-assign values to mutable variables", expr.syntax.token);
-			Report(Threat.Level.Think, "Declare variable as mutable", expr.syntax.token);
+			Report(Level.Avengers, "Can only re-assign values to mutable variables", expr.syntax.token);
+			Report(Level.Think, "Declare variable as mutable", expr.syntax.token);
 		}
 
 		public void ReportPossibleLossOfData(Token where) =>
-			Report(Threat.Level.Think, "Possible loss of data", where);
+			Report(Level.Think, "Possible loss of data", where);
 
 
 		public void Print(TextWriter writer)

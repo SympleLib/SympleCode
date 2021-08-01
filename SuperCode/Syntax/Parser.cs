@@ -116,9 +116,13 @@ namespace SuperCode
 		{
 			switch (current.kind)
 			{
+			case TokenKind.PubKey:
+			case TokenKind.ProtKey:
+			case TokenKind.PrivKey:
+				return FuncOrVarMem(Next());
 			case TokenKind.MutKey:
 			case TokenKind.ConstKey:
-				return VarMem(Next(), Type());
+				return VarMem(null, Next(), Type());
 			case TokenKind.DeclKey:
 				return DeclFuncMem();
 			case TokenKind.StructKey:
@@ -126,7 +130,7 @@ namespace SuperCode
 
 			default:
 				if (IsType(current))
-					return FuncOrVarMem();
+					return FuncOrVarMem(null);
 				return new StmtMemAst(Stmt());
 			}
 		}
@@ -171,7 +175,7 @@ namespace SuperCode
 			return new DeclFuncMemAst(key, ret, name, asmTag, open, paramz.ToArray(), vaArg, close, semi);
 		}
 
-		private FuncMemAst FuncMem(TypeAst ret)
+		private FuncMemAst FuncMem(Token? vis, TypeAst ret)
 		{
 			var name = Match(TokenKind.Iden);
 			Token? asmTag = null;
@@ -211,7 +215,7 @@ namespace SuperCode
 				var arrow = Next();
 
 				stmts.Add(Stmt());
-				return new FuncMemAst(ret, name, asmTag, openArg, paramz.ToArray(), vaArg, closeArg, arrow, stmts.ToArray());
+				return new FuncMemAst(vis, ret, name, asmTag, openArg, paramz.ToArray(), vaArg, closeArg, arrow, stmts.ToArray());
 			}
 
 			var open = Match(TokenKind.LeftBrace);
@@ -227,15 +231,18 @@ namespace SuperCode
 			}
 
 			var close = Next();
-			return new FuncMemAst(ret, name, asmTag, openArg, paramz.ToArray(), vaArg, closeArg, open, close, stmts.ToArray());
+			return new FuncMemAst(vis, ret, name, asmTag, openArg, paramz.ToArray(), vaArg, closeArg, open, close, stmts.ToArray());
 		}
 
-		private MemAst FuncOrVarMem()
+		private MemAst FuncOrVarMem(Token? vis)
 		{
 			var type = Type();
-			if (Peek(1).Is(TokenKind.LeftParen) || Peek(2).Is(TokenKind.LeftParen))
-				return FuncMem(type);
-			return VarMem(null, type);
+			if (next.Is(TokenKind.LeftParen) || Peek(2).Is(TokenKind.LeftParen))
+				return FuncMem(vis, type);
+			Token? mutKey = null;
+			if (current.kind is TokenKind.MutKey or TokenKind.ConstKey)
+				mutKey = Next();
+			return VarMem(vis, mutKey, type);
 		}
 
 		private StructMemAst StructMem()
@@ -268,19 +275,19 @@ namespace SuperCode
 		}
 
 
-		private VarMemAst VarMem(Token? mutKey, TypeAst type)
+		private VarMemAst VarMem(Token? vis, Token? mutKey, TypeAst type)
 		{
 			var name = Match(TokenKind.Iden);
 			if (current.Is(TokenKind.Semicol))
 			{
 				var semi = Next();
-				return new VarMemAst(mutKey, type, name, default, default, semi);
+				return new VarMemAst(vis, mutKey, type, name, default, default, semi);
 			}
 
 			var eql = Match(TokenKind.Eql);
 			var init = Expr();
 			var semicol = Match(TokenKind.Semicol);
-			return new VarMemAst(mutKey, type, name, eql, init, semicol);
+			return new VarMemAst(vis, mutKey, type, name, eql, init, semicol);
 		}
 
 		private StmtAst Stmt()

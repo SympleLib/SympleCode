@@ -40,10 +40,62 @@ namespace SuperCode
 		public void Optimize()
 		{
 			var pass = LLVMPassManagerRef.Create();
-			pass.AddGVNPass();
-			pass.AddReassociatePass();
+			pass.AddAggressiveDCEPass();
+			pass.AddAlignmentFromAssumptionsPass();
+			pass.AddAlwaysInlinerPass();
+			pass.AddArgumentPromotionPass();
+			pass.AddBasicAliasAnalysisPass();
+			pass.AddBitTrackingDCEPass();
+			pass.AddCalledValuePropagationPass();
 			pass.AddCFGSimplificationPass();
+			pass.AddConstantMergePass();
+			pass.AddCorrelatedValuePropagationPass();
+			pass.AddDCEPass();
+			pass.AddDeadArgEliminationPass();
+			pass.AddDeadStoreEliminationPass();
+			pass.AddDemoteMemoryToRegisterPass();
+			pass.AddEarlyCSEMemSSAPass();
+			pass.AddEarlyCSEPass();
+			pass.AddFunctionAttrsPass();
+			pass.AddFunctionInliningPass();
+			pass.AddGlobalDCEPass();
+			pass.AddGlobalOptimizerPass();
+			pass.AddGVNPass();
+			pass.AddIndVarSimplifyPass();
 			pass.AddInstructionCombiningPass();
+			pass.AddIPSCCPPass();
+			pass.AddJumpThreadingPass();
+			pass.AddLICMPass();
+			pass.AddLoopDeletionPass();
+			pass.AddLoopIdiomPass();
+			pass.AddLoopRerollPass();
+			pass.AddLoopRotatePass();
+			pass.AddLoopUnrollPass();
+			pass.AddLoopUnswitchPass();
+			pass.AddLoopVectorizePass();
+			pass.AddLowerConstantIntrinsicsPass();
+			pass.AddLowerExpectIntrinsicPass();
+			pass.AddLowerSwitchPass();
+			pass.AddMemCpyOptPass();
+			pass.AddMergedLoadStoreMotionPass();
+			pass.AddMergeFunctionsPass();
+			pass.AddNewGVNPass();
+			pass.AddPartiallyInlineLibCallsPass();
+			pass.AddPromoteMemoryToRegisterPass();
+			pass.AddPruneEHPass();
+			pass.AddReassociatePass();
+			pass.AddScalarizerPass();
+			pass.AddScalarReplAggregatesPass();
+			pass.AddScalarReplAggregatesPassSSA();
+			pass.AddSCCPPass();
+			pass.AddScopedNoAliasAAPass();
+			pass.AddSimplifyLibCallsPass();
+			pass.AddSLPVectorizePass();
+			pass.AddStripDeadPrototypesPass();
+			pass.AddStripSymbolsPass();
+			pass.AddTailCallEliminationPass();
+			pass.AddTypeBasedAliasAnalysisPass();
+			pass.AddVerifierPass();
 			pass.InitializeFunctionPassManager();
 			pass.Run(module);
 		}
@@ -137,6 +189,7 @@ namespace SuperCode
 		private LLVMValueRef Gen(VarMemNode node)
 		{
 			var var = module.AddGlobal(node.type, node.name);
+			node.vis.Apply(var);
 			if (node.init is null)
 				var.Initializer = LLVMValueRef.CreateConstNull(node.type);
 			else

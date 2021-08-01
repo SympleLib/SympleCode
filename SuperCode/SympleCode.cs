@@ -2,22 +2,25 @@
 {
 	public enum SycMode
 	{
-		Casual,
-		Industry,
+		DefaultPrivate = 1 << 0,
+		DefaultConstant = 1 << 1,
+		AllUnsafe = 1 << 2,
+
+		Default = 0,
+		Industry = DefaultPrivate | DefaultConstant,
 	}
 
 	public class SympleCode
 	{
 		public SycMode mode;
-		public readonly bool allUnsafe;
 
-		public Visibility defaultVis => mode is SycMode.Industry ? Visibility.Private : Visibility.Public;
-		public bool defaultConst => mode is SycMode.Industry;
+		public bool defPriv => mode.HasFlag(SycMode.DefaultPrivate);
+		public bool defConst => mode.HasFlag(SycMode.DefaultConstant);
+		public bool allUnsafe => mode.HasFlag(SycMode.AllUnsafe);
 
-		public SympleCode(SycMode mode, bool allUnsafe)
-		{
+		public Visibility defVis => defPriv ? Visibility.Private : Visibility.Public;
+
+		public SympleCode(SycMode mode) =>
 			this.mode = mode;
-			this.allUnsafe = allUnsafe;
-		}
 	}
 }
