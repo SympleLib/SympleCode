@@ -8,9 +8,10 @@ namespace SuperCode
 		public readonly FieldNode[] paramz;
 		public readonly Node[] stmts;
 
-		public FuncMemNode(LLVMTypeRef type, string name, FieldNode[] paramz, Node[] stmts)
+		public FuncMemNode(LLVMTypeRef type, Visibility vis, string name, FieldNode[] paramz, Node[] stmts)
 		{
 			this.type = type;
+			this.vis = vis;
 			this.retType = type.ReturnType;
 			this.name = name;
 			this.paramz = paramz;
@@ -19,6 +20,7 @@ namespace SuperCode
 
 		public bool mut => false;
 		public string name { get; }
+		public Visibility vis { get; }
 		public LLVMTypeRef type { get; }
 		public override NodeKind kind => NodeKind.FuncMem;
 	}

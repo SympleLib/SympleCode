@@ -113,6 +113,7 @@ namespace SuperCode
 		private LLVMValueRef Gen(FuncMemNode mem)
 		{
 			func = module.AddFunction(mem.name, mem.type);
+			mem.vis.Apply(func);
 			var entry = func.AppendBasicBlock();
 			builder.PositionAtEnd(entry);
 			syms.Add(mem, func);

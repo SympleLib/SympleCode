@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 
 using LLVMSharp.Interop;
+using static LLVMSharp.Interop.LLVMLinkage;
 
 namespace SuperCode
 {
@@ -47,5 +48,19 @@ namespace SuperCode
 
 		public static LLVMValueRef AddGlobal(this LLVMModuleRef module, LLVMTypeRef ty) =>
 			module.AddGlobal(ty, null);
+
+		public static void Apply(this Visibility vis, LLVMValueRef val)
+		{
+			if (vis is Visibility.Protected)
+				val.Linkage = LLVMInternalLinkage;
+			if (vis is Visibility.Private)
+				val.Linkage = LLVMPrivateLinkage;
+			if (vis is Visibility.Public)
+				val.Linkage = LLVMExternalLinkage;
+			if (vis is Visibility.Import)
+				val.Linkage = LLVMDLLImportLinkage;
+			if (vis is Visibility.Export)
+				val.Linkage = LLVMDLLExportLinkage;
+		}
 	}
 }

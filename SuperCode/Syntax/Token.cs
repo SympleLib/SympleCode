@@ -55,6 +55,10 @@ namespace SuperCode
 		MutKey,
 		ConstKey,
 
+		PubKey,
+		ProtKey,
+		PrivKey,
+
 		Count,
 	}
 
@@ -125,6 +129,10 @@ namespace SuperCode
 
 			{ "mut", TokenKind.MutKey },
 			{ "const", TokenKind.ConstKey },
+
+			{ "pub", TokenKind.PubKey },
+			{ "prot", TokenKind.ProtKey },
+			{ "priv", TokenKind.PrivKey },
 		};
 	}
 }

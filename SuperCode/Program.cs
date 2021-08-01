@@ -48,7 +48,8 @@ namespace SuperCode
 			LLVM.InitializeNativeAsmPrinter();
 			LLVM.InitializeNativeDisassembler();
 
-			var noder = new Noder(tree);
+			var syc = new SympleCode(SycMode.Casual, true);
+			var noder = new Noder(syc, tree);
 			safety = noder.Nodify(out var node);
 			safety.Print(Console.Out);
 			if (safety.MustSelfDestruct())

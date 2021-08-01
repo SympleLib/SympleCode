@@ -17,6 +17,7 @@ namespace SuperCode
 
 		public bool mut => false;
 		public string name { get; }
+		public Visibility vis => Visibility.Default;
 		public LLVMTypeRef type { get; }
 		public override NodeKind kind => NodeKind.DeclFuncMem;
 	}

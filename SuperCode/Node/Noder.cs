@@ -14,10 +14,12 @@ namespace SuperCode
 		private Dictionary<string, Symbol> syms = new Dictionary<string, Symbol>();
 		private readonly Dictionary<string, LLVMTypeRef> types = new Dictionary<string, LLVMTypeRef>();
 		private readonly Dictionary<LLVMTypeRef, StructMemNode> ztructs = new Dictionary<LLVMTypeRef, StructMemNode>();
+		private readonly SympleCode syc;
 		private LLVMTypeRef retType;
 
-		public Noder(ModuleAst module)
+		public Noder(SympleCode syc, ModuleAst module)
 		{
+			this.syc = syc;
 			this.module = module;
 			ctx = LLVMContextRef.Global;
 		}
@@ -55,7 +57,7 @@ namespace SuperCode
 		}
 
 		private FieldNode Nodify(FieldAst ast, int index) =>
-			new FieldNode(Nodify(ast.type), !(ast.mutKey.HasValue && ast.mutKey.Value.Is(TokenKind.ConstKey)), index, ast.name.text) { syntax = ast };
+			new FieldNode(Nodify(ast.type), IsMut(ast.mutKey), index, ast.name.text) { syntax = ast };
 
 		private Node Nodify(MemAst ast)
 		{
@@ -132,7 +134,7 @@ namespace SuperCode
 			for (int i = 0; i < stmts.Length; i++)
 				stmts[i] = Nodify(ast.stmts[i]);
 
-			var func = new FuncMemNode(ty, name, paramz, stmts) { syntax = ast };
+			var func = new FuncMemNode(ty, syc.defaultVis, name, paramz, stmts) { syntax = ast };
 			if (syms.ContainsKey(ast.name.text))
 				syms.Remove(ast.name.text);
 			syms.Add(ast.name.text, func);
@@ -166,7 +168,7 @@ namespace SuperCode
 		{
 			var ty = Nodify(ast.type);
 			var init = Nodify(ast.init, ty.IsRef() ? default : ty);
-			var var = new VarMemNode(ty, !(ast.mutKey.HasValue && ast.mutKey.Value.Is(TokenKind.ConstKey)), ast.name.text, init) { syntax = ast };
+			var var = new VarMemNode(ty, syc.defaultVis, IsMut(ast.mutKey), ast.name.text, init) { syntax = ast };
 			syms.Add(var.name, var);
 			return var;
 		}
@@ -226,7 +228,7 @@ namespace SuperCode
 			var ty = Nodify(ast.type);
 			var initTy = ty.IsRef() ? default : ty;
 			var init = Nodify(ast.init, initTy);
-			var var = new VarStmtNode(ty, !(ast.mutKey.HasValue && ast.mutKey.Value.Is(TokenKind.ConstKey)), ast.name.text, init) { syntax = ast };
+			var var = new VarStmtNode(ty, IsMut(ast.mutKey), ast.name.text, init) { syntax = ast };
 			syms.Add(var.name, var);
 			return var;
 		}
@@ -467,6 +469,19 @@ namespace SuperCode
 					return field;
 			safety.ReportNSField(name);
 			return null;
+		}
+
+		private bool IsMut(Token? mutKey)
+		{
+			if (mutKey is null)
+				return !syc.defaultConst;
+			var token = mutKey.Value;
+			if (token.kind is TokenKind.MutKey)
+				return true;
+			if (token.kind is TokenKind.ConstKey)
+				return false;
+
+			throw new InvalidOperationException("Can't deduce whether mutable");
 		}
 	}
 }
