@@ -380,7 +380,9 @@ namespace SuperCode
 		private RetStmtAst RetStmt()
 		{
 			var key = Match(TokenKind.RetKey);
-			var val = Expr();
+			ExprAst val = null;
+			if (current.kind is not TokenKind.Semicol)
+				val = Expr();
 			var semi = Match(TokenKind.Semicol);
 
 			return new RetStmtAst(key, val, semi);

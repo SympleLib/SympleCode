@@ -231,8 +231,18 @@ namespace SuperCode
 			return new IfStmtNode(cond, then, elze);
 		}
 
-		private RetStmtNode Nodify(RetStmtAst ast) =>
-			new RetStmtNode(Nodify(ast.value, retType));
+		private RetStmtNode Nodify(RetStmtAst ast)
+		{
+
+			if (retType == LLVMTypeRef.Void)
+			{
+				if (ast.value is not null)
+					throw new Exception("Must return null");
+				return new RetStmtNode(null);
+			}
+
+			return new RetStmtNode(Nodify(ast.value, retType));
+		}
 
 		private VarStmtNode Nodify(VarStmtAst ast)
 		{

@@ -8,13 +8,12 @@ decl void printf wprintf(char*, ...);
 decl void _flip(uint n, uint flip-count, uint x);
 void _flip(uint n, uint flip-count, uint x, uint s)
 {
-	if flip-count == 0 -> null;
-	else
-	{
-		uint y = n % x;
-		printf('%i\n', y - s != 0);
-		_flip(n, flip-count - 1, x * 2, y);
-	}
+	if flip-count == 0 ->
+		ret;
+
+	uint y = n % x;
+	printf('%i\n', y - s != 0);
+	_flip(n, flip-count - 1, x * 2, y);
 }
 
 void flip(uint flip-count)

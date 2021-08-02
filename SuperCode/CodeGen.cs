@@ -17,6 +17,7 @@ namespace SuperCode
 		private readonly LLVMBuilderRef builder;
 		private readonly LLVMDIBuilderRef dbuilder;
 		private LLVMMetadataRef file;
+		private bool returned;
 
 		public CodeGen(ModuleNode mod)
 		{
@@ -102,7 +103,7 @@ namespace SuperCode
 
 		private LLVMValueRef Gen(Node node)
 		{
-			if (node is null)
+			if (node is null || returned)
 				return null;
 
 			switch (node.kind)
@@ -166,6 +167,7 @@ namespace SuperCode
 
 		private LLVMValueRef Gen(FuncMemNode mem)
 		{
+			returned = false;
 			func = module.AddFunction(mem.name, mem.type);
 			mem.vis.Apply(func);
 			var entry = func.AppendBasicBlock();
@@ -223,25 +225,34 @@ namespace SuperCode
 			var branch = builder.BuildCondBr(cond, then, hasElse ? elze : end);
 
 			builder.PositionAtEnd(then);
+			returned = false;
 			Gen(node.then);
-			builder.BuildBr(end);
+			if (!returned)
+				builder.BuildBr(end);
 
 			if (node.elze is not null)
 			{
 				builder.PositionAtEnd(elze);
+				returned = false;
 				Gen(node.elze);
-				builder.BuildBr(end);
+				if (!returned)
+					builder.BuildBr(end);
 			}
 
 			builder.PositionAtEnd(end);
+			returned = false;
 			return branch;
 		}
 
-		private LLVMValueRef Gen(RetStmtNode node) =>
-			builder.BuildRet(Gen(node.value));
+		private LLVMValueRef Gen(RetStmtNode node)
+		{
+			returned = true;
+			if (node.value is null)
+				return builder.BuildRetVoid();
+			return builder.BuildRet(Gen(node.value));
+		}
 
-		private LLVMValueRef Gen(TypedefStmtNode node) =>
-			null;
+		private LLVMValueRef Gen(TypedefStmtNode node) => null;
 
 		private LLVMValueRef Gen(VarStmtNode node)
 		{

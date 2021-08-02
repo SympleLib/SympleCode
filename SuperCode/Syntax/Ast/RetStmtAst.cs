@@ -8,7 +8,7 @@
 		public RetStmtAst(Token key, ExprAst val, Token semi): base(semi)
 		{
 			token = key;
-
+			
 			this.key = key;
 			value = val;
 		}
