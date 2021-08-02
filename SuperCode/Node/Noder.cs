@@ -110,6 +110,8 @@ namespace SuperCode
 
 		private FuncMemNode Nodify(FuncMemAst ast)
 		{
+			var psyms = new Dictionary<string, Symbol>(syms);
+
 			var paramTypes = new LLVMTypeRef[ast.paramz.Length];
 			for (int i = 0; i < paramTypes.Length; i++)
 				paramTypes[i] = Nodify(ast.paramz[i].type);
@@ -138,8 +140,12 @@ namespace SuperCode
 				stmts[i] = Nodify(ast.stmts[i]);
 
 			var func = new FuncMemNode(ty, Vis(ast.vis), name, paramz, stmts) { syntax = ast };
+			syms = psyms;
 			if (syms.ContainsKey(ast.name.text))
-				syms.Remove(ast.name.text);
+			{
+				syms.Remove(ast.name.text, out var sym);
+				((DeclFuncMemNode) sym).impl = func;
+			}
 			syms.Add(ast.name.text, func);
 			return func;
 		}
@@ -218,7 +224,9 @@ namespace SuperCode
 			for (int i = 0; i < stmts.Length; i++)
 				stmts[i] = Nodify(ast.then[i]);
 			var then = new BlockStmtNode(stmts);
-			var elze = Nodify(ast.elze);
+			Node elze = null;
+			if (ast.elze is not null)
+				elze = Nodify(ast.elze);
 
 			return new IfStmtNode(cond, then, elze);
 		}
@@ -247,6 +255,9 @@ namespace SuperCode
 		
 		private ExprNode Nodify(ExprAst ast, LLVMTypeRef castTo = default)
 		{
+			if (ast is null)
+				return Cast(new NumExprNode(0, LLVMTypeRef.Int1), castTo);
+
 			switch (ast.kind)
 			{
 			case AstKind.BinExpr:

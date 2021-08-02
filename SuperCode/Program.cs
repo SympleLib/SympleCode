@@ -48,7 +48,7 @@ namespace SuperCode
 			LLVM.InitializeNativeAsmPrinter();
 			LLVM.InitializeNativeDisassembler();
 
-			var syc = new SympleCode(SycMode.Industry | SycMode.AllUnsafe);
+			var syc = new SympleCode((SycMode.Dev) & ~SycMode.Optimize);
 			var noder = new Noder(syc, tree);
 			safety = noder.Nodify(out var node);
 			safety.Print(Console.Out);
@@ -57,7 +57,8 @@ namespace SuperCode
 
 			var cg = new CodeGen(node);
 			var module = cg.Gen();
-			cg.Optimize();
+			if (syc.optimize)
+				cg.Optimize();
 
 			Console.ForegroundColor = ConsoleColor.DarkGreen;
 			File.WriteAllText("Code.ll", module.ToString());

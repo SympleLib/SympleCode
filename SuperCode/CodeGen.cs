@@ -157,6 +157,8 @@ namespace SuperCode
 
 		private LLVMValueRef Gen(DeclFuncMemNode mem)
 		{
+			if (mem.impl is not null)
+				return null;
 			var fn = module.AddFunction(mem.name, mem.type);
 			syms.Add(mem, fn);
 			return fn;
@@ -171,7 +173,11 @@ namespace SuperCode
 			syms.Add(mem, func);
 
 			for (int i = 0; i < mem.paramz.Length; i++)
-				syms.Add(mem.paramz[i], func.Params[i]);
+			{
+				var param = func.Params[i];
+				syms.Add(mem.paramz[i], param);
+				param.Name = mem.paramz[i].name;
+			}
 
 			foreach (var stmt in mem.stmts)
 				Gen(stmt);
@@ -366,10 +372,15 @@ namespace SuperCode
 			return builder.BuildBitCast(str, node.type);
 		}
 
-		private LLVMValueRef Gen(SymExprNode expr)
+		private LLVMValueRef Gen(SymExprNode node)
 		{
-			var sym = syms[expr.symbol];
-			var symbol = (Node) expr.symbol;
+			LLVMValueRef sym;
+			if (node.symbol is DeclFuncMemNode decl && decl.impl is not null)
+				sym = syms[decl.impl];
+			else
+				sym = syms[node.symbol];
+
+			var symbol = (Node) node.symbol;
 			if (symbol.kind is NodeKind.VarStmt or NodeKind.VarMem)
 				return builder.BuildLoad(sym);
 			return sym;
@@ -432,7 +443,12 @@ namespace SuperCode
 
 		private LLVMValueRef GenAddr(SymExprNode node)
 		{
-			var sym = syms[node.symbol];
+			LLVMValueRef sym;
+			if (node.symbol is DeclFuncMemNode decl && decl.impl is not null)
+				sym = syms[decl.impl];
+			else
+				sym = syms[node.symbol];
+
 			if (sym.TypeOf.ElementType.IsRef())
 				return builder.BuildLoad(sym);
 			return sym;

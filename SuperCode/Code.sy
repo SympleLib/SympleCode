@@ -1,11 +1,30 @@
-﻿decl void print _putws(char*);
+﻿decl ulong time(byte*);
+decl void seed srand(uint);
+decl uint rand();
+
+decl void print _putws(char*);
 decl void printf wprintf(char*, ...);
 
-char* fmt = 'Cool Number: %i\n';
-
-pub void run()
+decl void _flip(uint n, uint flip-count, uint x);
+void _flip(uint n, uint flip-count, uint x, uint s)
 {
-	mut int x = 60;
-	x = x + 9;
-	printf(fmt, x);
+	if flip-count == 0 -> null;
+	else
+	{
+		uint y = n % x;
+		printf('%i\n', (y - s / x) % 2);
+		_flip(n, flip-count - 1, x * 2, y);
+	}
+}
+
+void flip(uint flip-count)
+{
+	seed(time(null));
+	_flip(rand(), flip-count, 2, 0);
+}
+
+void run()
+{
+	uint flip-count = 6;
+	flip(flip-count);
 }
