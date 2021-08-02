@@ -22,17 +22,36 @@ namespace SuperCode
 				if (field.FieldType.IsAssignableTo(typeof(Ast)))
 				{
 					var child = (Ast) field.GetValue(this);
-					if (child is not null)
-						child.Print(writer, indent, $"{field.Name}: ", fieldLast);
+					if (child is null)
+					{
+						string prefix = indent + (fieldLast ? "└──" : "├──");
+						if (toConsole)
+							Console.ForegroundColor = ConsoleColor.Cyan;
+						writer.Write(prefix);
+						if (toConsole)
+							Console.ForegroundColor = ConsoleColor.Green;
+						writer.WriteLine($"{field.Name}");
+						continue;
+					}
+
+					child.Print(writer, indent, $"{field.Name}: ", fieldLast);
 				}
 				else if (field.FieldType.IsArray)
 				{
 					if (field.FieldType.IsAssignableTo(typeof(Ast[])))
 					{
 						var arr = (Ast[]) field.GetValue(this);
-						if (arr is null)
-							continue;
 						string prefix = indent + (fieldLast ? "└──" : "├──");
+						if (arr is null)
+						{
+							if (toConsole)
+								Console.ForegroundColor = ConsoleColor.Cyan;
+							writer.Write(prefix);
+							if (toConsole)
+								Console.ForegroundColor = ConsoleColor.DarkGray;
+							writer.WriteLine($"{field.Name}");
+							continue;
+						}
 
 						if (toConsole)
 							Console.ForegroundColor = ConsoleColor.Cyan;
@@ -55,9 +74,17 @@ namespace SuperCode
 					else if (field.FieldType.IsAssignableTo(typeof(Token[])))
 					{
 						var arr = (Token[]) field.GetValue(this);
-						if (arr is null)
-							continue;
 						string prefix = indent + (fieldLast ? "└──" : "├──");
+						if (arr is null)
+						{
+							if (toConsole)
+								Console.ForegroundColor = ConsoleColor.Cyan;
+							writer.Write(prefix);
+							if (toConsole)
+								Console.ForegroundColor = ConsoleColor.DarkGray;
+							writer.WriteLine($"{field.Name}");
+							continue;
+						}
 
 						if (toConsole)
 							Console.ForegroundColor = ConsoleColor.Cyan;
@@ -73,7 +100,7 @@ namespace SuperCode
 							if (token.kind == TokenKind.Unknown)
 								continue;
 
-							bool last = fieldLast && (token == arr[^1]);
+							bool last = token == arr[^1];
 							string eprefix = eindent + (last ? "└──" : "├──");
 
 							if (toConsole)
@@ -85,13 +112,20 @@ namespace SuperCode
 						}
 					}
 				}
-				else if (field.FieldType.IsAssignableTo(typeof(Token)))
+				else if (field.FieldType.IsAssignableTo(typeof(Token?)))
 				{
 					var token = (Token?) field.GetValue(this);
-					if (token is null || token.Value.Is(TokenKind.Unknown))
-						continue;
-
 					string prefix = indent + (fieldLast ? "└──" : "├──");
+					if (token is null || token.Value.Is(TokenKind.Unknown))
+					{
+						if (toConsole)
+							Console.ForegroundColor = ConsoleColor.Cyan;
+						writer.Write(prefix);
+						if (toConsole)
+							Console.ForegroundColor = ConsoleColor.DarkGray;
+						writer.WriteLine($"{field.Name}");
+						continue;
+					}
 
 					if (toConsole)
 						Console.ForegroundColor = ConsoleColor.Cyan;

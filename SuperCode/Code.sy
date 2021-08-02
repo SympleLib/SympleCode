@@ -1,29 +1,26 @@
-﻿decl ulong time(byte*);
+﻿decl uint time(byte*);
 decl void seed srand(uint);
 decl uint rand();
 
 decl void print _putws(char*);
 decl void printf wprintf(char*, ...);
 
-decl void _flip(uint n, uint flip-count, uint x);
-void _flip(uint n, uint flip-count, uint x, uint s)
-{
-	if flip-count == 0 ->
-		ret;
-
-	uint y = n % x;
-	printf('%i\n', y - s != 0);
-	_flip(n, flip-count - 1, x * 2, y);
-}
-
 void flip(uint flip-count)
 {
 	seed(time(null));
-	_flip(rand(), flip-count, 2, 0);
+	uint n = rand();
+	uint x = 2;
+	uint py = 0;
+
+	while flip-count > 0
+	{
+		uint y = n % x;
+		printf('%i\n', y - py != 0);
+		flip-count = flip-count - 1;
+		x = x * 2;
+		py = y;
+	}
 }
 
-void run()
-{
-	uint flip-count = 6;
-	flip(flip-count);
-}
+void run() ->
+	flip(8);

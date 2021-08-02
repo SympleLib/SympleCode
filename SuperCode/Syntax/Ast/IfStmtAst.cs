@@ -6,9 +6,9 @@
 		public readonly ExprAst cond;
 		public readonly Token? arrow;
 
-		public readonly Token open;
+		public readonly Token? open;
 		public readonly StmtAst[] then;
-		public readonly Token close;
+		public readonly Token? close;
 
 		public readonly Token? elseKey;
 		public readonly StmtAst elze;

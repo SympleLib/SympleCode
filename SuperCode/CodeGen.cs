@@ -127,6 +127,8 @@ namespace SuperCode
 				return Gen((TypedefStmtNode) node);
 			case NodeKind.VarStmt:
 				return Gen((VarStmtNode) node);
+			case NodeKind.WhileStmt:
+				return Gen((WhileStmtNode) node);
 
 			case NodeKind.AssignExpr:
 				return Gen((AssignExprNode) node);
@@ -177,8 +179,11 @@ namespace SuperCode
 			for (int i = 0; i < mem.paramz.Length; i++)
 			{
 				var param = func.Params[i];
-				syms.Add(mem.paramz[i], param);
-				param.Name = mem.paramz[i].name;
+				var ptr = builder.BuildAlloca(param.TypeOf);
+				builder.BuildStore(param, ptr);
+				ptr.Name = mem.paramz[i].name;
+
+				syms.Add(mem.paramz[i], ptr);
 			}
 
 			foreach (var stmt in mem.stmts)
@@ -267,6 +272,24 @@ namespace SuperCode
 				builder.BuildStore(init, ptr);
 			syms.Add(node, ptr);
 			return ptr;
+		}
+
+		private LLVMValueRef Gen(WhileStmtNode node)
+		{
+			var loop = func.AppendBasicBlock();
+			var then = func.AppendBasicBlock();
+			var end = func.AppendBasicBlock();
+			builder.BuildBr(loop);
+
+			builder.PositionAtEnd(loop);
+			var cond = Gen(node.cond);
+			var branch = builder.BuildCondBr(cond, then, end);
+			builder.PositionAtEnd(then);
+			Gen(node.then);
+			builder.BuildBr(loop);
+
+			builder.PositionAtEnd(end);
+			return branch;
 		}
 
 
@@ -424,7 +447,7 @@ namespace SuperCode
 				sym = syms[node.symbol];
 
 			var symbol = (Node) node.symbol;
-			if (symbol.kind is NodeKind.VarStmt or NodeKind.VarMem)
+			if (symbol.kind is NodeKind.VarStmt or NodeKind.VarMem or NodeKind.Field)
 				return builder.BuildLoad(sym);
 			return sym;
 		}

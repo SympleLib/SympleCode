@@ -305,6 +305,8 @@ namespace SuperCode
 				return RetStmt();
 			case TokenKind.IfKey:
 				return IfStmt();
+			case TokenKind.WhileKey:
+				return WhileStmt();
 
 			default:
 				if (current.isBuiltinType || types.Contains(current.text))
@@ -388,6 +390,17 @@ namespace SuperCode
 			return new RetStmtAst(key, val, semi);
 		}
 
+		private UsingStmtAst UsingStmt()
+		{
+			var key = Match(TokenKind.UsingKey);
+			var real = Type();
+			var asKey = Match(TokenKind.AsKey);
+			var alias = Match(TokenKind.Iden);
+			var semi = Match(TokenKind.Semicol);
+			types.Add(alias.text);
+			return new UsingStmtAst(key, real, asKey, alias, semi);
+		}
+
 		private VarStmtAst VarStmt(Token? mutKey = null, TypeAst ty = null)
 		{
 			if (current.Is(TokenKind.MutKey, TokenKind.ConstKey))
@@ -407,15 +420,32 @@ namespace SuperCode
 			return new VarStmtAst(mutKey, ty, name, default, null, Match(TokenKind.Semicol));
 		}
 
-		private UsingStmtAst UsingStmt()
+		private WhileStmtAst WhileStmt()
 		{
-			var key = Match(TokenKind.UsingKey);
-			var real = Type();
-			var asKey = Match(TokenKind.AsKey);
-			var alias = Match(TokenKind.Iden);
-			var semi = Match(TokenKind.Semicol);
-			types.Add(alias.text);
-			return new UsingStmtAst(key, real, asKey, alias, semi);
+			var key = Match(TokenKind.WhileKey);
+			var cond = Expr();
+			if (current.kind is TokenKind.Arrow)
+			{
+				var arrow = Next();
+				var stmt = Stmt();
+				return new WhileStmtAst(key, cond, arrow, stmt);
+			}
+
+			var open = Match(TokenKind.LeftBrace);
+			var stmts = new List<StmtAst>();
+			while (current.kind is not TokenKind.RightBrace)
+			{
+				if (current.kind is TokenKind.Eof)
+				{
+					safety.ReportUnexpectedEof(current);
+					return null;
+				}
+
+				stmts.Add(Stmt());
+			}
+
+			var close = Next();
+			return new WhileStmtAst(key, cond, open, stmts.ToArray(), close);
 		}
 
 		private ExprStmtAst ExprStmt() =>

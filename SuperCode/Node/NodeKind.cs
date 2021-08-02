@@ -15,6 +15,7 @@
 		RetStmt,
 		TypedefStmt,
 		VarStmt,
+		WhileStmt,
 
 		AssignExpr,
 		CallExpr,

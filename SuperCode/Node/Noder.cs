@@ -195,10 +195,13 @@ namespace SuperCode
 				return Nodify(((IfStmtAst) ast));
 			case AstKind.RetStmt:
 				return Nodify((RetStmtAst) ast);
-			case AstKind.VarStmt:
-				return Nodify((VarStmtAst) ast);
 			case AstKind.UsingStmt:
 				return Nodify((UsingStmtAst) ast);
+			case AstKind.VarStmt:
+				return Nodify((VarStmtAst) ast);
+			case AstKind.WhileStmt:
+				return Nodify((WhileStmtAst) ast);
+
 
 			default:
 				throw new InvalidOperationException("Invalid stmt");
@@ -244,6 +247,14 @@ namespace SuperCode
 			return new RetStmtNode(Nodify(ast.value, retType));
 		}
 
+		private TypedefStmtNode Nodify(UsingStmtAst ast)
+		{
+			string alias = ast.alias.text;
+			var real = Nodify(ast.real);
+			types.Add(alias, real);
+			return new TypedefStmtNode(alias, real);
+		}
+
 		private VarStmtNode Nodify(VarStmtAst ast)
 		{
 			var ty = Nodify(ast.type);
@@ -254,12 +265,15 @@ namespace SuperCode
 			return var;
 		}
 
-		private TypedefStmtNode Nodify(UsingStmtAst ast)
+		private WhileStmtNode Nodify(WhileStmtAst ast)
 		{
-			string alias = ast.alias.text;
-			var real = Nodify(ast.real);
-			types.Add(alias, real);
-			return new TypedefStmtNode(alias, real);
+			var cond = Nodify(ast.cond);
+			var stmts = new Node[ast.then.Length];
+			for (int i = 0; i < stmts.Length; i++)
+				stmts[i] = Nodify(ast.then[i]);
+			var then = new BlockStmtNode(stmts);
+
+			return new WhileStmtNode(cond, then);
 		}
 
 		

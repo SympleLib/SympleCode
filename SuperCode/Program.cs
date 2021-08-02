@@ -39,6 +39,7 @@ namespace SuperCode
 				goto Stop;
 
 			tree.Print(Console.Out);
+			File.WriteAllText("Code.tree", tree.ToString());
 			Console.WriteLine();
 
 #if !SYNTAX_ONLY

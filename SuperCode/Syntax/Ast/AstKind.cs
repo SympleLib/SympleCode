@@ -18,6 +18,7 @@
 		RetStmt,
 		UsingStmt,
 		VarStmt,
+		WhileStmt,
 
 		BinExpr,
 		CallExpr,

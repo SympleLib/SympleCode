@@ -53,6 +53,7 @@ namespace SuperCode
 		UsingKey,
 		StructKey,
 
+		WhileKey,
 		IfKey,
 		ElseKey,
 
@@ -126,7 +127,7 @@ namespace SuperCode
 		public static readonly string[] keys = 
 		{
 			"decl", "using", "struct",
-			"if", "else",
+			"while", "if", "else",
 			"null", "ret", "ref", "as",
 			"mut", "const",
 			"pub", "prot", "priv",
