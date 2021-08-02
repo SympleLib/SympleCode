@@ -1,9 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Text;
-using System.Xml.Linq;
 
 using LLVMSharp.Interop;
+using static LLVMSharp.Interop.LLVMIntPredicate;
+using static LLVMSharp.Interop.LLVMRealPredicate;
 
 namespace SuperCode
 {
@@ -300,11 +300,43 @@ namespace SuperCode
 				return builder.BuildFRem(left, right);
 
 			case BinOp.Eql:
-				return builder.BuildICmp(LLVMIntPredicate.LLVMIntEQ, left, right);
+				return builder.BuildICmp(LLVMIntEQ, left, right);
+			case BinOp.NEql:
+				return builder.BuildICmp(LLVMIntNE, left, right);
+			case BinOp.SLt:
+				return builder.BuildICmp(LLVMIntSLT, left, right);
+			case BinOp.SGt:
+				return builder.BuildICmp(LLVMIntSGT, left, right);
+			case BinOp.SLtEql:
+				return builder.BuildICmp(LLVMIntSLE, left, right);
+			case BinOp.SGtEql:
+				return builder.BuildICmp(LLVMIntSGE, left, right);
+
+			case BinOp.ULt:
+				return builder.BuildICmp(LLVMIntULT, left, right);
+			case BinOp.UGt:
+				return builder.BuildICmp(LLVMIntUGT, left, right);
+			case BinOp.ULtEql:
+				return builder.BuildICmp(LLVMIntULE, left, right);
+			case BinOp.UGtEql:
+				return builder.BuildICmp(LLVMIntUGE, left, right);
+
+			case BinOp.FEql:
+				return builder.BuildFCmp(LLVMRealOEQ, left, right);
+			case BinOp.FNEql:
+				return builder.BuildFCmp(LLVMRealONE, left, right);
+			case BinOp.FLt:
+				return builder.BuildFCmp(LLVMRealOLT, left, right);
+			case BinOp.FGt:
+				return builder.BuildFCmp(LLVMRealOGT, left, right);
+			case BinOp.FLtEql:
+				return builder.BuildFCmp(LLVMRealOLE, left, right);
+			case BinOp.FGtEql:
+				return builder.BuildFCmp(LLVMRealOGE, left, right);
 
 			case BinOp.Index:
 				return builder.BuildLoad(builder.BuildInBoundsGEP(left, new LLVMValueRef[] { right }));
-
+				
 			default:
 				throw new InvalidOperationException("Invalid bin-expr");
 			}

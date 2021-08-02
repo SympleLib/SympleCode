@@ -309,9 +309,23 @@ namespace SuperCode
 			BinOp op;
 			switch (ast.op.kind)
 			{
-
 			case TokenKind.EqlEql:
-				op = BinOp.Eql;
+				op = fp ? BinOp.FEql : BinOp.Eql;
+				goto LogExpr;
+			case TokenKind.NotEql:
+				op = fp ? BinOp.FNEql : BinOp.NEql;
+				goto LogExpr;
+			case TokenKind.LeftChevron:
+				op = fp ? BinOp.FLt : us ? BinOp.ULt : BinOp.SLt;
+				goto LogExpr;
+			case TokenKind.RightChevron:
+				op = fp ? BinOp.FGt : us ? BinOp.UGt : BinOp.SGt;
+				goto LogExpr;
+			case TokenKind.LEql:
+				op = fp ? BinOp.FLtEql : us ? BinOp.ULtEql : BinOp.SLtEql;
+				goto LogExpr;
+			case TokenKind.REql:
+				op = fp ? BinOp.FGtEql : us ? BinOp.UGtEql : BinOp.SGtEql;
 				goto LogExpr;
 
 			case TokenKind.Plus:

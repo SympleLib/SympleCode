@@ -34,19 +34,13 @@ namespace SuperCode
 		public static int BinPriority(this TokenKind kind) =>
 			kind switch
 			{
-				TokenKind.Eql =>
-					1,
-				TokenKind.EqlEql =>
-					2,
-				TokenKind.Plus or TokenKind.Dash =>
-					3,
-				TokenKind.Star or TokenKind.Slash or TokenKind.Percent =>
-					4,
-				TokenKind.Dot =>
-					5,
+				TokenKind.Eql => 1,
+				TokenKind.EqlEql or TokenKind.NotEql or TokenKind.LeftChevron or TokenKind.RightChevron or TokenKind.LEql or TokenKind.REql => 2,
+				TokenKind.Plus or TokenKind.Dash => 3,
+				TokenKind.Star or TokenKind.Slash or TokenKind.Percent => 4,
+				TokenKind.Dot => 5,
 
-				_ =>
-					0,
+				_ => 0,
 			};
 
 		public static bool IsPrefix(this TokenKind kind) =>

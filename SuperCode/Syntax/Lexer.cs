@@ -243,9 +243,9 @@ namespace SuperCode
 
 		private Token Keyword(int begin, string txt)
 		{
-			foreach (var key in Token.keys)
-				if (key.Key == txt)
-					return MakeToken(key.Value, begin, txt);
+			for (int i = 0; i < Token.keys.Length; i++)
+				if (Token.keys[i] == txt)
+					return MakeToken(TokenFacts.firstKey + i, begin, txt);
 			return MakeToken(TokenKind.Iden, begin, txt);
 		}
 

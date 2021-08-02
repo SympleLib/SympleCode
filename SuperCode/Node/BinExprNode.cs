@@ -11,8 +11,20 @@ namespace SuperCode
 		Mul,
 		SDiv,
 		SMod,
+
+		Eql,
+		NEql,
+		SLtEql,
+		SGtEql,
+		SGt,
+		SLt,
+
 		UDiv,
 		UMod,
+		ULtEql,
+		UGtEql,
+		UGt,
+		ULt,
 
 		FAdd,
 		FSub,
@@ -20,9 +32,12 @@ namespace SuperCode
 		FDiv,
 		FMod,
 
-		Eql,
-		Gt,
-		Lt,
+		FEql,
+		FNEql,
+		FLtEql,
+		FGtEql,
+		FGt,
+		FLt,
 
 		Index,
 	}

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Diagnostics.CodeAnalysis;
 
 namespace SuperCode
@@ -22,35 +23,43 @@ namespace SuperCode
 		Percent,
 
 		At,
-
-		LeftBrace,
-		RightBrace,
-		LeftParen,
-		RightParen,
-		LeftBracket,
-		RightBracket,
+		Eql,
+		Arrow,
 
 		Dot,
 		Comma,
 		Semicol,
 
-		Eql,
-		Arrow,
+
+		LeftBrace,
+		RightBrace,
+		LeftBracket,
+		RightBracket,
+		LeftParen,
+		RightParen,
+
+		LeftChevron,
+		RightChevron,
 
 		EqlEql,
+		NotEql,
+		LEql,
+		REql,
+
 		DotDotDot,
+
 
 		DeclKey,
 		UsingKey,
 		StructKey,
 
+		IfKey,
+		ElseKey,
+
 		NullKey,
 		RetKey,
 		RefKey,
 		AsKey,
-
-		IfKey,
-		ElseKey,
 
 		MutKey,
 		ConstKey,
@@ -104,35 +113,23 @@ namespace SuperCode
 		public override string ToString() =>
 			$"'{file}' {line}:{col}> {kind} {(Is(TokenKind.Str) ? rawText : ($"'{rawText}'"))}";
 
-		public static readonly string[] puncs = {
+		public static readonly string[] puncs =	{
 			"+", "-", "*", "/", "%",
-			"@",
-			"{", "}", "(", ")", "[", "]",
+			"@", "=", "->",
 			".", ",", ";",
-			"=", "->",
-			"==", "...",
+			"{", "}", "[", "]", "(", ")",
+			"<", ">",
+			"==", "!=", "<=", ">=",
+			"...",
 		};
 
-		public static readonly Dictionary<string, TokenKind> keys = new Dictionary<string, TokenKind>()
+		public static readonly string[] keys = 
 		{
-			{ "decl", TokenKind.DeclKey },
-			{ "using", TokenKind.UsingKey },
-			{ "struct", TokenKind.StructKey },
-
-			{ "if", TokenKind.IfKey },
-			{ "else", TokenKind.ElseKey },
-
-			{ "null", TokenKind.NullKey },
-			{ "ret", TokenKind.RetKey },
-			{ "ref", TokenKind.RefKey },
-			{ "as", TokenKind.AsKey },
-
-			{ "mut", TokenKind.MutKey },
-			{ "const", TokenKind.ConstKey },
-
-			{ "pub", TokenKind.PubKey },
-			{ "prot", TokenKind.ProtKey },
-			{ "priv", TokenKind.PrivKey },
+			"decl", "using", "struct",
+			"if", "else",
+			"null", "ret", "ref", "as",
+			"mut", "const",
+			"pub", "prot", "priv",
 		};
 	}
 }
