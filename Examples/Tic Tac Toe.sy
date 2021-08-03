@@ -1,0 +1,26 @@
+import 'libc.sy';
+
+using char* as Board;
+
+const char X = 88;
+const char O = 79;
+
+void printBoard(Board board)
+{
+	uint i = 0;
+	while i < 9
+	{
+		printf('%c | %c | %c\n', board[i + 0], board[i + 1], board[i + 2]);
+		i = i + 3;
+	}
+}
+
+void run()
+{
+	Board board = malloc(18);
+	board[0] = board[1] = board[2] = 
+	board[3] = board[4] = board[5] =
+	board[6] = board[7] = board[8] = X;
+	
+	printBoard(board);
+}

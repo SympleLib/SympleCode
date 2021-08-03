@@ -25,13 +25,13 @@ namespace SuperCode
 				$"Int: {ival}, Float: {fval}";
 		}
 
-		private static void Main(string[] _)
+		private static void Main(string[] args)
 		{
-			//Console.Write("Input file: ");
-			//string file = Console.ReadLine();
-			const string dir = "../Examples/";
-			const string file = "Code.sy";
-			var syc = new SympleCode((SycMode.Dev) & ~SycMode.Optimize, dir);
+			string path = "../Examples/Tic Tac Toe.sy";
+			string dir = path[..path.LastIndexOf('/')] + '/';
+			string file = path[(path.LastIndexOf('/') + 1)..];
+
+			var syc = new SympleCode(SycMode.Dev, dir);
 			var module = syc.CompileJIT(file);
 			if (module is null)
 				goto Stop;

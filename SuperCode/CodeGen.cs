@@ -315,7 +315,8 @@ namespace SuperCode
 		{
 			var expr = GenAddr(node.expr);
 			var val = Gen(node.value);
-			return builder.BuildStore(val, expr);
+			builder.BuildStore(val, expr);
+			return builder.BuildLoad(expr);
 		}
 
 		private LLVMValueRef Gen(BinExprNode node)
