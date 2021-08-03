@@ -203,6 +203,7 @@ namespace SuperCode
 		private LLVMValueRef Gen(VarMemNode node)
 		{
 			var var = module.AddGlobal(node.type, node.name);
+			var.IsGlobalConstant = true;
 			node.vis.Apply(var);
 			if (node.init is null)
 				var.Initializer = LLVMValueRef.CreateConstNull(node.type);
@@ -435,6 +436,7 @@ namespace SuperCode
 
 			var str = module.AddGlobal(arr.TypeOf, "..str");
 			str.Linkage = LLVMLinkage.LLVMPrivateLinkage;
+			str.IsGlobalConstant = true;
 			str.HasUnnamedAddr = true;
 			str.Initializer = arr;
 			return builder.BuildBitCast(str, node.type);
