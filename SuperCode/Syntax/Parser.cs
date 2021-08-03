@@ -25,7 +25,7 @@ namespace SuperCode
 			var mems = new List<MemAst>();
 			while (current.isComment)
 				Next();
-			while (!current.Is(TokenKind.Eof))
+			while (current.kind is not TokenKind.Eof)
 				mems.Add(Mem());
 
 			var eof = Next();
@@ -37,14 +37,8 @@ namespace SuperCode
 		private ExprAst[] Args(Token open)
 		{
 			var args = new List<ExprAst>();
-			while (!current.Is(TokenKind.RightParen))
+			while (current.kind is not TokenKind.RightParen and not TokenKind.Eof)
 			{
-				if (current.Is(TokenKind.Eof))
-				{
-					safety.ReportUnexpectedEof(open);
-					return null;
-				}
-
 				args.Add(Expr());
 				if (current.Is(TokenKind.Comma))
 					Next();
@@ -62,24 +56,16 @@ namespace SuperCode
 			if (current.Is(TokenKind.LeftParen))
 			{
 				open = Next();
-				while (!current.Is(TokenKind.RightParen))
-				{
-					if (current.Is(TokenKind.Eof))
-					{
-						safety.ReportUnexpectedEof(open.Value);
-						return null;
-					}
-
+				while (current.kind is not TokenKind.RightParen and not TokenKind.Eof)
 					args.Add(Type());
-				}
-				close = Next();
+				close = Match(TokenKind.RightParen);
 			}
 
 			var addons = new List<Token>();
 			while (current.isTypeAddon)
 				addons.Add(Next());
 			Token? refTok = null;
-			if (current.Is(TokenKind.RefKey))
+			if (current.kind is TokenKind.RefKey)
 				refTok = Next();
 
 			return new TypeAst(baze, open, args.ToArray(), close, addons.ToArray(), refTok);
@@ -87,25 +73,25 @@ namespace SuperCode
 
 		private FieldAst Field(Token? mutKey = null, TypeAst ty = null)
 		{
-			if (current.Is(TokenKind.MutKey, TokenKind.ConstKey))
+			if (current.kind is TokenKind.MutKey or TokenKind.ConstKey)
 				mutKey = Next();
 			if (ty is null || IsType(current))
 				ty = Type();
 			
-			var name = current.Is(TokenKind.Iden) ? Next() : default;
+			var name = current.kind is TokenKind.Iden ? Next() : default;
 			Token comma = default;
-			if (current.Is(TokenKind.Eql))
+			if (current.kind is TokenKind.Eql)
 			{
 				var eql = Next();
 				var defVal = Expr();
 
-				if (current.Is(TokenKind.Comma))
+				if (current.kind is TokenKind.Comma)
 					comma = Next();
 
 				return new FieldAst(mutKey, ty, name, eql, defVal, comma);
 			}
 
-			if (!current.Is(TokenKind.RightBrace, TokenKind.RightBracket, TokenKind.RightParen))
+			if (current.kind is not TokenKind.RightBrace and not TokenKind.RightBracket and not TokenKind.RightParen)
 				comma = Match(TokenKind.Comma);
 
 			return new FieldAst(mutKey, ty, name, comma);
@@ -149,14 +135,8 @@ namespace SuperCode
 			Token? mutKey = null;
 			Token? vaArg = null;
 			TypeAst ty = null;
-			while (!current.Is(TokenKind.RightParen))
+			while (current.kind is not TokenKind.RightParen and not TokenKind.Eof)
 			{
-				if (current.Is(TokenKind.Eof))
-				{
-					safety.ReportUnexpectedEof(open);
-					return null;
-				}
-
 				if (current.Is(TokenKind.DotDotDot))
 				{
 					vaArg = Next();
@@ -187,14 +167,8 @@ namespace SuperCode
 			Token? mutKey = null;
 			Token? vaArg = null;
 			TypeAst ty = null;
-			while (!current.Is(TokenKind.RightParen))
+			while (current.kind is not TokenKind.RightParen and not TokenKind.Eof)
 			{
-				if (current.Is(TokenKind.Eof))
-				{
-					safety.ReportUnexpectedEof(openArg);
-					return null;
-				}
-
 				if (current.Is(TokenKind.DotDotDot))
 				{
 					vaArg = Next();
@@ -207,7 +181,7 @@ namespace SuperCode
 				paramz.Add(field);
 			}
 
-			var closeArg = Next();
+			var closeArg = Match(TokenKind.RightParen);
 			var stmts = new List<StmtAst>();
 
 			if (current.Is(TokenKind.Arrow))
@@ -219,18 +193,10 @@ namespace SuperCode
 			}
 
 			var open = Match(TokenKind.LeftBrace);
-			while (!current.Is(TokenKind.RightBrace))
-			{
-				if (current.Is(TokenKind.Eof))
-				{
-					safety.ReportUnexpectedEof(open);
-					return null;
-				}
-
+			while (current.kind is not TokenKind.RightBrace and not TokenKind.Eof)
 				stmts.Add(Stmt());
-			}
 
-			var close = Next();
+			var close = Match(TokenKind.RightBrace);
 			return new FuncMemAst(vis, ret, name, asmTag, openArg, paramz.ToArray(), vaArg, closeArg, open, close, stmts.ToArray());
 		}
 
@@ -254,21 +220,14 @@ namespace SuperCode
 
 			Token? mutKey = null;
 			TypeAst ty = null;
-			while (!current.Is(TokenKind.RightBrace))
+			while (current.kind is not TokenKind.RightBrace and not TokenKind.Eof)
 			{
-				if (current.Is(TokenKind.Eof))
-				{
-					safety.ReportUnexpectedEof(open);
-					return null;
-				}
-
-
 				var field = Field(mutKey, ty);
 				ty = field.type;
 				mutKey = field.mutKey;
 				fields.Add(field);
 			}
-			var close = Next();
+			var close = Match(TokenKind.RightBrace);
 
 			types.Add(name.text);
 			return new StructMemAst(key, name, open, fields.ToArray(), close);
@@ -319,17 +278,9 @@ namespace SuperCode
 		{
 			var open = Match(TokenKind.LeftBrace);
 			var stmts = new List<StmtAst>();
-			while (!current.Is(TokenKind.RightBrace))
-			{
-				if (current.Is(TokenKind.Eof))
-				{
-					safety.ReportUnexpectedEof(current);
-					return null;
-				}
-
+			while (current.kind is not TokenKind.RightBrace and not TokenKind.Eof)
 				stmts.Add(Stmt());
-			}
-			var close = Next();
+			var close = Match(TokenKind.RightBrace);
 
 			return new BlockStmtAst(open, stmts.ToArray(), close);
 		}
@@ -357,17 +308,9 @@ namespace SuperCode
 
 			var open = Match(TokenKind.LeftBrace);
 			var stmts = new List<StmtAst>();
-			while (!current.Is(TokenKind.RightBrace))
-			{
-				if (current.Is(TokenKind.Eof))
-				{
-					safety.ReportUnexpectedEof(current);
-					return null;
-				}
-
+			while (current.kind is not TokenKind.RightBrace and not TokenKind.Eof)
 				stmts.Add(Stmt());
-			}
-			var close = Next();
+			var close = Match(TokenKind.RightBrace);
 
 			if (current.Is(TokenKind.ElseKey))
 			{
@@ -433,18 +376,10 @@ namespace SuperCode
 
 			var open = Match(TokenKind.LeftBrace);
 			var stmts = new List<StmtAst>();
-			while (current.kind is not TokenKind.RightBrace)
-			{
-				if (current.kind is TokenKind.Eof)
-				{
-					safety.ReportUnexpectedEof(current);
-					return null;
-				}
-
+			while (current.kind is not TokenKind.RightBrace and not TokenKind.Eof)
 				stmts.Add(Stmt());
-			}
 
-			var close = Next();
+			var close = Match(TokenKind.RightBrace);
 			return new WhileStmtAst(key, cond, open, stmts.ToArray(), close);
 		}
 
@@ -588,10 +523,13 @@ namespace SuperCode
 			return tok;
 		}
 
-		private Token Match(TokenKind kind)
+		private Token Match(TokenKind kind, params TokenKind[] kinds)
 		{
-			if (current.Is(kind))
+			if (current.kind == kind)
 				return Next();
+			foreach (var okind in kinds)
+				if (current.kind == okind)
+					return Next();
 
 			safety.ReportExpectedToken(kind, current);
 			return current;

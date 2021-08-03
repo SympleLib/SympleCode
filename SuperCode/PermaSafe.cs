@@ -75,9 +75,6 @@ namespace SuperCode
 		public void Report(Level lvl, string msg, Token tok) =>
 			threats.Add(new Threat(lvl, msg, tok));
 
-		public void ReportUnexpectedEof(Token where) =>
-			Report(Level.Avengers, "Unexpected end of file", where);
-
 		public void ReportExpectedToken(TokenKind expected, Token got) =>
 			Report(Level.Avengers, $"Expected {expected}, got {got.kind}", got);
 
