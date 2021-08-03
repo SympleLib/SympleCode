@@ -19,7 +19,8 @@ namespace SuperCode
 
 	public class SympleCode
 	{
-		public SycMode mode;
+		public readonly SycMode mode;
+		public readonly string dir;
 
 		public bool defPriv => mode.HasFlag(SycMode.DefaultPrivate);
 		public bool defConst => mode.HasFlag(SycMode.DefaultConstant);
@@ -33,8 +34,11 @@ namespace SuperCode
 		public LLVMExecutionEngineRef execEngine => engine;
 		private LLVMExecutionEngineRef engine;
 
-		public SympleCode(SycMode mode) =>
+		public SympleCode(SycMode mode, string dir)
+		{
 			this.mode = mode;
+			this.dir = dir;
+		}
 
 		public ModuleNode? CompileJIT(string file)
 		{
@@ -57,9 +61,9 @@ namespace SuperCode
 
 		public ModuleNode? Compile(string file)
 		{
-			string filebase = file.Contains('.') ? file[(..file.LastIndexOf('.'))] : file;
+			string filebase = dir + (file.Contains('.') ? file[(..file.LastIndexOf('.'))] : file);
 
-			var parser = new Parser(file);
+			var parser = new Parser(dir + file);
 #if DEBUG
 			SyntaxColors(parser.lexer.src, parser.tokens);
 #endif

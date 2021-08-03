@@ -29,8 +29,9 @@ namespace SuperCode
 		{
 			//Console.Write("Input file: ");
 			//string file = Console.ReadLine();
-			string file = "Code.sy";
-			var syc = new SympleCode((SycMode.Dev) & ~SycMode.Optimize);
+			const string dir = "../Examples/";
+			const string file = "Code.sy";
+			var syc = new SympleCode((SycMode.Dev) & ~SycMode.Optimize, dir);
 			var module = syc.CompileJIT(file);
 			if (module is null)
 				goto Stop;
@@ -43,7 +44,10 @@ namespace SuperCode
 #if !SYNTAX_ONLY
 		private static void RunJIT(SympleCode syc, LLVMModuleRef module)
 		{
-			var exec = (Run) Marshal.GetDelegateForFunctionPointer(syc.execEngine.GetPointerToGlobal(module.GetNamedFunction("run")), typeof(Run));
+			var func = module.GetNamedFunction("run");
+			if (func == null)
+				return;
+			var exec = (Run) Marshal.GetDelegateForFunctionPointer(syc.execEngine.GetPointerToGlobal(func), typeof(Run));
 			exec();
 		}
 #endif

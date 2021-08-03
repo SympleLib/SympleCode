@@ -1,3 +1,0 @@
-﻿import 'Test.sy';
-
-void run() -> test();

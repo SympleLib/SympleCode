@@ -1,0 +1,3 @@
+decl void print _putws(char*);
+decl void printf wprintf(char*);
+decl char getChar getwchar();
