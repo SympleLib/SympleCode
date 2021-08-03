@@ -6,7 +6,7 @@ namespace SuperCode
 {
 	public abstract class Node
 	{
-		public Ast syntax { get; init; }
+		public Ast? syntax { get; init; }
 		public abstract NodeKind kind { get; }
 	}
 }

@@ -71,7 +71,7 @@ namespace SuperCode
 			return new TypeAst(baze, open, args.ToArray(), close, addons.ToArray(), refTok);
 		}
 
-		private FieldAst Field(Token? mutKey = null, TypeAst ty = null)
+		private FieldAst Field(Token? mutKey = null, TypeAst? ty = null)
 		{
 			if (current.kind is TokenKind.MutKey or TokenKind.ConstKey)
 				mutKey = Next();
@@ -134,7 +134,7 @@ namespace SuperCode
 
 			Token? mutKey = null;
 			Token? vaArg = null;
-			TypeAst ty = null;
+			TypeAst? ty = null;
 			while (current.kind is not TokenKind.RightParen and not TokenKind.Eof)
 			{
 				if (current.kind is TokenKind.DotDotDot)
@@ -166,7 +166,7 @@ namespace SuperCode
 
 			Token? mutKey = null;
 			Token? vaArg = null;
-			TypeAst ty = null;
+			TypeAst? ty = null;
 			while (current.kind is not TokenKind.RightParen and not TokenKind.Eof)
 			{
 				if (current.kind is TokenKind.DotDotDot)
@@ -219,7 +219,7 @@ namespace SuperCode
 			var fields = new List<FieldAst>();
 
 			Token? mutKey = null;
-			TypeAst ty = null;
+			TypeAst? ty = null;
 			while (current.kind is not TokenKind.RightBrace and not TokenKind.Eof)
 			{
 				var field = Field(mutKey, ty);
@@ -240,7 +240,7 @@ namespace SuperCode
 			if (current.kind is TokenKind.Semicol)
 			{
 				var semi = Next();
-				return new VarMemAst(vis, mutKey, type, name, default, default, semi);
+				return new VarMemAst(vis, mutKey, type, name, null, null, semi);
 			}
 
 			var eql = Match(TokenKind.Eql);
@@ -325,7 +325,7 @@ namespace SuperCode
 		private RetStmtAst RetStmt()
 		{
 			var key = Match(TokenKind.RetKey);
-			ExprAst val = null;
+			ExprAst? val = null;
 			if (current.kind is not TokenKind.Semicol)
 				val = Expr();
 			var semi = Match(TokenKind.Semicol);
@@ -344,7 +344,7 @@ namespace SuperCode
 			return new UsingStmtAst(key, real, asKey, alias, semi);
 		}
 
-		private VarStmtAst VarStmt(Token? mutKey = null, TypeAst ty = null)
+		private VarStmtAst VarStmt(Token? mutKey = null, TypeAst? ty = null)
 		{
 			if (current.kind is TokenKind.MutKey or TokenKind.ConstKey)
 				mutKey = Next();
@@ -360,7 +360,7 @@ namespace SuperCode
 				return new VarStmtAst(mutKey, ty, name, eql, init, Match(TokenKind.Semicol));
 			}
 
-			return new VarStmtAst(mutKey, ty, name, default, null, Match(TokenKind.Semicol));
+			return new VarStmtAst(mutKey, ty, name, null, null, Match(TokenKind.Semicol));
 		}
 
 		private WhileStmtAst WhileStmt()
@@ -485,7 +485,7 @@ namespace SuperCode
 
 			default:
 				safety.ReportExpectedExpr(current);
-				return null;
+				return new NullExprAst();
 			}
 		}
 

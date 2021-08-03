@@ -144,6 +144,8 @@ namespace SuperCode
 			if (syms.ContainsKey(ast.name.text))
 			{
 				syms.Remove(ast.name.text, out var sym);
+				if (sym is null)
+					throw new InvalidOperationException("Symbol is null");
 				((DeclFuncMemNode) sym).impl = func;
 			}
 			syms.Add(ast.name.text, func);
@@ -176,7 +178,7 @@ namespace SuperCode
 		private VarMemNode Nodify(VarMemAst ast)
 		{
 			var ty = Nodify(ast.type);
-			var init = Nodify(ast.init, ty.IsRef() ? default : ty);
+			var init = ast.init is null ? null : Nodify(ast.init, ty.IsRef() ? default : ty);
 			var var = new VarMemNode(ty, Vis(ast.vis), IsMut(ast.mutKey), ast.name.text, init) { syntax = ast };
 			syms.Add(var.name, var);
 			return var;
@@ -227,7 +229,7 @@ namespace SuperCode
 			for (int i = 0; i < stmts.Length; i++)
 				stmts[i] = Nodify(ast.then[i]);
 			var then = new BlockStmtNode(stmts);
-			Node elze = null;
+			Node? elze = null;
 			if (ast.elze is not null)
 				elze = Nodify(ast.elze);
 
@@ -236,14 +238,15 @@ namespace SuperCode
 
 		private RetStmtNode Nodify(RetStmtAst ast)
 		{
-
 			if (retType == LLVMTypeRef.Void)
 			{
 				if (ast.value is not null)
-					throw new Exception("Must return null");
+					throw new Exception("Must return nothing");
 				return new RetStmtNode(null);
 			}
 
+			if (ast.value is null)
+				throw new Exception("Must return something");
 			return new RetStmtNode(Nodify(ast.value, retType));
 		}
 
@@ -259,7 +262,7 @@ namespace SuperCode
 		{
 			var ty = Nodify(ast.type);
 			var initTy = ty.IsRef() ? default : ty;
-			var init = Nodify(ast.init, initTy);
+			var init = ast.init is null ? null : Nodify(ast.init, initTy);
 			var var = new VarStmtNode(ty, IsMut(ast.mutKey), ast.name.text, init) { syntax = ast };
 			syms.Add(var.name, var);
 			return var;
@@ -315,7 +318,7 @@ namespace SuperCode
 			{
 				var name = ast.right.token;
 				var field = Mem(left.type, name);
-				return new MemExprNode(left, field);
+				return new MemExprNode(left, field is null ? FieldNode.nullField : field);
 			}
 			case TokenKind.Eql:
 			{
@@ -507,11 +510,15 @@ namespace SuperCode
 				return node;
 
 			if (to.IntWidth < node.type.IntWidth && !to.IsFloat() && !to.IsPtr())
+			{
+				if (node.syntax is null)
+					throw new InvalidOperationException("Null syntax on a cast");
 				safety.ReportPossibleLossOfData(node.syntax.token);
+			}
 			return new CastExprNode(node, to);
 		}
 
-		private FieldNode Mem(LLVMTypeRef ty, Token name)
+		private FieldNode? Mem(LLVMTypeRef ty, Token name)
 		{
 			if (ty == null)
 				return null;

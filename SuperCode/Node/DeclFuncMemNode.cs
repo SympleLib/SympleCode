@@ -6,7 +6,7 @@ namespace SuperCode
 	{
 		public readonly LLVMTypeRef retType;
 		public readonly FieldNode[] paramz;
-		public FuncMemNode impl { get; internal set; }
+		public FuncMemNode? impl { get; internal set; }
 
 		public DeclFuncMemNode(LLVMTypeRef type, string name, FieldNode[] paramz)
 		{

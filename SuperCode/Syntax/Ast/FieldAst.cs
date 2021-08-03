@@ -5,8 +5,8 @@
 		public readonly Token? mutKey;
 		public readonly TypeAst type;
 		public readonly Token name;
-		public readonly Token equal;
-		public readonly ExprAst defVal;
+		public readonly Token? equal;
+		public readonly ExprAst? defVal;
 		public readonly Token comma;
 
 		public FieldAst(Token? mutKey, TypeAst type, Token name, Token comma)
@@ -19,7 +19,7 @@
 			this.comma = comma;
 		}
 
-		public FieldAst(Token? mutKey, TypeAst type, Token name, Token eql, ExprAst def, Token comma)
+		public FieldAst(Token? mutKey, TypeAst type, Token name, Token? eql, ExprAst? def, Token comma)
 		{
 			token = name;
 

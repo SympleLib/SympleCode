@@ -4,9 +4,9 @@ namespace SuperCode
 {
 	public class VarMemNode: Node, Symbol
 	{
-		public readonly ExprNode init;
+		public readonly ExprNode? init;
 
-		public VarMemNode(LLVMTypeRef ty, Visibility vis, bool mut, string name, ExprNode init)
+		public VarMemNode(LLVMTypeRef ty, Visibility vis, bool mut, string name, ExprNode? init)
 		{
 			this.type = ty;
 			this.vis = vis;

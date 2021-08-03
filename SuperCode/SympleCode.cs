@@ -1,4 +1,6 @@
-﻿namespace SuperCode
+﻿using System;
+
+namespace SuperCode
 {
 	public enum SycMode
 	{

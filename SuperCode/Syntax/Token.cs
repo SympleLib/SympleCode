@@ -97,8 +97,8 @@ namespace SuperCode
 		public static bool operator !=(Token x, Token y) =>
 			!x.Equals(y);
 
-		public override bool Equals([NotNullWhen(true)] object obj) =>
-			GetHashCode() == obj.GetHashCode();
+		public override bool Equals(object? obj) =>
+			GetHashCode() == obj?.GetHashCode();
 
 		public override int GetHashCode() =>
 			HashCode.Combine(kind, text, file, line, col, pos);

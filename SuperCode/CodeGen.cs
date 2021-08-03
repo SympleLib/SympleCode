@@ -101,10 +101,11 @@ namespace SuperCode
 			pass.Run(module);
 		}
 
-		private LLVMValueRef Gen(Node node)
+		private LLVMValueRef Gen(Node? node)
 		{
 			if (node is null || returned)
-				return null;
+				return LLVMValueRef.CreateConstNull(LLVMTypeRef.Void);
+
 
 			switch (node.kind)
 			{
@@ -263,6 +264,7 @@ namespace SuperCode
 		{
 			var ptr = builder.BuildAlloca(node.type, node.name);
 			LLVMValueRef init;
+			
 			if (node.type.IsRef())
 				init = GenAddr(node.init);
 			else
@@ -483,8 +485,11 @@ namespace SuperCode
 		}
 
 
-		private LLVMValueRef GenAddr(Node node)
+		private LLVMValueRef GenAddr(Node? node)
 		{
+			if (node is null)
+				return LLVMValueRef.CreateConstNull(LLVMTypeRef.Void);
+
 			switch (node.kind)
 			{
 			case NodeKind.MemExpr:

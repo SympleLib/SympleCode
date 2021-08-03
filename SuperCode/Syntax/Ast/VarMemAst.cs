@@ -7,9 +7,9 @@
 		public readonly TypeAst type;
 		public readonly Token name;
 		public readonly Token? eql;
-		public readonly ExprAst init;
+		public readonly ExprAst? init;
 
-		public VarMemAst(Token? vis, Token? mutKey, TypeAst type, Token name, Token? eql, ExprAst init, Token semi): base(semi)
+		public VarMemAst(Token? vis, Token? mutKey, TypeAst type, Token name, Token? eql, ExprAst? init, Token semi): base(semi)
 		{
 			token = eql?? name;
 

@@ -4,9 +4,9 @@
 	{
 		public readonly ExprNode cond;
 		public readonly Node then;
-		public readonly Node elze;
+		public readonly Node? elze;
 
-		public IfStmtNode(ExprNode cond, Node then, Node elze)
+		public IfStmtNode(ExprNode cond, Node then, Node? elze)
 		{
 			this.cond = cond;
 			this.then = then;

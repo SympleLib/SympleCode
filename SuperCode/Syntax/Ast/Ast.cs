@@ -21,7 +21,7 @@ namespace SuperCode
 
 				if (field.FieldType.IsAssignableTo(typeof(Ast)))
 				{
-					var child = (Ast) field.GetValue(this);
+					var child = (Ast?) field.GetValue(this);
 					if (child is null)
 					{
 						string prefix = indent + (fieldLast ? "└──" : "├──");
@@ -38,9 +38,9 @@ namespace SuperCode
 				}
 				else if (field.FieldType.IsArray)
 				{
-					if (field.FieldType.IsAssignableTo(typeof(Ast[])))
+					if (field.FieldType.IsAssignableTo(typeof(Ast?[])))
 					{
-						var arr = (Ast[]) field.GetValue(this);
+						var arr = (Ast?[]?) field.GetValue(this);
 						string prefix = indent + (fieldLast ? "└──" : "├──");
 						if (arr is null)
 						{
@@ -71,9 +71,9 @@ namespace SuperCode
 								child.Print(writer, eindent, "", last);
 						}
 					}
-					else if (field.FieldType.IsAssignableTo(typeof(Token[])))
+					else if (field.FieldType.IsAssignableTo(typeof(Token?[])))
 					{
-						var arr = (Token[]) field.GetValue(this);
+						var arr = (Token?[]?) field.GetValue(this);
 						string prefix = indent + (fieldLast ? "└──" : "├──");
 						if (arr is null)
 						{
@@ -97,7 +97,7 @@ namespace SuperCode
 
 						foreach (var token in arr)
 						{
-							if (token.kind == TokenKind.Unknown)
+							if (token?.kind == TokenKind.Unknown)
 								continue;
 
 							bool last = token == arr[^1];

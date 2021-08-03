@@ -11,9 +11,9 @@
 		public readonly Token? close;
 
 		public readonly Token? elseKey;
-		public readonly StmtAst elze;
+		public readonly StmtAst? elze;
 
-		public IfStmtAst(Token ifKey, ExprAst cond, Token arrow, StmtAst then, Token? elseKey, StmtAst elze)
+		public IfStmtAst(Token ifKey, ExprAst cond, Token arrow, StmtAst then, Token? elseKey, StmtAst? elze)
 		{
 			token = ifKey;
 
@@ -25,7 +25,7 @@
 			this.elze = elze;
 		}
 
-		public IfStmtAst(Token ifKey, ExprAst cond, Token open, StmtAst[] then, Token close, Token? elseKey, StmtAst elze)
+		public IfStmtAst(Token ifKey, ExprAst cond, Token open, StmtAst[] then, Token close, Token? elseKey, StmtAst? elze)
 		{
 			token = ifKey;
 

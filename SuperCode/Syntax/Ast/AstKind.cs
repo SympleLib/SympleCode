@@ -25,6 +25,7 @@
 		CastExpr,
 		IndexExpr,
 		LitExpr,
+		NullExpr,
 		ParenExpr,
 		PreExpr,
 		TypePunExpr,
