@@ -103,16 +103,8 @@ namespace SuperCode
 		public override int GetHashCode() =>
 			HashCode.Combine(kind, text, file, line, col, pos);
 
-		public bool Is(params TokenKind[] kinds)
-		{
-			foreach (var kind in kinds)
-				if (this.kind == kind)
-					return true;
-			return false;
-		}
-
 		public override string ToString() =>
-			$"'{file}' {line}:{col}> {kind} {(Is(TokenKind.Str) ? rawText : ($"'{rawText}'"))}";
+			$"'{file}' {line}:{col}> {kind} {(kind is TokenKind.Str ? rawText : ($"'{rawText}'"))}";
 
 		public static readonly string[] puncs =	{
 			"+", "-", "*", "/", "%",

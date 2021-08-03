@@ -99,7 +99,7 @@ namespace SuperCode
 			{
 				var asmTag = ast.asmTag.Value;
 				name = asmTag.text;
-				if (asmTag.Is(TokenKind.Str))
+				if (asmTag.kind is TokenKind.Str)
 					name = name[1..^1];
 			}
 
@@ -131,7 +131,7 @@ namespace SuperCode
 			{
 				var asmTag = ast.asmTag.Value;
 				name = asmTag.text;
-				if (asmTag.Is(TokenKind.Str))
+				if (asmTag.kind is TokenKind.Str)
 					name = name[1..^1];
 			}
 
@@ -462,7 +462,7 @@ namespace SuperCode
 
 		private ExprNode Nodify(PreExprAst ast)
 		{
-			if (ast.prefix.Is(TokenKind.Plus))
+			if (ast.prefix.kind is TokenKind.Plus)
 				return Nodify(ast.expr);
 
 			UnOp op;

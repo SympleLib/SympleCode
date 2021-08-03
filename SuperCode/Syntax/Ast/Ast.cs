@@ -116,7 +116,7 @@ namespace SuperCode
 				{
 					var token = (Token?) field.GetValue(this);
 					string prefix = indent + (fieldLast ? "└──" : "├──");
-					if (token is null || token.Value.Is(TokenKind.Unknown))
+					if (token is null || token?.kind is TokenKind.Unknown)
 					{
 						if (toConsole)
 							Console.ForegroundColor = ConsoleColor.Cyan;

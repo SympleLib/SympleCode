@@ -40,7 +40,7 @@ namespace SuperCode
 			while (current.kind is not TokenKind.RightParen and not TokenKind.Eof)
 			{
 				args.Add(Expr());
-				if (current.Is(TokenKind.Comma))
+				if (current.kind is TokenKind.Comma)
 					Next();
 			}
 
@@ -53,7 +53,7 @@ namespace SuperCode
 			var args = new List<TypeAst>();
 			Token? open, close;
 			open = close = null;
-			if (current.Is(TokenKind.LeftParen))
+			if (current.kind is TokenKind.LeftParen)
 			{
 				open = Next();
 				while (current.kind is not TokenKind.RightParen and not TokenKind.Eof)
@@ -127,7 +127,7 @@ namespace SuperCode
 			var ret = Type();
 			var name = Match(TokenKind.Iden);
 			Token? asmTag = null;
-			if (current.Is(TokenKind.Iden, TokenKind.Str))
+			if (current.kind is TokenKind.Iden or TokenKind.Str)
 				asmTag = Next();
 			var open = Match(TokenKind.LeftParen);
 			var paramz = new List<FieldAst>();
@@ -137,7 +137,7 @@ namespace SuperCode
 			TypeAst ty = null;
 			while (current.kind is not TokenKind.RightParen and not TokenKind.Eof)
 			{
-				if (current.Is(TokenKind.DotDotDot))
+				if (current.kind is TokenKind.DotDotDot)
 				{
 					vaArg = Next();
 					break;
@@ -159,7 +159,7 @@ namespace SuperCode
 		{
 			var name = Match(TokenKind.Iden);
 			Token? asmTag = null;
-			if (current.Is(TokenKind.Iden, TokenKind.Str))
+			if (current.kind is TokenKind.Iden or TokenKind.Str)
 				asmTag = Next();
 			var openArg = Match(TokenKind.LeftParen);
 			var paramz = new List<FieldAst>();
@@ -169,7 +169,7 @@ namespace SuperCode
 			TypeAst ty = null;
 			while (current.kind is not TokenKind.RightParen and not TokenKind.Eof)
 			{
-				if (current.Is(TokenKind.DotDotDot))
+				if (current.kind is TokenKind.DotDotDot)
 				{
 					vaArg = Next();
 					break;
@@ -184,7 +184,7 @@ namespace SuperCode
 			var closeArg = Match(TokenKind.RightParen);
 			var stmts = new List<StmtAst>();
 
-			if (current.Is(TokenKind.Arrow))
+			if (current.kind is TokenKind.Arrow)
 			{
 				var arrow = Next();
 
@@ -203,7 +203,7 @@ namespace SuperCode
 		private MemAst FuncOrVarMem(Token? vis)
 		{
 			var type = Type();
-			if (next.Is(TokenKind.LeftParen) || Peek(2).Is(TokenKind.LeftParen))
+			if (next.kind is TokenKind.LeftParen || Peek(2).kind is TokenKind.LeftParen)
 				return FuncMem(vis, type);
 			Token? mutKey = null;
 			if (current.kind is TokenKind.MutKey or TokenKind.ConstKey)
@@ -237,7 +237,7 @@ namespace SuperCode
 		private VarMemAst VarMem(Token? vis, Token? mutKey, TypeAst type)
 		{
 			var name = Match(TokenKind.Iden);
-			if (current.Is(TokenKind.Semicol))
+			if (current.kind is TokenKind.Semicol)
 			{
 				var semi = Next();
 				return new VarMemAst(vis, mutKey, type, name, default, default, semi);
@@ -290,12 +290,12 @@ namespace SuperCode
 			var ifKey = Match(TokenKind.IfKey);
 			var cond = Expr();
 
-			if (current.Is(TokenKind.Arrow))
+			if (current.kind is TokenKind.Arrow)
 			{
 				var arrow = Next();
 				var then = Stmt();
 
-				if (current.Is(TokenKind.ElseKey))
+				if (current.kind is TokenKind.ElseKey)
 				{
 					var elseKey = Next();
 					var elze = Stmt();
@@ -312,7 +312,7 @@ namespace SuperCode
 				stmts.Add(Stmt());
 			var close = Match(TokenKind.RightBrace);
 
-			if (current.Is(TokenKind.ElseKey))
+			if (current.kind is TokenKind.ElseKey)
 			{
 				var elseKey = Next();
 				var elze = Stmt();
@@ -346,13 +346,13 @@ namespace SuperCode
 
 		private VarStmtAst VarStmt(Token? mutKey = null, TypeAst ty = null)
 		{
-			if (current.Is(TokenKind.MutKey, TokenKind.ConstKey))
+			if (current.kind is TokenKind.MutKey or TokenKind.ConstKey)
 				mutKey = Next();
 			if (ty is null || current.isBuiltinType || types.Contains(current.text))
 				ty = Type();
 			var name = Match(TokenKind.Iden);
 
-			if (current.Is(TokenKind.Eql))
+			if (current.kind is TokenKind.Eql)
 			{
 				var eql = Next();
 				var init = Expr();
@@ -457,9 +457,9 @@ namespace SuperCode
 		{
 			var expr = PrimExpr();
 			while (true)
-				if (current.Is(TokenKind.LeftParen))
+				if (current.kind is TokenKind.LeftParen)
 					expr = CallExpr(expr);
-				else if (current.Is(TokenKind.LeftBracket))
+				else if (current.kind is TokenKind.LeftBracket)
 					expr = IndexExpr(expr);
 				else
 					break;
@@ -502,7 +502,7 @@ namespace SuperCode
 
 
 		private bool IsType(Token tok) =>
-			tok.Is(TokenKind.Iden) && (tok.isBuiltinType || types.Contains(tok.text));
+			tok.kind is TokenKind.Iden && (tok.isBuiltinType || types.Contains(tok.text));
 
 		private Token Peek(int off)
 		{
