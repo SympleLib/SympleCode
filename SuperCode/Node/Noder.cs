@@ -144,9 +144,7 @@ namespace SuperCode
 			if (syms.ContainsKey(ast.name.text))
 			{
 				syms.Remove(ast.name.text, out var sym);
-				if (sym is null)
-					throw new InvalidOperationException("Symbol is null");
-				((DeclFuncMemNode) sym).impl = func;
+				((DeclFuncMemNode) sym!).impl = func;
 			}
 			syms.Add(ast.name.text, func);
 			return func;
@@ -247,7 +245,7 @@ namespace SuperCode
 
 			if (ast.value is null)
 				throw new Exception("Must return something");
-			return new RetStmtNode(Nodify(ast.value, retType));
+			return new RetStmtNode(Nodify(ast.value!, retType));
 		}
 
 		private TypedefStmtNode Nodify(UsingStmtAst ast)
@@ -510,11 +508,7 @@ namespace SuperCode
 				return node;
 
 			if (to.IntWidth < node.type.IntWidth && !to.IsFloat() && !to.IsPtr())
-			{
-				if (node.syntax is null)
-					throw new InvalidOperationException("Null syntax on a cast");
-				safety.ReportPossibleLossOfData(node.syntax.token);
-			}
+				safety.ReportPossibleLossOfData(node.syntax!.token);
 			return new CastExprNode(node, to);
 		}
 

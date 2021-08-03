@@ -92,9 +92,7 @@ namespace SuperCode
 
 		public void ReportNotMut(ExprNode expr)
 		{
-			if (expr.syntax is null)
-				throw new InvalidOperationException("Syntax is null");
-			Report(Level.Avengers, "Can only re-assign values to mutable variables", expr.syntax.token);
+			Report(Level.Avengers, "Can only re-assign values to mutable variables", expr.syntax!.token);
 			Report(Level.Think, "Declare variable as mutable", expr.syntax.token);
 		}
 
