@@ -12,6 +12,9 @@ namespace SuperCode
 		[UnmanagedFunctionPointer(CallingConvention.Cdecl)]
 		public delegate void Run();
 
+		public static void Test() =>
+			Console.WriteLine("Test works!");
+
 		[StructLayout(LayoutKind.Explicit)]
 		private unsafe struct FPIUnion
 		{
