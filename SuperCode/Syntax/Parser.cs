@@ -34,7 +34,7 @@ namespace SuperCode
 		}
 
 
-		private ExprAst[] Args(Token open)
+		private ExprAst[] Args()
 		{
 			var args = new List<ExprAst>();
 			while (current.kind is not TokenKind.RightParen and not TokenKind.Eof)
@@ -45,6 +45,13 @@ namespace SuperCode
 			}
 
 			return args.ToArray();
+		}
+
+		private ElementAst Element()
+		{
+			var val = Expr();
+			var comma = Match(TokenKind.Comma);
+			return new ElementAst(val, comma);
 		}
 
 		private TypeAst Type()
@@ -401,6 +408,17 @@ namespace SuperCode
 		private ExprAst Expr() =>
 			BinExpr();
 
+		private ArrExprAst ArrExpr()
+		{
+			var open = Match(TokenKind.LeftBracket);
+			var elements = new List<ElementAst>();
+			while (current.kind is not TokenKind.RightBracket and not TokenKind.Eof)
+				elements.Add(Element());
+			var close = Match(TokenKind.RightBracket);
+
+			return new ArrExprAst(open, elements.ToArray(), close);
+		}
+
 		private ExprAst BinExpr(int parentPriority = 0)
 		{
 			var left = PreExpr();
@@ -432,7 +450,7 @@ namespace SuperCode
 		private CallExprAst CallExpr(ExprAst expr)
 		{
 			var open = Match(TokenKind.LeftParen);
-			var args = Args(open);
+			var args = Args();
 			var close = Match(TokenKind.RightParen);
 			return new CallExprAst(expr, open, args, close);
 		}
@@ -483,7 +501,7 @@ namespace SuperCode
 			switch (current.kind)
 			{
 			case TokenKind.LeftParen:
-				if (next.isBuiltinType)
+				if (IsType(next))
 					return CastExpr();
 				return ParenExpr();
 			case TokenKind.Num:
@@ -492,7 +510,9 @@ namespace SuperCode
 			case TokenKind.NullKey:
 				return LitExpr();
 			case TokenKind.LeftBracket:
-				return TypePun();
+				if (IsType(next))
+					return TypePunExpr();
+				return ArrExpr();
 
 			default:
 				safety.ReportExpectedExpr(current);
@@ -500,7 +520,7 @@ namespace SuperCode
 			}
 		}
 
-		private TypePunExprAst TypePun()
+		private TypePunExprAst TypePunExpr()
 		{
 			var open = Match(TokenKind.LeftBracket);
 			var ty = Type();

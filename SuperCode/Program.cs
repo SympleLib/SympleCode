@@ -1,8 +1,4 @@
-﻿//#define SYNTAX_ONLY
-
-using System;
-using System.Reflection;
-using System.IO;
+﻿using System;
 using System.Runtime.InteropServices;
 using LLVMSharp.Interop;
 
@@ -31,7 +27,7 @@ namespace SuperCode
 			string dir = path[..path.LastIndexOf('/')] + '/';
 			string file = path[(path.LastIndexOf('/') + 1)..];
 
-			var syc = new SympleCode(SycMode.Dev, dir);
+			var syc = new SympleCode(SycMode.Dev & ~SycMode.Optimize, dir);
 			var module = syc.CompileJIT(file);
 			if (module is null)
 				goto Stop;
@@ -41,7 +37,6 @@ namespace SuperCode
 			Console.ReadKey();
 		}
 
-#if !SYNTAX_ONLY
 		private static void RunJIT(SympleCode syc, LLVMModuleRef module)
 		{
 			var func = module.GetNamedFunction("run");
@@ -50,6 +45,5 @@ namespace SuperCode
 			var exec = (Run) Marshal.GetDelegateForFunctionPointer(syc.execEngine.GetPointerToGlobal(func), typeof(Run));
 			exec();
 		}
-#endif
 	}
 }

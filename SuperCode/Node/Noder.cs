@@ -33,6 +33,9 @@ namespace SuperCode
 			return safety;
 		}
 
+		private ExprNode Nodify(ElementAst ast) =>
+			Nodify(ast.value);
+
 		private LLVMTypeRef Nodify(TypeAst ast)
 		{
 			LLVMTypeRef ty;
@@ -298,6 +301,8 @@ namespace SuperCode
 
 			switch (ast.kind)
 			{
+			case AstKind.ArrExpr:
+				return Cast(Nodify((ArrExprAst) ast), castTo);
 			case AstKind.BinExpr:
 				return Cast(Nodify((BinExprAst) ast), castTo);
 			case AstKind.CallExpr:
@@ -318,6 +323,22 @@ namespace SuperCode
 			default:
 				throw new InvalidOperationException("Invalid expr");
 			}
+		}
+
+		private ArrExprNode Nodify(ArrExprAst ast)
+		{
+			var type = BuiltinTypes.types["byte"].Ptr();
+			var elements = new ExprNode[ast.elements.Length];
+			if (elements.Length > 0)
+			{
+				var element = Nodify(ast.elements[0]);
+				elements[0] = element;
+				type = element.type.Ptr();
+			}
+
+			for (int i = 1; i < elements.Length; i++)
+				elements[i] = Nodify(ast.elements[i]);
+			return new ArrExprNode(type, elements);
 		}
 
 		private ExprNode Nodify(BinExprAst ast)

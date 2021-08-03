@@ -18,6 +18,7 @@
 		VarStmt,
 		WhileStmt,
 
+		ArrExpr,
 		AssignExpr,
 		CallExpr,
 		CastExpr,

@@ -2,6 +2,7 @@
 {
 	public enum AstKind
 	{
+		Element,
 		Field,
 		Module,
 		Type,
@@ -21,6 +22,7 @@
 		VarStmt,
 		WhileStmt,
 
+		ArrExpr,
 		BinExpr,
 		CallExpr,
 		CastExpr,

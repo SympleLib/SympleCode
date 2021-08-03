@@ -133,6 +133,8 @@ namespace SuperCode
 			case NodeKind.WhileStmt:
 				return Gen((WhileStmtNode) node);
 
+			case NodeKind.ArrExpr:
+				return Gen((ArrExprNode) node);
 			case NodeKind.AssignExpr:
 				return Gen((AssignExprNode) node);
 			case NodeKind.BinExpr:
@@ -280,14 +282,15 @@ namespace SuperCode
 		{
 			var ptr = builder.BuildAlloca(node.type, node.name);
 			LLVMValueRef init;
-			
-			if (node.type.IsRef())
+
+			if (node.init is null)
+				init = LLVMValueRef.CreateConstNull(node.type);
+			else if (node.type.IsRef())
 				init = GenAddr(node.init);
 			else
 				init = Gen(node.init);
 
-			if (init != null)
-				builder.BuildStore(init, ptr);
+			builder.BuildStore(init, ptr);
 			syms.Add(node, ptr);
 			return ptr;
 		}
@@ -310,6 +313,18 @@ namespace SuperCode
 			return branch;
 		}
 
+
+		private LLVMValueRef Gen(ArrExprNode node)
+		{
+			var elements = new LLVMValueRef[node.elements.Length];
+			for (int i = 0; i < elements.Length; i++)
+				elements[i] = Gen(node.elements[i]);
+			var arr = LLVMValueRef.CreateConstArray(node.type.ElementType, elements);
+
+			var ptr = builder.BuildAlloca(arr.TypeOf, "..arr");
+			builder.BuildStore(arr, ptr);
+			return builder.BuildBitCast(ptr, node.type);
+		}
 
 		private LLVMValueRef Gen(AssignExprNode node)
 		{

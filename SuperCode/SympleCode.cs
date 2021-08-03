@@ -1,4 +1,6 @@
-﻿using LLVMSharp.Interop;
+﻿//#define PRINT
+
+using LLVMSharp.Interop;
 using System.IO;
 using System;
 using System.Collections.Generic;
@@ -64,7 +66,7 @@ namespace SuperCode
 			string filebase = dir + (file.Contains('.') ? file[(..file.LastIndexOf('.'))] : file);
 
 			var parser = new Parser(dir + file);
-#if DEBUG
+#if PRINT
 			SyntaxColors(parser.lexer.src, parser.tokens);
 #endif
 			Console.WriteLine();
@@ -74,9 +76,9 @@ namespace SuperCode
 			if (safety.MustSelfDestruct())
 				return null;
 
-#if DEBUG
-			tree.Print(Console.Out);
 			File.WriteAllText(filebase + ".tree", tree.ToString());
+#if PRINT
+			tree.Print(Console.Out);
 			Console.WriteLine();
 #endif
 
@@ -97,9 +99,9 @@ namespace SuperCode
 			if (optimize)
 				cg.Optimize();
 
-#if DEBUG
-			Console.ForegroundColor = ConsoleColor.DarkGreen;
 			File.WriteAllText(filebase + ".ll", module.ToString());
+#if PRINT
+			Console.ForegroundColor = ConsoleColor.DarkGreen;
 			Console.WriteLine(module);
 #endif
 
@@ -120,7 +122,7 @@ namespace SuperCode
 			return node;
 		}
 
-#if DEBUG
+#if PRINT
 		private static void SyntaxColors(string src, Token[] tokens)
 		{
 			int pos = 0;
