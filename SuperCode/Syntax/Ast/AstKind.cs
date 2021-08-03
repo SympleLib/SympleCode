@@ -15,6 +15,7 @@
 		BlockStmt,
 		ExprStmt,
 		IfStmt,
+		ImportMem,
 		RetStmt,
 		UsingStmt,
 		VarStmt,

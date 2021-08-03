@@ -101,7 +101,7 @@ namespace SuperCode
 			pass.Run(module);
 		}
 
-		private LLVMValueRef Gen(Node? node)
+		private LLVMValueRef Gen(Node? node, bool extrn = false)
 		{
 			if (node is null || returned)
 				return LLVMValueRef.CreateConstNull(LLVMTypeRef.Void);
@@ -111,12 +111,14 @@ namespace SuperCode
 			{
 			case NodeKind.DeclFuncMem:
 				return Gen((DeclFuncMemNode) node);
+			case NodeKind.ImportMem:
+				return Gen((ImportMemNode) node);
 			case NodeKind.FuncMem:
-				return Gen((FuncMemNode) node);
+				return Gen((FuncMemNode) node, extrn);
 			case NodeKind.StructMem:
 				return Gen((StructMemNode) node);
 			case NodeKind.VarMem:
-				return Gen((VarMemNode) node);
+				return Gen((VarMemNode) node, extrn);
 
 			case NodeKind.BlockStmt:
 				return Gen((BlockStmtNode) node);
@@ -159,38 +161,48 @@ namespace SuperCode
 			}
 		}
 
-		private LLVMValueRef Gen(DeclFuncMemNode mem)
+		private LLVMValueRef Gen(DeclFuncMemNode node)
 		{
-			if (mem.impl is not null)
+			if (node.impl is not null)
 				return null;
-			var fn = module.AddFunction(mem.name, mem.type);
-			syms.Add(mem, fn);
+			var fn = module.AddFunction(node.name, node.type);
+			syms.Add(node, fn);
 			return fn;
 		}
 
-		private LLVMValueRef Gen(FuncMemNode mem)
+		private LLVMValueRef Gen(ImportMemNode node)
+		{
+			foreach (var mem in node.module.mems)
+				Gen(mem, true);
+			return null;
+		}
+
+		private LLVMValueRef Gen(FuncMemNode node, bool extrn = false)
 		{
 			returned = false;
-			func = module.AddFunction(mem.name, mem.type);
-			mem.vis.Apply(func);
+			func = module.AddFunction(node.name, node.type);
+			syms.Add(node, func);
+			if (extrn)
+				return func;
+
+			node.vis.Apply(func);
 			var entry = func.AppendBasicBlock();
 			builder.PositionAtEnd(entry);
-			syms.Add(mem, func);
 
-			for (int i = 0; i < mem.paramz.Length; i++)
+			for (int i = 0; i < node.paramz.Length; i++)
 			{
 				var param = func.Params[i];
 				var ptr = builder.BuildAlloca(param.TypeOf);
 				builder.BuildStore(param, ptr);
-				ptr.Name = mem.paramz[i].name;
+				ptr.Name = node.paramz[i].name;
 
-				syms.Add(mem.paramz[i], ptr);
+				syms.Add(node.paramz[i], ptr);
 			}
 
-			foreach (var stmt in mem.stmts)
+			foreach (var stmt in node.stmts)
 				Gen(stmt);
 
-			if (mem.retType == LLVMTypeRef.Void && !returned)
+			if (node.retType == LLVMTypeRef.Void && !returned)
 				builder.BuildRetVoid();
 			var fn = func;
 			func = null;
@@ -200,16 +212,19 @@ namespace SuperCode
 		private LLVMValueRef Gen(StructMemNode node) =>
 			null;
 
-		private LLVMValueRef Gen(VarMemNode node)
+		private LLVMValueRef Gen(VarMemNode node, bool extrn = false)
 		{
 			var var = module.AddGlobal(node.type, node.name);
-			var.IsGlobalConstant = true;
+			syms.Add(node, var);
+			if (extrn)
+				return var;
+
+			var.IsGlobalConstant = !node.mut;
 			node.vis.Apply(var);
 			if (node.init is null)
 				var.Initializer = LLVMValueRef.CreateConstNull(node.type);
 			else
 				var.Initializer = Gen(node.init);
-			syms.Add(node, var);
 			return var;
 		}
 

@@ -29,7 +29,7 @@ namespace SuperCode
 			var mems = new Node[module.mems.Length];
 			for (int i = 0; i < mems.Length; i++)
 				mems[i] = Nodify(module.mems[i]);
-			node = new ModuleNode(module.filename, mems) { syntax = module };
+			node = new ModuleNode(module.filename, mems, syms) { syntax = module };
 			return safety;
 		}
 
@@ -67,6 +67,8 @@ namespace SuperCode
 			{
 			case AstKind.DeclFuncMem:
 				return Nodify((DeclFuncMemAst) ast);
+			case AstKind.ImportMem:
+				return Nodify((ImportMemAst) ast);
 			case AstKind.FuncMem:
 				return Nodify((FuncMemAst) ast);
 			case AstKind.StmtMem:
@@ -104,8 +106,19 @@ namespace SuperCode
 			}
 
 			var decl = new DeclFuncMemNode(ty, name, paramz) { syntax = ast };
-			syms.Add(ast.name.text, decl);
+			syms.TryAdd(ast.name.text, decl);
 			return decl;
+		}
+
+		private ImportMemNode Nodify(ImportMemAst ast)
+		{
+			string what = ast.what.text[1..^1];
+			var omodule = syc.Compile(what);
+			if (omodule is null)
+				throw new Exception("Module compiled with errors");
+			foreach (var osym in omodule.symbols)
+				syms.Add(osym.Key, osym.Value);
+			return new ImportMemNode(what, omodule);
 		}
 
 		private FuncMemNode Nodify(FuncMemAst ast)

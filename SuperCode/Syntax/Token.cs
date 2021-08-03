@@ -49,6 +49,7 @@ namespace SuperCode
 		DotDotDot,
 
 
+		ImportKey,
 		DeclKey,
 		UsingKey,
 		StructKey,
@@ -118,7 +119,7 @@ namespace SuperCode
 
 		public static readonly string[] keys = 
 		{
-			"decl", "using", "struct",
+			"import", "decl", "using", "struct",
 			"while", "if", "else",
 			"null", "ret", "ref", "as",
 			"mut", "const",

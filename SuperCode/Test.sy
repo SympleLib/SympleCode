@@ -1,0 +1,3 @@
+decl void print _putws(char*);
+
+void test() -> print('Test works!');

@@ -215,7 +215,7 @@ namespace SuperCode
 			int begin = pos;
 			Next();
 			Next();
-			while (!CheckNewLine())
+			while (!CheckNewLine() && current is not '\0')
 				Next();
 
 			return MakeToken(TokenKind.LineComment, begin);

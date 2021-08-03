@@ -1,1 +1,3 @@
-﻿void run() -> null;
+﻿import 'Test.sy';
+
+void run() -> test();

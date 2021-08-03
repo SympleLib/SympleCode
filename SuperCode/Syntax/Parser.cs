@@ -109,6 +109,8 @@ namespace SuperCode
 			case TokenKind.MutKey:
 			case TokenKind.ConstKey:
 				return VarMem(null, Next(), Type());
+			case TokenKind.ImportKey:
+				return ImportMem();
 			case TokenKind.DeclKey:
 				return DeclFuncMem();
 			case TokenKind.StructKey:
@@ -153,6 +155,15 @@ namespace SuperCode
 			var semi = Match(TokenKind.Semicol);
 
 			return new DeclFuncMemAst(key, ret, name, asmTag, open, paramz.ToArray(), vaArg, close, semi);
+		}
+
+		private ImportMemAst ImportMem()
+		{
+			var key = Match(TokenKind.ImportKey);
+			var what = Match(TokenKind.Str);
+			var semi = Match(TokenKind.Semicol);
+
+			return new ImportMemAst(key, what, semi);
 		}
 
 		private FuncMemAst FuncMem(Token? vis, TypeAst ret)
