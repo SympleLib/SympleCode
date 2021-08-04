@@ -317,13 +317,17 @@ namespace SuperCode
 		private LLVMValueRef Gen(ArrExprNode node)
 		{
 			var elements = new LLVMValueRef[node.elements.Length];
-			for (int i = 0; i < elements.Length; i++)
-				elements[i] = Gen(node.elements[i]);
-			var arr = LLVMValueRef.CreateConstArray(node.type.ElementType, elements);
+			var arr = builder.BuildAlloca(LLVMTypeRef.CreateArray(node.type.ElementType, (uint)elements.Length), "..arr");
+			var ptr = builder.BuildBitCast(arr, node.type);
 
-			var ptr = builder.BuildAlloca(arr.TypeOf, "..arr");
-			builder.BuildStore(arr, ptr);
-			return builder.BuildBitCast(ptr, node.type);
+			for (int i = 0; i < elements.Length; i++)
+			{
+				var index = builder.BuildInBoundsGEP(ptr, new LLVMValueRef[] { LLVMValueRef.CreateConstInt(LLVMTypeRef.Int64, (ulong)i) });
+				elements[i] = Gen(node.elements[i]);
+				builder.BuildStore(elements[i], index);
+			}
+
+			return ptr;
 		}
 
 		private LLVMValueRef Gen(AssignExprNode node)

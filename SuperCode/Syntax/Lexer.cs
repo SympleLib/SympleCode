@@ -45,6 +45,12 @@ namespace SuperCode
 					continue;
 				}
 
+				if (current == '`' || (next == '`' && current is 's' or 'u' or 'w'))
+				{
+					tokens.Add(Char());
+					continue;
+				}
+
 				if (char.IsWhiteSpace(current))
 				{
 					Next();
@@ -168,6 +174,61 @@ namespace SuperCode
 						sb.Append(Next());
 				}
 			}
+			sb.Append(Next());
+			return MakeToken(TokenKind.Str, begin, sb.ToString());
+		}
+
+		private Token Char()
+		{
+			var sb = new StringBuilder();
+
+			int begin = pos;
+			if (current is 's' or 'u' or 'w')
+				sb.Append(Next());
+			sb.Append(Next());
+			if (current == '\\')
+			{
+				Next();
+				switch (Next())
+				{
+				case '0':
+					sb.Append('\0');
+					break;
+				case '\a':
+					sb.Append('\a');
+					break;
+				case 'b':
+					sb.Append('\b');
+					break;
+				case 'f':
+					sb.Append('\f');
+					break;
+				case 'n':
+					sb.Append('\n');
+					break;
+				case 'r':
+					sb.Append('\r');
+					break;
+				case 't':
+					sb.Append('\t');
+					break;
+				case 'v':
+					sb.Append('\v');
+					break;
+				case '\\':
+					sb.Append('\\');
+					break;
+				case '`':
+					sb.Append('`');
+					break;
+
+				default:
+					throw new InvalidOperationException("Unrecognized escape sequence");
+				}
+			}
+			else
+				sb.Append(Next());
+
 			sb.Append(Next());
 			return MakeToken(TokenKind.Str, begin, sb.ToString());
 		}

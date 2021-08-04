@@ -2,10 +2,6 @@ import 'libc.sy';
 
 using char as Slot;
 
-const Slot NA = 32;
-const Slot X = 88;
-const Slot O = 79;
-
 void printBoard(Slot* board)
 {
 	uint i = 0;
@@ -20,31 +16,31 @@ void move(Slot* board)
 {
 	printBoard(board);
 	uint move;
-	print('Where do you wanna move? 1-9');
+	printf('Where do you wanna move? 1-9\n> ');
 	scanf('%u', @move);
 	move = move - 1;
 	
 	if move < 0
 	{
-		print('Must be between 1-9');
+		print('Must be between 1-9\n');
 		ret;
 	}
 	else if move >= 9
 	{
-		print('Must be between 1-9');
+		print('Must be between 1-9\n');
 		ret;
 	}
-		
-	board[move] = X;
+	
+	print('');
+	board[move] = 'X';
 }
 
 void run()
 {
-	Slot* board;
-	[
-		NA, NA, NA,
-		NA, NA, NA,
-		NA, NA, NA,
+	Slot* board = [
+		`1`, `2`, `3`,
+		`4`, `5`, `6`,
+		`7`, `8`, `9`,
 	];
 	
 	while 1 -> move(board);

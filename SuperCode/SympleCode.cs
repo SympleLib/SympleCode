@@ -108,10 +108,7 @@ namespace SuperCode
 			Console.ForegroundColor = ConsoleColor.White;
 
 			if (!module.TryVerify(LLVMVerifierFailureAction.LLVMPrintMessageAction, out string err))
-			{
-				Console.Error.WriteLine(err);
 				return null;
-			}
 
 			var target = LLVMTargetRef.GetTargetFromTriple(LLVMTargetRef.DefaultTriple);
 			var targetMachine = target.CreateTargetMachine(LLVMTargetRef.DefaultTriple, "generic", "",

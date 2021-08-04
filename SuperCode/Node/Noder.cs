@@ -238,7 +238,7 @@ namespace SuperCode
 
 		private IfStmtNode Nodify(IfStmtAst ast)
 		{
-			var cond = Nodify(ast.cond);
+			var cond = Nodify(ast.cond, BuiltinTypes.types["bool"]);
 			var stmts = new Node[ast.then.Length];
 			for (int i = 0; i < stmts.Length; i++)
 				stmts[i] = Nodify(ast.then[i]);
@@ -284,7 +284,7 @@ namespace SuperCode
 
 		private WhileStmtNode Nodify(WhileStmtAst ast)
 		{
-			var cond = Nodify(ast.cond);
+			var cond = Nodify(ast.cond, BuiltinTypes.types["bool"]);
 			var stmts = new Node[ast.then.Length];
 			for (int i = 0; i < stmts.Length; i++)
 				stmts[i] = Nodify(ast.then[i]);
