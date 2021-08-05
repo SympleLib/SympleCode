@@ -14,6 +14,7 @@ namespace SuperCode
 
 		Iden,
 		Str,
+		Char,
 		Num,
 
 		Plus,

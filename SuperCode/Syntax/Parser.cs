@@ -506,6 +506,7 @@ namespace SuperCode
 				return ParenExpr();
 			case TokenKind.Num:
 			case TokenKind.Str:
+			case TokenKind.Char:
 			case TokenKind.Iden:
 			case TokenKind.NullKey:
 				return LitExpr();

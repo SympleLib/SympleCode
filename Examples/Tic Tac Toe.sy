@@ -7,32 +7,35 @@ void printBoard(Slot* board)
 	uint i = 0;
 	while i < 9
 	{
-		printf('%c|%c|%c\n', board[i + 0], board[i + 1], board[i + 2]);
+		printf('%hc|%hc|%hc\n', board[i + 0], board[i + 1], board[i + 2]);
 		i = i + 3;
 	}
 }
 
-void move(Slot* board)
+decl void move(Slot* board, Slot turn);
+void move(Slot* board, Slot turn)
 {
 	printBoard(board);
-	uint move;
-	printf('Where do you wanna move? 1-9\n> ');
-	scanf('%u', @move);
-	move = move - 1;
+	uint $move;
+	printf('\'%hc\', where do you wanna move? 1-9\n> ', turn);
+	scanf('%u', @$move);
+	$move = $move - 1;
 	
-	if move < 0
+	if $move < 0
 	{
 		print('Must be between 1-9\n');
+		move(board, turn);
 		ret;
 	}
-	else if move >= 9
+	else if $move >= 9
 	{
 		print('Must be between 1-9\n');
+		move(board, turn);
 		ret;
 	}
 	
 	print('');
-	board[move] = 'X';
+	board[$move] = turn;
 }
 
 void run()
@@ -43,5 +46,12 @@ void run()
 		`7`, `8`, `9`,
 	];
 	
-	while 1 -> move(board);
+	ret;
+	while 1
+	{
+		Slot turn = `X`;
+		move(board, turn);
+		if turn == `X` -> turn = `O`;
+		else turn = `X`;
+	}
 }

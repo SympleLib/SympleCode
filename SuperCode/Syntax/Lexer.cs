@@ -57,7 +57,7 @@ namespace SuperCode
 					continue;
 				}
 
-				if (char.IsLetter(current) || current is '_')
+				if (char.IsLetter(current) || current is '_' or '$')
 				{
 					tokens.Add(Identifier());
 					continue;
@@ -230,7 +230,7 @@ namespace SuperCode
 				sb.Append(Next());
 
 			sb.Append(Next());
-			return MakeToken(TokenKind.Str, begin, sb.ToString());
+			return MakeToken(TokenKind.Char, begin, sb.ToString());
 		}
 
 		private Token Number()

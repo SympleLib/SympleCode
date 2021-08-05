@@ -475,6 +475,18 @@ namespace SuperCode
 
 				return new StrExprNode(type, literal[start..^1]) { syntax = ast };
 			}
+			case TokenKind.Char:
+			{
+				var type = literal[0] switch
+				{
+					's' => BuiltinTypes.types["schar"],
+					'u' => BuiltinTypes.types["char"],
+					'w' => BuiltinTypes.types["wchar"],
+
+					_ => BuiltinTypes.types["char"],
+				};
+				return new NumExprNode(literal[literal[0] == '`' ? 1 : 2], type);
+			}
 			case TokenKind.Num:
 				if (literal.Contains('.'))
 				{
