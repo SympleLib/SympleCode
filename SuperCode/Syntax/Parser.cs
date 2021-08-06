@@ -509,6 +509,8 @@ namespace SuperCode
 			case TokenKind.Char:
 			case TokenKind.Iden:
 			case TokenKind.NullKey:
+			case TokenKind.TrueKey:
+			case TokenKind.FalseKey:
 				return LitExpr();
 			case TokenKind.LeftBracket:
 				if (IsType(next))

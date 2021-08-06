@@ -297,7 +297,7 @@ namespace SuperCode
 		private ExprNode Nodify(ExprAst ast, LLVMTypeRef castTo = default)
 		{
 			if (ast is null)
-				return Cast(new NumExprNode(0, LLVMTypeRef.Int1), castTo);
+				return Cast(new NumExprNode(0, BuiltinTypes.types["bit"]), castTo);
 
 			switch (ast.kind)
 			{
@@ -403,12 +403,19 @@ namespace SuperCode
 				op = fp ? BinOp.FMod : us ? BinOp.UMod : BinOp.SMod;
 				goto BinExpr;
 
+			case TokenKind.And:
+				op = BinOp.And;
+				goto BinExpr;
+			case TokenKind.Pipe:
+				op = BinOp.Or;
+				goto BinExpr;
+
 			default:
 				throw new InvalidOperationException("Invalid bin-expr");
 			}
 
 		LogExpr:
-			return new BinExprNode(op, left, right, LLVMTypeRef.Int1);
+			return new BinExprNode(op, left, right, BuiltinTypes.types["bool"]);
 		BinExpr:
 			return new BinExprNode(op, left, right, left.type) { syntax = ast };
 		}
@@ -453,9 +460,13 @@ namespace SuperCode
 			string literal = ast.literal.text;
 			switch (ast.literal.kind)
 			{
+			case TokenKind.TrueKey:
+				return new NumExprNode(1, BuiltinTypes.types["bool"]) { syntax = ast };
+			case TokenKind.FalseKey:
+				return new NumExprNode(0, BuiltinTypes.types["bool"]) { syntax = ast };
 			case TokenKind.NullKey:
 				// Chez
-				return new NumExprNode(0, LLVMTypeRef.Int64) { syntax = ast };
+				return new NumExprNode(0, BuiltinTypes.types["bit"]) { syntax = ast };
 			case TokenKind.Iden:
 				if (syms.TryGetValue(literal, out var sym))
 					return new SymExprNode(sym) { syntax = ast };
@@ -530,11 +541,16 @@ namespace SuperCode
 				op = UnOp.Deref;
 				ty = ty.ElementType;
 				goto UnExpr;
+			case TokenKind.Bang:
+				op = UnOp.Not;
+				goto LogExpr;
 
 			default:
 				throw new InvalidOperationException("Invalid un-expr");
 			}
 
+		LogExpr:
+			return new UnExprNode(BuiltinTypes.types["bool"], op, Cast(var, BuiltinTypes.types["bool"])) { syntax = ast };
 		UnExpr:
 			return new UnExprNode(ty, op, var) { syntax = ast };
 		}

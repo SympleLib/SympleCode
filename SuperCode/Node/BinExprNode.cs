@@ -40,6 +40,8 @@ namespace SuperCode
 		FLt,
 
 		Index,
+		And,
+		Or,
 	}
 
 	public class BinExprNode: ExprNode

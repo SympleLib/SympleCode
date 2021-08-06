@@ -27,7 +27,7 @@ namespace SuperCode
 			string dir = path[..path.LastIndexOf('/')] + '/';
 			string file = path[(path.LastIndexOf('/') + 1)..];
 
-			var syc = new SympleCode(SycMode.Dev & ~SycMode.Optimize, dir);
+			var syc = new SympleCode(SycMode.Dev, dir);
 			var module = syc.CompileJIT(file);
 			if (module is null)
 				goto Stop;

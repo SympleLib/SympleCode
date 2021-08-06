@@ -8,6 +8,7 @@ namespace SuperCode
 		FNeg,
 		Ref,
 		Deref,
+		Not,
 	}
 
 	public class UnExprNode: ExprNode

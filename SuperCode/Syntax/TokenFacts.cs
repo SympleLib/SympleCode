@@ -35,16 +35,17 @@ namespace SuperCode
 			kind switch
 			{
 				TokenKind.Eql => 1,
-				TokenKind.EqlEql or TokenKind.NotEql or TokenKind.LeftChevron or TokenKind.RightChevron or TokenKind.LEql or TokenKind.REql => 2,
-				TokenKind.Plus or TokenKind.Dash => 3,
-				TokenKind.Star or TokenKind.Slash or TokenKind.Percent => 4,
-				TokenKind.Dot => 5,
+				TokenKind.And or TokenKind.Pipe => 2,
+				TokenKind.EqlEql or TokenKind.NotEql or TokenKind.LeftChevron or TokenKind.RightChevron or TokenKind.LEql or TokenKind.REql => 3,
+				TokenKind.Plus or TokenKind.Dash => 4,
+				TokenKind.Star or TokenKind.Slash or TokenKind.Percent => 5,
+				TokenKind.Dot => 6,
 
 				_ => 0,
 			};
 
 		public static bool IsPrefix(this TokenKind kind) =>
-			kind is TokenKind.Plus or TokenKind.Dash or TokenKind.Percent or TokenKind.At;
+			kind is TokenKind.Plus or TokenKind.Dash or TokenKind.Percent or TokenKind.At or TokenKind.Bang;
 
 		public static bool IsTypeAddon(this TokenKind kind) =>
 			kind is TokenKind.Star;

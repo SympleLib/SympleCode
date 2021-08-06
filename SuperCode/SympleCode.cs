@@ -32,6 +32,7 @@ namespace SuperCode
 		public Visibility defVis => defPriv ? Visibility.Private : Visibility.Public;
 
 		public readonly List<ModuleNode> modules = new List<ModuleNode>();
+		public bool failed { get; private set; }
 
 		public LLVMExecutionEngineRef execEngine => engine;
 		private LLVMExecutionEngineRef engine;
@@ -45,7 +46,7 @@ namespace SuperCode
 		public ModuleNode? CompileJIT(string file)
 		{
 			var module = Compile(file);
-			if (module is null)
+			if (module is null || failed)
 				return null;
 
 			var options = new LLVMMCJITCompilerOptions { NoFramePointerElim = 1 };
@@ -74,7 +75,10 @@ namespace SuperCode
 			var safety = parser.Parse(out var tree);
 			safety.Print(Console.Out);
 			if (safety.MustSelfDestruct())
+			{
+				failed = true;
 				return null;
+			}
 
 			File.WriteAllText(filebase + ".tree", tree.ToString());
 #if PRINT
@@ -92,7 +96,10 @@ namespace SuperCode
 			safety = noder.Nodify(out var node);
 			safety.Print(Console.Out);
 			if (safety.MustSelfDestruct())
+			{
+				failed = true;
 				return null;
+			}
 
 			var cg = new CodeGen(node);
 			var module = cg.Gen();
@@ -108,7 +115,10 @@ namespace SuperCode
 			Console.ForegroundColor = ConsoleColor.White;
 
 			if (!module.TryVerify(LLVMVerifierFailureAction.LLVMPrintMessageAction, out string err))
+			{
+				failed = true;
 				return null;
+			}
 
 			var target = LLVMTargetRef.GetTargetFromTriple(LLVMTargetRef.DefaultTriple);
 			var targetMachine = target.CreateTargetMachine(LLVMTargetRef.DefaultTriple, "generic", "",

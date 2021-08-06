@@ -104,7 +104,7 @@ namespace SuperCode
 		private LLVMValueRef Gen(Node? node, bool extrn = false)
 		{
 			if (node is null || returned)
-				return LLVMValueRef.CreateConstNull(LLVMTypeRef.Void);
+				return null;
 
 
 			switch (node.kind)
@@ -181,7 +181,6 @@ namespace SuperCode
 
 		private LLVMValueRef Gen(FuncMemNode node, bool extrn = false)
 		{
-			returned = false;
 			func = module.AddFunction(node.name, node.type);
 			syms.Add(node, func);
 			if (extrn)
@@ -206,6 +205,7 @@ namespace SuperCode
 
 			if (node.retType == LLVMTypeRef.Void && !returned)
 				builder.BuildRetVoid();
+			returned = false;
 			var fn = func;
 			func = null;
 			return fn;
@@ -270,10 +270,11 @@ namespace SuperCode
 
 		private LLVMValueRef Gen(RetStmtNode node)
 		{
+			var val = Gen(node.value);
 			returned = true;
 			if (node.value is null)
 				return builder.BuildRetVoid();
-			return builder.BuildRet(Gen(node.value));
+			return builder.BuildRet(val);
 		}
 
 		private LLVMValueRef Gen(TypedefStmtNode node) => null;
@@ -408,7 +409,11 @@ namespace SuperCode
 
 			case BinOp.Index:
 				return builder.BuildLoad(builder.BuildInBoundsGEP(left, new LLVMValueRef[] { right }));
-				
+			case BinOp.And:
+				return builder.BuildAnd(left, right);
+			case BinOp.Or:
+				return builder.BuildOr(left, right);
+
 			default:
 				throw new InvalidOperationException("Invalid bin-expr");
 			}
@@ -515,6 +520,8 @@ namespace SuperCode
 				return builder.BuildFNeg(expr);
 			case UnOp.Deref:
 				return builder.BuildLoad(expr);
+			case UnOp.Not:
+				return builder.BuildNot(expr);
 
 			default:
 				throw new InvalidOperationException("Invalid un-expr");

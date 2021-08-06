@@ -27,6 +27,10 @@ namespace SuperCode
 		Eql,
 		Arrow,
 
+		And,
+		Pipe,
+		Bang,
+
 		Dot,
 		Comma,
 		Semicol,
@@ -71,6 +75,9 @@ namespace SuperCode
 		ProtKey,
 		PrivKey,
 
+		TrueKey,
+		FalseKey,
+
 		Count,
 	}
 
@@ -111,6 +118,7 @@ namespace SuperCode
 		public static readonly string[] puncs =	{
 			"+", "-", "*", "/", "%",
 			"@", "=", "->",
+			"&", "|", "!",
 			".", ",", ";",
 			"{", "}", "[", "]", "(", ")",
 			"<", ">",
@@ -125,6 +133,7 @@ namespace SuperCode
 			"null", "ret", "ref", "as",
 			"mut", "const",
 			"pub", "prot", "priv",
+			"true", "false",
 		};
 	}
 }
