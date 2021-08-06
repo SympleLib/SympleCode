@@ -17,13 +17,13 @@ namespace SuperCode
 				if (kind is not TokenKind.Iden)
 					return false;
 
-				if (BuiltinTypes.types.ContainsKey(text))
+				if (BuiltinTypes.builtinTypes.ContainsKey(text))
 					return true;
 				return false;
 			}
 		}
 
-		public LLVMTypeRef builtinType => BuiltinTypes.types[text];
+		public LLVMTypeRef builtinType => BuiltinTypes.builtinTypes[text];
 	}
 
 	public static class TokenFacts

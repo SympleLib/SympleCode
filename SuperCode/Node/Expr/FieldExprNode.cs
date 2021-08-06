@@ -2,12 +2,12 @@
 
 namespace SuperCode
 {
-	public class MemExprNode: ExprNode
+	public class FieldExprNode: ExprNode
 	{
 		public readonly ExprNode expr;
 		public readonly FieldNode field;
 
-		public MemExprNode(ExprNode expr, FieldNode field): base(field.type)
+		public FieldExprNode(ExprNode expr, FieldNode field): base(field.type)
 		{
 			this.expr = expr;
 			this.field = field;

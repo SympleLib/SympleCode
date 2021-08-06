@@ -23,7 +23,7 @@ namespace SuperCode
 
 		private static void Main(string[] args)
 		{
-			string path = "../Examples/Tic Tac Toe.sy";
+			string path = "../Examples/Hello World.sy";
 			string dir = path[..path.LastIndexOf('/')] + '/';
 			string file = path[(path.LastIndexOf('/') + 1)..];
 
@@ -43,6 +43,9 @@ namespace SuperCode
 			if (func == null)
 				return;
 			var exec = (Run) Marshal.GetDelegateForFunctionPointer(syc.execEngine.GetPointerToGlobal(func), typeof(Run));
+			Console.ForegroundColor = ConsoleColor.DarkGray;
+			Console.WriteLine("Running...");
+			Console.ForegroundColor = ConsoleColor.White;
 			exec();
 		}
 	}
