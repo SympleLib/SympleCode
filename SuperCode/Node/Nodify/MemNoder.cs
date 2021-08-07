@@ -41,7 +41,7 @@ namespace SuperCode
 				paramTypes[i] = param.type;
 			}
 
-			retType = Nodify(ast.retType);
+			retType = Type(ast.retType);
 			var ty = LLVMTypeRef.CreateFunction(retType, paramTypes, ast.vaArg != default);
 			string name = ast.name.text;
 			if (ast.asmTag is not null)
@@ -74,7 +74,7 @@ namespace SuperCode
 
 			var paramTypes = new LLVMTypeRef[ast.paramz.Length];
 			for (int i = 0; i < paramTypes.Length; i++)
-				paramTypes[i] = Nodify(ast.paramz[i].type);
+				paramTypes[i] = Type(ast.paramz[i].type);
 
 			var paramz = new FieldNode[ast.paramz.Length];
 			for (int i = 0; i < paramz.Length; i++)
@@ -84,7 +84,7 @@ namespace SuperCode
 				syms.Add(paramNode.name, paramNode);
 			}
 
-			retType = Nodify(ast.retType);
+			retType = Type(ast.retType);
 			var ty = LLVMTypeRef.CreateFunction(retType, paramTypes, ast.vaArg != default);
 			string name = ast.name.text;
 			if (ast.asmTag is not null)
@@ -135,7 +135,7 @@ namespace SuperCode
 
 		private VarMemNode Nodify(VarMemAst ast)
 		{
-			var ty = Nodify(ast.type);
+			var ty = Type(ast.type);
 			var init = ast.init is null ? null : Nodify(ast.init, ty.IsRef() ? default : ty);
 			var var = new VarMemNode(ty, Vis(ast.vis), IsMut(ast.mutKey), ast.name.text, init) { syntax = ast };
 			syms.Add(var.name, var);

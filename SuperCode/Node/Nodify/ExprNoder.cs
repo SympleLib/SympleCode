@@ -153,7 +153,7 @@ namespace SuperCode
 		private ExprNode Nodify(CastExprAst ast)
 		{
 			var node = Nodify(ast.expr);
-			var to = Nodify(ast.type);
+			var to = Type(ast.type);
 			if (to == default || node.type == to)
 				return node;
 			return new CastExprNode(node, to) { syntax = ast };
@@ -270,7 +270,7 @@ namespace SuperCode
 
 		private ExprNode Nodify(TypePunExprAst ast)
 		{
-			var ty = Nodify(ast.type);
+			var ty = Type(ast.type);
 			var expr = Nodify(ast.expr);
 			if (ty == expr.type)
 				return expr;

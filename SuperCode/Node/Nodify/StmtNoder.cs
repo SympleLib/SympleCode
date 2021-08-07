@@ -76,14 +76,14 @@ namespace SuperCode
 		private TypedefStmtNode Nodify(UsingStmtAst ast)
 		{
 			string alias = ast.alias.text;
-			var real = Nodify(ast.real);
+			var real = Type(ast.real);
 			types.Add(alias, real);
 			return new TypedefStmtNode(alias, real);
 		}
 
 		private VarStmtNode Nodify(VarStmtAst ast)
 		{
-			var ty = Nodify(ast.type);
+			var ty = Type(ast.type);
 			var initTy = ty.IsRef() ? default : ty;
 			var init = ast.init is null ? null : Nodify(ast.init, initTy);
 			var var = new VarStmtNode(ty, IsMut(ast.mutKey), ast.name.text, init) { syntax = ast };

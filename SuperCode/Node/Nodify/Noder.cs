@@ -36,7 +36,7 @@ namespace SuperCode
 		private ExprNode Nodify(ElementAst ast) =>
 			Nodify(ast.value);
 
-		private LLVMTypeRef Nodify(TypeAst ast)
+		private LLVMTypeRef Type(TypeAst ast)
 		{
 			LLVMTypeRef ty;
 			if (ast.baze.isBuiltinType)
@@ -48,7 +48,7 @@ namespace SuperCode
 			{
 				var args = new LLVMTypeRef[ast.args.Length];
 				for (int i = 0; i < args.Length; i++)
-					args[i] = Nodify(ast.args[i]);
+					args[i] = Type(ast.args[i]);
 				ty = LLVMTypeRef.CreateFunction(ty, args);
 			}
 			
@@ -62,7 +62,7 @@ namespace SuperCode
 		}
 
 		private FieldNode Nodify(FieldAst ast, int index) =>
-			new FieldNode(Nodify(ast.type), IsMut(ast.mutKey), index, ast.name.text) { syntax = ast };
+			new FieldNode(Type(ast.type), IsMut(ast.mutKey), index, ast.name.text) { syntax = ast };
 
 
 		private ExprNode Cast(ExprNode node, LLVMTypeRef to)

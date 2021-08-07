@@ -62,7 +62,7 @@ namespace SuperCode
 			return module;
 		}
 
-		public ModuleNode? Compile(string file)
+		public ModuleNode? Symbolize(string file)
 		{
 			string filebase = dir + (file.Contains('.') ? file[(..file.LastIndexOf('.'))] : file);
 
@@ -93,6 +93,11 @@ namespace SuperCode
 			LLVM.InitializeNativeDisassembler();
 
 			var noder = new Noder(this, tree);
+			noder.Symbolize();
+		}
+
+		public ModuleNode? Compile(string file)
+		{
 			safety = noder.Nodify(out var node);
 			safety.Print(Console.Out);
 			if (safety.MustSelfDestruct())
