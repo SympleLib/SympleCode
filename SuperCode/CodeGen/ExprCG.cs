@@ -192,10 +192,7 @@ namespace SuperCode
 		private LLVMValueRef Gen(TypePunExprNode node)
 		{
 			var expr = Gen(node.expr);
-			var fptr = builder.BuildAlloca(expr.TypeOf);
-			builder.BuildStore(expr, fptr);
-			var tptr = builder.BuildPointerCast(fptr, node.type.Ptr());
-			return builder.BuildLoad(tptr);
+			return builder.BuildBitCast(expr, node.type);
 		}
 
 		private LLVMValueRef Gen(UnExprNode node)

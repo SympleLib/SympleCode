@@ -54,7 +54,7 @@ namespace SuperCode
 		public void Symbolize(ImportMemAst ast)
 		{
 			string what = ast.what.text;
-			syc.Symbolize(what);
+			syc.Compile(what);
 		}
 	}
 }
