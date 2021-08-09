@@ -5,20 +5,15 @@ namespace SuperCode
 	public class DeclFuncMemNode: Node, Symbol
 	{
 		public readonly LLVMTypeRef retType;
-		public FieldNode[]? paramz {  get; private set; }
-		public FuncMemNode? impl { get; private set; }
+		public readonly FieldNode[] paramz;
+		public FuncMemNode? impl { get; internal set; }
 
-		public DeclFuncMemNode(LLVMTypeRef type, string name)
+		public DeclFuncMemNode(LLVMTypeRef type, string name, FieldNode[] paramz)
 		{
 			this.type = type;
 			this.retType = type.ReturnType;
 			this.name = name;
-		}
-
-		public void Complete(FieldNode[] paramz, FuncMemNode? impl)
-		{
 			this.paramz = paramz;
-			this.impl = impl;
 		}
 
 		public bool mut => false;

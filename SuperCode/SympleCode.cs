@@ -32,7 +32,6 @@ namespace SuperCode
 		public Visibility defVis => defPriv ? Visibility.Private : Visibility.Public;
 
 		public readonly List<ModuleNode> modules = new List<ModuleNode>();
-		public readonly Dictionary<string, Symbol> syms = new Dictionary<string, Symbol>();
 		public bool failed { get; private set; }
 
 		public LLVMExecutionEngineRef execEngine => engine;
@@ -94,7 +93,6 @@ namespace SuperCode
 			LLVM.InitializeNativeDisassembler();
 
 			var noder = new Noder(this, tree);
-			noder.Symbolize();
 			safety = noder.Nodify(out var node);
 			safety.Print(Console.Out);
 			if (safety.MustSelfDestruct())
