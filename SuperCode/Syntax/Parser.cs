@@ -9,6 +9,7 @@ namespace SuperCode
 		public readonly Lexer lexer;
 		public readonly Token[] tokens;
 		public readonly List<string> types = new List<string>();
+		private ParseStep step = ParseStep.Imports;
 		private int pos;
 
 		private Token current => pos < tokens.Length ? tokens[pos] : default;
@@ -44,7 +45,8 @@ namespace SuperCode
 					break;
 				}
 
-			mems.InsertRange(0, declMems);
+			int insert = mems.FindIndex(mem => mem.kind is AstKind.FuncMem);
+			mems.InsertRange(insert == -1 ? 0 : insert, declMems);
 
 			var eof = Next();
 			module = new ModuleAst(lexer.path, mems.ToArray(), eof);

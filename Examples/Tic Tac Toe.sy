@@ -18,7 +18,7 @@ bool winner(Slot* board, Slot turn)
 	{
 		if board[1] == turn & board[2] == turn ->
 			ret true;
-		if board[4] == turn & board[5] == turn ->
+		if board[4] == turn & board[8] == turn ->
 			ret true;
 		if board[3] == turn & board[6] == turn ->
 			ret true;
@@ -77,6 +77,21 @@ bool move(Slot* board, Slot turn)
 	ret winner(board, turn);
 }
 
+bool isTie(Slot* board)
+{
+	uint i = 0;
+	while i < 9
+	{
+		if !(board[i] == `X` | board[i] == `O`) ->
+			ret false;
+		i = i + 3;
+	}
+	
+	printBoard(board);
+	print('It\'s a tie!');
+	ret true;
+}
+
 void run()
 {
 	Slot* board = [
@@ -90,9 +105,13 @@ void run()
 	{
 		if move(board, turn)
 		{
-			printf('\'%hc\' won!', turn);
+			printBoard(board);
+			printf('\'%hc\' won!\n', turn);
 			ret;
 		}
+		
+		if isTie(board) ->
+			ret;
 		
 		if turn == `X` -> turn = `O`;
 		else turn = `X`;

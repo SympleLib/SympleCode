@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 
 namespace SuperCode
 {
@@ -31,6 +32,10 @@ namespace SuperCode
 
 		private DeclFuncMemAst DeclFuncMem()
 		{
+			if (step is not <= ParseStep.DeclFuncs)
+				throw new Exception();
+			step = ParseStep.DeclFuncs;
+
 			var key = Match(TokenKind.DeclKey);
 			var ret = Type();
 			var name = Match(TokenKind.Iden);
@@ -65,6 +70,10 @@ namespace SuperCode
 
 		private ImportMemAst ImportMem()
 		{
+			if (step is not <= ParseStep.Imports)
+				throw new Exception();
+			step = ParseStep.Imports;
+
 			var key = Match(TokenKind.ImportKey);
 			var what = Match(TokenKind.Str);
 			var semi = Match(TokenKind.Semicol);
@@ -74,6 +83,10 @@ namespace SuperCode
 
 		private FuncMemAst FuncMem(Token? vis, TypeAst ret)
 		{
+			if (step is not <= ParseStep.Funcs)
+				throw new Exception();
+			step = ParseStep.Funcs;
+
 			var name = Match(TokenKind.Iden);
 			Token? asmTag = null;
 			if (current.kind is TokenKind.Iden or TokenKind.Str)
@@ -130,6 +143,10 @@ namespace SuperCode
 
 		private StructMemAst StructMem()
 		{
+			if (step is not <= ParseStep.Structs)
+				throw new Exception();
+			step = ParseStep.Structs;
+
 			var key = Match(TokenKind.StructKey);
 			var name = Match(TokenKind.Iden);
 			var open = Match(TokenKind.LeftBrace);
@@ -153,6 +170,10 @@ namespace SuperCode
 
 		private VarMemAst VarMem(Token? vis, Token? mutKey, TypeAst type)
 		{
+			if (step is not <= ParseStep.Vars)
+				throw new Exception();
+			step = ParseStep.Vars;
+
 			var name = Match(TokenKind.Iden);
 			if (current.kind is TokenKind.Semicol)
 			{
