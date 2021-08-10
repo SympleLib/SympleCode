@@ -6,10 +6,11 @@ namespace SuperCode
 	{
 		private LLVMValueRef Gen(DeclFuncMemNode node)
 		{
-			if (node.impl is not null)
-				return null;
 			var fn = module.AddFunction(node.name, node.type);
-			syms.Add(node, fn);
+			if (node.impl is null)
+				syms.Add(node, fn);
+			else
+				syms.Add(node.impl, fn);
 			return fn;
 		}
 
@@ -22,8 +23,7 @@ namespace SuperCode
 
 		private LLVMValueRef Gen(FuncMemNode node, bool extrn = false)
 		{
-			func = module.AddFunction(node.name, node.type);
-			syms.Add(node, func);
+			func = syms[node];
 			if (extrn)
 				return func;
 

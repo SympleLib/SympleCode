@@ -28,6 +28,24 @@ namespace SuperCode
 			while (current.kind is not TokenKind.Eof)
 				mems.Add(Mem());
 
+			// Cheatcode
+			var declMems = new List<MemAst>();
+			foreach (var mem in mems)
+				switch (mem.kind)
+				{
+				case AstKind.FuncMem:
+				{
+					var func = (FuncMemAst) mem;
+					declMems.Add(new ImplFuncMemAst(func.retType, func.name, func.asmTag, func.paramz, func.vaArg));
+					break;
+				}
+
+				default:
+					break;
+				}
+
+			mems.InsertRange(0, declMems);
+
 			var eof = Next();
 			module = new ModuleAst(lexer.path, mems.ToArray(), eof);
 			return safety;

@@ -9,6 +9,7 @@
 
 		DeclFuncMem,
 		FuncMem,
+		ImplFuncMem,
 		StmtMem,
 		StructMem,
 		VarMem,

@@ -14,6 +14,8 @@ namespace SuperCode
 			{
 			case AstKind.DeclFuncMem:
 				return Nodify((DeclFuncMemAst) ast);
+			case AstKind.ImplFuncMem:
+				return Nodify((ImplFuncMemAst) ast);
 			case AstKind.ImportMem:
 				return Nodify((ImportMemAst) ast);
 			case AstKind.FuncMem:
@@ -31,6 +33,33 @@ namespace SuperCode
 		}
 
 		private DeclFuncMemNode Nodify(DeclFuncMemAst ast)
+		{
+			var paramTypes = new LLVMTypeRef[ast.paramz.Length];
+			var paramz = new FieldNode[ast.paramz.Length];
+			for (int i = 0; i < paramz.Length; i++)
+			{
+				var param = Nodify(ast.paramz[i], i);
+				paramz[i] = param;
+				paramTypes[i] = param.type;
+			}
+
+			retType = Type(ast.retType);
+			var ty = LLVMTypeRef.CreateFunction(retType, paramTypes, ast.vaArg != default);
+			string name = ast.name.text;
+			if (ast.asmTag is not null)
+			{
+				var asmTag = ast.asmTag.Value;
+				name = asmTag.text;
+				if (asmTag.kind is TokenKind.Str)
+					name = name[1..^1];
+			}
+
+			var decl = new DeclFuncMemNode(ty, name, paramz) { syntax = ast };
+			syms.TryAdd(ast.name.text, decl);
+			return decl;
+		}
+
+		private DeclFuncMemNode Nodify(ImplFuncMemAst ast)
 		{
 			var paramTypes = new LLVMTypeRef[ast.paramz.Length];
 			var paramz = new FieldNode[ast.paramz.Length];
