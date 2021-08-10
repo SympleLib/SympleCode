@@ -43,7 +43,7 @@ namespace SuperCode
 				ty = ast.baze.builtinType;
 			else
 				ty = types[ast.baze.text];
-
+			
 			if (ast.args.Length > 0)
 			{
 				var args = new LLVMTypeRef[ast.args.Length];

@@ -1,7 +1,4 @@
 import 'Libc.sy';
 
 void run() ->
-	Print();
-	
-void Print() ->
 	print('Hello, world!');

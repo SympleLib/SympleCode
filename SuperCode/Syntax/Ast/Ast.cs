@@ -64,6 +64,9 @@ namespace SuperCode
 
 						foreach (var obj in arr)
 						{
+							if (obj?.kind is AstKind.ImplFuncMem)
+								continue;
+
 							bool last = obj == arr[^1];
 
 							var child = obj;

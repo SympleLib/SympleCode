@@ -23,7 +23,7 @@ namespace SuperCode
 
 		private static void Main(string[] args)
 		{
-			string path = "../Examples/Hello World.sy";
+			string path = "../Examples/Tic Tac Toe.sy";
 			string dir = path[..path.LastIndexOf('/')] + '/';
 			string file = path[(path.LastIndexOf('/') + 1)..];
 

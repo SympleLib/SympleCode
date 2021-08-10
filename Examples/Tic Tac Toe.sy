@@ -12,9 +12,6 @@ void printBoard(Slot* board)
 	}
 }
 
-decl void move(Slot* board, Slot turn);
-decl bool winner(Slot* board, Slot turn);
-
 bool winner(Slot* board, Slot turn)
 {
 	if board[0] == turn
