@@ -46,6 +46,8 @@ namespace SuperCode
 			{
 			case NodeKind.DeclFuncMem:
 				return Gen((DeclFuncMemNode) node);
+			case NodeKind.DeclVarMem:
+				return Gen((DeclVarMemNode) node);
 			case NodeKind.ImportMem:
 				return Gen((ImportMemNode) node);
 			case NodeKind.FuncMem:

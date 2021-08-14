@@ -30,14 +30,20 @@ namespace SuperCode
 				mems.Add(Mem());
 
 			// Cheatcode
-			var declMems = new List<MemAst>();
+			var implMems = new List<MemAst>();
 			foreach (var mem in mems)
 				switch (mem.kind)
 				{
+				case AstKind.VarMem:
+				{
+					var var = (VarMemAst) mem;
+					implMems.Add(new ImplVarMemAst(var.mutKey, var.type, var.name));
+					break;
+				}
 				case AstKind.FuncMem:
 				{
 					var func = (FuncMemAst) mem;
-					declMems.Add(new ImplFuncMemAst(func.retType, func.name, func.asmTag, func.paramz, func.vaArg));
+					implMems.Add(new ImplFuncMemAst(func.retType, func.name, func.asmTag, func.paramz, func.vaArg));
 					break;
 				}
 
@@ -46,7 +52,7 @@ namespace SuperCode
 				}
 
 			int insert = mems.FindIndex(mem => mem.kind is AstKind.FuncMem);
-			mems.InsertRange(insert == -1 ? 0 : insert, declMems);
+			mems.InsertRange(insert == -1 ? 0 : insert, implMems);
 
 			var eof = Next();
 			module = new ModuleAst(lexer.path, mems.ToArray(), eof);

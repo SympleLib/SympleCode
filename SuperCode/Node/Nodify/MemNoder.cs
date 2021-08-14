@@ -14,8 +14,12 @@ namespace SuperCode
 			{
 			case AstKind.DeclFuncMem:
 				return Nodify((DeclFuncMemAst) ast);
+			case AstKind.DeclVarMem:
+				return Nodify((DeclVarMemAst) ast);
 			case AstKind.ImplFuncMem:
 				return Nodify((ImplFuncMemAst) ast);
+			case AstKind.ImplVarMem:
+				return Nodify((ImplVarMemAst) ast);
 			case AstKind.ImportMem:
 				return Nodify((ImportMemAst) ast);
 			case AstKind.FuncMem:

@@ -6,12 +6,28 @@ namespace SuperCode
 	{
 		private LLVMValueRef Gen(DeclFuncMemNode node)
 		{
+			if (module.GetNamedFunction(node.name) != null)
+				return node.impl is null ? syms[node] : syms[node.impl];
+
 			var fn = module.AddFunction(node.name, node.type);
 			if (node.impl is null)
 				syms.Add(node, fn);
 			else
 				syms.Add(node.impl, fn);
 			return fn;
+		}
+
+		private LLVMValueRef Gen(DeclVarMemNode node)
+		{
+			if (module.GetNamedGlobal(node.name) != null)
+				return node.impl is null ? syms[node] : syms[node.impl];
+
+			var var = module.AddGlobal(node.type, node.name);
+			if (node.impl is null)
+				syms.Add(node, var);
+			else
+				syms.Add(node.impl, var);
+			return var;
 		}
 
 		private LLVMValueRef Gen(ImportMemNode node)

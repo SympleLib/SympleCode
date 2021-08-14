@@ -8,8 +8,10 @@
 		Type,
 
 		DeclFuncMem,
+		DeclVarMem,
 		FuncMem,
 		ImplFuncMem,
+		ImplVarMem,
 		StmtMem,
 		StructMem,
 		VarMem,

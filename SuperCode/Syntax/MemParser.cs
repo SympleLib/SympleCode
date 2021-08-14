@@ -19,7 +19,7 @@ namespace SuperCode
 			case TokenKind.ImportKey:
 				return ImportMem();
 			case TokenKind.DeclKey:
-				return DeclFuncMem();
+				return DeclFuncOrVarMem();
 			case TokenKind.StructKey:
 				return StructMem();
 
@@ -30,14 +30,12 @@ namespace SuperCode
 			}
 		}
 
-		private DeclFuncMemAst DeclFuncMem()
+		private DeclFuncMemAst DeclFuncMem(Token key, TypeAst ret)
 		{
 			if (step is not <= ParseStep.DeclFuncs)
 				throw new Exception();
 			step = ParseStep.DeclFuncs;
 
-			var key = Match(TokenKind.DeclKey);
-			var ret = Type();
 			var name = Match(TokenKind.Iden);
 			Token? asmTag = null;
 			if (current.kind is TokenKind.Iden or TokenKind.Str)
@@ -66,6 +64,27 @@ namespace SuperCode
 			var semi = Match(TokenKind.Semicol);
 
 			return new DeclFuncMemAst(key, ret, name, asmTag, open, paramz.ToArray(), vaArg, close, semi);
+		}
+
+		private MemAst DeclFuncOrVarMem()
+		{
+			var key = Match(TokenKind.DeclKey);
+			Token? mutKey = null;
+			if (current.kind is TokenKind.MutKey or TokenKind.ConstKey)
+				mutKey = Next();
+			var type = Type();
+
+			if (next.kind is TokenKind.LeftParen || Peek(2).kind is TokenKind.LeftParen)
+				return DeclFuncMem(key, type);
+
+			return DeclVarMem(key, mutKey, type);
+		}
+
+		private DeclVarMemAst DeclVarMem(Token key, Token? mutKey, TypeAst type)
+		{
+			var name = Match(TokenKind.Iden);
+			var semi = Match(TokenKind.Semicol);
+			return new DeclVarMemAst(key, mutKey, type, name, semi);
 		}
 
 		private ImportMemAst ImportMem()
