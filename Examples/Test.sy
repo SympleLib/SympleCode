@@ -1,0 +1,6 @@
+import 'Libc.sy';
+
+^run()
+{
+	exit(69);
+}

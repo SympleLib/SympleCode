@@ -8,6 +8,8 @@ namespace SuperCode
 		// Subject to change...
 		public static readonly Dictionary<string, LLVMTypeRef> builtinTypes = new Dictionary<string, LLVMTypeRef>()
 		{
+			{ "^", LLVMTypeRef.CreateInt(69) },
+
 			{ "void", LLVMTypeRef.Void },
 			{ "bit", LLVMTypeRef.Int8 },
 

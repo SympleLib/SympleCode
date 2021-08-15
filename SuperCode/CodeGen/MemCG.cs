@@ -62,6 +62,8 @@ namespace SuperCode
 
 			if (node.retType == LLVMTypeRef.Void && !returned)
 				builder.BuildRetVoid();
+			else if (node.noret)
+				builder.BuildUnreachable();
 			returned = false;
 			var fn = func;
 			func = null;

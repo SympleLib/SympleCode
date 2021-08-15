@@ -48,6 +48,13 @@ namespace SuperCode
 			}
 
 			retType = Type(ast.retType);
+			bool noret = false;
+			if (retType == null)
+			{
+				noret = true;
+				retType = builtinTypes["^"];
+			}
+
 			var ty = LLVMTypeRef.CreateFunction(retType, paramTypes, ast.vaArg != default);
 			string name = ast.name.text;
 			if (ast.asmTag is not null)
@@ -58,7 +65,7 @@ namespace SuperCode
 					name = name[1..^1];
 			}
 
-			var decl = new DeclFuncMemNode(ty, name, paramz) { syntax = ast };
+			var decl = new DeclFuncMemNode(noret, ty, name, paramz) { syntax = ast };
 			syms.TryAdd(ast.name.text, decl);
 			return decl;
 		}
@@ -75,6 +82,13 @@ namespace SuperCode
 			}
 
 			retType = Type(ast.retType);
+			bool noret = false;
+			if (retType == null)
+			{
+				noret = true;
+				retType = builtinTypes["^"];
+			}
+
 			var ty = LLVMTypeRef.CreateFunction(retType, paramTypes, ast.vaArg != default);
 			string name = ast.name.text;
 			if (ast.asmTag is not null)
@@ -85,7 +99,7 @@ namespace SuperCode
 					name = name[1..^1];
 			}
 
-			var decl = new DeclFuncMemNode(ty, name, paramz) { syntax = ast };
+			var decl = new DeclFuncMemNode(noret, ty, name, paramz) { syntax = ast };
 			syms.TryAdd(ast.name.text, decl);
 			return decl;
 		}
@@ -118,6 +132,13 @@ namespace SuperCode
 			}
 
 			retType = Type(ast.retType);
+			bool noret = false;
+			if (retType == null)
+			{
+				noret = true;
+				retType = builtinTypes["^"];
+			}
+
 			var ty = LLVMTypeRef.CreateFunction(retType, paramTypes, ast.vaArg != default);
 			string name = ast.name.text;
 			if (ast.asmTag is not null)
@@ -132,7 +153,7 @@ namespace SuperCode
 			for (int i = 0; i < stmts.Length; i++)
 				stmts[i] = Nodify(ast.stmts[i]);
 
-			var func = new FuncMemNode(ty, Vis(ast.vis), name, paramz, stmts) { syntax = ast };
+			var func = new FuncMemNode(noret, ty, Vis(ast.vis), name, paramz, stmts) { syntax = ast };
 			syms = psyms;
 			if (syms.ContainsKey(ast.name.text))
 			{

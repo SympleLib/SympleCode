@@ -4,12 +4,14 @@ namespace SuperCode
 {
 	public class FuncMemNode: Node, Symbol
 	{
-		public LLVMTypeRef retType;
+		public readonly bool noret;
+		public readonly LLVMTypeRef retType;
 		public readonly FieldNode[] paramz;
 		public readonly Node[] stmts;
 
-		public FuncMemNode(LLVMTypeRef type, Visibility vis, string name, FieldNode[] paramz, Node[] stmts)
+		public FuncMemNode(bool noret, LLVMTypeRef type, Visibility vis, string name, FieldNode[] paramz, Node[] stmts)
 		{
+			this.noret = noret;
 			this.type = type;
 			this.vis = vis;
 			this.retType = type.ReturnType;

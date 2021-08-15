@@ -132,7 +132,7 @@ namespace SuperCode
 
 
 		private bool IsType(Token tok) =>
-			tok.kind is TokenKind.Iden && (tok.isBuiltinType || types.Contains(tok.text));
+			tok.isBuiltinType || (tok.kind is TokenKind.Iden && types.Contains(tok.text));
 
 		private Token Peek(int off)
 		{

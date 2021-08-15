@@ -14,6 +14,8 @@ namespace SuperCode
 		public bool isBuiltinType {
 			get
 			{
+				if (kind is TokenKind.Carot)
+					return true;
 				if (kind is not TokenKind.Iden)
 					return false;
 
@@ -23,7 +25,14 @@ namespace SuperCode
 			}
 		}
 
-		public LLVMTypeRef builtinType => BuiltinTypes.builtinTypes[text];
+		public LLVMTypeRef builtinType {
+			get
+			{
+				if (kind is TokenKind.Carot)
+					return null;
+				return BuiltinTypes.builtinTypes[text];
+			}
+		}
 	}
 
 	public static class TokenFacts

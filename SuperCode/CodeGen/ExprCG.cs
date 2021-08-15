@@ -1,6 +1,6 @@
 ﻿using LLVMSharp.Interop;
-using System;
 
+using static SuperCode.BuiltinTypes;
 using static LLVMSharp.Interop.LLVMIntPredicate;
 using static LLVMSharp.Interop.LLVMRealPredicate;
 
@@ -119,7 +119,13 @@ namespace SuperCode
 			for (int i = 0; i < args.Length; i++)
 				args[i] = Gen(expr.args[i]);
 
-			return builder.BuildCall(what, args);
+			var call = builder.BuildCall(what, args);
+			if (what.TypeOf.ReturnType == builtinTypes["^"])
+			{
+				builder.BuildUnreachable();
+				//returned = true;
+			}
+			return call;
 		}
 
 		private LLVMValueRef Gen(CastExprNode expr)
