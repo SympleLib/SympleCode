@@ -54,8 +54,8 @@ namespace SuperCode
 			var builder = LLVMBuilderRef.Create(module.Context);
 			var entry = func.AppendBasicBlock();
 			builder.PositionAtEnd(entry);
-			builder.BuildCall(runFn, Array.Empty<LLVMValueRef>());
-			builder.BuildUnreachable();
+			var call = builder.BuildCall(runFn, Array.Empty<LLVMValueRef>());
+			builder.BuildRet(call);
 			syc.execEngine.AddModule(module);
 
 			Console.ForegroundColor = ConsoleColor.DarkGray;

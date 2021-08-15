@@ -1,6 +1,7 @@
 import 'Libc.sy';
 
-^run()
+void run()
 {
-	exit(69);
+	exit(3735928559);
+	print('Hello, world!');
 }

@@ -120,10 +120,10 @@ namespace SuperCode
 				args[i] = Gen(expr.args[i]);
 
 			var call = builder.BuildCall(what, args);
-			if (what.TypeOf.ReturnType == builtinTypes["^"])
+			if (what.TypeOf.ElementType.ReturnType == builtinTypes["^"])
 			{
 				builder.BuildUnreachable();
-				//returned = true;
+				returned = true;
 			}
 			return call;
 		}
