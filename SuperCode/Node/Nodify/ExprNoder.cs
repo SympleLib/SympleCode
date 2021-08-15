@@ -1,5 +1,6 @@
 ﻿using LLVMSharp.Interop;
 using System;
+using System.Globalization;
 
 using static SuperCode.BuiltinTypes;
 
@@ -221,7 +222,33 @@ namespace SuperCode
 				}
 				else
 				{
-					ulong num = ulong.Parse(literal);
+					ulong num;
+					if (literal[0] is '0')
+					{
+						if (literal.Length <= 1)
+						{
+							num = 0;
+							goto Spoof;
+						}
+
+						switch (literal[1])
+						{
+						case 'x':
+						case 'X':
+							num = Convert.ToUInt64(literal[2..], 16);
+							goto Spoof;
+						case 'b':
+						case 'B':
+							num = Convert.ToUInt64(literal[2..], 2);
+							goto Spoof;
+
+						default:
+							throw new Exception("Number expected");
+						}
+					}
+					else
+						num = ulong.Parse(literal, NumberStyles.AllowHexSpecifier);
+				Spoof:
 					var ty = num != (uint) num ? LLVMTypeRef.Int64 : LLVMTypeRef.Int32;
 					return new NumExprNode(num, ty) { syntax = ast };
 				}

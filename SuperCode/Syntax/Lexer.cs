@@ -223,7 +223,7 @@ namespace SuperCode
 					break;
 
 				default:
-					throw new InvalidOperationException("Unrecognized escape sequence");
+					throw new Exception("Unrecognized escape sequence");
 				}
 			}
 			else
@@ -236,14 +236,27 @@ namespace SuperCode
 		private Token Number()
 		{
 			bool didDot = false;
+			bool hex = false;
 
 			int begin = pos;
-			while (char.IsDigit(current) || current == '.')
+			if (current is '0')
+			{
+				Next();
+				// C# do be like dat, there should be a `nor` keyword
+				if (current is not 'x' and not 'X' and not 'b' and not 'B')
+					throw new Exception("Unrecognized number format");
+				Next();
+				hex = true;
+				didDot = true; // hax
+			}
+
+			while (char.IsDigit(current) || current is '.' ||
+				(hex && current is 'a' or 'b' or 'c' or 'd' or 'e' or 'f' or 'A' or 'B' or 'C' or 'D' or 'E' or 'F'))
 			{
 				if (current == '.')
 				{
 					if (didDot)
-						throw new InvalidOperationException("Tooo many dots for poor number to handle");
+						throw new Exception("Tooo many dots for poor number to handle");
 					didDot = true;
 					if (!char.IsDigit(next))
 						return Punctuator();

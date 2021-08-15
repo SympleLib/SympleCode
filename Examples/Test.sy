@@ -2,6 +2,6 @@ import 'Libc.sy';
 
 void run()
 {
-	exit(3735928559);
+	exit(0xdeadbeef);
 	print('Hello, world!');
 }
