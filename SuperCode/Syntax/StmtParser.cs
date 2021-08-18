@@ -21,12 +21,23 @@ namespace SuperCode
 				return IfStmt();
 			case TokenKind.WhileKey:
 				return WhileStmt();
+			case TokenKind.AsmKey:
+				return AsmStmt();
 
 			default:
 				if (current.isBuiltinType || types.Contains(current.text))
 					return VarStmt();
 				return ExprStmt();
 			}
+		}
+
+		private AsmStmtAst AsmStmt()
+		{
+			var key = Match(TokenKind.AsmKey);
+			var asm = Match(TokenKind.Str);
+			var semi = Match(TokenKind.Semicol);
+
+			return new AsmStmtAst(key, asm, semi);
 		}
 
 		private BlockStmtAst BlockStmt()

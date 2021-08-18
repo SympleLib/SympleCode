@@ -39,8 +39,7 @@ namespace SuperCode
 
 		private static void RunJIT(SympleCode syc)
 		{
-			var runFn = syc.execEngine.FindFunction("run");
-			if (runFn == null)
+			if (!syc.execEngine.TryFindFunction("run", out var runFn))
 			{
 				Console.ForegroundColor = ConsoleColor.Red;
 				Console.WriteLine("'run' Function not found");
@@ -54,8 +53,8 @@ namespace SuperCode
 			var builder = LLVMBuilderRef.Create(module.Context);
 			var entry = func.AppendBasicBlock();
 			builder.PositionAtEnd(entry);
-			var call = builder.BuildCall(runFn, Array.Empty<LLVMValueRef>());
-			builder.BuildRet(call);
+			builder.BuildCall(runFn, Array.Empty<LLVMValueRef>());
+			builder.BuildRet(LLVMValueRef.CreateConstNull(LLVMTypeRef.Int32));
 			syc.execEngine.AddModule(module);
 
 			Console.ForegroundColor = ConsoleColor.DarkGray;

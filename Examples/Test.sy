@@ -1,7 +1,18 @@
 import 'Libc.sy';
 
-void run()
+int test()
 {
-	exit(0xdeadbeef);
-	print('Hello, world!');
+	// comic sans
+	
+	/*
+	asm '
+		push $$69
+		ret
+	';
+	*/
+	
+	ret 0x420;
 }
+
+void run() ->
+	printf('Funny number: %x\n', test());

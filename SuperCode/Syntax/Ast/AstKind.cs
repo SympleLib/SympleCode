@@ -16,6 +16,7 @@
 		StructMem,
 		VarMem,
 
+		AsmStmt,
 		BlockStmt,
 		ExprStmt,
 		IfStmt,

@@ -57,6 +57,8 @@ namespace SuperCode
 			case NodeKind.VarMem:
 				return Gen((VarMemNode) node, extrn);
 
+			case NodeKind.AsmStmt:
+				return Gen((AsmStmtNode) node);
 			case NodeKind.BlockStmt:
 				return Gen((BlockStmtNode) node);
 			case NodeKind.IfStmt:

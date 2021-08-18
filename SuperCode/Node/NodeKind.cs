@@ -12,6 +12,7 @@
 		FuncMem,
 		VarMem,
 
+		AsmStmt,
 		BlockStmt,
 		IfStmt,
 		RetStmt,

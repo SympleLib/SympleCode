@@ -79,6 +79,8 @@ namespace SuperCode
 		TrueKey,
 		FalseKey,
 
+		AsmKey,
+
 		Count,
 	}
 
@@ -127,7 +129,7 @@ namespace SuperCode
 			"...",
 		};
 
-		public static readonly string[] keys = 
+		public static readonly string[] keys =
 		{
 			"import", "decl", "using", "struct",
 			"while", "if", "else",
@@ -135,6 +137,7 @@ namespace SuperCode
 			"mut", "const",
 			"pub", "prot", "priv",
 			"true", "false",
+			"asm",
 		};
 	}
 }

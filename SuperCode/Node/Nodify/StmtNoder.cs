@@ -12,6 +12,8 @@ namespace SuperCode
 		{
 			switch (ast.kind)
 			{
+			case AstKind.AsmStmt:
+				return Nodify(((AsmStmtAst) ast));
 			case AstKind.BlockStmt:
 				return Nodify(((BlockStmtAst) ast));
 			case AstKind.ExprStmt:
@@ -32,6 +34,9 @@ namespace SuperCode
 				throw new InvalidOperationException("Invalid stmt");
 			}
 		}
+
+		private AsmStmtNode Nodify(AsmStmtAst ast) =>
+			new AsmStmtNode(ast.asm.text[1..^1]);
 
 		private BlockStmtNode Nodify(BlockStmtAst ast)
 		{

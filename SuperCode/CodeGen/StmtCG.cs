@@ -4,6 +4,13 @@ namespace SuperCode
 {
 	public partial class CodeGen
 	{
+		private LLVMValueRef Gen(AsmStmtNode node)
+		{
+			var fnTy = LLVMTypeRef.CreateFunction(LLVMTypeRef.Void, Array.Empty<LLVMTypeRef>());
+			var fn = LLVMValueRef.CreateConstInlineAsm(fnTy, node.asm, "", false, false);
+			return builder.BuildCall(fn, Array.Empty<LLVMValueRef>());
+		}
+
 		private LLVMValueRef Gen(BlockStmtNode node)
 		{
 			foreach (var stmt in node.stmts)
