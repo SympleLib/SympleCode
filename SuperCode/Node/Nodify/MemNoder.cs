@@ -18,6 +18,8 @@ namespace SuperCode
 				return Nodify((DeclVarMemAst) ast);
 			case AstKind.ImplFuncMem:
 				return Nodify((ImplFuncMemAst) ast);
+			case AstKind.ImplStructMem:
+				return Nodify((ImplStructMemAst) ast);
 			case AstKind.ImplVarMem:
 				return Nodify((ImplVarMemAst) ast);
 			case AstKind.ImportMem:
@@ -104,6 +106,13 @@ namespace SuperCode
 			return decl;
 		}
 
+		private DeclStructMemNode Nodify(ImplStructMemAst ast)
+		{
+			var ztruct = new DeclStructMemNode(ast.name.text);
+			syms.TryAdd(ztruct.name, ztruct);
+			return ztruct;
+		}
+
 		private ImportMemNode Nodify(ImportMemAst ast)
 		{
 			string what = ast.what.text[1..^1];
@@ -183,6 +192,12 @@ namespace SuperCode
 			type.StructSetBody(fieldTypes, true);
 			var node = new StructMemNode(type, name, fields);
 			ztructs.Add(type, node);
+			if (syms.ContainsKey(name))
+			{
+				syms.Remove(name, out var sym);
+				((DeclStructMemNode) sym!).impl = node;
+			}
+			syms.Add(ast.name.text, node);
 			types.Add(name, type);
 			return node;
 		}

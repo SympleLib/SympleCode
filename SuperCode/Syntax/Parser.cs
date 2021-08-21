@@ -30,20 +30,27 @@ namespace SuperCode
 				mems.Add(Mem());
 
 			// Cheatcode
-			var implMems = new List<MemAst>();
+			var implSyms = new List<MemAst>();
+			var implStructs = new List<MemAst>();
 			foreach (var mem in mems)
 				switch (mem.kind)
 				{
 				case AstKind.VarMem:
 				{
 					var var = (VarMemAst) mem;
-					implMems.Add(new ImplVarMemAst(var.mutKey, var.type, var.name));
+					implSyms.Add(new ImplVarMemAst(var.mutKey, var.type, var.name));
 					break;
 				}
 				case AstKind.FuncMem:
 				{
 					var func = (FuncMemAst) mem;
-					implMems.Add(new ImplFuncMemAst(func.retType, func.name, func.asmTag, func.paramz, func.vaArg));
+					implSyms.Add(new ImplFuncMemAst(func.retType, func.name, func.asmTag, func.paramz, func.vaArg));
+					break;
+				}
+				case AstKind.StructMem:
+				{
+					var ztruct = (StructMemAst) mem;
+					implStructs.Add(new ImplStructMemAst(ztruct.name));
 					break;
 				}
 
@@ -51,8 +58,10 @@ namespace SuperCode
 					break;
 				}
 
-			int insert = mems.FindIndex(mem => mem.kind is AstKind.FuncMem);
-			mems.InsertRange(insert == -1 ? 0 : insert, implMems);
+			int insert = mems.FindIndex(mem => mem.kind is AstKind.StructMem);
+			mems.InsertRange(insert == -1 ? 0 : insert, implStructs);
+			insert = mems.FindIndex(mem => mem.kind is AstKind.FuncMem);
+			mems.InsertRange(insert == -1 ? 0 : insert, implSyms);
 
 			var eof = Next();
 			module = new ModuleAst(lexer.path, mems.ToArray(), eof);

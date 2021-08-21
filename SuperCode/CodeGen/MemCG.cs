@@ -17,6 +17,13 @@ namespace SuperCode
 			return fn;
 		}
 
+		private LLVMTypeRef Gen(DeclStructMemNode node)
+		{
+			if (node.impl is null)
+				throw new InvalidOperationException("Struct no impl");
+			return module.GetTypeByName(node.name);
+		}
+
 		private LLVMValueRef Gen(DeclVarMemNode node)
 		{
 			if (module.GetNamedGlobal(node.name) != null)

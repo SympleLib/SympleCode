@@ -11,6 +11,7 @@
 		DeclVarMem,
 		FuncMem,
 		ImplFuncMem,
+		ImplStructMem,
 		ImplVarMem,
 		StmtMem,
 		StructMem,

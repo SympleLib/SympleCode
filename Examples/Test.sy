@@ -1,18 +1,17 @@
 import 'Libc.sy';
+	
+struct Struct
+{ Test test; }
+	
+struct Test
+{ uint num, }
 
-int test()
+void run()
 {
-	// comic sans
-	
-	/*
-	asm '
-		push $$69
-		ret
-	';
-	*/
-	
-	ret 0x420;
+	Struct test;
+	test.test.num = 0x69;
+	printTest(test);
 }
-
-void run() ->
-	printf('Funny number: %x\n', test());
+	
+void printTest(Struct test) ->
+	printf('Funny number: %x\n', test.test.num);

@@ -6,6 +6,7 @@
 		Field,
 
 		DeclFuncMem,
+		DeclStructMem,
 		DeclVarMem,
 		ImportMem,
 		StructMem,
