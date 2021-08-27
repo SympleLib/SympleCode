@@ -1,10 +1,10 @@
 import 'Libc.sy';
-	
-struct Struct
-{ Test test; }
-	
+
 struct Test
 { uint num, }
+
+struct Struct
+{ Test test; }
 
 void run()
 {
@@ -12,6 +12,6 @@ void run()
 	test.test.num = 0x69;
 	printTest(test);
 }
-	
+
 void printTest(Struct test) ->
 	printf('Funny number: %x\n', test.test.num);

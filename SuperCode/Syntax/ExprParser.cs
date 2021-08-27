@@ -100,7 +100,7 @@ namespace SuperCode
 			switch (current.kind)
 			{
 			case TokenKind.LeftParen:
-				if (IsType(next))
+				if (HasUntil(TokenKind.RightParen)
 					return CastExpr();
 				return ParenExpr();
 			case TokenKind.Num:
@@ -112,7 +112,7 @@ namespace SuperCode
 			case TokenKind.FalseKey:
 				return LitExpr();
 			case TokenKind.LeftBracket:
-				if (IsType(next))
+				if (HasUntil(TokenKind.RightParen, TokenKind.Star))
 					return TypePunExpr();
 				return ArrExpr();
 

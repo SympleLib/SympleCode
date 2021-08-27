@@ -8,7 +8,6 @@ namespace SuperCode
 		public readonly PermaSafe safety = new PermaSafe();
 		public readonly Lexer lexer;
 		public readonly Token[] tokens;
-		public readonly List<string> types = new List<string>();
 		private ParseStep step = ParseStep.Imports;
 		private int pos;
 
@@ -117,7 +116,7 @@ namespace SuperCode
 		{
 			if (current.kind is TokenKind.MutKey or TokenKind.ConstKey)
 				mutKey = Next();
-			if (ty is null || IsType(current))
+			if (ty is null || (next.kind is TokenKind.Iden or TokenKind.Eql or TokenKind.Comma))
 				ty = Type();
 			
 			var name = current.kind is TokenKind.Iden ? Next() : default;
@@ -140,8 +139,21 @@ namespace SuperCode
 		}
 
 
-		private bool IsType(Token tok) =>
-			tok.isBuiltinType || (tok.kind is TokenKind.Iden && types.Contains(tok.text));
+		private bool HasUntil(TokenKind stop, params TokenKind[] find)
+		{
+			for (int i = pos; i < tokens.Length; i++)
+			{
+				ref var token = ref tokens[i];
+				if (token.kind == stop)
+					return false;
+
+				foreach (TokenKind kind in find)
+					if (token.kind == kind)
+						return true;
+			}
+
+			return false;
+		}
 
 		private Token Peek(int off)
 		{

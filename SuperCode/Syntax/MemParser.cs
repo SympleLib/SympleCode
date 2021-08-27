@@ -175,10 +175,15 @@ namespace SuperCode
 			TypeAst? ty = null;
 			while (current.kind is not TokenKind.RightBrace and not TokenKind.Eof)
 			{
+				var start = current;
+
 				var field = Field(mutKey, ty);
 				ty = field.type;
 				mutKey = field.mutKey;
 				fields.Add(field);
+
+				if (start == current)
+					break;
 			}
 			var close = Match(TokenKind.RightBrace);
 

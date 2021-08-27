@@ -40,6 +40,10 @@ namespace SuperCode
 		public const TokenKind firstPunc = TokenKind.Plus;
 		public const TokenKind firstKey = TokenKind.ImportKey;
 
+		public static readonly TokenKind[] exprStop = new TokenKind[] {
+			TokenKind.ImportKey,
+		};
+
 		public static int BinPriority(this TokenKind kind) =>
 			kind switch
 			{
