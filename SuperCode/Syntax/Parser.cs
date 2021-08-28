@@ -155,6 +155,14 @@ namespace SuperCode
 			return false;
 		}
 
+		private int Find(TokenKind kind)
+		{
+			for (int i = pos; i < tokens.Length; i++)
+				if (tokens[i].kind == kind)
+					return i;
+			return -1;
+		}
+
 		private Token Peek(int off)
 		{
 			int i = pos + off;

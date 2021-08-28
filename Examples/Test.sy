@@ -1,17 +1,7 @@
 import 'Libc.sy';
 
-struct Test
-{ uint num, }
-
-struct Struct
-{ Test test; }
-
 void run()
 {
-	Struct test;
-	test.test.num = 0x69;
-	printTest(test);
+	int x = 4;
+	printf('5 %i', (short) x);
 }
-
-void printTest(Struct test) ->
-	printf('Funny number: %x\n', test.test.num);

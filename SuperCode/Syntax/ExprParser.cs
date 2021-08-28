@@ -46,6 +46,13 @@ namespace SuperCode
 			return new CastExprAst(open, ty, close, expr);
 		}
 
+		private ExprAst CastOrParenExpr()
+		{
+			if (IsExpr(next.kind))
+				return ParenExpr();
+			return CastExpr();
+		}
+
 		private CallExprAst CallExpr(ExprAst expr)
 		{
 			var open = Match(TokenKind.LeftParen);
@@ -60,6 +67,26 @@ namespace SuperCode
 			var index = Expr();
 			var close = Match(TokenKind.RightBracket);
 			return new IndexExprAst(expr, open, index, close);
+		}
+
+		private bool IsExpr(TokenKind kind)
+		{
+			switch (kind)
+			{
+			case TokenKind.LeftParen:
+			case TokenKind.Num:
+			case TokenKind.Str:
+			case TokenKind.Char:
+			case TokenKind.Iden:
+			case TokenKind.NullKey:
+			case TokenKind.TrueKey:
+			case TokenKind.FalseKey:
+			case TokenKind.LeftBracket:
+				return true;
+
+			default:
+				return kind.IsPrefix();
+			}
 		}
 
 		private LitExprAst LitExpr() =>
@@ -100,9 +127,7 @@ namespace SuperCode
 			switch (current.kind)
 			{
 			case TokenKind.LeftParen:
-				if (HasUntil(TokenKind.RightParen)
-					return CastExpr();
-				return ParenExpr();
+				return CastOrParenExpr();
 			case TokenKind.Num:
 			case TokenKind.Str:
 			case TokenKind.Char:
