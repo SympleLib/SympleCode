@@ -36,13 +36,13 @@ namespace SuperCode
 		private ExprNode Nodify(ElementAst ast) =>
 			Nodify(ast.value);
 
-		private LLVMTypeRef Type(TypeAst ast)
+		private TypePromise Type(TypeAst ast)
 		{
-			LLVMTypeRef ty;
+			TypePromise ty;
 			if (ast.baze.isBuiltinType)
 				ty = ast.baze.builtinType;
-			else
-				ty = types[ast.baze.text];
+			else if (!types.TryGetValue(ast.baze.text, out ty))
+				ty = ;
 			
 			if (ast.args.Length > 0)
 			{

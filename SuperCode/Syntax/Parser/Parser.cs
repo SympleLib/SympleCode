@@ -121,7 +121,11 @@ namespace SuperCode
 		{
 			if (current.kind is TokenKind.MutKey or TokenKind.ConstKey)
 				mutKey = Next();
-			if (ty is null || (next.kind is TokenKind.Iden or TokenKind.Eql or TokenKind.Comma))
+			if (
+				ty is null || (current.kind is TokenKind.Iden &&
+				next.kind is TokenKind.Iden or TokenKind.Eql or TokenKind.Comma or
+				TokenKind.RightBrace or TokenKind.RightBracket or TokenKind.RightParen)
+			)
 				ty = Type();
 			
 			var name = current.kind is TokenKind.Iden ? Next() : default;

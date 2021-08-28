@@ -2,7 +2,7 @@
 
 namespace SuperCode
 {
-	public class DeclStructMemNode: Node, Symbol
+	public class DeclStructMemNode: Node, Symbol, TypePrompt
 	{
 		public StructMemNode? impl { get; internal set; }
 
@@ -13,6 +13,7 @@ namespace SuperCode
 		public string name { get; }
 		public Visibility vis => Visibility.Default;
 		public LLVMTypeRef type { get; }
+		public LLVMTypeRef? realType => impl?.type;
 		public override NodeKind kind => NodeKind.DeclStructMem;
 	}
 }

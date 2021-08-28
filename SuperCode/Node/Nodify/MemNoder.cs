@@ -102,14 +102,14 @@ namespace SuperCode
 			}
 
 			var decl = new DeclFuncMemNode(noret, ty, name, paramz) { syntax = ast };
-			syms.TryAdd(ast.name.text, decl);
+			syms.Add(ast.name.text, decl);
 			return decl;
 		}
 
 		private DeclStructMemNode Nodify(ImplStructMemAst ast)
 		{
 			var ztruct = new DeclStructMemNode(ast.name.text);
-			syms.TryAdd(ztruct.name, ztruct);
+			syms.Add(ztruct.name, ztruct);
 			return ztruct;
 		}
 
@@ -197,6 +197,7 @@ namespace SuperCode
 				syms.Remove(name, out var sym);
 				((DeclStructMemNode) sym!).impl = node;
 			}
+
 			syms.Add(ast.name.text, node);
 			types.Add(name, type);
 			return node;

@@ -1,5 +1,11 @@
 import 'Libc.sy';
 
+struct Test
+{ Other o, }
+
+struct Other
+{ int x, }
+
 void run()
 {
 	float x = 6.9;
