@@ -48,7 +48,7 @@ namespace SuperCode
 
 		private ExprAst CastOrParenExpr()
 		{
-			if (IsExpr(next.kind))
+			if (IsExpr(next))
 				return ParenExpr();
 			return CastExpr();
 		}
@@ -69,15 +69,16 @@ namespace SuperCode
 			return new IndexExprAst(expr, open, index, close);
 		}
 
-		private bool IsExpr(TokenKind kind)
+		private bool IsExpr(Token token)
 		{
-			switch (kind)
+			switch (token.kind)
 			{
+			case TokenKind.Iden:
+				return scope.vars.Contains(token.text);
 			case TokenKind.LeftParen:
 			case TokenKind.Num:
 			case TokenKind.Str:
 			case TokenKind.Char:
-			case TokenKind.Iden:
 			case TokenKind.NullKey:
 			case TokenKind.TrueKey:
 			case TokenKind.FalseKey:
@@ -85,7 +86,7 @@ namespace SuperCode
 				return true;
 
 			default:
-				return kind.IsPrefix();
+				return token.kind.IsPrefix();
 			}
 		}
 

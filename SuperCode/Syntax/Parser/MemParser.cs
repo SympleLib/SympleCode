@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 
+using static System.Formats.Asn1.AsnWriter;
+
 namespace SuperCode
 {
 	public partial class Parser
@@ -103,6 +105,7 @@ namespace SuperCode
 			if (step is not <= ParseStep.Funcs)
 				throw new Exception();
 			step = ParseStep.Funcs;
+			scope = new ParseScope(scope);
 
 			var name = Match(TokenKind.Iden);
 			Token? asmTag = null;
@@ -144,6 +147,7 @@ namespace SuperCode
 				stmts.Add(Stmt());
 
 			var close = Match(TokenKind.RightBrace);
+			scope = scope.parent!;
 			return new FuncMemAst(vis, ret, name, asmTag, openArg, paramz.ToArray(), vaArg, closeArg, open, close, stmts.ToArray());
 		}
 
@@ -205,6 +209,7 @@ namespace SuperCode
 			var eql = Match(TokenKind.Eql);
 			var init = Expr();
 			var semicol = Match(TokenKind.Semicol);
+			globalScope.vars.Add(name.text);
 			return new VarMemAst(vis, mutKey, type, name, eql, init, semicol);
 		}
 	}

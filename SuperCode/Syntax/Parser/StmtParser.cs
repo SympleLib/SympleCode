@@ -53,6 +53,7 @@ namespace SuperCode
 
 		private IfStmtAst IfStmt()
 		{
+			scope = new ParseScope(scope);
 			var ifKey = Match(TokenKind.IfKey);
 			var cond = Expr();
 
@@ -78,10 +79,13 @@ namespace SuperCode
 				stmts.Add(Stmt());
 			var close = Match(TokenKind.RightBrace);
 
+			scope = scope.parent!;
 			if (current.kind is TokenKind.ElseKey)
 			{
+				scope = new ParseScope();
 				var elseKey = Next();
 				var elze = Stmt();
+				scope = scope.parent!;
 				return new IfStmtAst(ifKey, cond, open, stmts.ToArray(), close, elseKey, elze);
 			}
 
@@ -117,6 +121,7 @@ namespace SuperCode
 			if (ty is null || next.kind is TokenKind.Iden)
 				ty = Type();
 			var name = Match(TokenKind.Iden);
+			scope.vars.Add(name.text);
 
 			if (current.kind is TokenKind.Eql)
 			{
@@ -131,6 +136,7 @@ namespace SuperCode
 
 		private WhileStmtAst WhileStmt()
 		{
+			scope = new ParseScope();
 			var key = Match(TokenKind.WhileKey);
 			var cond = Expr();
 			if (current.kind is TokenKind.Arrow)
@@ -146,6 +152,7 @@ namespace SuperCode
 				stmts.Add(Stmt());
 
 			var close = Match(TokenKind.RightBrace);
+			scope = scope.parent!;
 			return new WhileStmtAst(key, cond, open, stmts.ToArray(), close);
 		}
 

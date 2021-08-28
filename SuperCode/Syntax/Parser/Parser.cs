@@ -14,12 +14,15 @@ namespace SuperCode
 		private Token current => pos < tokens.Length ? tokens[pos] : default;
 		private Token next => pos + 1 < tokens.Length ? tokens[pos + 1] : default;
 
-
+		private readonly ParseScope globalScope = new ParseScope();
+		private ParseScope scope;
 		
 		public Parser(string file)
 		{
 			lexer = new Lexer(file);
 			tokens = lexer.Lex();
+
+			scope = new ParseScope(globalScope);
 		}
 
 		public PermaSafe Parse(out ModuleAst module)
