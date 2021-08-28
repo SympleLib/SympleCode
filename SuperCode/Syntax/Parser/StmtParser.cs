@@ -25,7 +25,7 @@ namespace SuperCode
 				return AsmStmt();
 
 			default:
-				if (current.isBuiltinType || types.Contains(current.text))
+				if (next.kind is TokenKind.Iden)
 					return VarStmt();
 				return ExprStmt();
 			}
@@ -106,7 +106,7 @@ namespace SuperCode
 			var asKey = Match(TokenKind.AsKey);
 			var alias = Match(TokenKind.Iden);
 			var semi = Match(TokenKind.Semicol);
-			types.Add(alias.text);
+
 			return new UsingStmtAst(key, real, asKey, alias, semi);
 		}
 
@@ -114,7 +114,7 @@ namespace SuperCode
 		{
 			if (current.kind is TokenKind.MutKey or TokenKind.ConstKey)
 				mutKey = Next();
-			if (ty is null || current.isBuiltinType || types.Contains(current.text))
+			if (ty is null || next.kind is TokenKind.Iden)
 				ty = Type();
 			var name = Match(TokenKind.Iden);
 

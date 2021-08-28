@@ -24,9 +24,7 @@ namespace SuperCode
 				return StructMem();
 
 			default:
-				if (IsType(current))
-					return FuncOrVarMem(null);
-				return new StmtMemAst(Stmt());
+				return FuncOrVarMem(null);
 			}
 		}
 
@@ -187,7 +185,6 @@ namespace SuperCode
 			}
 			var close = Match(TokenKind.RightBrace);
 
-			types.Add(name.text);
 			return new StructMemAst(key, name, open, fields.ToArray(), close);
 		}
 

@@ -13,6 +13,8 @@ namespace SuperCode
 
 		private Token current => pos < tokens.Length ? tokens[pos] : default;
 		private Token next => pos + 1 < tokens.Length ? tokens[pos + 1] : default;
+
+
 		
 		public Parser(string file)
 		{
