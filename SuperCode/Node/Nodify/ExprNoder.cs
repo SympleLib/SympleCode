@@ -145,7 +145,10 @@ namespace SuperCode
 				LLVMTypeRef type = default;
 				if (i < paramTypes.Length)
 					type = paramTypes[i];
-				args[i] = Nodify(ast.args[i], type);
+				var arg = Nodify(ast.args[i], type);
+				if (i >= paramTypes.Length && arg.type.IsFloat())
+					arg = Cast(arg, LLVMTypeRef.Double);
+				args[i] = arg;
 			}
 
 			return new CallExprNode(what, args) { syntax = ast };

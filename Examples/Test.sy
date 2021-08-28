@@ -2,6 +2,7 @@ import 'Libc.sy';
 
 void run()
 {
-	int x = 4;
-	printf('5 %i', (short) x);
+	float x = 6.9;
+	uint y = [uint] x;
+	printf('%f\n', [float] y);
 }

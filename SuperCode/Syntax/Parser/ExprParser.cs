@@ -46,13 +46,6 @@ namespace SuperCode
 			return new CastExprAst(open, ty, close, expr);
 		}
 
-		private ExprAst CastOrParenExpr()
-		{
-			if (IsExpr(next))
-				return ParenExpr();
-			return CastExpr();
-		}
-
 		private CallExprAst CallExpr(ExprAst expr)
 		{
 			var open = Match(TokenKind.LeftParen);
@@ -128,7 +121,9 @@ namespace SuperCode
 			switch (current.kind)
 			{
 			case TokenKind.LeftParen:
-				return CastOrParenExpr();
+				if (IsExpr(next))
+					return ParenExpr();
+				return CastExpr();
 			case TokenKind.Num:
 			case TokenKind.Str:
 			case TokenKind.Char:
@@ -138,9 +133,9 @@ namespace SuperCode
 			case TokenKind.FalseKey:
 				return LitExpr();
 			case TokenKind.LeftBracket:
-				if (HasUntil(TokenKind.RightParen, TokenKind.Star))
-					return TypePunExpr();
-				return ArrExpr();
+				if (IsExpr(next))
+					return ArrExpr();
+				return TypePunExpr();
 
 			default:
 				safety.ReportExpectedExpr(current);

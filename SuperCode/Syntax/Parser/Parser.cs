@@ -144,22 +144,6 @@ namespace SuperCode
 		}
 
 
-		private bool HasUntil(TokenKind stop, params TokenKind[] find)
-		{
-			for (int i = pos; i < tokens.Length; i++)
-			{
-				ref var token = ref tokens[i];
-				if (token.kind == stop)
-					return false;
-
-				foreach (TokenKind kind in find)
-					if (token.kind == kind)
-						return true;
-			}
-
-			return false;
-		}
-
 		private int Find(TokenKind kind)
 		{
 			for (int i = pos; i < tokens.Length; i++)
