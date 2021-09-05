@@ -20,6 +20,17 @@ struct ->
 	- str name
 	- field[] fields
 
+impl ->
+	- enum vis
+	- str name
+	- func[] funcs
+
+class ->
+	- enum vis
+	- str name
+	- field[] fields
+	- func[] funcs
+
 declFunc ->
 	- enum vis
 	- ty retTy
