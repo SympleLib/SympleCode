@@ -1,0 +1,53 @@
+param ->
+	- ty
+	- str name
+	- expr init
+
+field ->
+	- enum vis
+	- ty
+	- str name
+	- expr init
+
+stmt --
+
+struct ->
+	- enum vis
+	- str name
+	- field[] fields
+
+func ->
+	- enum vis
+	- ty retTy
+	- str name
+	- param[] params
+	- stmt[] body
+
+var ->
+	- enum vis
+	- ty
+	- str name
+	- expr init
+
+exprStmt ->
+	- expr
+
+expr --
+
+binExpr ->
+	- expr left
+	- enum op
+	- expr right
+
+unExpr ->
+	- expr operand
+	- enum op
+
+strLit ->
+	- str
+
+intLit ->
+	- int
+
+fLit ->
+	- float
