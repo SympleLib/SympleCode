@@ -1,3 +1,7 @@
+ty ->
+	- str base
+	- int ptrCount
+
 param ->
 	- ty
 	- str name
@@ -16,12 +20,23 @@ struct ->
 	- str name
 	- field[] fields
 
+declFunc ->
+	- enum vis
+	- ty retTy
+	- str name
+	- ty params
+
 func ->
 	- enum vis
 	- ty retTy
 	- str name
 	- param[] params
 	- stmt[] body
+
+declVar ->
+	- enum vis
+	- ty
+	- str name
 
 var ->
 	- enum vis
@@ -43,11 +58,18 @@ unExpr ->
 	- expr operand
 	- enum op
 
+funcptr ->
+	- str func
+	- ty[] params
+
+varExpr ->
+	- str name
+
 strLit ->
-	- str
+	- str val
 
 intLit ->
-	- int
+	- int val
 
 fLit ->
-	- float
+	- float val
