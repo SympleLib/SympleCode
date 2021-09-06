@@ -60,7 +60,7 @@ exprStmt ->
 
 expr --
 
-binExpr ->
+biExpr ->
 	- expr left
 	- enum op
 	- expr right
