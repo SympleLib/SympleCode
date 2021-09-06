@@ -13,12 +13,85 @@ LLVMValueRef Build(LLVMBuilderRef builder, ExprAst expr)
 
 const string src = "6 + 9/ 7";
 
-ExprAst expr = new BiExprAst(LLVMAdd, new IntLiteralExprAst(6), new BiExprAst(LLVMSDiv, new IntLiteralExprAst(9), new IntLiteralExprAst(7)));
-var builder = LLVMBuilderRef.Create(LLVMContextRef.Global);
-var value = Build(builder, expr);
-long result = value.ConstIntSExt;
-Console.WriteLine(result);
+Parser parser = new Parser();
+parser.Parse();
 Console.ReadKey();
+
+class Parser
+{
+	enum TokenKind
+	{
+		Unknown = -1,
+		Eof,
+
+		Identifier,
+	}
+
+	record Token(TokenKind kind, string text);
+
+	public void Parse()
+	{
+		Lexer lxr = new Lexer("this is a T3ST");
+
+		while (true)
+		{
+			Token tok = lxr.LexNext();
+			Console.WriteLine(tok);
+			if (tok.kind is TokenKind.Eof)
+				break;
+		}
+	}
+
+	class Lexer
+	{
+		readonly string src;
+		int pos;
+		char current => Peek();
+
+		public Lexer(string source) =>
+			src = source;
+
+		public Token LexNext()
+		{
+			while (char.IsWhiteSpace(current))
+				pos++;
+
+			if (current is '\0')
+				return new Token(TokenKind.Eof, string.Empty);
+
+			if (char.IsLetter(current))
+				return Identifier();
+
+			return new Token(TokenKind.Unknown, src[pos..pos]);
+		}
+
+		Token Identifier()
+		{
+			int start = pos;
+			while (char.IsLetterOrDigit(current))
+				pos++;
+
+			return new Token(TokenKind.Identifier, src[start..pos]);
+		}
+
+		char Next()
+		{
+			char c = current;
+			if (pos < src.Length)
+				pos++;
+			return c;
+		}
+
+		char Peek(int offset = 0)
+		{
+			int i = pos + offset;
+			if (i < src.Length)
+				return src[i];
+			return '\0';
+		}
+	}
+
+}
 
 record Ast;
 
