@@ -11,10 +11,15 @@ LLVMValueRef Build(LLVMBuilderRef builder, ExprAst expr)
 	return default;
 }
 
-const string src = "6 + 9/ 7";
+const string src = "6 + 9";
 
-Parser parser = new Parser();
-parser.Parse();
+Parser parser = new Parser(src);
+Ast ast = parser.Parse();
+Console.WriteLine(ast);
+
+using LLVMBuilderRef builder = LLVMBuilderRef.Create(LLVMContextRef.Global);
+LLVMValueRef val = Build(builder, (ExprAst) ast);
+Console.WriteLine(val.ConstIntSExt);
 Console.ReadKey();
 
 class Parser
@@ -24,21 +29,49 @@ class Parser
 		Unknown = -1,
 		Eof,
 
+		Int,
+		Float,
 		Identifier,
+
+		Plus,
 	}
 
 	record Token(TokenKind kind, string text);
 
-	public void Parse()
-	{
-		Lexer lxr = new Lexer("this is a T3ST");
+	readonly Lexer lxr;
+	Token current = new Token(TokenKind.Unknown, string.Empty);
 
-		while (true)
+	public Parser(string source) =>
+		lxr = new Lexer(source);
+
+	public Ast Parse()
+	{
+		Next();
+		return BiExpr();
+	}
+
+	ExprAst BiExpr()
+	{
+		ExprAst left = LiteralExpr();
+		if (current.kind is TokenKind.Plus)
 		{
-			Token tok = lxr.LexNext();
-			Console.WriteLine(tok);
-			if (tok.kind is TokenKind.Eof)
-				break;
+			Next();
+			ExprAst right = BiExpr();
+			left = new BiExprAst(LLVMAdd, left, right);
+		}
+
+		return left;
+	}
+
+	LiteralExprAst LiteralExpr()
+	{
+		switch (current.kind)
+		{
+		case TokenKind.Int:
+			return new IntLiteralExprAst(ulong.Parse(Next().text));
+
+		default:
+			throw new Exception("not a literal");
 		}
 	}
 
@@ -59,10 +92,34 @@ class Parser
 			if (current is '\0')
 				return new Token(TokenKind.Eof, string.Empty);
 
+			if (char.IsDigit(current))
+				return Num();
 			if (char.IsLetter(current))
 				return Identifier();
+			if (current is '+')
+				return new Token(TokenKind.Plus, src[pos..++pos]);
 
-			return new Token(TokenKind.Unknown, src[pos..pos]);
+			return new Token(TokenKind.Unknown, src[pos..++pos]);
+		}
+
+		Token Num()
+		{
+			int start = pos;
+			TokenKind kind = TokenKind.Int;
+			while (char.IsDigit(current) || current is '.')
+			{
+				if (current is '.')
+				{
+					if (kind == TokenKind.Int)
+						kind = TokenKind.Float;
+					else
+						throw new Exception("too many dots");
+				}
+
+				pos++;
+			}
+
+			return new Token(kind, src[start..pos]);
 		}
 
 		Token Identifier()
@@ -91,10 +148,17 @@ class Parser
 		}
 	}
 
+	Token Next()
+	{
+		Token tmp = current;
+		current = lxr.LexNext();
+		return tmp;
+	}
 }
 
 record Ast;
 
 record ExprAst: Ast;
-record IntLiteralExprAst(ulong value): ExprAst;
+record LiteralExprAst(): ExprAst;
+record IntLiteralExprAst(ulong value): LiteralExprAst;
 record BiExprAst(LLVMOpcode op, ExprAst left, ExprAst right): ExprAst;
