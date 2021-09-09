@@ -11,7 +11,7 @@ LLVMValueRef Build(LLVMBuilderRef builder, ExprAst expr)
 	return default;
 }
 
-const string src = "6 + 9";
+const string src = "6 + 9 / 9";
 
 Parser parser = new Parser(src);
 Ast ast = parser.Parse();
@@ -34,9 +34,31 @@ class Parser
 		Identifier,
 
 		Plus,
+		Minus,
+		Star,
+		Slash,
+		Percent,
 	}
 
 	record Token(TokenKind kind, string text);
+
+	static int BiPrecendence(TokenKind kind) =>
+		kind switch
+		{
+			TokenKind.Plus or TokenKind.Minus or TokenKind.Star or TokenKind.Slash or TokenKind.Percent => 1,
+			_ => 0,
+		};
+
+	static LLVMOpcode BiOpcode(TokenKind kind) =>
+		kind switch
+		{
+			TokenKind.Plus => LLVMAdd,
+			TokenKind.Minus => LLVMSub,
+			TokenKind.Star => LLVMMul,
+			TokenKind.Slash => LLVMSDiv,
+			TokenKind.Percent => LLVMSRem,
+			_ => (LLVMOpcode) 0,
+		};
 
 	readonly Lexer lxr;
 	Token current = new Token(TokenKind.Unknown, string.Empty);
@@ -50,14 +72,18 @@ class Parser
 		return BiExpr();
 	}
 
-	ExprAst BiExpr()
+	ExprAst BiExpr(int parentPrecedence = 0)
 	{
 		ExprAst left = LiteralExpr();
-		if (current.kind is TokenKind.Plus)
+		while (true)
 		{
-			Next();
-			ExprAst right = BiExpr();
-			left = new BiExprAst(LLVMAdd, left, right);
+			int precedence = BiPrecendence(current.kind);
+			if (precedence is 0 || precedence < parentPrecedence)
+				break;
+
+			Token op = Next();
+			ExprAst right = BiExpr(precedence);
+			left = new BiExprAst(BiOpcode(op.kind), left, right);
 		}
 
 		return left;
@@ -77,6 +103,15 @@ class Parser
 
 	class Lexer
 	{
+		const TokenKind punctuatorStart = TokenKind.Plus;
+		static readonly string[] punctuators = {
+			"+",
+			"-",
+			"*",
+			"/",
+			"%",
+		};
+
 		readonly string src;
 		int pos;
 		char current => Peek();
@@ -96,10 +131,7 @@ class Parser
 				return Num();
 			if (char.IsLetter(current))
 				return Identifier();
-			if (current is '+')
-				return new Token(TokenKind.Plus, src[pos..++pos]);
-
-			return new Token(TokenKind.Unknown, src[pos..++pos]);
+			return Punctuator();
 		}
 
 		Token Num()
@@ -129,6 +161,15 @@ class Parser
 				pos++;
 
 			return new Token(TokenKind.Identifier, src[start..pos]);
+		}
+
+		Token Punctuator()
+		{
+			for (int i = punctuators.Length - 1; i >= 0; i--)
+				if (src[pos..].StartsWith(punctuators[i]))
+					return new Token(punctuatorStart + i, src[pos..(pos += punctuators[i].Length)]);
+
+			return new Token(TokenKind.Unknown, src[pos..++pos]);
 		}
 
 		char Next()
