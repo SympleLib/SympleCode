@@ -45,7 +45,8 @@ class Parser
 	static int BiPrecendence(TokenKind kind) =>
 		kind switch
 		{
-			TokenKind.Plus or TokenKind.Minus or TokenKind.Star or TokenKind.Slash or TokenKind.Percent => 1,
+			TokenKind.Star or TokenKind.Slash or TokenKind.Percent => 2,
+			TokenKind.Plus or TokenKind.Minus => 1,
 			_ => 0,
 		};
 
