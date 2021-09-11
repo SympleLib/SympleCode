@@ -21,6 +21,8 @@ partial class Parser
 			_ => (LLVMOpcode) 0,
 		};
 
+	ExprAst Expr() => BiExpr();
+
 	ExprAst BiExpr(int parentPrecedence = 0)
 	{
 		ExprAst left = LiteralExpr();

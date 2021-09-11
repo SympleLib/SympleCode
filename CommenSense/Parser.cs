@@ -8,10 +8,15 @@ partial class Parser
 	public Parser(string source) =>
 		lxr = new Lexer(source);
 
-	public Ast Parse()
+	public ModuleAst Parse()
 	{
 		Next();
-		return BiExpr();
+		const string name = "simple-code";
+		List<StmtAst> members = new List<StmtAst>();
+		while (current.kind is not TokenKind.Eof)
+			members.Add(Stmt());
+
+		return new ModuleAst(name, members.ToArray());
 	}
 
 	Token Next()

@@ -4,20 +4,24 @@ global using static LLVMSharp.Interop.LLVMOpcode;
 
 using CommenSense;
 
-const string src = "1 * 2 * 3 * 4 * 5";
+const string src = @"
+1 * 2 * 3 * 4 * 5
+6 * 9
+17
+";
 
 Parser parser = new Parser(src);
-Ast ast = parser.Parse();
+ModuleAst ast = parser.Parse();
 Console.WriteLine(ast);
 
 Console.WriteLine("---");
 
-ast = Resolver.Resolve(ast);
-Console.WriteLine(ast);
+//ast = Resolver.Resolve(ast);
+//Console.WriteLine(ast);
 
-Console.WriteLine("---");
+//Console.WriteLine("---");
 
 Builder builder = new Builder(ast);
-LLVMValueRef val = builder.BuildExpr((ExprAst) ast);
-Console.WriteLine(val.ConstIntSExt);
+LLVMModuleRef llModule = builder.Build();
+Console.WriteLine(llModule);
 Console.ReadKey();

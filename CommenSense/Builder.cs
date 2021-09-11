@@ -2,16 +2,36 @@
 
 class Builder
 {
-	readonly Ast ast;
+	readonly ModuleAst module;
+	readonly LLVMModuleRef llModule;
 	readonly LLVMBuilderRef llBuilder;
 
-	public Builder(Ast ast)
+	public Builder(ModuleAst module)
 	{
-		this.ast = ast;
-		llBuilder = LLVMBuilderRef.Create(LLVMContextRef.Global);
+		this.module = module;
+		llModule = LLVMModuleRef.CreateWithName(module.name);
+		llBuilder = LLVMBuilderRef.Create(llModule.Context);
 	}
 
-	public LLVMValueRef BuildExpr(ExprAst ast)
+	public LLVMModuleRef Build()
+	{
+		LLVMTypeRef ty = LLVMTypeRef.CreateFunction(LLVMTypeRef.Void, Array.Empty<LLVMTypeRef>());
+		LLVMValueRef fn = llModule.AddFunction(string.Empty, ty);
+		LLVMBasicBlockRef entry = fn.AppendBasicBlock(string.Empty);
+		llBuilder.PositionAtEnd(entry);
+
+		foreach (StmtAst member in module.members)
+			Build(member);
+		return llModule;
+	}
+
+	void Build(StmtAst member)
+	{
+		if (member is ExprStmtAst exprStmt)
+			llBuilder.BuildRet(BuildExpr(exprStmt.expr));
+	}
+
+	LLVMValueRef BuildExpr(ExprAst ast)
 	{
 		if (ast is IntLiteralExprAst intLiteral)
 			return LLVMValueRef.CreateConstInt(LLVMTypeRef.Int32, intLiteral.value);

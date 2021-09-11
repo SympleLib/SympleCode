@@ -1,3 +1,7 @@
+module ->
+	- str name
+	- stmt[] members
+
 ty ->
 	- str base
 	- int ptrCount
@@ -18,18 +22,18 @@ stmt --
 struct ->
 	- enum vis
 	- str name
-	- field[] fields
+	- field[]
 
 impl ->
 	- enum vis
 	- str name
-	- func[] funcs
+	- func[]
 
 class ->
 	- enum vis
 	- str name
-	- field[] fields
-	- func[] funcs
+	- field[]
+	- func[]
 
 declFunc ->
 	- enum vis
@@ -41,7 +45,7 @@ func ->
 	- enum vis
 	- ty retTy
 	- str name
-	- param[] params
+	- param[]
 	- stmt[] body
 
 declVar ->
