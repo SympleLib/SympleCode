@@ -15,7 +15,7 @@ partial class Parser
 		{
 			TokenKind.Plus => LLVMAdd,
 			TokenKind.Minus => LLVMSub,
-			TokenKind.Star => LLVMFMul,
+			TokenKind.Star => LLVMMul,
 			TokenKind.Slash => LLVMSDiv,
 			TokenKind.Percent => LLVMSRem,
 			_ => (LLVMOpcode) 0,

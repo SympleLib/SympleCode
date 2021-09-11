@@ -4,15 +4,22 @@ global using static LLVMSharp.Interop.LLVMOpcode;
 
 using CommenSense;
 
-const string src = "6.9 * 4.20";
+const string src = "69 * 420";
 
 Parser parser = new Parser(src);
 Ast ast = parser.Parse();
 Console.WriteLine(ast);
 
+Console.WriteLine("---");
+
+ast = Resolver.Resolve(ast);
+Console.WriteLine(ast);
+
+Console.WriteLine("---");
+
 using LLVMBuilderRef builder = LLVMBuilderRef.Create(LLVMContextRef.Global);
 LLVMValueRef val = builder.Build((ExprAst) ast);
-Console.WriteLine(val.GetConstRealDouble(out bool _));
+Console.WriteLine(val.ConstIntSExt);
 Console.ReadKey();
 
 static class _
