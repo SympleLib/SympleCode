@@ -15,7 +15,7 @@ partial class Parser
 		{
 			TokenKind.Plus => LLVMAdd,
 			TokenKind.Minus => LLVMSub,
-			TokenKind.Star => LLVMMul,
+			TokenKind.Star => LLVMFMul,
 			TokenKind.Slash => LLVMSDiv,
 			TokenKind.Percent => LLVMSRem,
 			_ => (LLVMOpcode) 0,
@@ -44,6 +44,8 @@ partial class Parser
 		{
 		case TokenKind.Int:
 			return new IntLiteralExprAst(ulong.Parse(Next().text));
+		case TokenKind.Float:
+			return new FloatLiteralExprAst(double.Parse(Next().text));
 
 		default:
 			throw new Exception("not a literal");
