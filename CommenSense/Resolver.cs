@@ -6,7 +6,7 @@ static class Resolver
 	{
 		if (ast is ExprAst expr)
 			return Resolve(expr);
-		throw new Exception("Resolve, involve, disengaged");
+		throw new Exception("resolve, involve, disengage");
 	}
 
 	public static ExprAst Resolve(ExprAst ast)
@@ -15,7 +15,7 @@ static class Resolver
 			return Resolve(biExpr);
 		if (ast is IntLiteralExprAst)
 			return ast;
-		throw new Exception("Resolve, involve, disengaged");
+		throw new Exception("resolve, involve, disengage");
 	}
 
 	public static BiExprAst Resolve(BiExprAst ast)
