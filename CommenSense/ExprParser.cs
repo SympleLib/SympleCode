@@ -60,7 +60,7 @@ partial class Parser
 		if (unOps.Contains(current.kind))
 		{
 			Enum op = UnOpcode(Next().kind);
-			ExprAst operand = LiteralExpr();
+			ExprAst operand = PreExpr();
 			return new UnExprAst(op, operand);
 		}
 
