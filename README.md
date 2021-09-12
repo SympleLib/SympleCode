@@ -18,6 +18,6 @@ Symple C is a programming language based on the [C Family](https://en.wikipedia.
   
 ## Remarks
   
-Obviously, making a compiler is no symple task, here are some resources I used:
+Obviously, making a compiler is no **s*y*mple** task, here are some resources I used:
   - [Minsk Compiler (C#)](https://github.com/terrajobst/minsk)
   - [chibicc Compiler (C)](https://github.com/rui314/chibicc)
