@@ -76,9 +76,25 @@ class Builder
 			Type type = (float) floatLiteral.value == floatLiteral.value ? Type.Float : Type.Double;
 			return Value.CreateConstReal(type, floatLiteral.value);
 		}
+		if (ast is UnExprAst unExpr)
+			return BuildExpr(unExpr);
 		if (ast is BiExprAst biExpr)
 			return BuildExpr(biExpr);
 		throw new Exception("Bob the builder can't build this ◁[<");
+	}
+
+	Value BuildExpr(UnExprAst ast)
+	{
+		Value operand = BuildExpr(ast.operand);
+
+		switch (ast.op)
+		{
+		case LLVMFNeg:
+			return operand.TypeOf.IsFloat() ? llBuilder.BuildFNeg(operand) : llBuilder.BuildNeg(operand);
+
+		default:
+			throw new Exception("bob the builders cannt build (nor spell)");
+		}
 	}
 
 	Value BuildExpr(BiExprAst ast)
@@ -111,7 +127,7 @@ class Builder
 		if (from.IsPtr() && !to.IsPtr())
 			return llBuilder.BuildPtrToInt(val, to);
 		if (!from.IsPtr() && to.IsPtr())
-			return llBuilder.BuildBitCast(val, to);
+			return llBuilder.BuildIntToPtr(val, to);
 
 		return llBuilder.BuildIntCast(val, to);
 	}

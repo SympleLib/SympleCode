@@ -7,12 +7,7 @@ using CommenSense;
 
 const string src = @"
 void run {
-	6 * 9
-	69 + 420 + 1337
-	1 + 2 + 3 + 4 + 5
-	1 * 2 * 3 * 4 * 5
-	4294967296
-	6.9 + 7
+	16/--2
 }
 ";
 

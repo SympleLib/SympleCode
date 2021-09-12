@@ -16,6 +16,8 @@ partial class Parser
 		Star,
 		Slash,
 		Percent,
+		SlashDash,
+		PercentDash,
 
 		LeftBrace,
 		RightBrace,

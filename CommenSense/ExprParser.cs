@@ -2,10 +2,23 @@
 
 partial class Parser
 {
+	static readonly TokenKind[] unOps = {
+		TokenKind.Plus,
+		TokenKind.Minus,
+	};
+
+	static Enum UnOpcode(TokenKind kind) =>
+		kind switch
+		{
+			TokenKind.Plus => LLVMAdd,
+			TokenKind.Minus => LLVMFNeg,
+			_ => (LLVMOpcode) 0,
+		};
+
 	static int BiPrecendence(TokenKind kind) =>
 		   kind switch
 		   {
-			   TokenKind.Star or TokenKind.Slash or TokenKind.Percent => 2,
+			   TokenKind.Star or TokenKind.Slash or TokenKind.Percent or TokenKind.SlashDash or TokenKind.PercentDash => 2,
 			   TokenKind.Plus or TokenKind.Minus => 1,
 			   _ => 0,
 		   };
@@ -18,6 +31,8 @@ partial class Parser
 			TokenKind.Star => LLVMMul,
 			TokenKind.Slash => LLVMSDiv,
 			TokenKind.Percent => LLVMSRem,
+			TokenKind.SlashDash => LLVMUDiv,
+			TokenKind.PercentDash => LLVMURem,
 			_ => (LLVMOpcode) 0,
 		};
 
@@ -25,7 +40,7 @@ partial class Parser
 
 	ExprAst BiExpr(int parentPrecedence = 0)
 	{
-		ExprAst left = LiteralExpr();
+		ExprAst left = PreExpr();
 		while (true)
 		{
 			int precedence = BiPrecendence(current.kind);
@@ -38,6 +53,18 @@ partial class Parser
 		}
 
 		return left;
+	}
+
+	ExprAst PreExpr()
+	{
+		if (unOps.Contains(current.kind))
+		{
+			Enum op = UnOpcode(Next().kind);
+			ExprAst operand = LiteralExpr();
+			return new UnExprAst(op, operand);
+		}
+
+		return LiteralExpr();
 	}
 
 	LiteralExprAst LiteralExpr()
