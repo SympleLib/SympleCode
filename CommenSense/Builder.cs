@@ -1,5 +1,8 @@
 ﻿namespace CommenSense;
 
+using Type = LLVMTypeRef;
+using Value = LLVMValueRef;
+
 class Builder
 {
 	readonly ModuleAst module;
@@ -26,12 +29,19 @@ class Builder
 			Build(func);
 		else if (ast is ExprStmtAst exprStmt)
 			llBuilder.BuildRet(BuildExpr(exprStmt.expr));
+		else
+			throw new Exception("Bob the builder can't build this ◁[<");
 	}
 
 	void Build(FuncAst ast)
 	{
-		LLVMTypeRef ty = LLVMTypeRef.CreateFunction(LLVMTypeRef.Void, Array.Empty<LLVMTypeRef>());
-		LLVMValueRef fn = llModule.AddFunction(ast.name, ty);
+		Type[] paramTypes = new Type[ast.paramz.Length];
+		for (int i = 0; i < ast.paramz.Length; i++)
+			paramTypes[i] = BuildType(ast.paramz[i].type);
+
+		Type retType = BuildType(ast.retType);
+		Type ty = Type.CreateFunction(retType, paramTypes);
+		Value fn = llModule.AddFunction(ast.name, ty);
 		LLVMBasicBlockRef entry = fn.AppendBasicBlock(string.Empty);
 		llBuilder.PositionAtEnd(entry);
 
@@ -39,14 +49,70 @@ class Builder
 			Build(stmt);
 	}
 
-	LLVMValueRef BuildExpr(ExprAst ast)
+	Type BuildType(TypeAst ast)
+	{
+		Type type = ast.typeBase switch
+		{
+			"void" => Type.Void,
+
+			_ => llModule.GetTypeByName(ast.typeBase),
+		};
+
+		for (int i = 0; i < ast.ptrCount; i++)
+			type = Type.CreatePointer(type, 0);
+
+		return type;
+	}
+
+	Value BuildExpr(ExprAst ast)
 	{
 		if (ast is IntLiteralExprAst intLiteral)
-			return LLVMValueRef.CreateConstInt(LLVMTypeRef.Int32, intLiteral.value);
+		{
+			Type type = (uint) intLiteral.value == intLiteral.value ? Type.Int32 : Type.Int64;
+			return Value.CreateConstInt(type, intLiteral.value);
+		}
 		if (ast is FloatLiteralExprAst floatLiteral)
-			return LLVMValueRef.CreateConstReal(LLVMTypeRef.Float, floatLiteral.value);
+		{
+			Type type = (float) floatLiteral.value == floatLiteral.value ? Type.Float : Type.Double;
+			return Value.CreateConstReal(type, floatLiteral.value);
+		}
 		if (ast is BiExprAst biExpr)
-			return llBuilder.BuildBinOp((LLVMOpcode) biExpr.op, BuildExpr(biExpr.left), BuildExpr(biExpr.right));
+			return BuildExpr(biExpr);
 		throw new Exception("Bob the builder can't build this ◁[<");
+	}
+
+	Value BuildExpr(BiExprAst ast)
+	{
+		Value left = BuildExpr(ast.left);
+		Value right = BuildExpr(ast.right);
+
+		var op = (LLVMOpcode) ast.op;
+		Type type = left.TypeOf;
+		if (type.ElementType == default && type.IsFloat())
+			op++;
+		right = BuildCast(right, type);
+
+		return llBuilder.BuildBinOp(op, left, right);
+	}
+
+	Value BuildCast(Value val, Type to)
+	{
+		Type from = val.TypeOf;
+
+		if (from.IsFloat() && to.IsFloat())
+			return llBuilder.BuildFPCast(val, to);
+		if (from.IsFloat() && !to.IsFloat())
+			return llBuilder.BuildFPToSI(val, to);
+		if (!from.IsFloat() && to.IsFloat())
+			return llBuilder.BuildSIToFP(val, to);
+
+		if (from.IsPtr() && to.IsPtr())
+			return llBuilder.BuildPointerCast(val, to);
+		if (from.IsPtr() && !to.IsPtr())
+			return llBuilder.BuildPtrToInt(val, to);
+		if (!from.IsPtr() && to.IsPtr())
+			return llBuilder.BuildBitCast(val, to);
+
+		return llBuilder.BuildIntCast(val, to);
 	}
 }
