@@ -1,13 +1,17 @@
 ﻿global using LLVMSharp.Interop;
 
 global using static LLVMSharp.Interop.LLVMOpcode;
+global using static LLVMSharp.Interop.LLVMVisibility;
 
 using CommenSense;
 
 const string src = @"
-1 * 2 * 3 * 4 * 5
-6 * 9
-17
+void run {
+	6 * 9
+	69 + 420 + 1337
+	1 + 2 + 3 + 4 + 5
+	1 * 2 * 3 * 4 * 5
+}
 ";
 
 Parser parser = new Parser(src);

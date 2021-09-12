@@ -11,6 +11,9 @@ partial class Parser
 		"*",
 		"/",
 		"%",
+
+		"{",
+		"}",
 	};
 
 		readonly string src;

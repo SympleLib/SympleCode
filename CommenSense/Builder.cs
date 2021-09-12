@@ -15,20 +15,28 @@ class Builder
 
 	public LLVMModuleRef Build()
 	{
-		LLVMTypeRef ty = LLVMTypeRef.CreateFunction(LLVMTypeRef.Void, Array.Empty<LLVMTypeRef>());
-		LLVMValueRef fn = llModule.AddFunction(string.Empty, ty);
-		LLVMBasicBlockRef entry = fn.AppendBasicBlock(string.Empty);
-		llBuilder.PositionAtEnd(entry);
-
 		foreach (StmtAst member in module.members)
 			Build(member);
 		return llModule;
 	}
 
-	void Build(StmtAst member)
+	void Build(StmtAst ast)
 	{
-		if (member is ExprStmtAst exprStmt)
+		if (ast is FuncAst func)
+			Build(func);
+		else if (ast is ExprStmtAst exprStmt)
 			llBuilder.BuildRet(BuildExpr(exprStmt.expr));
+	}
+
+	void Build(FuncAst ast)
+	{
+		LLVMTypeRef ty = LLVMTypeRef.CreateFunction(LLVMTypeRef.Void, Array.Empty<LLVMTypeRef>());
+		LLVMValueRef fn = llModule.AddFunction(ast.name, ty);
+		LLVMBasicBlockRef entry = fn.AppendBasicBlock(string.Empty);
+		llBuilder.PositionAtEnd(entry);
+
+		foreach (StmtAst stmt in ast.body)
+			Build(stmt);
 	}
 
 	LLVMValueRef BuildExpr(ExprAst ast)

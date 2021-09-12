@@ -19,6 +19,26 @@ partial class Parser
 		return new ModuleAst(name, members.ToArray());
 	}
 
+	TypeAst Type()
+	{
+		string typeBase = Match(TokenKind.Identifier).text;
+		int ptrCount = 0;
+		while (current.kind is TokenKind.Star)
+		{
+			ptrCount++;
+			Next();
+		}
+
+		return new TypeAst(typeBase, ptrCount);
+	}
+
+	Token Match(TokenKind kind)
+	{
+		if (current.kind == kind)
+			return Next();
+		throw new Exception($"incorrect tokenkind: {current.kind}");
+	}
+
 	Token Next()
 	{
 		Token tmp = current;

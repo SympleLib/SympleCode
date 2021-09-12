@@ -16,6 +16,9 @@ partial class Parser
 		Star,
 		Slash,
 		Percent,
+
+		LeftBrace,
+		RightBrace,
 	}
 
 	record Token(TokenKind kind, string text);
