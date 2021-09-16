@@ -3,17 +3,20 @@
 using Type = LLVMTypeRef;
 using Value = LLVMValueRef;
 
-class Builder
+partial class Builder
 {
 	readonly ModuleAst module;
 	readonly LLVMModuleRef llModule;
 	readonly LLVMBuilderRef llBuilder;
+
+	Value currentFunc;
 
 	public Builder(ModuleAst module)
 	{
 		this.module = module;
 		llModule = LLVMModuleRef.CreateWithName(module.name);
 		llBuilder = LLVMBuilderRef.Create(llModule.Context);
+		scope = new Scope(this);
 	}
 
 	public LLVMModuleRef Build()
@@ -27,6 +30,8 @@ class Builder
 	{
 		if (ast is FuncAst func)
 			Build(func);
+		else if (ast is VarAst var)
+			Build(var);
 		else if (ast is ExprStmtAst exprStmt)
 			llBuilder.BuildRet(BuildExpr(exprStmt.expr));
 		else
@@ -44,9 +49,30 @@ class Builder
 		Value fn = llModule.AddFunction(ast.name, ty);
 		LLVMBasicBlockRef entry = fn.AppendBasicBlock(string.Empty);
 		llBuilder.PositionAtEnd(entry);
+		currentFunc = fn;
 
+		BeginScope();
 		foreach (StmtAst stmt in ast.body)
 			Build(stmt);
+		EndScope();
+	}
+
+	void Build(VarAst ast)
+	{
+		Type type = BuildType(ast.type);
+
+		if (currentFunc == null)
+		{
+			Value var = llModule.AddGlobal(type, ast.name);
+			var.Initializer = BuildCast(BuildExpr(ast.initializer), type);
+		}
+		else
+		{
+			Value var = llBuilder.BuildAlloca(type, ast.name);
+			Value initializer = BuildCast(BuildExpr(ast.initializer), type);
+			llBuilder.BuildStore(initializer, var);
+			scope.Define(ast.name, var);
+		}
 	}
 
 	Type BuildType(TypeAst ast)
@@ -54,6 +80,7 @@ class Builder
 		Type type = ast.typeBase switch
 		{
 			"void" => Type.Void,
+			"int" => Type.Int32,
 
 			_ => llModule.GetTypeByName(ast.typeBase),
 		};
@@ -80,6 +107,8 @@ class Builder
 			return BuildExpr(unExpr);
 		if (ast is BiExprAst biExpr)
 			return BuildExpr(biExpr);
+		if (ast.GetType() == typeof(ExprAst))
+			return Value.CreateConstNull(Type.Int1);
 		throw new Exception("Bob the builder can't build this ◁[<");
 	}
 

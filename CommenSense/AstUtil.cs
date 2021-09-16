@@ -17,7 +17,7 @@ static class _
 }
 
 partial record ModuleAst
-{ public override string ToString() => $"module `{name}`: [\n{IncTab()}{string.Join<StmtAst>(",\n\t", members)}\n]"; }
+{ public override string ToString() => $"module `{name}`: [\n{IncTab()}{string.Join<StmtAst>("\n\n\t", members)}\n]"; }
 
 
 partial record TypeAst
@@ -31,7 +31,11 @@ partial record FieldAst
 
 
 partial record FuncAst
-{ public override string ToString() => $"{vis} {retType} {name}[{string.Join<ParamAst>(", ", paramz)}] {{\n{IncTab()}{string.Join<StmtAst>($";\n{GetTabs()}", body)};{DecTab()}\n{GetTabs()}}}"; }
+{ public override string ToString() => $"{vis} {retType} {name}[{string.Join<ParamAst>(", ", paramz)}] {{\n{IncTab()}{string.Join<StmtAst>($"\n{GetTabs()}", body)}{DecTab()}\n{GetTabs()}}}"; }
+
+partial record VarAst
+{ public override string ToString() => $"{vis} {type} {name} = {initializer}"; }
+
 
 partial record ExprStmtAst
 { public override string ToString() => expr.ToString(); }

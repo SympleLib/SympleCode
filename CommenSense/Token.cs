@@ -19,6 +19,8 @@ partial class Parser
 		SlashDash,
 		PercentDash,
 
+		Eql,
+
 		LeftBrace,
 		RightBrace,
 	}

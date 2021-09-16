@@ -6,17 +6,19 @@ partial class Parser
 	{
 		const TokenKind punctuatorStart = TokenKind.Plus;
 		static readonly string[] punctuators = {
-		"+",
-		"-",
-		"*",
-		"/",
-		"%",
-		"/-",
-		"%-",
+			"+",
+			"-",
+			"*",
+			"/",
+			"%",
+			"/-",
+			"%-",
 
-		"{",
-		"}",
-	};
+			"=",
+
+			"{",
+			"}",
+		};
 
 		readonly string src;
 		int pos;

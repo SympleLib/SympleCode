@@ -5,15 +5,19 @@ partial class Parser
 	StmtAst Stmt()
 	{
 		if (current.kind is TokenKind.Identifier)
-			return Func();
+		{
+			TypeAst type = Type();
+			string name = Match(TokenKind.Identifier).text;
+			if (current.kind is TokenKind.LeftBrace)
+				return Func(retType: type, name);
+			return Var(type, name);
+		}
 		return ExprStmt();
 	}
 
-	FuncAst Func()
+	FuncAst Func(TypeAst retType, string name)
 	{
 		const LLVMVisibility vis = LLVMDefaultVisibility;
-		TypeAst retType = Type();
-		string name = Match(TokenKind.Identifier).text;
 		ParamAst[] paramz = Array.Empty<ParamAst>();
 		
 		List<StmtAst> body = new List<StmtAst>();
@@ -23,6 +27,19 @@ partial class Parser
 		Match(TokenKind.RightBrace);
 
 		return new FuncAst(vis, retType, name, paramz, body.ToArray());
+	}
+
+	VarAst Var(TypeAst type, string name)
+	{
+		const LLVMVisibility vis = LLVMDefaultVisibility;
+		ExprAst initializer = new ExprAst();
+		if (current.kind is TokenKind.Eql)
+		{
+			Next();
+			initializer = Expr();
+		}
+
+		return new VarAst(vis, type, name, initializer);
 	}
 
 	ExprStmtAst ExprStmt() =>
