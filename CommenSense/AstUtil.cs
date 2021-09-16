@@ -44,6 +44,9 @@ partial record ExprStmtAst
 partial record IntLiteralExprAst
 { public override string ToString() => $"{value}"; }
 
+partial record BoolLiteralExprAst
+{ public override string ToString() => $"{value}"; }
+
 partial record StrLiteralExprAst
 { public override string ToString() => $"`{value}`"; }
 

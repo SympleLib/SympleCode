@@ -7,7 +7,11 @@ using CommenSense;
 
 const string src = @"
 void run {
-	int funny = 6 int number = 9
+	void run {
+		void run {
+			bool inception = true
+		}
+	}
 }
 ";
 

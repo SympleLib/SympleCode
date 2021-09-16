@@ -6,10 +6,10 @@ partial class Builder
 {
 	Scope scope;
 
-	void BeginScope() =>
+	void EnterScope() =>
 		scope = new Scope(this, scope);
 
-	void EndScope() =>
+	void ExitScope() =>
 		scope = scope.parent!;
 
 	class Scope

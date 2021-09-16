@@ -26,6 +26,7 @@ record ExprAst: Ast;
 
 partial record LiteralExprAst(): ExprAst;
 partial record IntLiteralExprAst(ulong value): LiteralExprAst;
+partial record BoolLiteralExprAst(bool value): LiteralExprAst;
 partial record StrLiteralExprAst(string value): LiteralExprAst;
 partial record FloatLiteralExprAst(double value): LiteralExprAst;
 

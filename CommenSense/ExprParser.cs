@@ -75,6 +75,12 @@ partial class Parser
 			return new IntLiteralExprAst(ulong.Parse(Next().text));
 		case TokenKind.Float:
 			return new FloatLiteralExprAst(double.Parse(Next().text));
+		case TokenKind.TrueKeyword:
+			Next();
+			return new BoolLiteralExprAst(true);
+		case TokenKind.FalseKeyword:
+			Next();
+			return new BoolLiteralExprAst(false);
 
 		default:
 			throw new Exception("not a literal");

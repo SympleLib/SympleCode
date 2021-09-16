@@ -51,10 +51,10 @@ partial class Builder
 		llBuilder.PositionAtEnd(entry);
 		currentFunc = fn;
 
-		BeginScope();
+		EnterScope();
 		foreach (StmtAst stmt in ast.body)
 			Build(stmt);
-		EndScope();
+		ExitScope();
 	}
 
 	void Build(VarAst ast)
@@ -80,6 +80,7 @@ partial class Builder
 		Type type = ast.typeBase switch
 		{
 			"void" => Type.Void,
+			"bool" => Type.Int1,
 			"int" => Type.Int32,
 
 			_ => llModule.GetTypeByName(ast.typeBase),
@@ -98,6 +99,8 @@ partial class Builder
 			Type type = (uint) intLiteral.value == intLiteral.value ? Type.Int32 : Type.Int64;
 			return Value.CreateConstInt(type, intLiteral.value);
 		}
+		if (ast is BoolLiteralExprAst boolLiteral)
+			return Value.CreateConstInt(Type.Int1, boolLiteral.value ? 1ul : 0ul);
 		if (ast is FloatLiteralExprAst floatLiteral)
 		{
 			Type type = (float) floatLiteral.value == floatLiteral.value ? Type.Float : Type.Double;

@@ -20,6 +20,12 @@ partial class Parser
 			"}",
 		};
 
+		const TokenKind keywordStart = TokenKind.TrueKeyword;
+		static readonly string[] keywords = {
+			"true",
+			"false",
+		};
+
 		readonly string src;
 		int pos;
 		char current => Peek();
@@ -68,7 +74,12 @@ partial class Parser
 			while (char.IsLetterOrDigit(current))
 				pos++;
 
-			return new Token(TokenKind.Identifier, src[start..pos]);
+			string text = src[start..pos];
+			for (int i = 0; i < keywords.Length; i++)
+				if (keywords[i] == text)
+					return new Token(keywordStart, text);
+
+			return new Token(TokenKind.Identifier, text);
 		}
 
 		Token Punctuator()

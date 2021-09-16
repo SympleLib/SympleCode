@@ -23,6 +23,10 @@ partial class Parser
 
 		LeftBrace,
 		RightBrace,
+
+
+		TrueKeyword,
+		FalseKeyword,
 	}
 
 	record Token(TokenKind kind, string text);
