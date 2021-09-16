@@ -7,11 +7,11 @@ using CommenSense;
 
 const string src = @"
 void run {
-	void run {
-		void run {
-			bool inception = true
-		}
-	}
+	oFunc[0, 3]
+}
+
+int oFunc[int x, y] {
+	x + y
 }
 ";
 
