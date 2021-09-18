@@ -77,6 +77,10 @@ funcptr ->
 	- str func
 	- ty[] params
 
+callExpr ->
+	- expr ptr
+	- expr[] params
+
 varExpr ->
 	- str name
 
