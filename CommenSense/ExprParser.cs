@@ -64,7 +64,19 @@ partial class Parser
 			return new UnExprAst(op, operand);
 		}
 
-		return LiteralExpr();
+		return PrimExpr();
+	}
+
+	ExprAst PrimExpr()
+	{
+		switch (current.kind)
+		{
+		case TokenKind.Identifier:
+			return new VarExprAst(Next().text);
+
+		default:
+			return LiteralExpr();
+		}
 	}
 
 	LiteralExprAst LiteralExpr()

@@ -106,6 +106,10 @@ partial class Builder
 			Type type = (float) floatLiteral.value == floatLiteral.value ? Type.Float : Type.Double;
 			return Value.CreateConstReal(type, floatLiteral.value);
 		}
+
+		if (ast is VarExprAst varExpr)
+			return llBuilder.BuildLoad(scope.Find(varExpr.varName));
+
 		if (ast is UnExprAst unExpr)
 			return BuildExpr(unExpr);
 		if (ast is BiExprAst biExpr)

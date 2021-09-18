@@ -4,7 +4,7 @@ partial class Parser
 {
 	StmtAst Stmt()
 	{
-		if (current.kind is TokenKind.Identifier)
+		if (current.kind is TokenKind.Identifier && next.kind is TokenKind.Identifier or TokenKind.Star)
 		{
 			TypeAst type = Type();
 			string name = Match(TokenKind.Identifier).text;

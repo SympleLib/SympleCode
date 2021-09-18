@@ -54,6 +54,9 @@ partial record FloatLiteralExprAst
 { public override string ToString() => $"{value}"; }
 
 
+partial record VarExprAst
+{ public override string ToString() => $"{varName}"; }
+
 partial record UnExprAst
 { public override string ToString() => $"{op} {operand}"; }
 

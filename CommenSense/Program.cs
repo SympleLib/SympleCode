@@ -7,11 +7,8 @@ using CommenSense;
 
 const string src = @"
 void run {
-	oFunc[0, 3]
-}
-
-int oFunc[int x, y] {
-	x + y
+	int x = 4
+	x + 6
 }
 ";
 
