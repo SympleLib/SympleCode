@@ -31,7 +31,7 @@ partial class Builder
 		values[^1] = Value.CreateConstInt(Type.Int8, 0);
 		Value arr = Value.CreateConstArray(Type.Int8, values);
 
-		Value str = llModule.AddGlobal(arr.TypeOf, "..str");
+		Value str = llModule.AddGlobal(arr.TypeOf, string.Empty);
 		str.Linkage = LLVMLinkage.LLVMPrivateLinkage;
 		str.IsGlobalConstant = true;
 		str.HasUnnamedAddr = true;
@@ -74,6 +74,7 @@ partial class Builder
 		Type retType = BuildType(ast.retType);
 		Type ty = Type.CreateFunction(retType, paramTypes);
 		Value fn = llModule.AddFunction(ast.name, ty);
+		scope.Define(ast.name, fn);
 		LLVMBasicBlockRef entry = fn.AppendBasicBlock(string.Empty);
 		llBuilder.PositionAtEnd(entry);
 		currentFunc = fn;
@@ -154,6 +155,8 @@ partial class Builder
 			return Value.CreateConstReal(type, floatLiteral.value);
 		}
 
+		if (ast is FuncPtrAst funcExpr)
+			return scope.Find(funcExpr.funcName);
 		if (ast is VarExprAst varExpr)
 			return llBuilder.BuildLoad(scope.Find(varExpr.varName));
 

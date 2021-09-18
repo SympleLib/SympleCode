@@ -30,10 +30,7 @@ partial class Builder
 				return symbol;
 			if (parent is not null)
 				return parent!.Find(name);
-			Value global = builder.llModule.GetNamedGlobal(name);
-			if (global == null)
-				return builder.llModule.GetNamedFunction(name);
-			return global;
+			throw new Exception("symbol don't exit man");
 		}
 
 		public void Define(string name, Value symbol) =>

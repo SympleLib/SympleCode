@@ -12,7 +12,7 @@ const string src = @"
 decl int putchar[char c]
 
 void run {
-	
+	putchar
 	69
 }
 ";

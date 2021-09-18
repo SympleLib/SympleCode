@@ -13,7 +13,7 @@ partial class Parser
 				return DeclFunc(retType: type, name);
 			return DeclVar(type, name);
 		}
-		if (current.kind is TokenKind.Identifier && !scope.VarExists(current.text))
+		if (current.kind is TokenKind.Identifier && !(scope.VarExists(current.text) || scope.FuncExists(current.text)))
 		{
 			TypeAst type = Type();
 			string name = Match(TokenKind.Identifier).text;
@@ -52,6 +52,7 @@ partial class Parser
 		ExitScope();
 		Match(TokenKind.RightBrace);
 
+		scope.DefineFunc(name);
 		return new FuncAst(vis, retType, name, paramz.ToArray(), body.ToArray());
 	}
 
@@ -78,13 +79,13 @@ partial class Parser
 		{
 			ParamAst param = Param();
 			paramz.Add(param);
-			scope.DefineVar(param.name);
 			if (current.kind is not TokenKind.RightBracket)
 				Match(TokenKind.Comma);
 		}
 
 		Match(TokenKind.RightBracket);
 
+		scope.DefineFunc(name);
 		return new DeclFuncAst(vis, retType, name, paramz.ToArray());
 	}
 

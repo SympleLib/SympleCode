@@ -72,6 +72,8 @@ partial class Parser
 		switch (current.kind)
 		{
 		case TokenKind.Identifier:
+			if (scope.FuncExists(current.text))
+				return new FuncPtrAst(Next().text);
 			return new VarExprAst(Next().text);
 
 		default:

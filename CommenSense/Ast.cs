@@ -31,7 +31,7 @@ partial record StrLiteralExprAst(string value): LiteralExprAst;
 partial record FloatLiteralExprAst(double value): LiteralExprAst;
 
 partial record VarExprAst(string varName): ExprAst;
-partial record FuncPtrAst(string funcName, TypeAst[] paramTypes): ExprAst;
+partial record FuncPtrAst(string funcName): ExprAst;
 
 partial record UnExprAst(Enum op, ExprAst operand): ExprAst;
 partial record BiExprAst(Enum op, ExprAst left, ExprAst right): ExprAst;
