@@ -7,8 +7,9 @@ using CommenSense;
 
 const string src = @"
 void run {
-	int x = 4
-	x + 6
+	int x = 69
+	int y = -x
+	x + y
 }
 ";
 
