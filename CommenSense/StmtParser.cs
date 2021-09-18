@@ -4,7 +4,7 @@ partial class Parser
 {
 	StmtAst Stmt()
 	{
-		if (current.kind is TokenKind.Identifier && next.kind is TokenKind.Identifier)
+		if (current.kind is TokenKind.Identifier && !scope.VarExists(current.text))
 		{
 			TypeAst type = Type();
 			string name = Match(TokenKind.Identifier).text;
@@ -22,8 +22,10 @@ partial class Parser
 		
 		List<StmtAst> body = new List<StmtAst>();
 		Match(TokenKind.LeftBrace);
+		EnterScope();
 		while (current.kind is not TokenKind.Eof and not TokenKind.RightBrace)
 			body.Add(Stmt());
+		ExitScope();
 		Match(TokenKind.RightBrace);
 
 		return new FuncAst(vis, retType, name, paramz, body.ToArray());
@@ -39,6 +41,7 @@ partial class Parser
 			initializer = Expr();
 		}
 
+		scope.DefineVar(name);
 		return new VarAst(vis, type, name, initializer);
 	}
 
