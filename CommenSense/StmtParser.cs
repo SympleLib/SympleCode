@@ -8,7 +8,7 @@ partial class Parser
 		{
 			TypeAst type = Type();
 			string name = Match(TokenKind.Identifier).text;
-			if (current.kind is TokenKind.LeftBrace)
+			if (current.kind is TokenKind.LeftBrace or TokenKind.LeftBracket)
 				return Func(retType: type, name);
 			return Var(type, name);
 		}
@@ -17,18 +17,32 @@ partial class Parser
 
 	FuncAst Func(TypeAst retType, string name)
 	{
+		EnterScope();
 		const LLVMVisibility vis = LLVMDefaultVisibility;
-		ParamAst[] paramz = Array.Empty<ParamAst>();
+		List<ParamAst> paramz = new List<ParamAst>();
+		if (current.kind is TokenKind.LeftBracket)
+		{
+			Next();
+			while (current.kind is not TokenKind.Eof and not TokenKind.RightBracket)
+			{
+				ParamAst param = Param();
+				paramz.Add(param);
+				scope.DefineVar(param.name);
+				if (current.kind is not TokenKind.RightBracket)
+					Match(TokenKind.Comma);
+			}
+
+			Match(TokenKind.RightBracket);
+		}
 		
 		List<StmtAst> body = new List<StmtAst>();
 		Match(TokenKind.LeftBrace);
-		EnterScope();
 		while (current.kind is not TokenKind.Eof and not TokenKind.RightBrace)
 			body.Add(Stmt());
 		ExitScope();
 		Match(TokenKind.RightBrace);
 
-		return new FuncAst(vis, retType, name, paramz, body.ToArray());
+		return new FuncAst(vis, retType, name, paramz.ToArray(), body.ToArray());
 	}
 
 	VarAst Var(TypeAst type, string name)

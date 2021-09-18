@@ -1,6 +1,6 @@
 ﻿namespace CommenSense;
 
-record Ast;
+partial record Ast;
 partial record ModuleAst(string name, StmtAst[] members);
 
 partial record TypeAst(string typeBase, int ptrCount): Ast;
@@ -8,7 +8,7 @@ partial record ParamAst(TypeAst type, string name, ExprAst defaultExpr): Ast;
 partial record FieldAst(Enum vis, TypeAst type, string name, ExprAst initializer): Ast;
 
 
-record StmtAst: Ast;
+partial record StmtAst: Ast;
 
 partial record ImplAst(Enum vis, string name, FuncAst[] funcs): StmtAst;
 partial record StructAst(Enum vis, string name, FieldAst[] fields): StmtAst;
@@ -22,7 +22,7 @@ partial record VarAst(Enum vis, TypeAst type, string name, ExprAst initializer):
 partial record ExprStmtAst(ExprAst expr): StmtAst;
 
 
-record ExprAst: Ast;
+partial record ExprAst: Ast;
 
 partial record LiteralExprAst(): ExprAst;
 partial record IntLiteralExprAst(ulong value): LiteralExprAst;

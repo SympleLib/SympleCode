@@ -23,6 +23,10 @@ partial class Parser
 
 		LeftBrace,
 		RightBrace,
+		LeftBracket,
+		RightBracket,
+
+		Comma,
 
 
 		TrueKeyword,

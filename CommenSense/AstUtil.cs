@@ -24,10 +24,10 @@ partial record TypeAst
 { public override string ToString() => $"{typeBase}{new string('*', ptrCount)}"; }
 
 partial record ParamAst
-{ public override string ToString() => $"{{ {type} {name} = {defaultExpr} }}"; }
+{ public override string ToString() => $"{type} {name} = {defaultExpr}"; }
 
 partial record FieldAst
-{ public override string ToString() => $"{{ {vis} {type} {name} = {initializer} }}"; }
+{ public override string ToString() => $"{vis} {type} {name} = {initializer}"; }
 
 
 partial record FuncAst
@@ -40,8 +40,11 @@ partial record VarAst
 partial record ExprStmtAst
 { public override string ToString() => expr.ToString(); }
 
+partial record ExprAst
+{ public override string ToString() => "null"; }
 
-partial record IntLiteralExprAst
+
+	partial record IntLiteralExprAst
 { public override string ToString() => $"{value}"; }
 
 partial record BoolLiteralExprAst

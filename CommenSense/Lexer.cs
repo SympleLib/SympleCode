@@ -18,6 +18,10 @@ partial class Parser
 
 			"{",
 			"}",
+			"[",
+			"]",
+
+			",",
 		};
 
 		const TokenKind keywordStart = TokenKind.TrueKeyword;

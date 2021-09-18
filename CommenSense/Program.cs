@@ -9,21 +9,8 @@ using System.Runtime.InteropServices;
 using CommenSense;
 
 const string src = @"
-void run {
-	int x = 69
-	int y = -x
+void run[int x, int y] {
 	x + y
-	x - y
-	y - x
-	x * y
-	x / y
-	y / x
-	x /- y
-	y /- x
-	x % y
-	y % x
-	x %- y
-	y %- x
 }
 ";
 
@@ -61,7 +48,7 @@ if (!llModule.TryCreateMCJITCompiler(out LLVMExecutionEngineRef engine, ref opti
 }
 
 var runFn = (Run) Marshal.GetDelegateForFunctionPointer(engine.GetPointerToGlobal(llModule.GetNamedFunction("run")), typeof(Run));
-runFn();
+runFn(12, 16);
 
 End:
 Console.WriteLine("---");
@@ -69,4 +56,4 @@ Console.ReadKey();
 
 
 [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
-delegate void Run();
+delegate void Run(int x, int y);

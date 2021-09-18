@@ -44,6 +44,20 @@ partial class Parser
 		return new TypeAst(typeBase, ptrCount);
 	}
 
+	ParamAst Param()
+	{
+		TypeAst type = Type();
+		string name = Match(TokenKind.Identifier).text;
+		ExprAst defaultExpr = new ExprAst();
+		if (current.kind is TokenKind.Eql)
+		{
+			Next();
+			defaultExpr = Expr();
+		}
+
+		return new ParamAst(type, name, defaultExpr);
+	}
+
 	Token Peek(int offset = 0)
 	{
 		int i = pos + offset;

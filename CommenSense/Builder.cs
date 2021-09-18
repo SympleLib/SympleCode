@@ -75,6 +75,12 @@ partial class Builder
 		currentFunc = fn;
 
 		EnterScope();
+		for (int i = 0; i < ast.paramz.Length; i++)
+		{
+			Value ptr = llBuilder.BuildAlloca(paramTypes[i]);
+			llBuilder.BuildStore(fn.Params[i], ptr);
+			scope.Define(ast.paramz[i].name, ptr);
+		}
 		foreach (StmtAst stmt in ast.body)
 			Build(stmt);
 		ExitScope();
