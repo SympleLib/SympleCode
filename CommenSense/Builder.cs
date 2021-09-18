@@ -1,5 +1,7 @@
 ﻿namespace CommenSense;
 
+using System.Xml.Linq;
+
 using Type = LLVMTypeRef;
 using Value = LLVMValueRef;
 
@@ -8,6 +10,8 @@ partial class Builder
 	readonly ModuleAst module;
 	readonly LLVMModuleRef llModule;
 	readonly LLVMBuilderRef llBuilder;
+	readonly Value printfFn;
+	readonly Value fmt;
 
 	Value currentFunc;
 
@@ -17,6 +21,22 @@ partial class Builder
 		llModule = LLVMModuleRef.CreateWithName(module.name);
 		llBuilder = LLVMBuilderRef.Create(llModule.Context);
 		scope = new Scope(this);
+
+		printfFn = llModule.AddFunction("printf", Type.CreateFunction(Type.Void, new Type[] { Type.CreatePointer(Type.Int8, 0) }, true));
+
+		const string fmtStr = "%i\n";
+		Value[] values = new Value[fmtStr.Length + 1];
+		for (int i = 0; i < fmtStr.Length; i++)
+			values[i] = Value.CreateConstInt(Type.Int8, fmtStr[i]);
+		values[^1] = Value.CreateConstInt(Type.Int8, 0);
+		Value arr = Value.CreateConstArray(Type.Int8, values);
+
+		Value str = llModule.AddGlobal(arr.TypeOf, "..str");
+		str.Linkage = LLVMLinkage.LLVMPrivateLinkage;
+		str.IsGlobalConstant = true;
+		str.HasUnnamedAddr = true;
+		str.Initializer = arr;
+		fmt = llBuilder.BuildBitCast(str, Type.CreatePointer(Type.Int8, 0));
 	}
 
 	public LLVMModuleRef Build()
@@ -33,7 +53,10 @@ partial class Builder
 		else if (ast is VarAst var)
 			Build(var);
 		else if (ast is ExprStmtAst exprStmt)
-			llBuilder.BuildRet(BuildExpr(exprStmt.expr));
+		{
+			Value val = BuildExpr(exprStmt.expr);
+			llBuilder.BuildCall(printfFn, new Value[] { fmt, val });
+		}
 		else
 			throw new Exception("Bob the builder can't build this ◁[<");
 	}
@@ -55,6 +78,7 @@ partial class Builder
 		foreach (StmtAst stmt in ast.body)
 			Build(stmt);
 		ExitScope();
+		llBuilder.BuildRetVoid();
 	}
 
 	void Build(VarAst ast)
