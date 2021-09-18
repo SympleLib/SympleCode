@@ -52,6 +52,10 @@ partial class Builder
 			Build(func);
 		else if (ast is VarAst var)
 			Build(var);
+		else if(ast is DeclFuncAst declFunc)
+			Build(declFunc);
+		else if (ast is DeclVarAst declVar)
+			Build(declVar);
 		else if (ast is ExprStmtAst exprStmt)
 		{
 			Value val = BuildExpr(exprStmt.expr);
@@ -105,12 +109,25 @@ partial class Builder
 		}
 	}
 
+	void Build(DeclFuncAst ast)
+	{
+		Type[] paramTypes = new Type[ast.paramz.Length];
+		for (int i = 0; i < ast.paramz.Length; i++)
+			paramTypes[i] = BuildType(ast.paramz[i].type);
+
+		Type retType = BuildType(ast.retType);
+		Type ty = Type.CreateFunction(retType, paramTypes);
+		Value fn = llModule.AddFunction(ast.name, ty);
+		scope.Define(ast.name, fn);
+	}
+
 	Type BuildType(TypeAst ast)
 	{
 		Type type = ast.typeBase switch
 		{
 			"void" => Type.Void,
 			"bool" => Type.Int1,
+			"char" => Type.Int8,
 			"int" => Type.Int32,
 
 			_ => llModule.GetTypeByName(ast.typeBase),

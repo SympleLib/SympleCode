@@ -31,6 +31,8 @@ partial class Parser
 
 		TrueKeyword,
 		FalseKeyword,
+
+		DeclKeyword,
 	}
 
 	record Token(TokenKind kind, string text);

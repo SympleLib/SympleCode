@@ -28,6 +28,8 @@ partial class Parser
 		static readonly string[] keywords = {
 			"true",
 			"false",
+
+			"decl",
 		};
 
 		readonly string src;
@@ -81,7 +83,7 @@ partial class Parser
 			string text = src[start..pos];
 			for (int i = 0; i < keywords.Length; i++)
 				if (keywords[i] == text)
-					return new Token(keywordStart, text);
+					return new Token(keywordStart + i, text);
 
 			return new Token(TokenKind.Identifier, text);
 		}

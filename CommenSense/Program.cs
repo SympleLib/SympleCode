@@ -9,8 +9,11 @@ using System.Runtime.InteropServices;
 using CommenSense;
 
 const string src = @"
-void run[int x, int y] {
-	x + y
+decl int putchar[char c]
+
+void run {
+	
+	69
 }
 ";
 
