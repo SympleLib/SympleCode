@@ -51,7 +51,7 @@ if (!llModule.TryCreateMCJITCompiler(out LLVMExecutionEngineRef engine, ref opti
 }
 
 var runFn = (Run) Marshal.GetDelegateForFunctionPointer(engine.GetPointerToGlobal(llModule.GetNamedFunction("run")), typeof(Run));
-runFn(12, 16);
+runFn();
 
 End:
 Console.WriteLine("---");
@@ -59,4 +59,4 @@ Console.ReadKey();
 
 
 [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
-delegate void Run(int x, int y);
+delegate void Run();
