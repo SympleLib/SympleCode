@@ -30,6 +30,7 @@ partial record BoolLiteralExprAst(bool value): LiteralExprAst;
 partial record StrLiteralExprAst(string value): LiteralExprAst;
 partial record FloatLiteralExprAst(double value): LiteralExprAst;
 
+partial record CallExprAst(ExprAst ptr, ExprAst[] args): ExprAst;
 partial record VarExprAst(string varName): ExprAst;
 partial record FuncPtrAst(string funcName): ExprAst;
 

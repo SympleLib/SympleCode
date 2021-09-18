@@ -1,5 +1,7 @@
 ﻿namespace CommenSense;
 
+using System.Linq;
+
 using static _;
 
 static class _
@@ -44,7 +46,7 @@ partial record ExprAst
 { public override string ToString() => "null"; }
 
 
-	partial record IntLiteralExprAst
+partial record IntLiteralExprAst
 { public override string ToString() => $"{value}"; }
 
 partial record BoolLiteralExprAst
@@ -57,11 +59,15 @@ partial record FloatLiteralExprAst
 { public override string ToString() => $"{value}"; }
 
 
+partial record CallExprAst
+{ public override string ToString() => $"{ptr}[{string.Join<ExprAst>(", ", args)}]"; }
+
 partial record FuncPtrAst
 { public override string ToString() => $"&{funcName}"; }
 
 partial record VarExprAst
 { public override string ToString() => $"{varName}"; }
+
 
 partial record UnExprAst
 { public override string ToString() => $"{op} {operand}"; }

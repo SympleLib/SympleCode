@@ -64,7 +64,30 @@ partial class Parser
 			return new UnExprAst(op, operand);
 		}
 
-		return PrimExpr();
+		return PostExpr(PrimExpr());
+	}
+
+	ExprAst PostExpr(ExprAst operand)
+	{
+	Loop:
+		if (current.kind is TokenKind.LeftBracket)
+		{
+			Next();
+
+			List<ExprAst> args = new List<ExprAst>();
+			while (current.kind is not TokenKind.Eof and not TokenKind.RightBracket)
+			{
+				args.Add(Expr());
+				if (current.kind is not TokenKind.RightBracket)
+					Match(TokenKind.Comma);
+			}
+
+			Match(TokenKind.RightBracket);
+			operand = new CallExprAst(operand, args.ToArray());
+			goto Loop;
+		}
+
+		return operand;
 	}
 
 	ExprAst PrimExpr()

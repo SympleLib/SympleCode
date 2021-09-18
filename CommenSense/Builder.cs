@@ -159,6 +159,8 @@ partial class Builder
 			return scope.Find(funcExpr.funcName);
 		if (ast is VarExprAst varExpr)
 			return llBuilder.BuildLoad(scope.Find(varExpr.varName));
+		if (ast is CallExprAst callExpr)
+			return BuildExpr(callExpr);
 
 		if (ast is UnExprAst unExpr)
 			return BuildExpr(unExpr);
@@ -167,6 +169,21 @@ partial class Builder
 		if (ast.GetType() == typeof(ExprAst))
 			return Value.CreateConstNull(Type.Int1);
 		throw new Exception("Bob the builder can't build this ◁[<");
+	}
+
+	Value BuildExpr(CallExprAst ast)
+	{
+		Value ptr = BuildExpr(ast.ptr);
+		Value[] args = new Value[ast.args.Length];
+		for (int i = 0; i < args.Length; i++)
+		{
+			Value arg = BuildExpr(ast.args[i]);
+			if (ptr.IsAFunction != null)
+				arg = BuildCast(arg, ptr.Params[i].TypeOf);
+			args[i] = arg;
+		}
+
+		return llBuilder.BuildCall(ptr, args);
 	}
 
 	Value BuildExpr(UnExprAst ast)

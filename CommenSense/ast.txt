@@ -79,7 +79,7 @@ funcptr ->
 
 callExpr ->
 	- expr ptr
-	- expr[] params
+	- expr[] args
 
 varExpr ->
 	- str name
