@@ -14,8 +14,8 @@ partial record ImplAst(Enum vis, string name, FuncAst[] funcs): StmtAst;
 partial record StructAst(Enum vis, string name, FieldAst[] fields): StmtAst;
 partial record ClassAst(Enum vis, string name, FieldAst[] fields, FuncAst[] funcs): StmtAst;
 
-partial record DeclFuncAst(Enum vis, TypeAst retType, string name, ParamAst[] paramz): StmtAst;
-partial record FuncAst(Enum vis, TypeAst retType, string name, ParamAst[] paramz, StmtAst[] body): StmtAst;
+partial record DeclFuncAst(Enum vis, TypeAst retType, string name, ParamAst[] paramz, bool vaArg): StmtAst;
+partial record FuncAst(Enum vis, TypeAst retType, string name, ParamAst[] paramz, StmtAst[] body, bool vaArg): StmtAst;
 partial record DeclVarAst(Enum vis, TypeAst type, string name): StmtAst;
 partial record VarAst(Enum vis, TypeAst type, string name, ExprAst initializer): StmtAst;
 

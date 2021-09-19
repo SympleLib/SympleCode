@@ -16,6 +16,13 @@ static class _
 		tabCount--;
 		return "";
 	}
+
+	public static string PrintWithVaArgMaybeIHonestlyDontKnowWhatToCallThisFunction(bool vaArg)
+	{
+		if (vaArg)
+			return ", ...";
+		return string.Empty;
+	}
 }
 
 partial record ModuleAst
@@ -33,7 +40,7 @@ partial record FieldAst
 
 
 partial record FuncAst
-{ public override string ToString() => $"{vis} {retType} {name}[{string.Join<ParamAst>(", ", paramz)}] {{\n{IncTab()}{string.Join<StmtAst>($"\n{GetTabs()}", body)}{DecTab()}\n{GetTabs()}}}"; }
+{ public override string ToString() => $"{vis} {retType} {name}[{string.Join<ParamAst>(", ", paramz)}{PrintWithVaArgMaybeIHonestlyDontKnowWhatToCallThisFunction(vaArg)}] {{\n{IncTab()}{string.Join<StmtAst>($"\n{GetTabs()}", body)}{DecTab()}\n{GetTabs()}}}"; }
 
 partial record VarAst
 { public override string ToString() => $"{vis} {type} {name} = {initializer}"; }

@@ -29,12 +29,20 @@ partial class Parser
 	{
 		EnterScope();
 		const LLVMVisibility vis = LLVMDefaultVisibility;
+		bool vaArg = false;
 		List<ParamAst> paramz = new List<ParamAst>();
 		if (current.kind is TokenKind.LeftBracket)
 		{
 			Next();
 			while (current.kind is not TokenKind.Eof and not TokenKind.RightBracket)
 			{
+				if (current.kind is TokenKind.DotDotDot)
+				{
+					Next();
+					vaArg = true;
+					break;
+				}
+
 				ParamAst param = Param();
 				paramz.Add(param);
 				scope.DefineVar(param.name);
@@ -53,7 +61,7 @@ partial class Parser
 		Match(TokenKind.RightBrace);
 
 		scope.DefineFunc(name);
-		return new FuncAst(vis, retType, name, paramz.ToArray(), body.ToArray());
+		return new FuncAst(vis, retType, name, paramz.ToArray(), body.ToArray(), vaArg);
 	}
 
 	VarAst Var(TypeAst type, string name)
@@ -75,8 +83,16 @@ partial class Parser
 		const LLVMVisibility vis = LLVMDefaultVisibility;
 		List<ParamAst> paramz = new List<ParamAst>();
 		Match(TokenKind.LeftBracket);
+		bool vaArg = false;
 		while (current.kind is not TokenKind.Eof and not TokenKind.RightBracket)
 		{
+			if (current.kind is TokenKind.DotDotDot)
+			{
+				Next();
+				vaArg = true;
+				break;
+			}
+
 			ParamAst param = Param();
 			paramz.Add(param);
 			if (current.kind is not TokenKind.RightBracket)
@@ -86,7 +102,7 @@ partial class Parser
 		Match(TokenKind.RightBracket);
 
 		scope.DefineFunc(name);
-		return new DeclFuncAst(vis, retType, name, paramz.ToArray());
+		return new DeclFuncAst(vis, retType, name, paramz.ToArray(), vaArg);
 	}
 
 	DeclVarAst DeclVar(TypeAst type, string name)

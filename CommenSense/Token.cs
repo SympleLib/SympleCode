@@ -20,7 +20,10 @@ partial class Parser
 		SlashDash,
 		PercentDash,
 
+		And,
+
 		Eql,
+		DotDotDot,
 
 		LeftBrace,
 		RightBrace,

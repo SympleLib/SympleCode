@@ -10,8 +10,6 @@ partial class Builder
 	readonly ModuleAst module;
 	readonly LLVMModuleRef llModule;
 	readonly LLVMBuilderRef llBuilder;
-	readonly Value printfFn;
-	readonly Value fmt;
 
 	Value currentFunc;
 
@@ -41,11 +39,7 @@ partial class Builder
 		else if (ast is DeclVarAst declVar)
 			Build(declVar);
 		else if (ast is ExprStmtAst exprStmt)
-		{
-			Value val = BuildExpr(exprStmt.expr);
-			if (val.TypeOf != Type.Void)
-				llBuilder.BuildCall(printfFn, new Value[] { fmt, val });
-		}
+			BuildExpr(exprStmt.expr);
 		else
 			throw new Exception("Bob the builder can't build this ◁[<");
 	}
@@ -57,7 +51,7 @@ partial class Builder
 			paramTypes[i] = BuildType(ast.paramz[i].type);
 
 		Type retType = BuildType(ast.retType);
-		Type ty = Type.CreateFunction(retType, paramTypes);
+		Type ty = Type.CreateFunction(retType, paramTypes, ast.vaArg);
 		Value fn = llModule.AddFunction(ast.name, ty);
 		scope.Define(ast.name, fn);
 		LLVMBasicBlockRef entry = fn.AppendBasicBlock(string.Empty);
@@ -102,7 +96,7 @@ partial class Builder
 			paramTypes[i] = BuildType(ast.paramz[i].type);
 
 		Type retType = BuildType(ast.retType);
-		Type ty = Type.CreateFunction(retType, paramTypes);
+		Type ty = Type.CreateFunction(retType, paramTypes, ast.vaArg);
 		Value fn = llModule.AddFunction(ast.name, ty);
 		scope.Define(ast.name, fn);
 	}
@@ -123,6 +117,15 @@ partial class Builder
 			type = Type.CreatePointer(type, 0);
 
 		return type;
+	}
+
+	Value BuildPtr(ExprAst ast)
+	{
+		if (ast is FuncPtrAst funcExpr)
+			return scope.Find(funcExpr.funcName);
+		if (ast is VarExprAst varExpr)
+			return scope.Find(varExpr.varName);
+		throw new Exception("not a ptr D:{");
 	}
 
 	Value BuildExpr(ExprAst ast)
@@ -165,7 +168,7 @@ partial class Builder
 		for (int i = 0; i < args.Length; i++)
 		{
 			Value arg = BuildExpr(ast.args[i]);
-			if (ptr.IsAFunction != null)
+			if (ptr.IsAFunction != null && i < ptr.ParamsCount)
 				arg = BuildCast(arg, ptr.Params[i].TypeOf);
 			args[i] = arg;
 		}
@@ -181,6 +184,8 @@ partial class Builder
 		{
 		case LLVMFNeg:
 			return operand.TypeOf.IsFloat() ? llBuilder.BuildFNeg(operand) : llBuilder.BuildNeg(operand);
+		case LLVMAnd:
+			return BuildPtr(ast.operand);
 
 		default:
 			throw new Exception("bob the builders cannt build (nor spell)");

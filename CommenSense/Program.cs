@@ -9,10 +9,20 @@ using System.Runtime.InteropServices;
 using CommenSense;
 
 const string src = @"
+decl void scanf[char* fmt, ...]
+decl void printf[char* fmt, ...]
 decl void puts[char* str]
+decl void putchar[char c]
+
+decl char* malloc[int sz]
 
 void run {
-	puts['Hello, world!']
+	char* name = malloc[69]
+
+	puts['What is your name?']
+	scanf['%s', name]
+	printf['Hello, %s!', name]
+	putchar[10]
 }
 ";
 

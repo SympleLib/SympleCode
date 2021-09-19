@@ -5,6 +5,8 @@ partial class Parser
 	static readonly TokenKind[] unOps = {
 		TokenKind.Plus,
 		TokenKind.Minus,
+
+		TokenKind.And,
 	};
 
 	static Enum UnOpcode(TokenKind kind) =>
@@ -12,6 +14,7 @@ partial class Parser
 		{
 			TokenKind.Plus => LLVMAdd,
 			TokenKind.Minus => LLVMFNeg,
+			TokenKind.And => LLVMAnd,
 			_ => (LLVMOpcode) 0,
 		};
 
