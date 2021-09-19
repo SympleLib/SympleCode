@@ -12,7 +12,6 @@ const string src = @"
 decl void scanf[char* fmt, ...]
 decl void printf[char* fmt, ...]
 decl void puts[char* str]
-decl void putchar[char c]
 
 decl char* malloc[int sz]
 
@@ -21,8 +20,7 @@ void run {
 
 	puts['What is your name?']
 	scanf['%s', name]
-	printf['Hello, %s!', name]
-	putchar[10]
+	printf['Hello, %s!\n', name]
 }
 ";
 
