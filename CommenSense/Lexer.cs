@@ -85,7 +85,7 @@ partial class Parser
 		{
 			Next();
 			StringBuilder sb = new StringBuilder();
-			while (current is not '\'')
+			while (current is not '\'' and not '\0')
 			{
 				if (current is '\\')
 				{
@@ -130,6 +130,7 @@ partial class Parser
 				else
 					sb.Append(Next());
 			}
+
 			Next();
 			return new Token(TokenKind.Str, sb.ToString());
 		}
