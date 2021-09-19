@@ -21,22 +21,6 @@ partial class Builder
 		llModule = LLVMModuleRef.CreateWithName(module.name);
 		llBuilder = LLVMBuilderRef.Create(llModule.Context);
 		scope = new Scope(this);
-
-		printfFn = llModule.AddFunction("printf", Type.CreateFunction(Type.Void, new Type[] { Type.CreatePointer(Type.Int8, 0) }, true));
-
-		const string fmtStr = "%i\n";
-		Value[] values = new Value[fmtStr.Length + 1];
-		for (int i = 0; i < fmtStr.Length; i++)
-			values[i] = Value.CreateConstInt(Type.Int8, fmtStr[i]);
-		values[^1] = Value.CreateConstInt(Type.Int8, 0);
-		Value arr = Value.CreateConstArray(Type.Int8, values);
-
-		Value str = llModule.AddGlobal(arr.TypeOf, string.Empty);
-		str.Linkage = LLVMLinkage.LLVMPrivateLinkage;
-		str.IsGlobalConstant = true;
-		str.HasUnnamedAddr = true;
-		str.Initializer = arr;
-		fmt = llBuilder.BuildBitCast(str, Type.CreatePointer(Type.Int8, 0));
 	}
 
 	public LLVMModuleRef Build()
@@ -143,6 +127,8 @@ partial class Builder
 
 	Value BuildExpr(ExprAst ast)
 	{
+		if (ast is StrLiteralExprAst strLiteral)
+			return llBuilder.BuildGlobalString(strLiteral.value);
 		if (ast is IntLiteralExprAst intLiteral)
 		{
 			Type type = (uint) intLiteral.value == intLiteral.value ? Type.Int32 : Type.Int64;

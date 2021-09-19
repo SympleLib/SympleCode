@@ -7,6 +7,7 @@ partial class Parser
 		Unknown = -1,
 		Eof,
 
+		Str,
 		Int,
 		Float,
 		Identifier,

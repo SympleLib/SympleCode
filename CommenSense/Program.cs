@@ -9,21 +9,10 @@ using System.Runtime.InteropServices;
 using CommenSense;
 
 const string src = @"
-decl void putchar[char c]
+decl void puts[char* str]
 
 void run {
-	putchar[64 + 8]
-	putchar[64 + 5]
-	putchar[64 + 12]
-	putchar[64 + 12]
-	putchar[64 + 15]
-	putchar[32]
-	putchar[64 + 23]
-	putchar[64 + 15]
-	putchar[64 + 18]
-	putchar[64 + 12]
-	putchar[64 + 4]
-	putchar[10]
+	puts['Hello, world!']
 }
 ";
 

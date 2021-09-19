@@ -51,6 +51,8 @@ partial class Parser
 				return Num();
 			if (char.IsLetter(current))
 				return Identifier();
+			if (current is '\'')
+				return Str();
 			return Punctuator();
 		}
 
@@ -72,6 +74,16 @@ partial class Parser
 			}
 
 			return new Token(kind, src[start..pos]);
+		}
+
+		Token Str()
+		{
+			Next();
+			int start = pos;
+			while (current is not '\'')
+				Next();
+			Next();
+			return new Token(TokenKind.Str, src[start..(pos-1)]);
 		}
 
 		Token Identifier()
