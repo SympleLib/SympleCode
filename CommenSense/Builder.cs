@@ -59,7 +59,8 @@ partial class Builder
 		else if (ast is ExprStmtAst exprStmt)
 		{
 			Value val = BuildExpr(exprStmt.expr);
-			llBuilder.BuildCall(printfFn, new Value[] { fmt, val });
+			if (val.TypeOf != Type.Void)
+				llBuilder.BuildCall(printfFn, new Value[] { fmt, val });
 		}
 		else
 			throw new Exception("Bob the builder can't build this ◁[<");
