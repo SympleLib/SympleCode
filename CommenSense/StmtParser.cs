@@ -9,7 +9,7 @@ partial class Parser
 			Next();
 			TypeAst type = Type();
 			string name = Match(TokenKind.Identifier).text;
-			if (current.kind is TokenKind.LeftBracket)
+			if (current.kind is TokenKind.LeftParen)
 				return DeclFunc(retType: type, name);
 			return DeclVar(type, name);
 		}
@@ -17,7 +17,7 @@ partial class Parser
 		{
 			TypeAst type = Type();
 			string name = Match(TokenKind.Identifier).text;
-			if (current.kind is TokenKind.LeftBracket or TokenKind.LeftBrace)
+			if (current.kind is TokenKind.LeftParen or TokenKind.LeftBrace)
 				return Func(retType: type, name);
 			return Var(type, name);
 		}
@@ -31,10 +31,10 @@ partial class Parser
 		const LLVMVisibility vis = LLVMDefaultVisibility;
 		bool vaArg = false;
 		List<ParamAst> paramz = new List<ParamAst>();
-		if (current.kind is TokenKind.LeftBracket)
+		if (current.kind is TokenKind.LeftParen)
 		{
 			Next();
-			while (current.kind is not TokenKind.Eof and not TokenKind.RightBracket)
+			while (current.kind is not TokenKind.Eof and not TokenKind.RightParen)
 			{
 				if (current.kind is TokenKind.DotDotDot)
 				{
@@ -46,11 +46,11 @@ partial class Parser
 				ParamAst param = Param();
 				paramz.Add(param);
 				scope.DefineVar(param.name);
-				if (current.kind is not TokenKind.RightBracket)
+				if (current.kind is not TokenKind.RightParen)
 					Match(TokenKind.Comma);
 			}
 
-			Match(TokenKind.RightBracket);
+			Match(TokenKind.RightParen);
 		}
 
 		List<StmtAst> body = new List<StmtAst>();
@@ -82,9 +82,9 @@ partial class Parser
 	{
 		const LLVMVisibility vis = LLVMDefaultVisibility;
 		List<ParamAst> paramz = new List<ParamAst>();
-		Match(TokenKind.LeftBracket);
+		Match(TokenKind.LeftParen);
 		bool vaArg = false;
-		while (current.kind is not TokenKind.Eof and not TokenKind.RightBracket)
+		while (current.kind is not TokenKind.Eof and not TokenKind.RightParen)
 		{
 			if (current.kind is TokenKind.DotDotDot)
 			{
@@ -95,11 +95,11 @@ partial class Parser
 
 			ParamAst param = Param();
 			paramz.Add(param);
-			if (current.kind is not TokenKind.RightBracket)
+			if (current.kind is not TokenKind.RightParen)
 				Match(TokenKind.Comma);
 		}
 
-		Match(TokenKind.RightBracket);
+		Match(TokenKind.RightParen);
 
 		scope.DefineFunc(name);
 		return new DeclFuncAst(vis, retType, name, paramz.ToArray(), vaArg);

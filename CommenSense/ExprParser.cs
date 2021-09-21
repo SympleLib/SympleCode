@@ -73,19 +73,19 @@ partial class Parser
 	ExprAst PostExpr(ExprAst operand)
 	{
 	Loop:
-		if (current.kind is TokenKind.LeftBracket)
+		if (current.kind is TokenKind.LeftParen)
 		{
 			Next();
 
 			List<ExprAst> args = new List<ExprAst>();
-			while (current.kind is not TokenKind.Eof and not TokenKind.RightBracket)
+			while (current.kind is not TokenKind.Eof and not TokenKind.RightParen)
 			{
 				args.Add(Expr());
-				if (current.kind is not TokenKind.RightBracket)
+				if (current.kind is not TokenKind.RightParen)
 					Match(TokenKind.Comma);
 			}
 
-			Match(TokenKind.RightBracket);
+			Match(TokenKind.RightParen);
 			operand = new CallExprAst(operand, args.ToArray());
 			goto Loop;
 		}

@@ -29,6 +29,8 @@ partial class Parser
 		RightBrace,
 		LeftBracket,
 		RightBracket,
+		LeftParen,
+		RightParen,
 
 		Comma,
 
