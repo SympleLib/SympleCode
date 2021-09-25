@@ -4,6 +4,48 @@ namespace CommenSense;
 
 partial class Parser
 {
+	enum TokenKind
+	{
+		Unknown = -1,
+		Eof,
+
+		Str,
+		Int,
+		Char,
+		Float,
+		Identifier,
+
+		Plus,
+		Minus,
+		Star,
+		Slash,
+		Percent,
+		SlashDash,
+		PercentDash,
+
+		And,
+
+		Eql,
+		DotDotDot,
+
+		LeftBrace,
+		RightBrace,
+		LeftBracket,
+		RightBracket,
+		LeftParen,
+		RightParen,
+
+		Comma,
+
+
+		TrueKeyword,
+		FalseKeyword,
+
+		DeclKeyword,
+	}
+
+	record Token(TokenKind kind, string text);
+
 	class Lexer
 	{
 		const TokenKind punctuatorStart = TokenKind.Plus;
@@ -60,6 +102,8 @@ partial class Parser
 				return Identifier();
 			if (current is '\'')
 				return Str();
+			if (current is '`')
+				return Char();
 			return Punctuator();
 		}
 
@@ -135,6 +179,59 @@ partial class Parser
 
 			Next();
 			return new Token(TokenKind.Str, sb.ToString());
+		}
+
+		Token Char()
+		{
+			Next();
+			string text;
+
+			if (current is '\\')
+			{
+				Next();
+				switch (Next())
+				{
+				case '0':
+					text = "\0";
+					break;
+				case '\a':
+					text = "\a";
+					break;
+				case 'b':
+					text = "\b";
+					break;
+				case 'f':
+					text = "\f";
+					break;
+				case 'n':
+					text = "\n";
+					break;
+				case 'r':
+					text = "\r";
+					break;
+				case 't':
+					text = "\t";
+					break;
+				case 'v':
+					text = "\v";
+					break;
+				case '\\':
+					text = "\\";
+					break;
+				case '\'':
+					text = "\'";
+					break;
+
+				default:
+					throw new Exception("Unrecognized escape sequence");
+				}
+			}
+			else
+				text = Next().ToString();
+
+			if (Next() is not '`')
+				throw new Exception("literal can only have one char");
+			return new Token(TokenKind.Char, text);
 		}
 
 		Token Identifier()

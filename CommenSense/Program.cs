@@ -15,6 +15,7 @@ using CommenSense;
 const string src = @"
 decl void scanf(char* fmt, ...)
 decl void printf(char* fmt, ...)
+decl void putchar(char c)
 decl void puts(char* str)
 
 decl char* malloc(int sz)
@@ -24,7 +25,9 @@ void run {
 }
 
 void doTheThing {
-	puts('wassup')
+	putchar(`H`)
+	putchar(`i`)
+	putchar(`\0`)
 }
 ";
 

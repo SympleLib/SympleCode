@@ -113,6 +113,8 @@ partial class Parser
 		{
 		case TokenKind.Str:
 			return new StrLiteralExprAst(Next().text);
+		case TokenKind.Char:
+			return new CharLiteralExprAst(Next().text[0], 1);
 		case TokenKind.Int:
 			return new IntLiteralExprAst(ulong.Parse(Next().text));
 		case TokenKind.Float:

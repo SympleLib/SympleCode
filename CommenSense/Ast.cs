@@ -28,6 +28,7 @@ partial record LiteralExprAst(): ExprAst;
 partial record IntLiteralExprAst(ulong value): LiteralExprAst;
 partial record BoolLiteralExprAst(bool value): LiteralExprAst;
 partial record StrLiteralExprAst(string value): LiteralExprAst;
+partial record CharLiteralExprAst(ulong value, int nBits): LiteralExprAst;
 partial record FloatLiteralExprAst(double value): LiteralExprAst;
 
 partial record CallExprAst(ExprAst ptr, ExprAst[] args): ExprAst;

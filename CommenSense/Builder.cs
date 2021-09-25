@@ -1,7 +1,5 @@
 ﻿namespace CommenSense;
 
-using System.Xml.Linq;
-
 using Type = LLVMTypeRef;
 using Value = LLVMValueRef;
 
