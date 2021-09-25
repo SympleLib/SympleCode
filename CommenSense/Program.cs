@@ -1,6 +1,10 @@
 ﻿global using LLVMSharp;
 global using LLVMSharp.Interop;
 
+global using System;
+global using System.Collections.Generic;
+global using System.Linq;
+
 global using static LLVMSharp.Interop.LLVMOpcode;
 global using static LLVMSharp.Interop.LLVMVisibility;
 
