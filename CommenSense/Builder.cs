@@ -24,6 +24,8 @@ partial class Builder
 	public LLVMModuleRef Build()
 	{
 		foreach (StmtAst member in module.members)
+			Decl(member);
+		foreach (StmtAst member in module.members)
 			Build(member);
 		return llModule;
 	}
@@ -44,7 +46,13 @@ partial class Builder
 			throw new Exception("Bob the builder can't build this ◁[<");
 	}
 
-	void Build(FuncAst ast)
+	void Decl(StmtAst ast)
+	{
+		if (ast is FuncAst func)
+			Decl(func);
+	}
+
+	void Decl(FuncAst ast)
 	{
 		Type[] paramTypes = new Type[ast.paramz.Length];
 		for (int i = 0; i < ast.paramz.Length; i++)
@@ -54,6 +62,12 @@ partial class Builder
 		Type ty = Type.CreateFunction(retType, paramTypes, ast.vaArg);
 		Value fn = llModule.AddFunction(ast.name, ty);
 		scope.Define(ast.name, fn);
+	}
+
+	void Build(FuncAst ast)
+	{
+		Value fn = scope.Find(ast.name);
+		Type[] paramTypes = fn.TypeOf.ParamTypes;
 		LLVMBasicBlockRef entry = fn.AppendBasicBlock(string.Empty);
 		llBuilder.PositionAtEnd(entry);
 		currentFunc = fn;
@@ -65,6 +79,9 @@ partial class Builder
 			llBuilder.BuildStore(fn.Params[i], ptr);
 			scope.Define(ast.paramz[i].name, ptr);
 		}
+
+		foreach (StmtAst stmt in ast.body)
+			Decl(stmt);
 		foreach (StmtAst stmt in ast.body)
 			Build(stmt);
 		ExitScope();

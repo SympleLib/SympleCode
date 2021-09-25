@@ -20,11 +20,11 @@ decl void puts(char* str)
 decl char* malloc(int sz)
 
 void run {
-	char* name = malloc(69)
+	doTheThing()
+}
 
-	puts('What is your name?')
-	scanf('%s', name)
-	printf('Hello, %s!\n', name)
+void doTheThing {
+	puts('wassup')
 }
 ";
 
