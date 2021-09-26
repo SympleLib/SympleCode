@@ -39,6 +39,10 @@ partial record FieldAst
 { public override string ToString() => $"{vis} {type} {name} = {initializer}"; }
 
 
+partial record StructAst
+{ public override string ToString() => $"{vis} struct {name} {{\n{IncTab()}{string.Join<FieldAst>(",\n" + GetTabs(), fields)}{DecTab()}\n{GetTabs()}}}"; }
+
+
 partial record DeclFuncAst
 { public override string ToString() => $"{vis} decl {retType} {name}[{string.Join<ParamAst>(", ", paramz)}{PrintWithVaArgMaybeIHonestlyDontKnowWhatToCallThisFunction(vaArg)}]"; }
 

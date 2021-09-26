@@ -31,10 +31,9 @@ LLVMModuleRef? CompileSingle(string path)
 	if (!llModule.TryVerify(LLVMVerifierFailureAction.LLVMPrintMessageAction, out string error))
 	{
 		Console.WriteLine($"Error: {error}");
+		Console.WriteLine("---");
 		return null;
 	}
-
-	Console.WriteLine("---");
 
 	return llModule;
 }
@@ -80,7 +79,7 @@ LLVMExecutionEngineRef? Compile(string path, params string[] paths)
 	return engine;
 }
 
-LLVMExecutionEngineRef? engine = Compile("samples/test.sy", "samples/test2.sy");
+LLVMExecutionEngineRef? engine = Compile("samples/test.sy");
 if (engine is null)
 	goto End;
 

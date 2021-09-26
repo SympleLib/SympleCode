@@ -47,7 +47,7 @@ partial class Parser
 	ParamAst Param()
 	{
 		TypeAst type = Type();
-		string name = Match(TokenKind.Identifier).text;
+		string name = current.kind is TokenKind.Identifier ? Next().text : string.Empty;
 		ExprAst defaultExpr = new ExprAst();
 		if (current.kind is TokenKind.Eql)
 		{

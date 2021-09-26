@@ -1,9 +1,11 @@
-decl void doTheThing()
+decl void puts(char*)
 
-char x = 69
+struct Test {
+	int x,
+	int y,
+	int z,
+}
 
 void run {
-	doTheThing()
-	x = 101
-	doTheThing()
+	puts('Hello, world!')
 }
