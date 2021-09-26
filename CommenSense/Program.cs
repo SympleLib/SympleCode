@@ -13,10 +13,9 @@ using System.Runtime.InteropServices;
 
 using CommenSense;
 
-LLVMModuleRef llMod1, llMod2;
-
+LLVMModuleRef? CompileSingle(string path)
 {
-	string src = File.ReadAllText("samples/test.sy");
+	string src = File.ReadAllText(path);
 	Parser parser = new Parser(src);
 	ModuleAst ast = parser.Parse();
 	Console.WriteLine(ast);
@@ -24,57 +23,68 @@ LLVMModuleRef llMod1, llMod2;
 	Console.WriteLine("---");
 
 	Builder builder = new Builder(ast);
-	llMod1 = builder.Build();
-	Console.WriteLine(llMod1);
-
-	Console.WriteLine("---");
-}
-
-{
-	string src = File.ReadAllText("samples/test2.sy");
-	Parser parser = new Parser(src);
-	ModuleAst ast = parser.Parse();
-	Console.WriteLine(ast);
+	LLVMModuleRef llModule = builder.Build();
+	Console.WriteLine(llModule);
 
 	Console.WriteLine("---");
 
-	Builder builder = new Builder(ast);
-	llMod2 = builder.Build();
-	Console.WriteLine(llMod2);
+	if (!llModule.TryVerify(LLVMVerifierFailureAction.LLVMPrintMessageAction, out string error))
+	{
+		Console.WriteLine($"Error: {error}");
+		return null;
+	}
 
 	Console.WriteLine("---");
+
+	return llModule;
 }
 
-if (!llMod1.TryVerify(LLVMVerifierFailureAction.LLVMPrintMessageAction, out string error))
+LLVMExecutionEngineRef? Compile(string path, params string[] paths)
 {
-	Console.WriteLine($"Error: {error}");
-	goto End;
+	LLVMModuleRef llModule;
+	LLVMModuleRef[] llMods = new LLVMModuleRef[paths.Length];
+
+	LLVMModuleRef? tmp = CompileSingle(path);
+	if (tmp is null)
+		return null;
+
+	llModule = tmp.Value;
+
+	for (int i = 0; i < paths.Length; i++)
+	{
+		tmp = CompileSingle(paths[i]);
+		if (tmp is null)
+			return null;
+
+		llMods[i] = tmp.Value;
+	}
+
+	LLVM.LinkInMCJIT();
+
+	LLVM.InitializeX86TargetMC();
+	LLVM.InitializeX86Target();
+	LLVM.InitializeX86TargetInfo();
+	LLVM.InitializeX86AsmParser();
+	LLVM.InitializeX86AsmPrinter();
+
+	LLVMMCJITCompilerOptions options = new LLVMMCJITCompilerOptions { NoFramePointerElim = 1 };
+	if (!llModule.TryCreateMCJITCompiler(out LLVMExecutionEngineRef engine, ref options, out string error))
+	{
+		Console.WriteLine($"Error: {error}");
+		return null;
+	}
+
+	foreach (LLVMModuleRef llMod in llMods)
+		engine.AddModule(llMod);
+
+	return engine;
 }
 
-if (!llMod2.TryVerify(LLVMVerifierFailureAction.LLVMPrintMessageAction, out error))
-{
-	Console.WriteLine($"Error: {error}");
+LLVMExecutionEngineRef? engine = Compile("samples/test.sy", "samples/test2.sy");
+if (engine is null)
 	goto End;
-}
 
-LLVM.LinkInMCJIT();
-
-LLVM.InitializeX86TargetMC();
-LLVM.InitializeX86Target();
-LLVM.InitializeX86TargetInfo();
-LLVM.InitializeX86AsmParser();
-LLVM.InitializeX86AsmPrinter();
-
-LLVMMCJITCompilerOptions options = new LLVMMCJITCompilerOptions { NoFramePointerElim = 1 };
-if (!llMod1.TryCreateMCJITCompiler(out LLVMExecutionEngineRef engine, ref options, out error))
-{
-	Console.WriteLine($"Error: {error}");
-	goto End;
-}
-
-engine.AddModule(llMod2);
-
-var runFn = (Run) Marshal.GetDelegateForFunctionPointer(engine.GetPointerToGlobal(llMod1.GetNamedFunction("run")), typeof(Run));
+var runFn = (Run) Marshal.GetDelegateForFunctionPointer((IntPtr) engine?.GetFunctionAddress("run"), typeof(Run));
 runFn();
 
 End:
