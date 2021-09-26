@@ -1,0 +1,9 @@
+decl void doTheThing()
+
+char x = 69
+
+void run {
+	doTheThing()
+	x = 101
+	doTheThing()
+}

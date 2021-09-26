@@ -1,4 +1,0 @@
-import 'Libc.sy';
-
-void run() ->
-	print('Hello, world!');

@@ -8,48 +8,50 @@ global using System.Linq;
 global using static LLVMSharp.Interop.LLVMOpcode;
 global using static LLVMSharp.Interop.LLVMVisibility;
 
+using System.IO;
 using System.Runtime.InteropServices;
 
 using CommenSense;
 
-const string src = @"
-decl void scanf(char* fmt, ...)
-decl void printf(char* fmt, ...)
-decl void putchar(char c)
-decl void puts(char* str)
+LLVMModuleRef llMod1, llMod2;
 
-decl char* malloc(int sz)
+{
+	string src = File.ReadAllText("samples/test.sy");
+	Parser parser = new Parser(src);
+	ModuleAst ast = parser.Parse();
+	Console.WriteLine(ast);
 
-char x = 69
+	Console.WriteLine("---");
 
-void run {
-	doTheThing()
-	x = 101
-	doTheThing()
+	Builder builder = new Builder(ast);
+	llMod1 = builder.Build();
+	Console.WriteLine(llMod1);
+
+	Console.WriteLine("---");
 }
 
-void doTheThing {
-	putchar(`H`)
-	putchar(`i`)
-	putchar(` `)
-	putchar(x)
-	putchar(`\n`)
+{
+	string src = File.ReadAllText("samples/test2.sy");
+	Parser parser = new Parser(src);
+	ModuleAst ast = parser.Parse();
+	Console.WriteLine(ast);
+
+	Console.WriteLine("---");
+
+	Builder builder = new Builder(ast);
+	llMod2 = builder.Build();
+	Console.WriteLine(llMod2);
+
+	Console.WriteLine("---");
 }
-";
 
-Parser parser = new Parser(src);
-ModuleAst ast = parser.Parse();
-Console.WriteLine(ast);
+if (!llMod1.TryVerify(LLVMVerifierFailureAction.LLVMPrintMessageAction, out string error))
+{
+	Console.WriteLine($"Error: {error}");
+	goto End;
+}
 
-Console.WriteLine("---");
-
-Builder builder = new Builder(ast);
-LLVMModuleRef llModule = builder.Build();
-Console.WriteLine(llModule);
-
-Console.WriteLine("---");
-
-if (!llModule.TryVerify(LLVMVerifierFailureAction.LLVMPrintMessageAction, out string error))
+if (!llMod2.TryVerify(LLVMVerifierFailureAction.LLVMPrintMessageAction, out error))
 {
 	Console.WriteLine($"Error: {error}");
 	goto End;
@@ -64,13 +66,15 @@ LLVM.InitializeX86AsmParser();
 LLVM.InitializeX86AsmPrinter();
 
 LLVMMCJITCompilerOptions options = new LLVMMCJITCompilerOptions { NoFramePointerElim = 1 };
-if (!llModule.TryCreateMCJITCompiler(out LLVMExecutionEngineRef engine, ref options, out error))
+if (!llMod1.TryCreateMCJITCompiler(out LLVMExecutionEngineRef engine, ref options, out error))
 {
 	Console.WriteLine($"Error: {error}");
 	goto End;
 }
 
-var runFn = (Run) Marshal.GetDelegateForFunctionPointer(engine.GetPointerToGlobal(llModule.GetNamedFunction("run")), typeof(Run));
+engine.AddModule(llMod2);
+
+var runFn = (Run) Marshal.GetDelegateForFunctionPointer(engine.GetPointerToGlobal(llMod1.GetNamedFunction("run")), typeof(Run));
 runFn();
 
 End:

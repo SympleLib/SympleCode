@@ -36,8 +36,7 @@ partial class Builder
 			Build(var);
 		else if(ast is DeclFuncAst declFunc)
 			Build(declFunc);
-		else if (ast is DeclVarAst declVar)
-			Build(declVar);
+		else if (ast is DeclVarAst) { }
 		else if (ast is ExprStmtAst exprStmt)
 			BuildExpr(exprStmt.expr);
 		else
@@ -46,10 +45,19 @@ partial class Builder
 
 	void Decl(StmtAst ast)
 	{
-		if (ast is FuncAst func)
+		if (ast is DeclVarAst declVar)
+			Decl(declVar);
+		else if (ast is FuncAst func)
 			Decl(func);
 		else if (ast is VarAst var)
 			Decl(var);
+	}
+
+	void Decl(DeclVarAst ast)
+	{
+		Type type = BuildType(ast.type);
+		Value var = llModule.AddGlobal(type, ast.name);
+		scope.Define(ast.name, var);
 	}
 
 	void Decl(FuncAst ast)
@@ -68,7 +76,6 @@ partial class Builder
 	{
 		Type type = BuildType(ast.type);
 		Value var = llModule.AddGlobal(type, ast.name);
-		var.Initializer = BuildCast(BuildExpr(ast.initializer), type);
 		scope.Define(ast.name, var);
 	}
 
