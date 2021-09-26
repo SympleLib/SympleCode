@@ -1,0 +1,6 @@
+﻿namespace CommenSense;
+
+class Compiler
+{
+	
+}

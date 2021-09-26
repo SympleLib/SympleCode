@@ -39,8 +39,14 @@ partial record FieldAst
 { public override string ToString() => $"{vis} {type} {name} = {initializer}"; }
 
 
+partial record DeclFuncAst
+{ public override string ToString() => $"{vis} decl {retType} {name}[{string.Join<ParamAst>(", ", paramz)}{PrintWithVaArgMaybeIHonestlyDontKnowWhatToCallThisFunction(vaArg)}]"; }
+
 partial record FuncAst
 { public override string ToString() => $"{vis} {retType} {name}[{string.Join<ParamAst>(", ", paramz)}{PrintWithVaArgMaybeIHonestlyDontKnowWhatToCallThisFunction(vaArg)}] {{\n{IncTab()}{string.Join<StmtAst>($"\n{GetTabs()}", body)}{DecTab()}\n{GetTabs()}}}"; }
+
+partial record DeclVarAst
+{ public override string ToString() => $"{vis} decl {type} {name}"; }
 
 partial record VarAst
 { public override string ToString() => $"{vis} {type} {name} = {initializer}"; }
@@ -60,6 +66,9 @@ partial record BoolLiteralExprAst
 { public override string ToString() => $"{value}"; }
 
 partial record StrLiteralExprAst
+{ public override string ToString() => $"'{value}'"; }
+
+partial record CharLiteralExprAst
 { public override string ToString() => $"`{value}`"; }
 
 partial record FloatLiteralExprAst
