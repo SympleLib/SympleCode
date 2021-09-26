@@ -27,7 +27,7 @@ void run {
 void doTheThing {
 	putchar(`H`)
 	putchar(`i`)
-	putchar(`\0`)
+	putchar(`\n`)
 }
 ";
 

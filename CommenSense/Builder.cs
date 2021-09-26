@@ -147,6 +147,10 @@ partial class Builder
 	{
 		if (ast is StrLiteralExprAst strLiteral)
 			return llBuilder.BuildGlobalString(strLiteral.value);
+		if (ast is CharLiteralExprAst charLiteral)
+		{
+			return Value.CreateConstInt(Type.CreateInt((uint) charLiteral.nBits), charLiteral.value);
+		}
 		if (ast is IntLiteralExprAst intLiteral)
 		{
 			Type type = (uint) intLiteral.value == intLiteral.value ? Type.Int32 : Type.Int64;
