@@ -21,14 +21,16 @@ partial class Parser
 	static int BiPrecendence(TokenKind kind) =>
 		   kind switch
 		   {
-			   TokenKind.Star or TokenKind.Slash or TokenKind.Percent or TokenKind.SlashDash or TokenKind.PercentDash => 2,
-			   TokenKind.Plus or TokenKind.Minus => 1,
+			   TokenKind.Star or TokenKind.Slash or TokenKind.Percent or TokenKind.SlashDash or TokenKind.PercentDash => 3,
+			   TokenKind.Plus or TokenKind.Minus => 2,
+			   TokenKind.Eql => 1,
 			   _ => 0,
 		   };
 
 	static Enum BiOpcode(TokenKind kind) =>
 		kind switch
 		{
+			TokenKind.Eql => TokenKind.Eql,
 			TokenKind.Plus => LLVMAdd,
 			TokenKind.Minus => LLVMSub,
 			TokenKind.Star => LLVMMul,

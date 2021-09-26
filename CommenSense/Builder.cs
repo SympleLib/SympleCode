@@ -48,6 +48,8 @@ partial class Builder
 	{
 		if (ast is FuncAst func)
 			Decl(func);
+		else if (ast is VarAst var)
+			Decl(var);
 	}
 
 	void Decl(FuncAst ast)
@@ -60,6 +62,14 @@ partial class Builder
 		Type ty = Type.CreateFunction(retType, paramTypes, ast.vaArg);
 		Value fn = llModule.AddFunction(ast.name, ty);
 		scope.Define(ast.name, fn);
+	}
+
+	void Decl(VarAst ast)
+	{
+		Type type = BuildType(ast.type);
+		Value var = llModule.AddGlobal(type, ast.name);
+		var.Initializer = BuildCast(BuildExpr(ast.initializer), type);
+		scope.Define(ast.name, var);
 	}
 
 	void Build(FuncAst ast)
@@ -92,7 +102,7 @@ partial class Builder
 
 		if (currentFunc == null)
 		{
-			Value var = llModule.AddGlobal(type, ast.name);
+			Value var = scope.Find(ast.name);
 			var.Initializer = BuildCast(BuildExpr(ast.initializer), type);
 		}
 		else
@@ -213,6 +223,15 @@ partial class Builder
 
 	Value BuildExpr(BiExprAst ast)
 	{
+		if (ast.op is TokenKind.Eql)
+		{
+			Value ptr = BuildPtr(ast.left);
+			Value val = BuildCast(BuildExpr(ast.right), ptr.TypeOf.ElementType);
+
+			llBuilder.BuildStore(val, ptr);
+			return val;
+		}
+
 		Value left = BuildExpr(ast.left);
 		Value right = BuildExpr(ast.right);
 

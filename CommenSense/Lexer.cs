@@ -2,48 +2,48 @@
 
 namespace CommenSense;
 
+enum TokenKind
+{
+	Unknown = -1,
+	Eof,
+
+	Str,
+	Int,
+	Char,
+	Float,
+	Identifier,
+
+	Plus,
+	Minus,
+	Star,
+	Slash,
+	Percent,
+	SlashDash,
+	PercentDash,
+
+	And,
+
+	Eql,
+	DotDotDot,
+
+	LeftBrace,
+	RightBrace,
+	LeftBracket,
+	RightBracket,
+	LeftParen,
+	RightParen,
+
+	Comma,
+
+
+	TrueKeyword,
+	FalseKeyword,
+
+	DeclKeyword,
+}
+
 partial class Parser
 {
-	enum TokenKind
-	{
-		Unknown = -1,
-		Eof,
-
-		Str,
-		Int,
-		Char,
-		Float,
-		Identifier,
-
-		Plus,
-		Minus,
-		Star,
-		Slash,
-		Percent,
-		SlashDash,
-		PercentDash,
-
-		And,
-
-		Eql,
-		DotDotDot,
-
-		LeftBrace,
-		RightBrace,
-		LeftBracket,
-		RightBracket,
-		LeftParen,
-		RightParen,
-
-		Comma,
-
-
-		TrueKeyword,
-		FalseKeyword,
-
-		DeclKeyword,
-	}
-
 	record Token(TokenKind kind, string text);
 
 	class Lexer

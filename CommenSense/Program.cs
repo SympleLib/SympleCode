@@ -20,13 +20,19 @@ decl void puts(char* str)
 
 decl char* malloc(int sz)
 
+char x = 69
+
 void run {
+	doTheThing()
+	x = 101
 	doTheThing()
 }
 
 void doTheThing {
 	putchar(`H`)
 	putchar(`i`)
+	putchar(` `)
+	putchar(x)
 	putchar(`\n`)
 }
 ";
