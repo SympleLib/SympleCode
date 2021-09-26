@@ -1,6 +1,0 @@
-﻿namespace CommenSense;
-
-class Compiler
-{
-	
-}
