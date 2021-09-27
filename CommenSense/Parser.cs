@@ -33,7 +33,7 @@ partial class Parser
 
 	TypeAst Type()
 	{
-		string typeBase = Match(TokenKind.Identifier).text;
+		string typeBase = Name();
 		int ptrCount = 0;
 		while (current.kind is TokenKind.Star)
 		{
@@ -58,6 +58,22 @@ partial class Parser
 		return new ParamAst(type, name, defaultExpr);
 	}
 
+	FieldAst Field()
+	{
+		const LLVMVisibility vis = LLVMDefaultVisibility;
+
+		TypeAst type = Type();
+		string name = current.kind is TokenKind.Identifier ? Next().text : string.Empty;
+		ExprAst initializer = new ExprAst();
+		if (current.kind is TokenKind.Eql)
+		{
+			Next();
+			initializer = Expr();
+		}
+
+		return new FieldAst(vis, type, name, initializer);
+	}
+
 	Token Peek(int offset = 0)
 	{
 		int i = pos + offset;
@@ -78,4 +94,7 @@ partial class Parser
 		pos++;
 		return prev;
 	}
+
+	string Name() =>
+		Match(TokenKind.Identifier).text;
 }

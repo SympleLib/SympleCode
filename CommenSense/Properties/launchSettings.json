@@ -3,7 +3,7 @@
     "CommenSense": {
       "commandName": "Project",
       "workingDirectory": "$(SolutionDir)",
-      "nativeDebugging": false
+      "nativeDebugging": true
     }
   }
 }

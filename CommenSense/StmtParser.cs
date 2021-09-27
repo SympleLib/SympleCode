@@ -4,11 +4,13 @@ partial class Parser
 {
 	StmtAst Stmt()
 	{
+		if (current.kind is TokenKind.StructKeyword)
+			return Struct();
 		if (current.kind is TokenKind.DeclKeyword)
 		{
 			Next();
 			TypeAst type = Type();
-			string name = Match(TokenKind.Identifier).text;
+			string name = Name();
 			if (current.kind is TokenKind.LeftParen)
 				return DeclFunc(retType: type, name);
 			return DeclVar(type, name);
@@ -16,13 +18,34 @@ partial class Parser
 		if (current.kind is TokenKind.Identifier && !(scope.VarExists(current.text) || scope.FuncExists(current.text)) && next.kind is TokenKind.Star or TokenKind.Identifier)
 		{
 			TypeAst type = Type();
-			string name = Match(TokenKind.Identifier).text;
+			string name = Name();
 			if (current.kind is TokenKind.LeftParen or TokenKind.LeftBrace)
 				return Func(retType: type, name);
 			return Var(type, name);
 		}
 
 		return ExprStmt();
+	}
+
+	StructAst Struct()
+	{
+		const LLVMVisibility vis = LLVMDefaultVisibility;
+
+		Match(TokenKind.StructKeyword);
+		string name = Name();
+		Match(TokenKind.LeftBrace);
+
+		List<FieldAst> fields = new List<FieldAst>();
+		while (current.kind is not TokenKind.Eof and not TokenKind.RightBrace)
+		{
+			fields.Add(Field());
+			if (current.kind is not TokenKind.RightBrace)
+				Match(TokenKind.Comma);
+		}
+
+		Match(TokenKind.RightBrace);
+
+		return new StructAst(vis, name, fields.ToArray());
 	}
 
 	FuncAst Func(TypeAst retType, string name)

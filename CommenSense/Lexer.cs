@@ -24,6 +24,7 @@ enum TokenKind
 	And,
 
 	Eql,
+	Dot,
 	DotDotDot,
 
 	LeftBrace,
@@ -40,6 +41,7 @@ enum TokenKind
 	FalseKeyword,
 
 	DeclKeyword,
+	StructKeyword,
 }
 
 partial class Parser
@@ -61,6 +63,7 @@ partial class Parser
 			"&",
 
 			"=",
+			".",
 			"...",
 
 			"{",
@@ -79,6 +82,7 @@ partial class Parser
 			"false",
 
 			"decl",
+			"struct",
 		};
 
 		readonly string src;

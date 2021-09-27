@@ -40,7 +40,17 @@ partial record FieldAst
 
 
 partial record StructAst
-{ public override string ToString() => $"{vis} struct {name} {{\n{IncTab()}{string.Join<FieldAst>(",\n" + GetTabs(), fields)}{DecTab()}\n{GetTabs()}}}"; }
+{
+	public uint GetField(string name)
+	{
+		int i = Array.FindIndex(fields, field => field.name == name);
+		if (i == -1)
+			throw new Exception("we ain't got dat field");
+		return (uint) i;
+	}
+
+	public override string ToString() => $"{vis} struct {name} {{\n{IncTab()}{string.Join<FieldAst>("\n" + GetTabs(), fields)}{DecTab()}\n{GetTabs()}}}";
+}
 
 
 partial record DeclFuncAst

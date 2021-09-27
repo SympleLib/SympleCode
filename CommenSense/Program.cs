@@ -79,11 +79,12 @@ LLVMExecutionEngineRef? Compile(string path, params string[] paths)
 	return engine;
 }
 
-LLVMExecutionEngineRef? engine = Compile("samples/test.sy");
-if (engine is null)
+LLVMExecutionEngineRef? _engine = Compile("samples/test.sy");
+if (_engine is null)
 	goto End;
 
-var runFn = (Run) Marshal.GetDelegateForFunctionPointer((IntPtr) engine?.GetFunctionAddress("run"), typeof(Run));
+var engine = _engine.Value;
+var runFn = (Run) Marshal.GetDelegateForFunctionPointer((IntPtr) engine.GetFunctionAddress("run"), typeof(Run));
 runFn();
 
 End:

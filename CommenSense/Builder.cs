@@ -34,9 +34,10 @@ partial class Builder
 			Build(func);
 		else if (ast is VarAst var)
 			Build(var);
-		else if(ast is DeclFuncAst declFunc)
+		else if (ast is DeclFuncAst declFunc)
 			Build(declFunc);
 		else if (ast is DeclVarAst) { }
+		else if (ast is StructAst) { }
 		else if (ast is ExprStmtAst exprStmt)
 			BuildExpr(exprStmt.expr);
 		else
@@ -51,6 +52,8 @@ partial class Builder
 			Decl(func);
 		else if (ast is VarAst var)
 			Decl(var);
+		else if (ast is StructAst ztruct)
+			Decl(ztruct);
 	}
 
 	void Decl(DeclVarAst ast)
@@ -67,16 +70,29 @@ partial class Builder
 			paramTypes[i] = BuildType(ast.paramz[i].type);
 
 		Type retType = BuildType(ast.retType);
-		Type ty = Type.CreateFunction(retType, paramTypes, ast.vaArg);
-		Value fn = llModule.AddFunction(ast.name, ty);
-		scope.Define(ast.name, fn);
+		Type type = Type.CreateFunction(retType, paramTypes, ast.vaArg);
+		Value func = llModule.AddFunction(ast.name, type);
+		scope.Define(ast.name, func);
 	}
 
 	void Decl(VarAst ast)
 	{
+		if (currentFunc != null)
+			return;
+
 		Type type = BuildType(ast.type);
 		Value var = llModule.AddGlobal(type, ast.name);
 		scope.Define(ast.name, var);
+	}
+
+	void Decl(StructAst ast)
+	{
+		Type type = llModule.Context.CreateNamedStruct(ast.name);
+		Type[] elTypes = new Type[ast.fields.Length];
+		for (int i = 0; i < elTypes.Length; i++)
+			elTypes[i] = BuildType(ast.fields[i].type);
+		type.StructSetBody(elTypes, false);
+		scope.Define(ast.name, ast);
 	}
 
 	void Build(FuncAst ast)
@@ -157,7 +173,17 @@ partial class Builder
 			return scope.Find(funcExpr.funcName);
 		if (ast is VarExprAst varExpr)
 			return scope.Find(varExpr.varName);
+		if (ast is MemberExprAst memberExpr)
+			return BuildPtr(memberExpr);
 		throw new Exception("not a ptr D:{");
+	}
+
+	Value BuildPtr(MemberExprAst ast)
+	{
+		Value container = BuildPtr(ast.container);
+		StructAst ztruct = scope.GetStruct(container.TypeOf.ElementType.StructName);
+		uint i = ztruct.GetField(ast.memberName);
+		return llBuilder.BuildStructGEP(container, i);
 	}
 
 	Value BuildExpr(ExprAst ast)
@@ -187,6 +213,8 @@ partial class Builder
 			return llBuilder.BuildLoad(scope.Find(varExpr.varName));
 		if (ast is CallExprAst callExpr)
 			return BuildExpr(callExpr);
+		if (ast is MemberExprAst memberExpr)
+			return BuildExpr(memberExpr);
 
 		if (ast is UnExprAst unExpr)
 			return BuildExpr(unExpr);
@@ -210,6 +238,14 @@ partial class Builder
 		}
 
 		return llBuilder.BuildCall(ptr, args);
+	}
+
+	Value BuildExpr(MemberExprAst ast)
+	{
+		Value container = BuildPtr(ast.container);
+		StructAst ztruct = scope.GetStruct(container.TypeOf.ElementType.StructName);
+		uint i = ztruct.GetField(ast.memberName);
+		return llBuilder.BuildLoad(llBuilder.BuildStructGEP(container, i));
 	}
 
 	Value BuildExpr(UnExprAst ast)

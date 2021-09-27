@@ -21,6 +21,7 @@ partial class Parser
 	static int BiPrecendence(TokenKind kind) =>
 		   kind switch
 		   {
+			   TokenKind.Dot => 3,
 			   TokenKind.Star or TokenKind.Slash or TokenKind.Percent or TokenKind.SlashDash or TokenKind.PercentDash => 3,
 			   TokenKind.Plus or TokenKind.Minus => 2,
 			   TokenKind.Eql => 1,
@@ -30,7 +31,7 @@ partial class Parser
 	static Enum BiOpcode(TokenKind kind) =>
 		kind switch
 		{
-			TokenKind.Eql => TokenKind.Eql,
+			TokenKind.Eql or TokenKind.Dot => kind,
 			TokenKind.Plus => LLVMAdd,
 			TokenKind.Minus => LLVMSub,
 			TokenKind.Star => LLVMMul,
@@ -91,6 +92,13 @@ partial class Parser
 			operand = new CallExprAst(operand, args.ToArray());
 			goto Loop;
 		}
+		else if (current.kind is TokenKind.Dot)
+		{
+			Next();
+			string memberName = Name();
+			operand = new MemberExprAst(operand, memberName);
+			goto Loop;
+		}
 
 		return operand;
 	}
@@ -116,7 +124,7 @@ partial class Parser
 		case TokenKind.Str:
 			return new StrLiteralExprAst(Next().text);
 		case TokenKind.Char:
-			return new CharLiteralExprAst((ulong) Next().text[0], 8);
+			return new CharLiteralExprAst(Next().text[0], 8);
 		case TokenKind.Int:
 			return new IntLiteralExprAst(ulong.Parse(Next().text));
 		case TokenKind.Float:

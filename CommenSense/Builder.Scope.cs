@@ -16,12 +16,25 @@ partial class Builder
 	{
 		public readonly Builder builder;
 		public readonly Scope? parent;
+		readonly Dictionary<string, StructAst> structs = new Dictionary<string, StructAst>();
 		readonly Dictionary<string, Value> symbols = new Dictionary<string, Value>();
 
 		public Scope(Builder builder, Scope? parent = null)
 		{
 			this.builder = builder;
 			this.parent = parent;
+		}
+
+		public void Define(string name, StructAst ztruct) =>
+			structs.Add(name, ztruct);
+
+		public StructAst GetStruct(string name)
+		{
+			if (structs.TryGetValue(name, out StructAst? ztruct))
+				return ztruct;
+			if (parent is not null)
+				return parent!.GetStruct(name);
+			throw new Exception("struct don't exit man");
 		}
 
 		public Value Find(string name)

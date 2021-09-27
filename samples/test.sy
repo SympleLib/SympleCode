@@ -1,3 +1,4 @@
+decl void printf(char* fmt, ...)
 decl void puts(char*)
 
 struct Test {
@@ -7,5 +8,9 @@ struct Test {
 }
 
 void run {
+	Test x
+	x.x = 69
+
+	printf('x = %i\n', x.x)
 	puts('Hello, world!')
 }

@@ -34,6 +34,7 @@ partial record FloatLiteralExprAst(double value): LiteralExprAst;
 partial record CallExprAst(ExprAst ptr, ExprAst[] args): ExprAst;
 partial record VarExprAst(string varName): ExprAst;
 partial record FuncPtrAst(string funcName): ExprAst;
+partial record MemberExprAst(ExprAst container, string memberName): ExprAst;
 
 partial record UnExprAst(Enum op, ExprAst operand): ExprAst;
 partial record BiExprAst(Enum op, ExprAst left, ExprAst right): ExprAst;
