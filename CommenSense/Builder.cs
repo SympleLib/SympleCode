@@ -122,16 +122,27 @@ partial class Builder
 	void Build(VarAst ast)
 	{
 		Type type = BuildType(ast.type);
+		Value initializer;
+		if (ast.initializer.GetType() == typeof(ExprAst) && type.StructName != string.Empty)
+		{
+			StructAst ztruct = scope.GetStruct(type.StructName);
+			Value[] eles = new Value[ztruct.fields.Length];
+			for (int i = 0; i < eles.Length; i++)
+				eles[i] = BuildCast(BuildExpr(ztruct.fields[i].initializer), type.StructElementTypes[i]);
+
+			initializer = Value.CreateConstNamedStruct(type, eles);
+		}
+		else
+			initializer = BuildCast(BuildExpr(ast.initializer), type);
 
 		if (currentFunc == null)
 		{
 			Value var = scope.Find(ast.name);
-			var.Initializer = BuildCast(BuildExpr(ast.initializer), type);
+			var.Initializer = initializer;
 		}
 		else
 		{
 			Value var = llBuilder.BuildAlloca(type, ast.name);
-			Value initializer = BuildCast(BuildExpr(ast.initializer), type);
 			llBuilder.BuildStore(initializer, var);
 			scope.Define(ast.name, var);
 		}

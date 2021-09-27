@@ -1,16 +1,16 @@
 decl void printf(char* fmt, ...)
 decl void puts(char*)
 
-struct Test {
-	int x,
-	int y,
-	int z,
-}
-
 void run {
 	Test x
-	x.x = 69
 
-	printf('x = %i\n', x.x)
+	printf('x = %i, y = %i, z = %i, w = %i\n', x.x, x.y, x.z, x.w)
 	puts('Hello, world!')
+}
+
+struct Test {
+	int x = 69,
+	int y = 420,
+	int z = 1337,
+	int w,
 }
