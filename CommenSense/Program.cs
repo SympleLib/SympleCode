@@ -87,8 +87,10 @@ LLVMModuleRef? CompileSingle(string path)
 
 	Builder builder = new Builder(ast);
 	LLVMModuleRef llModule = builder.Build();
+#if false // No need for the Infini-Mizing (The tiny program will run too fast, )
 	//                      👇 To insure COMPLETE optimization
 	for (ulong i = 0; i < ulong.MaxValue; i++)
+#endif
 		Optimize(llModule);
 	Console.WriteLine(llModule);
 
