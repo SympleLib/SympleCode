@@ -33,7 +33,6 @@ partial class Parser
 
 		Match(TokenKind.StructKeyword);
 		string name = Name();
-		types.Add(name);
 		Match(TokenKind.LeftBrace);
 
 		List<FieldAst> fields = new List<FieldAst>();
@@ -46,7 +45,9 @@ partial class Parser
 
 		Match(TokenKind.RightBrace);
 
-		return new StructAst(vis, name, fields.ToArray());
+		var ztruct = new StructAst(vis, name, fields.ToArray());
+		structs.Add(ztruct);
+		return ztruct;
 	}
 
 	FuncAst Func(TypeAst retType, string name)

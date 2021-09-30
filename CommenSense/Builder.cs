@@ -23,11 +23,13 @@ partial class Builder
 
 	public LLVMModuleRef Build()
 	{
+		foreach (StructAst ztruct in module.structs)
+		{
+			llModule.Context.CreateNamedStruct(ztruct.name);
+			scope.Define(ztruct.name, ztruct);
+		}
 		foreach (StmtAst member in module.members)
 			Decl(member);
-		foreach (StmtAst member in module.members)
-			if (member is StructAst ztruct)
-				Decl2(ztruct);
 		foreach (StmtAst member in module.members)
 			Build(member);
 		return llModule;
@@ -91,13 +93,6 @@ partial class Builder
 	}
 
 	void Decl(StructAst ast)
-	{
-		llModule.Context.CreateNamedStruct(ast.name);
-		scope.Define(ast.name, ast);
-	}
-
-	// TODO: optimize
-	void Decl2(StructAst ast)
 	{
 		Type type = llModule.GetTypeByName(ast.name);
 		Type[] elTypes = new Type[ast.fields.Length];
