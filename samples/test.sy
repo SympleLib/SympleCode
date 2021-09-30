@@ -5,8 +5,6 @@ int sdf
 
 void run {
 	Test x
-	x. w = sdf + 1
-
 	printf('x = %i, y = %i, z = %i, w = %i\n', x.x, x.y, x.z, x.w)
 	puts(x.a.test)
 	puts('Hello, world!')

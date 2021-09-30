@@ -9,6 +9,8 @@ partial class Builder
 	readonly LLVMModuleRef llModule;
 	readonly LLVMBuilderRef llBuilder;
 
+	static readonly Type uninitType = Type.CreateInt(1);
+
 	Value currentFunc;
 
 	public Builder(ModuleAst module)
@@ -131,23 +133,7 @@ partial class Builder
 	void Build(VarAst ast)
 	{
 		Type type = BuildType(ast.type);
-		Value initializer;
-		if (ast.initializer.GetType() == typeof(ExprAst) && type.StructName != string.Empty)
-		{
-			StructAst ztruct = scope.GetStruct(type.StructName);
-			Value ptr = llBuilder.BuildAlloca(type);
-
-			for (uint i = 0; i < ztruct.fields.Length; i++)
-			{
-				Value ele = BuildCast(BuildExpr(ztruct.fields[i].initializer), type.StructElementTypes[i]);
-				Value fieldPtr = llBuilder.BuildStructGEP(ptr, i);
-				llBuilder.BuildStore(ele, fieldPtr);
-			}
-
-			initializer = llBuilder.BuildLoad(ptr);
-		}
-		else
-			initializer = BuildCast(BuildExpr(ast.initializer), type);
+		Value initializer = BuildCast(BuildExpr(ast.initializer), type);
 
 		if (currentFunc == null)
 		{
@@ -321,6 +307,20 @@ partial class Builder
 		return llBuilder.BuildBinOp(op, left, right);
 	}
 
+	Value BuildStructExpr(Type type, StructAst ztruct)
+	{
+		Value ptr = llBuilder.BuildAlloca(type);
+
+		for (uint i = 0; i < ztruct.fields.Length; i++)
+		{
+			Value ele = BuildCast(BuildExpr(ztruct.fields[i].initializer), type.StructElementTypes[i]);
+			Value fieldPtr = llBuilder.BuildStructGEP(ptr, i);
+			llBuilder.BuildStore(ele, fieldPtr);
+		}
+
+		return llBuilder.BuildLoad(ptr);
+	}
+
 	Value BuildCast(Value val, Type to)
 	{
 		Type from = val.TypeOf;
@@ -339,6 +339,11 @@ partial class Builder
 		if (!from.IsPtr() && to.IsPtr())
 			return llBuilder.BuildIntToPtr(val, to);
 
+		if (from == uninitType && to.StructName != string.Empty)
+		{
+			StructAst ztruct = scope.GetStruct(to.StructName);
+			return BuildStructExpr(to, ztruct);
+		}
 		return llBuilder.BuildIntCast(val, to);
 	}
 }
