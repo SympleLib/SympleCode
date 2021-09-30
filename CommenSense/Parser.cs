@@ -4,6 +4,7 @@ partial class Parser
 {
 	readonly Lexer lxr;
 	readonly List<Token> tokens = new List<Token>();
+	readonly List<string> types = new List<string>();
 	int pos = 0;
 	Token prev => Peek(-1);
 	Token current => Peek();
@@ -28,7 +29,7 @@ partial class Parser
 		while (current.kind is not TokenKind.Eof)
 			members.Add(Stmt());
 
-		return new ModuleAst(name, members.ToArray());
+		return new ModuleAst(name, members.ToArray(), types.ToArray());
 	}
 
 	TypeAst Type()

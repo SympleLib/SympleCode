@@ -24,6 +24,9 @@ partial class Builder
 		foreach (StmtAst member in module.members)
 			Decl(member);
 		foreach (StmtAst member in module.members)
+			if (member is StructAst ztruct)
+				Decl2(ztruct);
+		foreach (StmtAst member in module.members)
 			Build(member);
 		return llModule;
 	}
@@ -87,12 +90,18 @@ partial class Builder
 
 	void Decl(StructAst ast)
 	{
-		Type type = llModule.Context.CreateNamedStruct(ast.name);
+		llModule.Context.CreateNamedStruct(ast.name);
+		scope.Define(ast.name, ast);
+	}
+
+	// TODO: optimize
+	void Decl2(StructAst ast)
+	{
+		Type type = llModule.GetTypeByName(ast.name);
 		Type[] elTypes = new Type[ast.fields.Length];
 		for (int i = 0; i < elTypes.Length; i++)
 			elTypes[i] = BuildType(ast.fields[i].type);
 		type.StructSetBody(elTypes, false);
-		scope.Define(ast.name, ast);
 	}
 
 	void Build(FuncAst ast)
@@ -126,11 +135,16 @@ partial class Builder
 		if (ast.initializer.GetType() == typeof(ExprAst) && type.StructName != string.Empty)
 		{
 			StructAst ztruct = scope.GetStruct(type.StructName);
-			Value[] eles = new Value[ztruct.fields.Length];
-			for (int i = 0; i < eles.Length; i++)
-				eles[i] = BuildCast(BuildExpr(ztruct.fields[i].initializer), type.StructElementTypes[i]);
+			Value ptr = llBuilder.BuildAlloca(type);
 
-			initializer = Value.CreateConstNamedStruct(type, eles);
+			for (uint i = 0; i < ztruct.fields.Length; i++)
+			{
+				Value ele = BuildCast(BuildExpr(ztruct.fields[i].initializer), type.StructElementTypes[i]);
+				Value fieldPtr = llBuilder.BuildStructGEP(ptr, i);
+				llBuilder.BuildStore(ele, fieldPtr);
+			}
+
+			initializer = llBuilder.BuildLoad(ptr);
 		}
 		else
 			initializer = BuildCast(BuildExpr(ast.initializer), type);
@@ -160,6 +174,15 @@ partial class Builder
 		scope.Define(ast.name, fn);
 	}
 
+	Type NonNativeType(string name)
+	{
+		Type type = llModule.GetTypeByName(name);
+		if (type.Handle != IntPtr.Zero)
+			return type;
+
+		throw new Exception("type ain't existensial");
+	}
+
 	Type BuildType(TypeAst ast)
 	{
 		Type type = ast.typeBase switch
@@ -169,7 +192,7 @@ partial class Builder
 			"char" => Type.Int8,
 			"int" => Type.Int32,
 
-			_ => llModule.GetTypeByName(ast.typeBase),
+			_ => NonNativeType(ast.typeBase),
 		};
 
 		for (int i = 0; i < ast.ptrCount; i++)

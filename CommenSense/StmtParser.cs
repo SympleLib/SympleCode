@@ -33,6 +33,7 @@ partial class Parser
 
 		Match(TokenKind.StructKeyword);
 		string name = Name();
+		types.Add(name);
 		Match(TokenKind.LeftBrace);
 
 		List<FieldAst> fields = new List<FieldAst>();
