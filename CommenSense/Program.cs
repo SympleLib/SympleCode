@@ -88,8 +88,8 @@ LLVMModuleRef? CompileSingle(string path)
 	Builder builder = new Builder(ast);
 	LLVMModuleRef llModule = builder.Build();
 #if false // No need for the Infini-Mizing (The tiny program will run too fast, too much power ⚡ for mere mortals to handle)
-	//                      👇 To insure COMPLETE optimization
-	for (ulong i = 0; i < ulong.MaxValue; i++)
+	//      👇 To insure COMPLETE optimization
+	while (true)
 #endif
 		Optimize(llModule);
 	Console.WriteLine(llModule);
@@ -127,12 +127,8 @@ LLVMExecutionEngineRef? Compile(string path, params string[] paths)
 	}
 
 	LLVM.LinkInMCJIT();
-
-	LLVM.InitializeX86TargetMC();
-	LLVM.InitializeX86Target();
-	LLVM.InitializeX86TargetInfo();
-	LLVM.InitializeX86AsmParser();
-	LLVM.InitializeX86AsmPrinter();
+	LLVM.InitializeNativeTarget();
+	LLVM.InitializeNativeAsmPrinter();
 
 	LLVMMCJITCompilerOptions options = new LLVMMCJITCompilerOptions { NoFramePointerElim = 1 };
 	if (!llModule.TryCreateMCJITCompiler(out LLVMExecutionEngineRef engine, ref options, out string error))

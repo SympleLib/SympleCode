@@ -34,7 +34,7 @@ partial class Builder
 				return ztruct;
 			if (parent is not null)
 				return parent!.GetStruct(name);
-			throw new Exception("struct don't exit man");
+			throw new Exception("struct don't exist man");
 		}
 
 		public Value Find(string name)
@@ -43,7 +43,7 @@ partial class Builder
 				return symbol;
 			if (parent is not null)
 				return parent!.Find(name);
-			throw new Exception("symbol don't exit man");
+			throw new Exception("symbol don't exist man");
 		}
 
 		public void Define(string name, Value symbol) =>

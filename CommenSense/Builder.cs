@@ -104,7 +104,7 @@ partial class Builder
 	void Build(FuncAst ast)
 	{
 		Value fn = scope.Find(ast.name);
-		Type[] paramTypes = fn.TypeOf.ParamTypes;
+		Type[] paramTypes = fn.TypeOf.ElementType.ParamTypes;
 		LLVMBasicBlockRef entry = fn.AppendBasicBlock(string.Empty);
 		llBuilder.PositionAtEnd(entry);
 		currentFunc = fn;
@@ -190,6 +190,13 @@ partial class Builder
 			return scope.Find(varExpr.varName);
 		if (ast is MemberExprAst memberExpr)
 			return BuildPtr(memberExpr);
+		if (ast is UnExprAst unExpr)
+		{
+			//if (unExpr.op is TokenKind.And)
+			//	return BuildPtr(unExpr.operand);
+			if (unExpr.op is LLVMLoad)
+				return BuildExpr(unExpr.operand);
+		}
 		throw new Exception("not a ptr D:{");
 	}
 
@@ -265,14 +272,20 @@ partial class Builder
 
 	Value BuildExpr(UnExprAst ast)
 	{
+		switch (ast.op)
+		{
+		case TokenKind.And:
+			return BuildPtr(ast.operand);
+		}
+
 		Value operand = BuildExpr(ast.operand);
 
 		switch (ast.op)
 		{
 		case LLVMFNeg:
 			return operand.TypeOf.IsFloat() ? llBuilder.BuildFNeg(operand) : llBuilder.BuildNeg(operand);
-		case LLVMAnd:
-			return BuildPtr(ast.operand);
+		case LLVMLoad:
+			return llBuilder.BuildLoad(operand);
 
 		default:
 			throw new Exception("bob the builders cannt build (nor spell)");

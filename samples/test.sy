@@ -1,12 +1,14 @@
 decl void printf(char* fmt, ...)
 decl void puts(char*)
 
-int sdf;
-
 void run {
 	Test x;
-	printf('x = %i, y = %i, z = %i, w = %i\n', x.x, x.y, x.z, x.w);
-	puts(x.a.test);
+	printTest(&x);
+}
+
+void printTest(Test* ptr) {
+	printf('x = %i, y = %i, z = %i, w = %i\n', %ptr.x, %ptr.y, %ptr.z, %ptr.w);
+	puts(%ptr.a.test);
 	puts('Hello, world!');
 }
 
@@ -14,7 +16,7 @@ struct Test {
 	int x = 69,
 	int y = 420,
 	int z = 1337,
-	int w = sdf + 1,
+	int w = 0,
 	X a,
 }
 

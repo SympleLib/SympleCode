@@ -7,14 +7,16 @@ partial class Parser
 		TokenKind.Minus,
 
 		TokenKind.And,
+		// TokenKind.Percent,
 	};
 
 	static Enum UnOpcode(TokenKind kind) =>
 		kind switch
 		{
+			TokenKind.And => kind,
 			TokenKind.Plus => LLVMAdd,
 			TokenKind.Minus => LLVMFNeg,
-			TokenKind.And => LLVMAnd,
+			TokenKind.Percent => LLVMLoad,
 			_ => (LLVMOpcode) 0,
 		};
 
@@ -107,10 +109,17 @@ partial class Parser
 	{
 		switch (current.kind)
 		{
+		case TokenKind.Percent:
+			return new UnExprAst(UnOpcode(Next().kind), PrimExpr());
 		case TokenKind.Identifier:
 			if (scope.FuncExists(current.text) || next.kind is TokenKind.LeftParen)
 				return new FuncPtrAst(Next().text);
 			return new VarExprAst(Next().text);
+		case TokenKind.LeftParen:
+			Next();
+			ExprAst expr = Expr();
+			Match(TokenKind.RightParen);
+			return expr;
 
 		default:
 			return LiteralExpr();
