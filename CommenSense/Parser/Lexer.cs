@@ -96,8 +96,17 @@ partial class Parser
 
 		public Token LexNext()
 		{
-			while (char.IsWhiteSpace(current))
-				pos++;
+			while (true)
+			{
+				if (char.IsWhiteSpace(current))
+					pos++;
+				else if (current is '/' && Peek(1) is '/')
+					SingleComment();
+				else if (current is '/' && Peek(1) is '*')
+					MultiComment();
+				else
+					break;
+			}
 
 			if (current is '\0')
 				return new Token(TokenKind.Eof, string.Empty);
@@ -261,6 +270,24 @@ partial class Parser
 					return new Token(punctuatorStart + i, src[pos..(pos += punctuators[i].Length)]);
 
 			return new Token(TokenKind.Unknown, src[pos..++pos]);
+		}
+
+		void SingleComment()
+		{
+			Next();
+			Next();
+			while (current is not '\n')
+				Next();
+		}
+
+		void MultiComment()
+		{
+			Next();
+			Next();
+			while (current is not '*' && Peek(1) is not '/')
+				Next();
+			Next();
+			Next();
 		}
 
 		char Next()

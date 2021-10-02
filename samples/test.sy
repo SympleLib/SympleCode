@@ -1,8 +1,9 @@
 decl void printf(char* fmt, ...)
 decl void puts(char*)
 
+// Entry Point
 void run {
-	call(&test);
+	call(&test /* pass 'test' func by ptr */);
 }
 
 void test() {
@@ -11,6 +12,7 @@ void test() {
 }
 
 void call(void()* func) {
+	// Deref func then call
 	%func();
 }
 
@@ -21,9 +23,10 @@ void printTest(Test* ptr) {
 }
 
 struct Test {
-	int x = 69,
+	int x = 69 /* nice
+	no rlly nice */,
 	int y = 420,
-	int z = 1337,
+	int z = /* LEET */ 1337,
 	int w = 0,
 	X a,
 }
