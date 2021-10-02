@@ -63,7 +63,14 @@ partial class Parser
 		{
 			Next();
 			TypeAst to = Type();
-			operand = new CastExprAst(to, operand);
+			operand = new BitCastExprAst(operand, to);
+			goto Loop;
+		}
+		else if (current.kind is TokenKind.ToKeyword)
+		{
+			Next();
+			TypeAst to = Type();
+			operand = new CastExprAst(operand, to);
 			goto Loop;
 		}
 
@@ -85,12 +92,7 @@ partial class Parser
 			ExprAst expr = Expr();
 			Match(TokenKind.RightParen);
 			return expr;
-		case TokenKind.LeftBracket:
-			Next();
-			TypeAst to = Type();
-			Match(TokenKind.RightBracket);
-			ExprAst value = Expr();
-			return new BitCastExprAst(to, value);
+		case TokenKind.LeftBracket: // Arrays
 
 		default:
 			return LiteralExpr();

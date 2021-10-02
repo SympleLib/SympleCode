@@ -2,7 +2,8 @@ decl void printf(char* fmt, ...)
 decl void puts(char*)
 
 void run {
-	printInt(6.9 as int);
+	printInt(6.9 to int); // cast
+	printInt(6.9 as int); // bitcast
 }
 
 void printInt(int n) {
