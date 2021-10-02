@@ -73,6 +73,14 @@ partial class Parser
 			operand = new CastExprAst(operand, to);
 			goto Loop;
 		}
+		else if (current.kind is TokenKind.LeftBracket)
+		{
+			Next();
+			ExprAst idx = Expr();
+			Match(TokenKind.RightBracket);
+			operand = new IndexExprAst(operand, idx);
+			goto Loop;
+		}
 
 		return operand;
 	}
@@ -92,11 +100,29 @@ partial class Parser
 			ExprAst expr = Expr();
 			Match(TokenKind.RightParen);
 			return expr;
-		case TokenKind.LeftBracket: // Arrays
+		case TokenKind.LeftBracket:
+			return ArrayExpr();
 
 		default:
 			return LiteralExpr();
 		}
+	}
+
+	ArrayExprAst ArrayExpr()
+	{
+		Match(TokenKind.LeftBracket);
+
+		List<ExprAst> elements = new List<ExprAst>();
+		while (current.kind is not TokenKind.Eof and not TokenKind.RightBracket)
+		{
+			elements.Add(Expr());
+
+			if (current.kind is not TokenKind.RightBracket)
+				Match(TokenKind.Comma);
+		}
+
+		Match(TokenKind.RightBracket);
+		return new ArrayExprAst(elements.ToArray());
 	}
 
 	LiteralExprAst LiteralExpr()

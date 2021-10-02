@@ -38,6 +38,8 @@ partial record VarExprAst(string varName): ExprAst;
 partial record FuncPtrAst(string funcName): ExprAst;
 partial record MemberExprAst(ExprAst container, string memberName): ExprAst;
 
+partial record ArrayExprAst(ExprAst[] elements): ExprAst;
+partial record IndexExprAst(ExprAst ptr, ExprAst index): ExprAst;
 partial record CastExprAst(ExprAst value, TypeAst to): ExprAst;
 partial record BitCastExprAst(ExprAst value, TypeAst to): ExprAst;
 

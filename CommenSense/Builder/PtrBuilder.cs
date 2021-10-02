@@ -1,6 +1,7 @@
 ﻿namespace CommenSense;
 
 using Value = LLVMValueRef;
+using Type = LLVMTypeRef;
 
 partial class Builder
 {
@@ -12,6 +13,8 @@ partial class Builder
 			return scope.Find(varExpr.varName);
 		if (ast is MemberExprAst memberExpr)
 			return BuildPtr(memberExpr);
+		if (ast is IndexExprAst idxExpr)
+			return BuildPtr(idxExpr);
 		if (ast is UnExprAst unExpr)
 		{
 			//if (unExpr.op is TokenKind.And)
@@ -20,6 +23,13 @@ partial class Builder
 				return BuildExpr(unExpr.operand);
 		}
 		throw new Exception("not a ptr D:{");
+	}
+
+	Value BuildPtr(IndexExprAst ast)
+	{
+		Value ptr = BuildExpr(ast.ptr);
+		Value elePtr = llBuilder.BuildInBoundsGEP(ptr, new Value[] { BuildExpr(ast.index) });
+		return elePtr;
 	}
 
 	Value BuildPtr(MemberExprAst ast)

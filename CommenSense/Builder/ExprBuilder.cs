@@ -35,6 +35,10 @@ partial class Builder
 		if (ast is MemberExprAst memberExpr)
 			return BuildExpr(memberExpr);
 
+		if (ast is ArrayExprAst arrExpr)
+			return BuildExpr(arrExpr);
+		if (ast is IndexExprAst idxExpr)
+			return BuildExpr(idxExpr);
 		if (ast is CastExprAst castExpr)
 			return BuildCast(BuildExpr(castExpr.value), BuildType(castExpr.to));
 		if (ast is BitCastExprAst bitCastExpr)
@@ -71,6 +75,30 @@ partial class Builder
 		uint i = ztruct.GetField(ast.memberName);
 		return llBuilder.BuildLoad(llBuilder.BuildStructGEP(container, i));
 	}
+
+	Value BuildExpr(ArrayExprAst ast)
+	{
+		if (ast.elements.Length <= 0)
+			return null;
+
+		Value firstEle = BuildExpr(ast.elements[0]);
+		Type eleType = firstEle.TypeOf;
+		Value array = llBuilder.BuildAlloca(Type.CreateArray(eleType, (uint) ast.elements.Length));
+		Value ptr = llBuilder.BuildBitCast(array, Type.CreatePointer(eleType, 0));
+		Value elePtr = llBuilder.BuildInBoundsGEP(ptr, new Value[] { Value.CreateConstInt(Type.Int64, 0) });
+		llBuilder.BuildStore(BuildExpr(ast.elements[0]), elePtr);
+
+		for (int i = 1; i < ast.elements.Length; i++)
+		{
+			elePtr = llBuilder.BuildInBoundsGEP(ptr, new Value[] { Value.CreateConstInt(Type.Int64, (ulong) i) });
+			llBuilder.BuildStore(BuildExpr(ast.elements[i]), elePtr);
+		}
+
+		return ptr;
+	}
+
+	Value BuildExpr(IndexExprAst ast) =>
+		llBuilder.BuildLoad(BuildPtr(ast));
 
 	Value BuildExpr(UnExprAst ast)
 	{
