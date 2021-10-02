@@ -3,7 +3,9 @@
 partial record Ast;
 partial record ModuleAst(string name, StmtAst[] members, StructAst[] structs);
 
-partial record TypeAst(string typeBase, int ptrCount): Ast;
+partial record TypeAst(int ptrCount): Ast;
+partial record BaseTypeAst(string typeBase, int ptrCount): TypeAst(ptrCount);
+partial record FuncTypeAst(TypeAst retType, TypeAst[] paramTypes, bool vaArg, int ptrCount): TypeAst(ptrCount);
 partial record ParamAst(TypeAst type, string name, ExprAst defaultExpr): Ast;
 partial record FieldAst(Enum vis, TypeAst type, string name, ExprAst initializer): Ast;
 

@@ -166,6 +166,16 @@ partial class Builder
 
 	Type BuildType(TypeAst ast)
 	{
+		if (ast is BaseTypeAst baseType)
+			return BuildType(baseType);
+		if (ast is FuncTypeAst funcType)
+			return BuildType(funcType);
+
+		throw new Exception("type no exist");
+	}
+
+	Type BuildType(BaseTypeAst ast)
+	{
 		Type type = ast.typeBase switch
 		{
 			"void" => Type.Void,
@@ -175,6 +185,21 @@ partial class Builder
 
 			_ => NonNativeType(ast.typeBase),
 		};
+
+		for (int i = 0; i < ast.ptrCount; i++)
+			type = Type.CreatePointer(type, 0);
+
+		return type;
+	}
+
+	Type BuildType(FuncTypeAst ast)
+	{
+		Type[] paramTypes = new Type[ast.paramTypes.Length];
+		for (int i = 0; i < paramTypes.Length; i++)
+			paramTypes[i] = BuildType(ast.paramTypes[i]);
+
+		Type retType = BuildType(ast.retType);
+		Type type = Type.CreateFunction(retType, paramTypes, ast.vaArg);
 
 		for (int i = 0; i < ast.ptrCount; i++)
 			type = Type.CreatePointer(type, 0);

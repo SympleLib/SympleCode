@@ -2,8 +2,16 @@ decl void printf(char* fmt, ...)
 decl void puts(char*)
 
 void run {
+	call(&test);
+}
+
+void test() {
 	Test x;
 	printTest(&x);
+}
+
+void call(void()* func) {
+	%func();
 }
 
 void printTest(Test* ptr) {

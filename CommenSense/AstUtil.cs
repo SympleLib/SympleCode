@@ -29,8 +29,11 @@ partial record ModuleAst
 { public override string ToString() => $"module `{name}`: [\n{IncTab()}{string.Join<StmtAst>("\n\n\t", members)}\n]"; }
 
 
-partial record TypeAst
+partial record BaseTypeAst
 { public override string ToString() => $"{typeBase}{new string('*', ptrCount)}"; }
+
+partial record FuncTypeAst
+{ public override string ToString() => $"{retType} ({string.Join<TypeAst>(", ", paramTypes)}{PrintWithVaArgMaybeIHonestlyDontKnowWhatToCallThisFunction(vaArg)}){new string('*', ptrCount)}"; }
 
 partial record ParamAst
 { public override string ToString() => $"{type} {name} = {defaultExpr}"; }

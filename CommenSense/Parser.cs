@@ -41,8 +41,41 @@ partial class Parser
 			ptrCount++;
 			Next();
 		}
+		
+		TypeAst baseType = new BaseTypeAst(typeBase, ptrCount);
 
-		return new TypeAst(typeBase, ptrCount);
+		if (current.kind == TokenKind.LeftParen)
+		{
+			Next();
+
+			bool vaArg = false;
+			List<TypeAst> paramTypes = new List<TypeAst>();
+			while (current.kind is not TokenKind.Eof and not TokenKind.RightParen)
+			{
+				if (current.kind == TokenKind.DotDotDot)
+				{
+					vaArg = true;
+					break;
+				}
+
+				paramTypes.Add(Type());
+
+				if (current.kind is not TokenKind.RightParen)
+					Match(TokenKind.Comma);
+			}
+
+			Match(TokenKind.RightParen);
+
+			ptrCount = 0;
+			while (current.kind is TokenKind.Star)
+			{
+				ptrCount++;
+				Next();
+			}
+			return new FuncTypeAst(baseType, paramTypes.ToArray(), vaArg, ptrCount);
+		}
+
+		return baseType;
 	}
 
 	ParamAst Param()
