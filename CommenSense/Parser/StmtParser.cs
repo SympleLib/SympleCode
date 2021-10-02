@@ -45,6 +45,7 @@ partial class Parser
 
 		Match(TokenKind.RightBrace);
 
+		MaybeEndLine();
 		var ztruct = new StructAst(vis, name, fields.ToArray());
 		structs.Add(ztruct);
 		return ztruct;
@@ -85,6 +86,7 @@ partial class Parser
 		ExitScope();
 		Match(TokenKind.RightBrace);
 
+		MaybeEndLine();
 		scope.DefineFunc(name);
 		return new FuncAst(vis, retType, name, paramz.ToArray(), body.ToArray(), vaArg);
 	}
@@ -99,6 +101,7 @@ partial class Parser
 			initializer = Expr();
 		}
 
+		EndLine();
 		scope.DefineVar(name);
 		return new VarAst(vis, type, name, initializer);
 	}
@@ -125,6 +128,7 @@ partial class Parser
 		}
 
 		Match(TokenKind.RightParen);
+		EndLine();
 
 		scope.DefineFunc(name);
 		return new DeclFuncAst(vis, retType, name, paramz.ToArray(), vaArg);
@@ -137,6 +141,10 @@ partial class Parser
 		return new DeclVarAst(vis, type, name);
 	}
 
-	ExprStmtAst ExprStmt() =>
-		new ExprStmtAst(Expr());
+	ExprStmtAst ExprStmt()
+	{
+		ExprStmtAst stmt = new ExprStmtAst(Expr());
+		EndLine();
+		return stmt;
+	}
 }

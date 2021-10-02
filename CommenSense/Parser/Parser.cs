@@ -24,6 +24,9 @@ partial class Parser
 
 	public ModuleAst Parse()
 	{
+		while (current.kind is TokenKind.Semicol)
+			Next();
+
 		const string name = "simple-code";
 		List<StmtAst> members = new List<StmtAst>();
 		while (current.kind is not TokenKind.Eof)
@@ -127,6 +130,15 @@ partial class Parser
 	{
 		pos++;
 		return prev;
+	}
+
+	void EndLine() =>
+		MaybeEndLine();
+
+	void MaybeEndLine()
+	{
+		while (current.kind is TokenKind.Semicol)
+			Next();
 	}
 
 	string Name() =>

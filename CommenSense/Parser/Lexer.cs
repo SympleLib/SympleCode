@@ -35,6 +35,7 @@ enum TokenKind
 	RightParen,
 
 	Comma,
+	Semicol,
 
 
 	TrueKeyword,
@@ -74,6 +75,7 @@ partial class Parser
 			")",
 
 			",",
+			";",
 		};
 
 		const TokenKind keywordStart = TokenKind.TrueKeyword;
@@ -94,14 +96,8 @@ partial class Parser
 
 		public Token LexNext()
 		{
-			while (current is ';')
-				Next();
-
 			while (char.IsWhiteSpace(current))
 				pos++;
-
-			while (current is ';')
-				Next();
 
 			if (current is '\0')
 				return new Token(TokenKind.Eof, string.Empty);
