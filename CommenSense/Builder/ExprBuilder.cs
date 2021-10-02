@@ -91,7 +91,7 @@ partial class Builder
 		for (int i = 1; i < ast.elements.Length; i++)
 		{
 			elePtr = llBuilder.BuildInBoundsGEP(ptr, new Value[] { Value.CreateConstInt(Type.Int64, (ulong) i) });
-			llBuilder.BuildStore(BuildExpr(ast.elements[i]), elePtr);
+			llBuilder.BuildStore(BuildCast(BuildExpr(ast.elements[i]), eleType), elePtr);
 		}
 
 		return ptr;
