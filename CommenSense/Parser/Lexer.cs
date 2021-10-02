@@ -43,6 +43,7 @@ enum TokenKind
 
 	DeclKeyword,
 	StructKeyword,
+	AsKeyword,
 }
 
 partial class Parser
@@ -85,6 +86,7 @@ partial class Parser
 
 			"decl",
 			"struct",
+			"as",
 		};
 
 		readonly string src;

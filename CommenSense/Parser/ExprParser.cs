@@ -59,6 +59,13 @@ partial class Parser
 			operand = new MemberExprAst(operand, memberName);
 			goto Loop;
 		}
+		else if (current.kind is TokenKind.AsKeyword)
+		{
+			Next();
+			TypeAst to = Type();
+			operand = new CastExprAst(to, operand);
+			goto Loop;
+		}
 
 		return operand;
 	}
@@ -74,7 +81,10 @@ partial class Parser
 				return new FuncPtrAst(Next().text);
 			return new VarExprAst(Next().text);
 		case TokenKind.LeftParen:
-			return ParenExprOrTypeCast();
+			Next();
+			ExprAst expr = Expr();
+			Match(TokenKind.RightParen);
+			return expr;
 		case TokenKind.LeftBracket:
 			Next();
 			TypeAst to = Type();
@@ -84,25 +94,6 @@ partial class Parser
 
 		default:
 			return LiteralExpr();
-		}
-	}
-
-	ExprAst ParenExprOrTypeCast()
-	{
-		Match(TokenKind.LeftParen);
-		if (IsType())
-		{
-			TypeAst to = Type();
-			Match(TokenKind.RightParen);
-			ExprAst value = Expr();
-			return new CastExprAst(to, value);
-		}
-		else
-		{
-			Next();
-			ExprAst expr = Expr();
-			Match(TokenKind.RightParen);
-			return expr;
 		}
 	}
 

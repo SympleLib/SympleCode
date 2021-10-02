@@ -35,41 +35,6 @@ partial class Parser
 		return new ModuleAst(name, members.ToArray(), structs.ToArray());
 	}
 
-	// All I have now is just simulate parsing a type
-	bool IsType(int offset = 0)
-	{
-		if (current.kind is not TokenKind.Identifier)
-			return false;
-
-		bool possible = false;
-		if (Peek(offset).kind is TokenKind.Star)
-		{
-			offset++;
-			if (!IsType(offset))
-				return false;
-
-			while (Peek(offset).kind is TokenKind.Star)
-				offset++;
-			possible = true;
-		}
-
-		if (Peek(offset + 1).kind is TokenKind.LeftParen)
-		{
-			offset++;
-			while (Peek(offset).kind is not TokenKind.Eof and not TokenKind.RightParen)
-			{
-				if (current.kind is TokenKind.DotDotDot)
-					break;
-
-				if (!IsType(offset))
-					return false;
-
-				offset++;
-
-			}
-		}
-	}
-
 	TypeAst Type()
 	{
 		string typeBase = Name();

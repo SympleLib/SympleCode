@@ -2,7 +2,7 @@ decl void printf(char* fmt, ...)
 decl void puts(char*)
 
 void run {
-	printInt((int) 6.9);
+	printInt(6.9 as int);
 }
 
 void printInt(int n) {
