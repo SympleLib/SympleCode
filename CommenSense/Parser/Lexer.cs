@@ -90,6 +90,7 @@ partial class Parser
 		readonly string src;
 		int pos;
 		char current => Peek();
+		char next => Peek(1);
 
 		public Lexer(string source) =>
 			src = source;
@@ -100,9 +101,9 @@ partial class Parser
 			{
 				if (char.IsWhiteSpace(current))
 					pos++;
-				else if (current is '/' && Peek(1) is '/')
+				else if (current is '/' && next is '/')
 					SingleComment();
-				else if (current is '/' && Peek(1) is '*')
+				else if (current is '/' && next is '*')
 					MultiComment();
 				else
 					break;
@@ -284,7 +285,7 @@ partial class Parser
 		{
 			Next();
 			Next();
-			while (current is not '*' && Peek(1) is not '/')
+			while (current is not '*' && next is not '/')
 				Next();
 			Next();
 			Next();

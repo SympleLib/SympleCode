@@ -1,36 +1,10 @@
 decl void printf(char* fmt, ...)
 decl void puts(char*)
 
-// Entry Point
 void run {
-	call(&test /* pass 'test' func by ptr */);
+	printInt((int) 6.9);
 }
 
-void test() {
-	Test x;
-	printTest(&x);
-}
-
-void call(void()* func) {
-	// Deref func then call
-	%func();
-}
-
-void printTest(Test* ptr) {
-	printf('x = %i, y = %i, z = %i, w = %i\n', %ptr.x, %ptr.y, %ptr.z, %ptr.w);
-	puts(%ptr.a.test);
-	puts('Hello, world!');
-}
-
-struct Test {
-	int x = 69 /* nice
-	no rlly nice */,
-	int y = 420,
-	int z = /* LEET */ 1337,
-	int w = 0,
-	X a,
-}
-
-struct X {
-	char* test = 'haha this works, I am so proud!',
+void printInt(int n) {
+	printf('%i\n', n);
 }

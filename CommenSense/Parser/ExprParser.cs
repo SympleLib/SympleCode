@@ -74,13 +74,35 @@ partial class Parser
 				return new FuncPtrAst(Next().text);
 			return new VarExprAst(Next().text);
 		case TokenKind.LeftParen:
+			return ParenExprOrTypeCast();
+		case TokenKind.LeftBracket:
+			Next();
+			TypeAst to = Type();
+			Match(TokenKind.RightBracket);
+			ExprAst value = Expr();
+			return new BitCastExprAst(to, value);
+
+		default:
+			return LiteralExpr();
+		}
+	}
+
+	ExprAst ParenExprOrTypeCast()
+	{
+		Match(TokenKind.LeftParen);
+		if (IsType())
+		{
+			TypeAst to = Type();
+			Match(TokenKind.RightParen);
+			ExprAst value = Expr();
+			return new CastExprAst(to, value);
+		}
+		else
+		{
 			Next();
 			ExprAst expr = Expr();
 			Match(TokenKind.RightParen);
 			return expr;
-
-		default:
-			return LiteralExpr();
 		}
 	}
 

@@ -35,6 +35,11 @@ partial class Builder
 		if (ast is MemberExprAst memberExpr)
 			return BuildExpr(memberExpr);
 
+		if (ast is CastExprAst castExpr)
+			return BuildCast(BuildExpr(castExpr.value), BuildType(castExpr.to));
+		if (ast is BitCastExprAst bitCastExpr)
+			return llBuilder.BuildBitCast(BuildExpr(bitCastExpr.value), BuildType(bitCastExpr.to));
+
 		if (ast is UnExprAst unExpr)
 			return BuildExpr(unExpr);
 		if (ast is BiExprAst biExpr)
