@@ -2,6 +2,8 @@
 
 using System.Linq;
 
+using LLVMSharp;
+
 using static _;
 
 static class _
@@ -14,7 +16,14 @@ static class _
 	public static string DecTab()
 	{
 		tabCount--;
-		return "";
+		return string.Empty;
+	}
+
+	public static string ArrayThing(TypeAst? eleType)
+	{
+		if (eleType is null)
+			return string.Empty;
+		return eleType + " ";
 	}
 
 	public static string PrintWithVaArgMaybeIHonestlyDontKnowWhatToCallThisFunction(bool vaArg)
@@ -26,7 +35,7 @@ static class _
 }
 
 partial record ModuleAst
-{ public override string ToString() => $"module `{name}`: [\n{IncTab()}{string.Join<StmtAst>("\n\n\t", members)}\n]"; }
+{ public override string ToString() => $"module '{name}' {{\n{IncTab()}{string.Join<StmtAst>("\n\n\t", members)}\n}}"; }
 
 
 partial record BaseTypeAst
@@ -57,10 +66,10 @@ partial record StructAst
 
 
 partial record DeclFuncAst
-{ public override string ToString() => $"{vis} decl {retType} {name}[{string.Join<ParamAst>(", ", paramz)}{PrintWithVaArgMaybeIHonestlyDontKnowWhatToCallThisFunction(vaArg)}]"; }
+{ public override string ToString() => $"{vis} decl {retType} {name}({string.Join<ParamAst>(", ", paramz)}{PrintWithVaArgMaybeIHonestlyDontKnowWhatToCallThisFunction(vaArg)})"; }
 
 partial record FuncAst
-{ public override string ToString() => $"{vis} {retType} {name}[{string.Join<ParamAst>(", ", paramz)}{PrintWithVaArgMaybeIHonestlyDontKnowWhatToCallThisFunction(vaArg)}] {{\n{IncTab()}{string.Join<StmtAst>($"\n{GetTabs()}", body)}{DecTab()}\n{GetTabs()}}}"; }
+{ public override string ToString() => $"{vis} {retType} {name}({string.Join<ParamAst>(", ", paramz)}{PrintWithVaArgMaybeIHonestlyDontKnowWhatToCallThisFunction(vaArg)}) {{\n{IncTab()}{string.Join<StmtAst>($"\n{GetTabs()}", body)}{DecTab()}\n{GetTabs()}}}"; }
 
 partial record DeclVarAst
 { public override string ToString() => $"{vis} decl {type} {name}"; }
@@ -93,13 +102,26 @@ partial record FloatLiteralExprAst
 
 
 partial record CallExprAst
-{ public override string ToString() => $"{ptr}[{string.Join<ExprAst>(", ", args)}]"; }
+{ public override string ToString() => $"{ptr}({string.Join<ExprAst>(", ", args)})"; }
 
 partial record FuncPtrAst
 { public override string ToString() => $"&{funcName}"; }
 
 partial record VarExprAst
 { public override string ToString() => $"{varName}"; }
+
+
+partial record ArrayExprAst
+{ public override string ToString() => $"{ArrayThing(eleType)}[ {string.Join<ExprAst>(", ", elements)} ]"; }
+
+partial record IndexExprAst
+{ public override string ToString() => $"{ptr}[{index}]"; }
+
+partial record CastExprAst
+{ public override string ToString() => $"{value} to {to}"; }
+
+partial record BitCastExprAst
+{ public override string ToString() => $"{value} as {to}"; }
 
 
 partial record UnExprAst

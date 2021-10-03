@@ -91,7 +91,7 @@ LLVMModuleRef? CompileSingle(string path)
 	//      👇 To insure COMPLETE optimization
 	while (true)
 #endif
-	//Optimize(llModule);
+	Optimize(llModule);
 	Console.WriteLine(llModule);
 
 	Console.WriteLine("---");
