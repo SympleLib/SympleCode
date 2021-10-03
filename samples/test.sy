@@ -3,23 +3,19 @@ decl void putchar(char)
 decl void puts(char*)
 
 void run {
-	double* arr = [ 6.9, 4.20, 1.337 ];
+	float* arr = float [ 6.9, 4.20, 1.337 ];
 	
-	printInt((long) arr[0]); // explicit cast
-	printInt([long] arr[1]); // bit cast
+	printInt((int) arr[0]); // explicit cast
+	printInt([int] arr[1]); // bit cast
 	printInt(arr[2]);        // implicit cast
 	
 	putchar(`\n`);
 	
-	printInt(arr[0] to long); // explicit cast
-	printInt(arr[1] as long); // bit cast
+	printInt(arr[0] to int); // explicit cast
+	printInt(arr[1] as int); // bit cast
 	printInt(arr[2]);        // implicit cast
 }
 
-void printInt(long n) {
+void printInt(int n) {
 	printf('%i\n', n);
-}
-
-struct Test
-{
 }

@@ -82,11 +82,11 @@ partial class Builder
 			return null;
 
 		Value firstEle = BuildExpr(ast.elements[0]);
-		Type eleType = firstEle.TypeOf;
+		Type eleType = ast.eleType is null ? firstEle.TypeOf : BuildType(ast.eleType);
 		Value array = llBuilder.BuildAlloca(Type.CreateArray(eleType, (uint) ast.elements.Length));
 		Value ptr = llBuilder.BuildBitCast(array, Type.CreatePointer(eleType, 0));
 		Value elePtr = llBuilder.BuildInBoundsGEP(ptr, new Value[] { Value.CreateConstInt(Type.Int64, 0) });
-		llBuilder.BuildStore(BuildExpr(ast.elements[0]), elePtr);
+		llBuilder.BuildStore(BuildCast(firstEle, eleType), elePtr);
 
 		for (int i = 1; i < ast.elements.Length; i++)
 		{

@@ -92,6 +92,9 @@ partial class Parser
 		case TokenKind.Percent:
 			return new UnExprAst(UnOpcode(Next().kind), PrimExpr());
 		case TokenKind.Identifier:
+			if (IsType(current))
+				return ArrayExpr(eleType: Type());
+
 			if (scope.FuncExists(current.text) || next.kind is TokenKind.LeftParen)
 				return new FuncPtrAst(Next().text);
 			return new VarExprAst(Next().text);
@@ -123,7 +126,7 @@ partial class Parser
 		}
 	}
 
-	ArrayExprAst ArrayExpr()
+	ArrayExprAst ArrayExpr(TypeAst? eleType = null)
 	{
 		Match(TokenKind.LeftBracket);
 
@@ -137,7 +140,7 @@ partial class Parser
 		}
 
 		Match(TokenKind.RightBracket);
-		return new ArrayExprAst(elements.ToArray());
+		return new ArrayExprAst(eleType, elements.ToArray());
 	}
 
 	LiteralExprAst LiteralExpr()
