@@ -2,20 +2,18 @@ decl void printf(char* fmt, ...)
 decl void putchar(char)
 decl void puts(char*)
 
-void run {
-	float* arr = float [ 6.9, 4.20, 1.337 ];
-	
-	printInt((int) arr[0]); // explicit cast
-	printInt([int] arr[1]); // bit cast
-	printInt(arr[2]);        // implicit cast
-	
-	putchar(`\n`);
-	
-	printInt(arr[0] to int); // explicit cast
-	printInt(arr[1] as int); // bit cast
-	printInt(arr[2]);        // implicit cast
+struct Test
+{
+	int x,
+	bool y,
+	int z,
+	double w,
 }
 
-void printInt(int n) {
-	printf('%i\n', n);
+void run {
+	Test test = Test { 69, true, 420, 1.337 };
+	printf('%i\n', test.x);
+	printf('%i\n', (int) test.y);
+	printf('%i\n', test.z);
+	printf('%g\n', test.w);
 }

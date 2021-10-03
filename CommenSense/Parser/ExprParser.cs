@@ -1,4 +1,6 @@
-﻿namespace CommenSense;
+﻿using System.Security.AccessControl;
+
+namespace CommenSense;
 
 partial class Parser
 {
@@ -93,7 +95,12 @@ partial class Parser
 			return new UnExprAst(UnOpcode(Next().kind), PrimExpr());
 		case TokenKind.Identifier:
 			if (IsType(current))
-				return ArrayExpr(eleType: Type());
+			{
+				TypeAst type = Type();
+				if (current.kind is TokenKind.LeftBracket)
+					return ArrayExpr(eleType: type);
+				return GroupExpr(groupType: type);
+			}
 
 			if (scope.FuncExists(current.text) || next.kind is TokenKind.LeftParen)
 				return new FuncPtrAst(Next().text);
@@ -141,6 +148,22 @@ partial class Parser
 
 		Match(TokenKind.RightBracket);
 		return new ArrayExprAst(eleType, elements.ToArray());
+	}
+
+	GroupExprAst GroupExpr(TypeAst groupType)
+	{
+		Match(TokenKind.LeftBrace);
+
+		List<ExprAst> members = new List<ExprAst>();
+		while (current.kind is not TokenKind.Eof and not TokenKind.RightBrace)
+		{
+			members.Add(Expr());
+
+			if (current.kind is not TokenKind.RightBrace)
+				Match(TokenKind.Comma);
+		}
+		Match(TokenKind.RightBrace);
+		return new GroupExprAst(groupType, members.ToArray());
 	}
 
 	LiteralExprAst LiteralExpr()

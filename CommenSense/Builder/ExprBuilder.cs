@@ -37,6 +37,8 @@ partial class Builder
 
 		if (ast is ArrayExprAst arrExpr)
 			return BuildExpr(arrExpr);
+		if (ast is GroupExprAst groupExpr)
+			return BuildExpr(groupExpr);
 		if (ast is IndexExprAst idxExpr)
 			return BuildExpr(idxExpr);
 		if (ast is CastExprAst castExpr)
@@ -95,6 +97,21 @@ partial class Builder
 		}
 
 		return ptr;
+	}
+
+	Value BuildExpr(GroupExprAst ast)
+	{
+		Type type = BuildType(ast.groupType);
+		Value ptr = llBuilder.BuildAlloca(type);
+
+		for (uint i = 0; i < ast.members.Length; i++)
+		{
+			Value ele = BuildCast(BuildExpr(ast.members[i]), type.StructElementTypes[i]);
+			Value fieldPtr = llBuilder.BuildStructGEP(ptr, i);
+			llBuilder.BuildStore(ele, fieldPtr);
+		}
+
+		return llBuilder.BuildLoad(ptr);
 	}
 
 	Value BuildExpr(IndexExprAst ast) =>

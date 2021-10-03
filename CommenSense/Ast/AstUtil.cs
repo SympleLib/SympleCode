@@ -114,6 +114,9 @@ partial record VarExprAst
 partial record ArrayExprAst
 { public override string ToString() => $"{ArrayThing(eleType)}[ {string.Join<ExprAst>(", ", elements)} ]"; }
 
+partial record GroupExprAst
+{ public override string ToString() => $"{ArrayThing(groupType)}{{ {string.Join<ExprAst>(", ", members)} }}"; }
+
 partial record IndexExprAst
 { public override string ToString() => $"{ptr}[{index}]"; }
 
