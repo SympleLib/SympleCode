@@ -24,8 +24,9 @@ partial class Parser
 
 	public ModuleAst Parse()
 	{
-		while (current.kind is TokenKind.Semicol)
-			Next();
+		MaybeEndLine();
+		PreParse();
+		MaybeEndLine();
 
 		const string name = "simple-code";
 		List<StmtAst> members = new List<StmtAst>();
