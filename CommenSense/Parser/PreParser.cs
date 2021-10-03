@@ -5,7 +5,16 @@ partial class Parser
 	// Store the names of symbols to tell what an identifier means
 	readonly List<string> varNames = new List<string>();
 	readonly List<string> funcNames = new List<string>();
-	readonly List<string> typeNames = new List<string>();
+	readonly List<string> typeNames = new List<string>()
+	{
+		"void",
+		"bool",
+		"char",
+		"int",
+		"long",
+		"float",
+		"double",
+	};
 
 	// Iterate through code as if parsing it, but only care about the top-level stmts
 	void PreParse()

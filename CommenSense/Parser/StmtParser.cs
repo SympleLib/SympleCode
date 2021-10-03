@@ -15,7 +15,7 @@ partial class Parser
 				return DeclFunc(retType: type, name);
 			return DeclVar(type, name);
 		}
-		if (current.kind is TokenKind.Identifier && !(scope.VarExists(current.text) || scope.FuncExists(current.text)) && next.kind is TokenKind.Star or TokenKind.Identifier)
+		if (current.kind is TokenKind.Identifier && !(scope.VarExists(current.text) || scope.FuncExists(current.text)) && IsType(current))
 		{
 			TypeAst type = Type();
 			string name = Name();

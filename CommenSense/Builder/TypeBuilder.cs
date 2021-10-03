@@ -31,6 +31,9 @@ partial class Builder
 			"bool" => Type.Int1,
 			"char" => Type.Int8,
 			"int" => Type.Int32,
+			"long" => Type.Int64,
+			"float" => Type.Float,
+			"double" => Type.Double,
 
 			_ => NonNativeType(ast.typeBase),
 		};

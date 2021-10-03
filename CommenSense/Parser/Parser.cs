@@ -36,6 +36,14 @@ partial class Parser
 		return new ModuleAst(name, members.ToArray(), structs.ToArray());
 	}
 
+	bool IsType(Token token)
+	{
+		if (token.kind is not TokenKind.Identifier)
+			return false;
+
+		return typeNames.Contains(token.text);
+	}
+
 	TypeAst Type()
 	{
 		string typeBase = Name();
