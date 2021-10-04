@@ -104,30 +104,4 @@ partial class Builder
 		Value fn = llModule.AddFunction(ast.name, ty);
 		scope.Define(ast.name, fn);
 	}
-
-	Value BuildCast(Value val, Type to)
-	{
-		Type from = val.TypeOf;
-
-		if (from.IsFloat() && to.IsFloat())
-			return llBuilder.BuildFPCast(val, to);
-		if (from.IsFloat() && !to.IsFloat())
-			return llBuilder.BuildFPToSI(val, to);
-		if (!from.IsFloat() && to.IsFloat())
-			return llBuilder.BuildSIToFP(val, to);
-
-		if (from.IsPtr() && to.IsPtr())
-			return llBuilder.BuildPointerCast(val, to);
-		if (from.IsPtr() && !to.IsPtr())
-			return llBuilder.BuildPtrToInt(val, to);
-		if (!from.IsPtr() && to.IsPtr())
-			return llBuilder.BuildIntToPtr(val, to);
-
-		if (from == uninitType && to.StructName != string.Empty)
-		{
-			StructAst ztruct = scope.GetStruct(to.StructName);
-			return BuildStructExpr(to, ztruct);
-		}
-		return llBuilder.BuildIntCast(val, to);
-	}
 }
