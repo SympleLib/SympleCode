@@ -48,7 +48,7 @@ partial record ParamAst
 { public override string ToString() => $"{type} {name} = {defaultExpr}"; }
 
 partial record FieldAst
-{ public override string ToString() => $"{vis} {type} {name} = {initializer}"; }
+{ public override string ToString() => $"{visibility} {type} {name} = {initializer}"; }
 
 
 partial record StructAst
@@ -66,16 +66,16 @@ partial record StructAst
 
 
 partial record DeclFuncAst
-{ public override string ToString() => $"{vis} decl {retType} {name}({string.Join<ParamAst>(", ", paramz)}{PrintWithVaArgMaybeIHonestlyDontKnowWhatToCallThisFunction(vaArg)})"; }
+{ public override string ToString() => $"{visibility} decl {retType} {name}({string.Join<ParamAst>(", ", paramz)}{PrintWithVaArgMaybeIHonestlyDontKnowWhatToCallThisFunction(vaArg)})"; }
 
 partial record FuncAst
-{ public override string ToString() => $"{vis} {retType} {name}({string.Join<ParamAst>(", ", paramz)}{PrintWithVaArgMaybeIHonestlyDontKnowWhatToCallThisFunction(vaArg)}) {{\n{IncTab()}{string.Join<StmtAst>($"\n{GetTabs()}", body)}{DecTab()}\n{GetTabs()}}}"; }
+{ public override string ToString() => $"{visibility} {retType} {name}({string.Join<ParamAst>(", ", paramz)}{PrintWithVaArgMaybeIHonestlyDontKnowWhatToCallThisFunction(vaArg)}) {{\n{IncTab()}{string.Join<StmtAst>($"\n{GetTabs()}", body)}{DecTab()}\n{GetTabs()}}}"; }
 
 partial record DeclVarAst
-{ public override string ToString() => $"{vis} decl {type} {name}"; }
+{ public override string ToString() => $"{visibility} decl {type} {name}"; }
 
 partial record VarAst
-{ public override string ToString() => $"{vis} {type} {name} = {initializer}"; }
+{ public override string ToString() => $"{visibility} {type} {name} = {initializer}"; }
 
 
 partial record ExprStmtAst

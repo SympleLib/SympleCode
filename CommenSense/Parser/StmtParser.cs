@@ -1,36 +1,56 @@
-﻿namespace CommenSense;
+﻿using LLVMSharp.Interop;
+
+namespace CommenSense;
 
 partial class Parser
 {
 	StmtAst Stmt()
 	{
+		Visibility visibility;
+		switch (current.kind)
+		{
+		case TokenKind.PublicKeyword:
+			Next();
+			visibility = LLVMDefaultVisibility;
+			break;
+		case TokenKind.PrivateKeyword:
+			Next();
+			visibility = LLVMHiddenVisibility;
+			break;
+		case TokenKind.ProtectedKeyword:
+			Next();
+			visibility = LLVMProtectedVisibility;
+			break;
+		default:
+			visibility = LLVMDefaultVisibility;
+			break;
+		};
+
 		if (current.kind is TokenKind.StructKeyword)
-			return Struct();
+			return Struct(visibility);
 		if (current.kind is TokenKind.DeclKeyword)
 		{
 			Next();
 			TypeAst type = Type();
 			string name = Name();
 			if (current.kind is TokenKind.LeftParen)
-				return DeclFunc(retType: type, name);
-			return DeclVar(type, name);
+				return DeclFunc(visibility, retType: type, name);
+			return DeclVar(visibility, type, name);
 		}
 		if (current.kind is TokenKind.Identifier && !(scope.VarExists(current.text) || scope.FuncExists(current.text)) && IsType(current))
 		{
 			TypeAst type = Type();
 			string name = Name();
 			if (current.kind is TokenKind.LeftParen or TokenKind.LeftBrace)
-				return Func(retType: type, name);
-			return Var(type, name);
+				return Func(visibility, retType: type, name);
+			return Var(visibility, type, name);
 		}
 
 		return ExprStmt();
 	}
 
-	StructAst Struct()
+	StructAst Struct(Visibility visibility)
 	{
-		const LLVMVisibility vis = LLVMDefaultVisibility;
-
 		Match(TokenKind.StructKeyword);
 		string name = Name();
 		Match(TokenKind.LeftBrace);
@@ -46,15 +66,14 @@ partial class Parser
 		Match(TokenKind.RightBrace);
 
 		MaybeEndLine();
-		var ztruct = new StructAst(vis, name, fields.ToArray());
+		var ztruct = new StructAst(visibility, name, fields.ToArray());
 		structs.Add(ztruct);
 		return ztruct;
 	}
 
-	FuncAst Func(TypeAst retType, string name)
+	FuncAst Func(Visibility visibility, TypeAst retType, string name)
 	{
 		EnterScope();
-		const LLVMVisibility vis = LLVMDefaultVisibility;
 		bool vaArg = false;
 		List<ParamAst> paramz = new List<ParamAst>();
 		if (current.kind is TokenKind.LeftParen)
@@ -88,12 +107,11 @@ partial class Parser
 
 		MaybeEndLine();
 		scope.DefineFunc(name);
-		return new FuncAst(vis, retType, name, paramz.ToArray(), body.ToArray(), vaArg);
+		return new FuncAst(visibility, retType, name, paramz.ToArray(), body.ToArray(), vaArg);
 	}
 
-	VarAst Var(TypeAst type, string name)
+	VarAst Var(Visibility visibility, TypeAst type, string name)
 	{
-		const LLVMVisibility vis = LLVMDefaultVisibility;
 		ExprAst initializer = new ExprAst();
 		if (current.kind is TokenKind.Eql)
 		{
@@ -103,12 +121,11 @@ partial class Parser
 
 		EndLine();
 		scope.DefineVar(name);
-		return new VarAst(vis, type, name, initializer);
+		return new VarAst(visibility, type, name, initializer);
 	}
 
-	DeclFuncAst DeclFunc(TypeAst retType, string name)
+	DeclFuncAst DeclFunc(Visibility visibility, TypeAst retType, string name)
 	{
-		const LLVMVisibility vis = LLVMDefaultVisibility;
 		List<ParamAst> paramz = new List<ParamAst>();
 		Match(TokenKind.LeftParen);
 		bool vaArg = false;
@@ -131,14 +148,13 @@ partial class Parser
 		EndLine();
 
 		scope.DefineFunc(name);
-		return new DeclFuncAst(vis, retType, name, paramz.ToArray(), vaArg);
+		return new DeclFuncAst(visibility, retType, name, paramz.ToArray(), vaArg);
 	}
 
-	DeclVarAst DeclVar(TypeAst type, string name)
+	DeclVarAst DeclVar(Visibility visibility, TypeAst type, string name)
 	{
-		const LLVMVisibility vis = LLVMDefaultVisibility;
 		scope.DefineVar(name);
-		return new DeclVarAst(vis, type, name);
+		return new DeclVarAst(visibility, type, name);
 	}
 
 	ExprStmtAst ExprStmt()

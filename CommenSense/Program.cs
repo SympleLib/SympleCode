@@ -8,6 +8,8 @@ global using System.Linq;
 global using static LLVMSharp.Interop.LLVMOpcode;
 global using static LLVMSharp.Interop.LLVMVisibility;
 
+global using Visibility = LLVMSharp.Interop.LLVMVisibility;
+
 using System.IO;
 using System.Runtime.InteropServices;
 

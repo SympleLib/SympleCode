@@ -7,19 +7,19 @@ partial record TypeAst(int ptrCount): Ast;
 partial record BaseTypeAst(string typeBase, int ptrCount): TypeAst(ptrCount);
 partial record FuncTypeAst(TypeAst retType, TypeAst[] paramTypes, bool vaArg, int ptrCount): TypeAst(ptrCount);
 partial record ParamAst(TypeAst type, string name, ExprAst defaultExpr): Ast;
-partial record FieldAst(Enum vis, TypeAst type, string name, ExprAst initializer): Ast;
+partial record FieldAst(Visibility visibility, TypeAst type, string name, ExprAst initializer): Ast;
 
 
 partial record StmtAst: Ast;
 
-partial record ImplAst(Enum vis, string name, FuncAst[] funcs): StmtAst;
-partial record StructAst(Enum vis, string name, FieldAst[] fields): StmtAst;
-partial record ClassAst(Enum vis, string name, FieldAst[] fields, FuncAst[] funcs): StmtAst;
+partial record ImplAst(Visibility visibility, string name, FuncAst[] funcs): StmtAst;
+partial record StructAst(Visibility vis, string name, FieldAst[] fields): StmtAst;
+partial record ClassAst(Visibility visibility, string name, FieldAst[] fields, FuncAst[] funcs): StmtAst;
 
-partial record DeclFuncAst(Enum vis, TypeAst retType, string name, ParamAst[] paramz, bool vaArg): StmtAst;
-partial record FuncAst(Enum vis, TypeAst retType, string name, ParamAst[] paramz, StmtAst[] body, bool vaArg): StmtAst;
-partial record DeclVarAst(Enum vis, TypeAst type, string name): StmtAst;
-partial record VarAst(Enum vis, TypeAst type, string name, ExprAst initializer): StmtAst;
+partial record DeclFuncAst(Visibility visibility, TypeAst retType, string name, ParamAst[] paramz, bool vaArg): StmtAst;
+partial record FuncAst(Visibility visibility, TypeAst retType, string name, ParamAst[] paramz, StmtAst[] body, bool vaArg): StmtAst;
+partial record DeclVarAst(Visibility visibility, TypeAst type, string name): StmtAst;
+partial record VarAst(Visibility visibility, TypeAst type, string name, ExprAst initializer): StmtAst;
 
 partial record ExprStmtAst(ExprAst expr): StmtAst;
 

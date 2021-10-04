@@ -28,6 +28,15 @@ partial class Parser
 
 	void PreStmt()
 	{
+		switch (current.kind)
+		{
+		case TokenKind.PublicKeyword:
+		case TokenKind.PrivateKeyword:
+		case TokenKind.ProtectedKeyword:
+			Next();
+			break;
+		};
+
 		if (current.kind is TokenKind.StructKeyword)
 			PreStruct();
 		else if (current.kind is TokenKind.DeclKeyword)

@@ -1,19 +1,27 @@
-decl void printf(char* fmt, ...)
-decl void putchar(char)
-decl void puts(char*)
+public decl void printf(char* fmt, ...)
+public decl void putchar(char)
+public decl void puts(char*)
 
-struct Test
+private struct Test
 {
-	int x,
-	bool y,
-	int z,
-	double w,
+	public int x,
+	private bool y,
+	private int z,
+	public double w,
 }
 
-void run {
-	Test test = Test { 69, true, 420, 1.337 };
+private void doTest(Test test) {
 	printf('%i\n', test.x);
 	printf('%i\n', (int) test.y);
 	printf('%i\n', test.z);
 	printf('%g\n', test.w);
+}
+
+public void runFunc(void(Test)* func, Test param) {
+	%func(param);
+}
+
+public void run {
+	Test test = Test { 69, true, 420, 1.337 };
+	runFunc(&doTest, test);
 }

@@ -46,6 +46,10 @@ enum TokenKind
 
 	AsKeyword,
 	ToKeyword,
+
+	PublicKeyword,
+	PrivateKeyword,
+	ProtectedKeyword,
 }
 
 partial class Parser
@@ -91,6 +95,10 @@ partial class Parser
 
 			"as",
 			"to",
+
+			"public",
+			"private",
+			"protected",
 		};
 
 		readonly string src;

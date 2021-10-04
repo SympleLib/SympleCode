@@ -1,5 +1,7 @@
 ﻿namespace CommenSense;
 
+using System;
+
 using Type = LLVMTypeRef;
 using Value = LLVMValueRef;
 
@@ -21,6 +23,7 @@ partial class Builder
 	{
 		Type type = BuildType(ast.type);
 		Value var = llModule.AddGlobal(type, ast.name);
+		var.Visibility = ast.visibility;
 		scope.Define(ast.name, var);
 	}
 
@@ -33,6 +36,7 @@ partial class Builder
 		Type retType = BuildType(ast.retType);
 		Type type = Type.CreateFunction(retType, paramTypes, ast.vaArg);
 		Value func = llModule.AddFunction(ast.name, type);
+		func.Visibility = ast.visibility;
 		scope.Define(ast.name, func);
 	}
 
@@ -43,6 +47,7 @@ partial class Builder
 
 		Type type = BuildType(ast.type);
 		Value var = llModule.AddGlobal(type, ast.name);
+		var.Visibility = ast.visibility;
 		scope.Define(ast.name, var);
 	}
 

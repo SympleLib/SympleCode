@@ -106,7 +106,25 @@ partial class Parser
 
 	FieldAst Field()
 	{
-		const LLVMVisibility vis = LLVMDefaultVisibility;
+		Visibility visibility;
+		switch (current.kind)
+		{
+		case TokenKind.PublicKeyword:
+			Next();
+			visibility = LLVMDefaultVisibility;
+			break;
+		case TokenKind.PrivateKeyword:
+			Next();
+			visibility = LLVMHiddenVisibility;
+			break;
+		case TokenKind.ProtectedKeyword:
+			Next();
+			visibility = LLVMProtectedVisibility;
+			break;
+		default:
+			visibility = LLVMDefaultVisibility;
+			break;
+		};
 
 		TypeAst type = Type();
 		string name = current.kind is TokenKind.Identifier ? Next().text : string.Empty;
@@ -117,7 +135,7 @@ partial class Parser
 			initializer = Expr();
 		}
 
-		return new FieldAst(vis, type, name, initializer);
+		return new FieldAst(visibility, type, name, initializer);
 	}
 
 	Token Peek(int offset = 0)
