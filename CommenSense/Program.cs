@@ -15,7 +15,10 @@ using System.Runtime.InteropServices;
 
 using CommenSense;
 
+// I wont use this buddy for debugging
+#pragma warning disable CS8321 // Local function is declared but never used
 void Optimize(LLVMModuleRef module)
+#pragma warning restore CS8321 // Local function is declared but never used
 {
 	LLVMPassManagerRef pass = LLVMPassManagerRef.Create();
 	pass.AddAggressiveDCEPass();

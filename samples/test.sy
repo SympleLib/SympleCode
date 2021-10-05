@@ -22,6 +22,10 @@ public void runFunc(void(Test)* func, Test param): 'u can use spaces aswell' {
 }
 
 public void run: 'run' {
+	@exit {
+		printString('Exiting...');
+	}
+
 	Test test = Test { 69, true, 420, 1.337 };
 	runFunc(&doTest, test);
 }
