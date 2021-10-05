@@ -61,6 +61,19 @@ partial record StructAst
 		return (uint) i;
 	}
 
+	public uint GetFieldWithLvl(string name, Visibility permLvl)
+	{
+		uint i = GetField(name);
+		Visibility vis = fields[i].visibility;
+		if (permLvl is Visibility.LLVMHiddenVisibility)
+			return i;
+		if (permLvl is Visibility.LLVMProtectedVisibility && vis is not Visibility.LLVMHiddenVisibility)
+			return i;
+		if (permLvl is Visibility.LLVMDefaultVisibility && vis is Visibility.LLVMDefaultVisibility)
+			return i;
+		throw new Exception("Ya ain't got perms");
+	}
+
 	public override string ToString() => $"{vis} struct {name} {{\n{IncTab()}{string.Join<FieldAst>("\n" + GetTabs(), fields)}{DecTab()}\n{GetTabs()}}}";
 }
 

@@ -12,8 +12,8 @@ private struct Test
 
 private void doTest(Test test) {
 	printf('%i\n', test.x);
-	printf('%i\n', (int) test.y);
-	printf('%i\n', test.z);
+	// printf('%i\n', (int) test.y);
+	// printf('%i\n', test.z);
 	printf('%g\n', test.w);
 }
 

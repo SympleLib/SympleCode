@@ -74,7 +74,7 @@ partial class Builder
 	{
 		Value container = BuildPtr(ast.container);
 		StructAst ztruct = scope.GetStruct(container.TypeOf.ElementType.StructName);
-		uint i = ztruct.GetField(ast.memberName);
+		uint i = ztruct.GetFieldWithLvl(ast.memberName, LLVMDefaultVisibility);
 		return llBuilder.BuildLoad(llBuilder.BuildStructGEP(container, i));
 	}
 
