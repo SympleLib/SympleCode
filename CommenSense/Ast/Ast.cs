@@ -16,10 +16,10 @@ partial record ImplAst(Visibility visibility, string name, FuncAst[] funcs): Stm
 partial record StructAst(Visibility vis, string name, FieldAst[] fields): StmtAst;
 partial record ClassAst(Visibility visibility, string name, FieldAst[] fields, FuncAst[] funcs): StmtAst;
 
-partial record DeclFuncAst(Visibility visibility, TypeAst retType, string name, ParamAst[] paramz, bool vaArg): StmtAst;
-partial record FuncAst(Visibility visibility, TypeAst retType, string name, ParamAst[] paramz, StmtAst[] body, bool vaArg): StmtAst;
-partial record DeclVarAst(Visibility visibility, TypeAst type, string name): StmtAst;
-partial record VarAst(Visibility visibility, TypeAst type, string name, ExprAst initializer): StmtAst;
+partial record DeclFuncAst(Visibility visibility, TypeAst retType, string realName, string asmName, ParamAst[] paramz, bool vaArg): StmtAst;
+partial record FuncAst(Visibility visibility, TypeAst retType, string realName, string asmName, ParamAst[] paramz, StmtAst[] body, bool vaArg): StmtAst;
+partial record DeclVarAst(Visibility visibility, TypeAst type, string realName, string asmName): StmtAst;
+partial record VarAst(Visibility visibility, TypeAst type, string realName, string asmName, ExprAst initializer): StmtAst;
 
 partial record ExprStmtAst(ExprAst expr): StmtAst;
 

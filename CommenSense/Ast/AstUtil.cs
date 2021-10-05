@@ -79,16 +79,16 @@ partial record StructAst
 
 
 partial record DeclFuncAst
-{ public override string ToString() => $"{visibility} decl {retType} {name}({string.Join<ParamAst>(", ", paramz)}{PrintWithVaArgMaybeIHonestlyDontKnowWhatToCallThisFunction(vaArg)})"; }
+{ public override string ToString() => $"{visibility} decl {retType} {realName}({string.Join<ParamAst>(", ", paramz)}{PrintWithVaArgMaybeIHonestlyDontKnowWhatToCallThisFunction(vaArg)}): '{asmName}'"; }
 
 partial record FuncAst
-{ public override string ToString() => $"{visibility} {retType} {name}({string.Join<ParamAst>(", ", paramz)}{PrintWithVaArgMaybeIHonestlyDontKnowWhatToCallThisFunction(vaArg)}) {{\n{IncTab()}{string.Join<StmtAst>($"\n{GetTabs()}", body)}{DecTab()}\n{GetTabs()}}}"; }
+{ public override string ToString() => $"{visibility} {retType} {realName}({string.Join<ParamAst>(", ", paramz)}{PrintWithVaArgMaybeIHonestlyDontKnowWhatToCallThisFunction(vaArg)}): '{asmName}' {{\n{IncTab()}{string.Join<StmtAst>($"\n{GetTabs()}", body)}{DecTab()}\n{GetTabs()}}}"; }
 
 partial record DeclVarAst
-{ public override string ToString() => $"{visibility} decl {type} {name}"; }
+{ public override string ToString() => $"{visibility} decl {type} {realName}: '{asmName}'"; }
 
 partial record VarAst
-{ public override string ToString() => $"{visibility} {type} {name} = {initializer}"; }
+{ public override string ToString() => $"{visibility} {type} {realName}: '{asmName}' = {initializer}"; }
 
 
 partial record ExprStmtAst

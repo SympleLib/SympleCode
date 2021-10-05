@@ -41,9 +41,15 @@ partial class Parser
 		{
 			TypeAst type = Type();
 			string name = Name();
+			string? asmName = null;
+			if (current.kind is TokenKind.Colon)
+			{
+				Next();
+				name = Match(TokenKind.Str).text;
+			}
 			if (current.kind is TokenKind.LeftParen or TokenKind.LeftBrace)
-				return Func(visibility, retType: type, name);
-			return Var(visibility, type, name);
+				return Func(visibility, retType: type, name, asmName);
+			return Var(visibility, type, name, asmName);
 		}
 
 		return ExprStmt();
@@ -71,7 +77,7 @@ partial class Parser
 		return ztruct;
 	}
 
-	FuncAst Func(Visibility visibility, TypeAst retType, string name)
+	FuncAst Func(Visibility visibility, TypeAst retType, string name, string? asmName)
 	{
 		EnterScope();
 		bool vaArg = false;
@@ -98,6 +104,12 @@ partial class Parser
 			Match(TokenKind.RightParen);
 		}
 
+		if (asmName is null && current.kind is TokenKind.Colon)
+		{
+			Next();
+			asmName = Match(TokenKind.Str).text;
+		}
+
 		List<StmtAst> body = new List<StmtAst>();
 		Match(TokenKind.LeftBrace);
 		while (current.kind is not TokenKind.Eof and not TokenKind.RightBrace)
@@ -107,11 +119,17 @@ partial class Parser
 
 		MaybeEndLine();
 		scope.DefineFunc(name);
-		return new FuncAst(visibility, retType, name, paramz.ToArray(), body.ToArray(), vaArg);
+		return new FuncAst(visibility, retType, name, asmName?? name, paramz.ToArray(), body.ToArray(), vaArg);
 	}
 
-	VarAst Var(Visibility visibility, TypeAst type, string name)
+	VarAst Var(Visibility visibility, TypeAst type, string name, string? asmName)
 	{
+		scope.DefineVar(name);
+		if (asmName is null && current.kind is TokenKind.Colon)
+		{
+			Next();
+			asmName = Match(TokenKind.Str).text;
+		}
 		ExprAst initializer = new ExprAst();
 		if (current.kind is TokenKind.Eql)
 		{
@@ -120,12 +138,12 @@ partial class Parser
 		}
 
 		EndLine();
-		scope.DefineVar(name);
-		return new VarAst(visibility, type, name, initializer);
+		return new VarAst(visibility, type, name, asmName?? name, initializer);
 	}
 
 	DeclFuncAst DeclFunc(Visibility visibility, TypeAst retType, string name)
 	{
+		scope.DefineFunc(name);
 		List<ParamAst> paramz = new List<ParamAst>();
 		Match(TokenKind.LeftParen);
 		bool vaArg = false;
@@ -145,16 +163,27 @@ partial class Parser
 		}
 
 		Match(TokenKind.RightParen);
+		string asmName = name;
+		if (current.kind is TokenKind.Colon)
+		{
+			Next();
+			asmName = Match(TokenKind.Str).text;
+		}
 		EndLine();
 
-		scope.DefineFunc(name);
-		return new DeclFuncAst(visibility, retType, name, paramz.ToArray(), vaArg);
+		return new DeclFuncAst(visibility, retType, name, asmName, paramz.ToArray(), vaArg);
 	}
 
 	DeclVarAst DeclVar(Visibility visibility, TypeAst type, string name)
 	{
 		scope.DefineVar(name);
-		return new DeclVarAst(visibility, type, name);
+		string asmName = name;
+		if (current.kind is TokenKind.Colon)
+		{
+			Next();
+			name = Match(TokenKind.Str).text;
+		}
+		return new DeclVarAst(visibility, type, name, asmName);
 	}
 
 	ExprStmtAst ExprStmt()

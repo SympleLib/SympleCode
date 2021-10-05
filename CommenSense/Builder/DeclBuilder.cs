@@ -22,9 +22,9 @@ partial class Builder
 	void Decl(DeclVarAst ast)
 	{
 		Type type = BuildType(ast.type);
-		Value var = llModule.AddGlobal(type, ast.name);
+		Value var = llModule.AddGlobal(type, ast.asmName);
 		var.Visibility = ast.visibility;
-		scope.Define(ast.name, var);
+		scope.Define(ast.realName, var);
 	}
 
 	void Decl(FuncAst ast)
@@ -35,9 +35,9 @@ partial class Builder
 
 		Type retType = BuildType(ast.retType);
 		Type type = Type.CreateFunction(retType, paramTypes, ast.vaArg);
-		Value func = llModule.AddFunction(ast.name, type);
+		Value func = llModule.AddFunction(ast.asmName, type);
 		func.Visibility = ast.visibility;
-		scope.Define(ast.name, func);
+		scope.Define(ast.realName, func);
 	}
 
 	void Decl(VarAst ast)
@@ -46,9 +46,9 @@ partial class Builder
 			return;
 
 		Type type = BuildType(ast.type);
-		Value var = llModule.AddGlobal(type, ast.name);
+		Value var = llModule.AddGlobal(type, ast.asmName);
 		var.Visibility = ast.visibility;
-		scope.Define(ast.name, var);
+		scope.Define(ast.realName, var);
 	}
 
 	void Decl(StructAst ast)

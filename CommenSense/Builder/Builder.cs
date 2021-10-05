@@ -53,7 +53,7 @@ partial class Builder
 
 	void Build(FuncAst ast)
 	{
-		Value fn = scope.Find(ast.name);
+		Value fn = scope.Find(ast.realName);
 		Type[] paramTypes = fn.TypeOf.ElementType.ParamTypes;
 		LLVMBasicBlockRef entry = fn.AppendBasicBlock(string.Empty);
 		llBuilder.PositionAtEnd(entry);
@@ -82,14 +82,14 @@ partial class Builder
 
 		if (currentFunc == null)
 		{
-			Value var = scope.Find(ast.name);
+			Value var = scope.Find(ast.realName);
 			var.Initializer = initializer;
 		}
 		else
 		{
-			Value var = llBuilder.BuildAlloca(type, ast.name);
+			Value var = llBuilder.BuildAlloca(type, ast.asmName);
 			llBuilder.BuildStore(initializer, var);
-			scope.Define(ast.name, var);
+			scope.Define(ast.realName, var);
 		}
 	}
 
@@ -101,7 +101,7 @@ partial class Builder
 
 		Type retType = BuildType(ast.retType);
 		Type ty = Type.CreateFunction(retType, paramTypes, ast.vaArg);
-		Value fn = llModule.AddFunction(ast.name, ty);
-		scope.Define(ast.name, fn);
+		Value fn = llModule.AddFunction(ast.asmName, ty);
+		scope.Define(ast.realName, fn);
 	}
 }

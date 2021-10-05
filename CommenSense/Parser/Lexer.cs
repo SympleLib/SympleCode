@@ -35,6 +35,7 @@ enum TokenKind
 	RightParen,
 
 	Comma,
+	Colon,
 	Semicol,
 
 
@@ -82,6 +83,7 @@ partial class Parser
 			")",
 
 			",",
+			":",
 			";",
 		};
 

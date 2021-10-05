@@ -53,10 +53,19 @@ partial class Parser
 		{
 			Type();
 			string name = Name();
+			bool asmified = false;
+			if (current.kind is TokenKind.Colon)
+			{
+				asmified = true;
+
+				Next();
+				Match(TokenKind.Str);
+			}
+
 			if (current.kind is TokenKind.LeftParen or TokenKind.LeftBrace)
-				PreFunc(name);
+				PreFunc(name, asmified);
 			else
-				PreVar(name);
+				PreVar(name, asmified);
 		}
 	}
 
@@ -68,18 +77,29 @@ partial class Parser
 		Follow(TokenKind.LeftBrace, TokenKind.RightBrace);
 	}
 
-	void PreFunc(string name)
+	void PreFunc(string name, bool asmified)
 	{
 		if (current.kind is TokenKind.LeftParen)
 			Follow(TokenKind.LeftParen, TokenKind.RightParen);
+		if (!asmified && current.kind is TokenKind.Colon)
+		{
+			Next();
+			Match(TokenKind.Str);
+		}
 		Follow(TokenKind.LeftBrace, TokenKind.RightBrace);
 		MaybeEndLine();
 
 		funcNames.Add(name);
 	}
 
-	void PreVar(string name)
+	void PreVar(string name, bool asmified)
 	{
+		if (!asmified && current.kind is TokenKind.Colon)
+		{
+			Next();
+			Match(TokenKind.Str);
+		}
+
 		JumpTo(TokenKind.Semicol);
 		MaybeEndLine();
 
@@ -89,6 +109,12 @@ partial class Parser
 	void PreDeclFunc(string name)
 	{
 		Follow(TokenKind.LeftParen, TokenKind.RightParen);
+		if (current.kind is TokenKind.Colon)
+		{
+			Next();
+			Match(TokenKind.Str);
+		}
+
 		EndLine();
 
 		funcNames.Add(name);
@@ -96,6 +122,12 @@ partial class Parser
 
 	void PreDeclVar(string name)
 	{
+		if (current.kind is TokenKind.Colon)
+		{
+			Next();
+			Match(TokenKind.Str);
+		}
+
 		MaybeEndLine();
 		varNames.Add(name);
 	}

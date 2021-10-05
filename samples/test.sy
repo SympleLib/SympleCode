@@ -1,27 +1,27 @@
-public decl void printf(char* fmt, ...)
-public decl void putchar(char)
-public decl void puts(char*)
+public decl void printFmt(char* fmt, ...): 'printf'
+public decl void putchar(char): 'putchar'
+public decl void printString(char*): 'puts'
 
 private struct Test
 {
-	public int x,
-	private bool y,
-	private int z,
-	public double w,
+	int x,
+	bool y,
+	int z,
+	double w,
 }
 
-private void doTest(Test test) {
-	printf('%i\n', test.x);
-	// printf('%i\n', (int) test.y);
-	// printf('%i\n', test.z);
-	printf('%g\n', test.w);
+private void doTest(Test test): 'chickenDoodleDoo' {
+	printFmt('%i\n', test.x);
+	printFmt('%i\n', (int) test.y);
+	printFmt('%i\n', test.z);
+	printFmt('%g\n', test.w);
 }
 
-public void runFunc(void(Test)* func, Test param) {
+public void runFunc(void(Test)* func, Test param): 'u can use spaces aswell' {
 	%func(param);
 }
 
-public void run {
+public void run: 'run' {
 	Test test = Test { 69, true, 420, 1.337 };
 	runFunc(&doTest, test);
 }
