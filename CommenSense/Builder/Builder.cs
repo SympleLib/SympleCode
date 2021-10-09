@@ -1,5 +1,7 @@
 ﻿namespace CommenSense;
 
+using System;
+
 using Type = LLVMTypeRef;
 using Value = LLVMValueRef;
 
@@ -102,6 +104,7 @@ partial class Builder
 		Type retType = BuildType(ast.retType);
 		Type ty = Type.CreateFunction(retType, paramTypes, ast.vaArg);
 		Value fn = llModule.AddFunction(ast.asmName, ty);
+		fn.FunctionCallConv = (uint) ast.conv;
 		scope.Define(ast.realName, fn);
 	}
 }

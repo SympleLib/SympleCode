@@ -86,6 +86,9 @@ partial class Parser
 			Next();
 			Match(TokenKind.Str);
 		}
+
+		if (current.kind is TokenKind.Annotation)
+			Next();
 		Follow(TokenKind.LeftBrace, TokenKind.RightBrace);
 		MaybeEndLine();
 
@@ -114,6 +117,9 @@ partial class Parser
 			Next();
 			Match(TokenKind.Str);
 		}
+
+		if (current.kind is TokenKind.Annotation)
+			Next();
 
 		EndLine();
 

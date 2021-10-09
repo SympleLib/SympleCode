@@ -37,6 +37,7 @@ partial class Builder
 		Type type = Type.CreateFunction(retType, paramTypes, ast.vaArg);
 		Value func = llModule.AddFunction(ast.asmName, type);
 		func.Visibility = ast.visibility;
+		func.FunctionCallConv = (uint) ast.conv;
 		scope.Define(ast.realName, func);
 	}
 

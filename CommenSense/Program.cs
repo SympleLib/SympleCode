@@ -7,8 +7,10 @@ global using System.Linq;
 
 global using static LLVMSharp.Interop.LLVMOpcode;
 global using static LLVMSharp.Interop.LLVMVisibility;
+global using static LLVMSharp.Interop.LLVMCallConv;
 
 global using Visibility = LLVMSharp.Interop.LLVMVisibility;
+global using CallConv = LLVMSharp.Interop.LLVMCallConv;
 
 using System.IO;
 using System.Runtime.InteropServices;

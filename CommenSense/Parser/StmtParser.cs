@@ -104,10 +104,32 @@ partial class Parser
 			Match(TokenKind.RightParen);
 		}
 
-		if (asmName is null && current.kind is TokenKind.Colon)
+		if (asmName is null)
 		{
-			Next();
-			asmName = Match(TokenKind.Str).text;
+			if (current.kind is TokenKind.Colon)
+			{
+				Next();
+				asmName = Match(TokenKind.Str).text;
+			}
+		}
+		else
+			asmName = name;
+
+		CallConv conv = LLVMCCallConv;
+		if (current.kind is TokenKind.Annotation)
+		{
+			string decl = Next().text;
+			switch (decl)
+			{
+			case "cdecl":
+				break;
+			case "stdcall":
+				conv = LLVMX86StdcallCallConv;
+				break;
+
+			default:
+				throw new Exception("Invalid calling convention");
+			}
 		}
 
 		List<StmtAst> body = new List<StmtAst>();
@@ -119,7 +141,7 @@ partial class Parser
 
 		MaybeEndLine();
 		scope.DefineFunc(name);
-		return new FuncAst(visibility, retType, name, asmName?? name, paramz.ToArray(), body.ToArray(), vaArg);
+		return new FuncAst(visibility, retType, name, asmName?? name, paramz.ToArray(), vaArg, conv, body.ToArray());
 	}
 
 	VarAst Var(Visibility visibility, TypeAst type, string name, string? asmName)
@@ -163,15 +185,34 @@ partial class Parser
 		}
 
 		Match(TokenKind.RightParen);
+
 		string asmName = name;
 		if (current.kind is TokenKind.Colon)
 		{
 			Next();
 			asmName = Match(TokenKind.Str).text;
 		}
+
+		CallConv conv = LLVMCCallConv;
+		if (current.kind is TokenKind.Annotation)
+		{
+			string decl = Next().text;
+			switch (decl)
+			{
+			case "cdecl":
+				break;
+			case "stdcall":
+				conv = LLVMX86StdcallCallConv;
+				break;
+
+			default:
+				throw new Exception("Invalid calling convention");
+			}
+		}
+
 		EndLine();
 
-		return new DeclFuncAst(visibility, retType, name, asmName, paramz.ToArray(), vaArg);
+		return new DeclFuncAst(visibility, retType, name, asmName, paramz.ToArray(), vaArg, conv);
 	}
 
 	DeclVarAst DeclVar(Visibility visibility, TypeAst type, string name)

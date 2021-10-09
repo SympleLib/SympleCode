@@ -31,6 +31,7 @@ partial class Builder
 			"void" => Type.Void,
 			"bool" => Type.Int1,
 			"char" => Type.Int8,
+			"byte" => Type.Int8,
 			"int" => Type.Int32,
 			"long" => Type.Int64,
 			"float" => Type.Float,

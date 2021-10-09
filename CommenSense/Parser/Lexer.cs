@@ -1,5 +1,7 @@
 ﻿using System.Text;
 
+using static System.Net.Mime.MediaTypeNames;
+
 namespace CommenSense;
 
 enum TokenKind
@@ -12,6 +14,7 @@ enum TokenKind
 	Char,
 	Float,
 	Identifier,
+	Annotation,
 
 	Plus,
 	Minus,
@@ -132,6 +135,8 @@ partial class Parser
 				return Num();
 			if (char.IsLetter(current))
 				return Identifier();
+			if (current is '@')
+				return Annotation();
 			if (current is '\'')
 				return Str();
 			if (current is '`')
@@ -278,6 +283,16 @@ partial class Parser
 					return new Token(keywordStart + i, text);
 
 			return new Token(TokenKind.Identifier, text);
+		}
+
+		Token Annotation()
+		{
+			Next();
+			int start = pos;
+			while (char.IsLetterOrDigit(current))
+pos++;
+
+			return new Token(TokenKind.Annotation, src[start..pos]);
 		}
 
 		Token Punctuator()
