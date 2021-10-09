@@ -6,6 +6,10 @@ partial class Parser
 {
 	StmtAst Stmt()
 	{
+		if (current.kind is TokenKind.RetKeyword)
+			return Ret();
+
+		bool illegal = true;
 		Visibility visibility;
 		switch (current.kind)
 		{
@@ -23,6 +27,7 @@ partial class Parser
 			break;
 		default:
 			visibility = LLVMDefaultVisibility;
+			illegal = false;
 			break;
 		};
 
@@ -52,7 +57,18 @@ partial class Parser
 			return Var(visibility, type, name, asmName);
 		}
 
-		return ExprStmt();
+		if (!illegal)
+			return ExprStmt();
+
+		throw new Exception("Illegal");
+	}
+
+	RetStmtAst Ret()
+	{
+		Match(TokenKind.RetKeyword);
+		ExprAst expr = Expr();
+		EndLine();
+		return new RetStmtAst(expr);
 	}
 
 	StructAst Struct(Visibility visibility)
@@ -210,7 +226,7 @@ partial class Parser
 			}
 		}
 
-		EndLine();
+		MaybeEndLine();
 
 		return new DeclFuncAst(visibility, retType, name, asmName, paramz.ToArray(), vaArg, conv);
 	}

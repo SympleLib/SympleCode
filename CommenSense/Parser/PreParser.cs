@@ -121,7 +121,7 @@ partial class Parser
 		if (current.kind is TokenKind.Annotation)
 			Next();
 
-		EndLine();
+		MaybeEndLine();
 
 		funcNames.Add(name);
 	}

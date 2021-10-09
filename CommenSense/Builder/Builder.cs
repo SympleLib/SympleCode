@@ -47,6 +47,14 @@ partial class Builder
 			Build(declFunc);
 		else if (ast is DeclVarAst) { }
 		else if (ast is StructAst) { }
+		else if (ast is RetStmtAst retStmt)
+		{
+			Value expr = BuildExpr(retStmt.expr);
+			if (currentFunc.TypeOf.ElementType.ReturnType == Type.Void)
+				llBuilder.BuildRetVoid();
+			else
+				llBuilder.BuildRet(expr);
+		}
 		else if (ast is ExprStmtAst exprStmt)
 			BuildExpr(exprStmt.expr);
 		else
@@ -72,9 +80,14 @@ partial class Builder
 		foreach (StmtAst stmt in ast.body)
 			Decl(stmt);
 		foreach (StmtAst stmt in ast.body)
+		{
 			Build(stmt);
+			// In case new func
+			currentFunc = fn;
+		}
 		ExitScope();
-		llBuilder.BuildRetVoid();
+		if (fn.TypeOf.ElementType.ReturnType == Type.Void && entry.Terminator == null)
+			llBuilder.BuildRetVoid();
 	}
 
 	void Build(VarAst ast)

@@ -21,6 +21,7 @@ partial record FuncAst(Visibility visibility, TypeAst retType, string realName, 
 partial record DeclVarAst(Visibility visibility, TypeAst type, string realName, string asmName): StmtAst;
 partial record VarAst(Visibility visibility, TypeAst type, string realName, string asmName, ExprAst initializer): StmtAst;
 
+partial record RetStmtAst(ExprAst expr): StmtAst;
 partial record ExprStmtAst(ExprAst expr): StmtAst;
 
 

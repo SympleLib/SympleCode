@@ -91,6 +91,9 @@ partial record VarAst
 { public override string ToString() => $"{visibility} {type} {realName}: '{asmName}' = {initializer}"; }
 
 
+partial record RetStmtAst
+{ public override string ToString() => $"ret {expr}"; }
+
 partial record ExprStmtAst
 { public override string ToString() => expr.ToString(); }
 

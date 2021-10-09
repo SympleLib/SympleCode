@@ -159,8 +159,11 @@ partial class Parser
 		return prev;
 	}
 
-	void EndLine() =>
+	void EndLine()
+	{
+		Match(TokenKind.Semicol);
 		MaybeEndLine();
+	}
 
 	void MaybeEndLine()
 	{
