@@ -62,7 +62,7 @@ partial class Parser
 				Match(TokenKind.Str);
 			}
 
-			if (current.kind is TokenKind.LeftParen or TokenKind.LeftBrace)
+			if (current.kind is TokenKind.LeftParen or TokenKind.LeftBrace or TokenKind.Arrow)
 				PreFunc(name, asmified);
 			else
 				PreVar(name, asmified);
@@ -89,7 +89,11 @@ partial class Parser
 
 		if (current.kind is TokenKind.Annotation)
 			Next();
-		Follow(TokenKind.LeftBrace, TokenKind.RightBrace);
+
+		if (current.kind is TokenKind.Arrow)
+			JumpTo(TokenKind.Semicol);
+		else
+			Follow(TokenKind.LeftBrace, TokenKind.RightBrace);
 		MaybeEndLine();
 
 		funcNames.Add(name);
@@ -141,7 +145,8 @@ partial class Parser
 
 	void JumpTo(TokenKind kind)
 	{
-		while (current.kind is not TokenKind.Eof && current.kind != kind) {}
+		while (current.kind is not TokenKind.Eof && current.kind != kind)
+			Next();
 		Match(kind);
 	}
 

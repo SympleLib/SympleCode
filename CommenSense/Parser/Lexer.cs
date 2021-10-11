@@ -28,6 +28,7 @@ enum TokenKind
 
 	Eql,
 	Dot,
+	Arrow,
 	DotDotDot,
 
 	LeftBrace,
@@ -78,6 +79,7 @@ partial class Parser
 
 			"=",
 			".",
+			"->",
 			"...",
 
 			"{",

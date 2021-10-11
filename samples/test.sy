@@ -5,8 +5,13 @@ public decl void puts(char*) @cdecl
 public decl void MessageBoxA(byte* wnd, char* text, char* title, int type) @stdcall
 
 public void run {
-	int* run = int [ false, 6.9, 44.2, 1234 ];
+	int* run = int [ false, 6.9, 44.2, test() ];
 	printf('%i, %i, %i, %i\n', run[0], run[1], run[2], run[3]);
 	
-	ret MessageBoxA(0, 'Test Works!', 'Test', 0);
+	msg();
 }
+
+int test -> 45;
+
+void msg ->
+	MessageBoxA(0, 'Test Works!', 'Test', 0);

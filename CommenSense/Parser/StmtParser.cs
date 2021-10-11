@@ -52,7 +52,7 @@ partial class Parser
 				Next();
 				name = Match(TokenKind.Str).text;
 			}
-			if (current.kind is TokenKind.LeftParen or TokenKind.LeftBrace)
+			if (current.kind is TokenKind.LeftParen or TokenKind.LeftBrace or TokenKind.Arrow)
 				return Func(visibility, retType: type, name, asmName);
 			return Var(visibility, type, name, asmName);
 		}
@@ -146,6 +146,15 @@ partial class Parser
 			default:
 				throw new Exception("Invalid calling convention");
 			}
+		}
+
+		// Single Expr Func
+		if (current.kind is TokenKind.Arrow)
+		{
+			Next();
+			ExprAst expr = Expr();
+			MaybeEndLine();
+			return new FuncAst(visibility, retType, name, asmName ?? name, paramz.ToArray(), vaArg, conv, new StmtAst[] { new RetStmtAst(expr) });
 		}
 
 		List<StmtAst> body = new List<StmtAst>();
