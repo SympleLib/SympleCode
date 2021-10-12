@@ -1,17 +1,27 @@
-public decl void printf(char* fmt, ...) @cdecl
-public decl void putchar(char) @cdecl
-public decl void puts(char*) @cdecl
+public decl void printf(char* fmt, ...)
+public decl void putchar(char)
+public decl void puts(char*)
 
-public decl void MessageBoxA(byte* wnd, char* text, char* title, int type) @stdcall
+public decl void MessageBoxA(byte* wnd, char* text, char* title, int type)
 
-public void run {
-	int* run = int [ false, 6.9, 44.2, test() ];
-	printf('%i, %i, %i, %i\n', run[0], run[1], run[2], run[3]);
+class Test {
+	int x,
+	int y,
+	bool z;
 	
-	msg();
+	void func1(int w) {
+		printf('%i, %i, %i\n', this.x, y + w, z);
+	}
+	
+	void func1(int w) {
+		x += w;
+		printf('%i, %i, %i\n', x, y * w, z + w);
+	}
 }
 
-int test -> 45;
-
-void msg ->
-	MessageBoxA(0, 'Test Works!', 'Test', 0);
+public void run {
+	int* run = int [ false, 6.9, 42.0, 1337 ];
+	printf('%i, %i, %i, %i\n', run[0], run[1], run[2], run[3]);
+	
+	// MessageBoxA(0, 'Test Works!', 'Test', 0);
+}
