@@ -30,6 +30,13 @@ partial class Builder
 			llModule.Context.CreateNamedStruct(ztruct.name);
 			scope.Define(ztruct.name, ztruct);
 		}
+
+		foreach (ClassAst clazz in module.classes)
+		{
+			llModule.Context.CreateNamedStruct(clazz.name);
+			scope.Define(clazz.name, clazz);
+		}
+
 		foreach (StmtAst member in module.members)
 			Decl(member);
 		foreach (StmtAst member in module.members)
@@ -47,6 +54,8 @@ partial class Builder
 			Build(declFunc);
 		else if (ast is DeclVarAst) { }
 		else if (ast is StructAst) { }
+		else if (ast is ClassAst clazz)
+			Build(clazz);
 		else if (ast is RetStmtAst retStmt)
 		{
 			Value expr = BuildExpr(retStmt.expr);
@@ -59,6 +68,12 @@ partial class Builder
 			BuildExpr(exprStmt.expr);
 		else
 			throw new Exception("Bob the builder can't build this ◁[<");
+	}
+
+	void Build(ClassAst ast)
+	{
+		foreach (FuncAst func in ast.funcs)
+			Build(func);
 	}
 
 	void Build(FuncAst ast)

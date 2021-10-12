@@ -33,6 +33,8 @@ partial class Parser
 
 		if (current.kind is TokenKind.StructKeyword)
 			return Struct(visibility);
+		if (current.kind is TokenKind.ClassKeyword)
+			return Class(visibility);
 		if (current.kind is TokenKind.DeclKeyword)
 		{
 			Next();
@@ -50,7 +52,7 @@ partial class Parser
 			if (current.kind is TokenKind.Colon)
 			{
 				Next();
-				name = Match(TokenKind.Str).text;
+				asmName = Match(TokenKind.Str).text;
 			}
 			if (current.kind is TokenKind.LeftParen or TokenKind.LeftBrace or TokenKind.Arrow)
 				return Func(visibility, retType: type, name, asmName);
@@ -93,6 +95,67 @@ partial class Parser
 		return ztruct;
 	}
 
+	ClassAst Class(Visibility visibility)
+	{
+		Match(TokenKind.ClassKeyword);
+		string name = Name();
+		Match(TokenKind.LeftBrace);
+
+		List<FieldAst> fields = new List<FieldAst>();
+		while (current.kind is not TokenKind.Eof and not TokenKind.Semicol)
+		{
+			fields.Add(Field());
+			if (current.kind is not TokenKind.Semicol)
+				Match(TokenKind.Comma);
+		}
+
+		EndLine();
+
+		List<FuncAst> funcs = new List<FuncAst>();
+		while (current.kind is not TokenKind.Eof and not TokenKind.RightBrace)
+			funcs.Add(Func(name));
+
+		Match(TokenKind.RightBrace);
+		MaybeEndLine();
+		var clazz = new ClassAst(visibility, name, fields.ToArray(), funcs.ToArray());
+		classes.Add(clazz);
+		return clazz;
+	}
+
+	FuncAst Func(string className)
+	{
+		Visibility visibility;
+		switch (current.kind)
+		{
+		case TokenKind.PublicKeyword:
+			Next();
+			visibility = LLVMDefaultVisibility;
+			break;
+		case TokenKind.PrivateKeyword:
+			Next();
+			visibility = LLVMHiddenVisibility;
+			break;
+		case TokenKind.ProtectedKeyword:
+			Next();
+			visibility = LLVMProtectedVisibility;
+			break;
+		default:
+			visibility = LLVMDefaultVisibility;
+			break;
+		};
+
+		TypeAst retType = Type();
+		string name = Name();
+		string asmName = $"{className}.{name}";
+		if (current.kind is TokenKind.Colon)
+		{
+			Next();
+			asmName = Match(TokenKind.Str).text;
+		}
+
+		return Func(visibility, retType, name, asmName);
+	}
+
 	FuncAst Func(Visibility visibility, TypeAst retType, string name, string? asmName)
 	{
 		EnterScope();
@@ -122,14 +185,13 @@ partial class Parser
 
 		if (asmName is null)
 		{
+			asmName = name;
 			if (current.kind is TokenKind.Colon)
 			{
 				Next();
 				asmName = Match(TokenKind.Str).text;
 			}
 		}
-		else
-			asmName = name;
 
 		// Single Expr Func
 		if (current.kind is TokenKind.Arrow)

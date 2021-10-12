@@ -17,6 +17,7 @@ partial class Builder
 		public readonly Builder builder;
 		public readonly Scope? parent;
 		readonly Dictionary<string, StructAst> structs = new Dictionary<string, StructAst>();
+		readonly Dictionary<string, ClassAst> classes = new Dictionary<string, ClassAst>();
 		readonly Dictionary<string, Value> symbols = new Dictionary<string, Value>();
 
 		public Scope(Builder builder, Scope? parent = null)
@@ -27,6 +28,9 @@ partial class Builder
 
 		public void Define(string name, StructAst ztruct) =>
 			structs.Add(name, ztruct);
+
+		public void Define(string name, ClassAst clazz) =>
+			classes.Add(name, clazz);
 
 		public StructAst GetStruct(string name)
 		{

@@ -48,6 +48,7 @@ enum TokenKind
 
 	DeclKeyword,
 	StructKeyword,
+	ClassKeyword,
 
 	RetKeyword,
 
@@ -101,6 +102,7 @@ partial class Parser
 
 			"decl",
 			"struct",
+			"class",
 
 			"ret",
 

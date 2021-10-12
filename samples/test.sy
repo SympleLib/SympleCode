@@ -10,12 +10,12 @@ class Test {
 	bool z;
 	
 	void func1(int w) {
-		printf('%i, %i, %i\n', this.x, y + w, z);
+		// printf('%i, %i, %i\n', this.x, y + w, z);
 	}
 	
-	void func1(int w) {
-		x += w;
-		printf('%i, %i, %i\n', x, y * w, z + w);
+	void func2(int w) {
+		// x += w;
+		// printf('%i, %i, %i\n', x, y * w, z + w);
 	}
 }
 

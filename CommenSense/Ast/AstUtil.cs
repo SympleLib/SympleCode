@@ -51,6 +51,9 @@ partial record FieldAst
 { public override string ToString() => $"{visibility} {type} {name} = {initializer}"; }
 
 
+partial record ClassAst
+{ public override string ToString() => $"{visibility} class {name} {{\n{IncTab()}{string.Join<FieldAst>("\n" + GetTabs(), fields)}{"\n\n" + GetTabs()}{string.Join<FuncAst>("\n\n" + GetTabs(), funcs)}{DecTab()}\n{GetTabs()}}}"; }
+
 partial record StructAst
 {
 	public uint GetField(string name)
@@ -74,7 +77,7 @@ partial record StructAst
 		throw new Exception("Ya ain't got perms");
 	}
 
-	public override string ToString() => $"{vis} struct {name} {{\n{IncTab()}{string.Join<FieldAst>("\n" + GetTabs(), fields)}{DecTab()}\n{GetTabs()}}}";
+	public override string ToString() => $"{visibility} struct {name} {{\n{IncTab()}{string.Join<FieldAst>("\n" + GetTabs(), fields)}{DecTab()}\n{GetTabs()}}}";
 }
 
 

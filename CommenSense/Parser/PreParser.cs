@@ -39,6 +39,8 @@ partial class Parser
 
 		if (current.kind is TokenKind.StructKeyword)
 			PreStruct();
+		else if (current.kind is TokenKind.ClassKeyword)
+			PreClass();
 		else if (current.kind is TokenKind.DeclKeyword)
 		{
 			Next();
@@ -72,9 +74,17 @@ partial class Parser
 	void PreStruct()
 	{
 		Match(TokenKind.StructKeyword);
-		MaybeEndLine();
 		typeNames.Add(Name());
 		Follow(TokenKind.LeftBrace, TokenKind.RightBrace);
+		MaybeEndLine();
+	}
+
+	void PreClass()
+	{
+		Match(TokenKind.ClassKeyword);
+		typeNames.Add(Name());
+		Follow(TokenKind.LeftBrace, TokenKind.RightBrace);
+		MaybeEndLine();
 	}
 
 	void PreFunc(string name, bool asmified)

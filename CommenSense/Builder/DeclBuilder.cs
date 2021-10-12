@@ -17,6 +17,8 @@ partial class Builder
 			Decl(var);
 		else if (ast is StructAst ztruct)
 			Decl(ztruct);
+		else if (ast is ClassAst clazz)
+			Decl(clazz);
 	}
 
 	void Decl(DeclVarAst ast)
@@ -59,5 +61,17 @@ partial class Builder
 		for (int i = 0; i < elTypes.Length; i++)
 			elTypes[i] = BuildType(ast.fields[i].type);
 		type.StructSetBody(elTypes, false);
+	}
+
+	void Decl(ClassAst ast)
+	{
+		Type type = llModule.GetTypeByName(ast.name);
+		Type[] elTypes = new Type[ast.fields.Length];
+		for (int i = 0; i < elTypes.Length; i++)
+			elTypes[i] = BuildType(ast.fields[i].type);
+		type.StructSetBody(elTypes, false);
+
+		foreach (FuncAst func in ast.funcs)
+			Decl(func);
 	}
 }

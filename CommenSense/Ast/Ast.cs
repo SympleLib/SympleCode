@@ -1,7 +1,7 @@
 ﻿namespace CommenSense;
 
 partial record Ast;
-partial record ModuleAst(string name, StmtAst[] members, StructAst[] structs);
+partial record ModuleAst(string name, StmtAst[] members, StructAst[] structs, ClassAst[] classes);
 
 partial record TypeAst(int ptrCount): Ast;
 partial record BaseTypeAst(string typeBase, int ptrCount): TypeAst(ptrCount);
@@ -13,7 +13,7 @@ partial record FieldAst(Visibility visibility, TypeAst type, string name, ExprAs
 partial record StmtAst: Ast;
 
 partial record ImplAst(Visibility visibility, string name, FuncAst[] funcs): StmtAst;
-partial record StructAst(Visibility vis, string name, FieldAst[] fields): StmtAst;
+partial record StructAst(Visibility visibility, string name, FieldAst[] fields): StmtAst;
 partial record ClassAst(Visibility visibility, string name, FieldAst[] fields, FuncAst[] funcs): StmtAst;
 
 partial record DeclFuncAst(Visibility visibility, TypeAst retType, string realName, string asmName, ParamAst[] paramz, bool vaArg): StmtAst;
