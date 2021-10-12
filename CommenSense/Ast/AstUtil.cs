@@ -149,6 +149,9 @@ partial record CallExprAst
 partial record FuncPtrAst
 { public override string ToString() => $"&{funcName}"; }
 
+partial record MemberExprAst
+{ public override string ToString() => $"{container}.{memberName}"; }
+
 partial record VarExprAst
 { public override string ToString() => $"{varName}"; }
 
