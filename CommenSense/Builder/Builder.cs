@@ -25,16 +25,10 @@ partial class Builder
 
 	public LLVMModuleRef Build()
 	{
-		foreach (StructAst ztruct in module.structs)
+		foreach (Container ctnr in module.ctnrs)
 		{
-			llModule.Context.CreateNamedStruct(ztruct.name);
-			scope.Define(ztruct.name, ztruct);
-		}
-
-		foreach (ClassAst clazz in module.classes)
-		{
-			llModule.Context.CreateNamedStruct(clazz.name);
-			scope.Define(clazz.name, clazz);
+			llModule.Context.CreateNamedStruct(ctnr.name);
+			scope.Define(ctnr.name, ctnr);
 		}
 
 		foreach (StmtAst member in module.members)

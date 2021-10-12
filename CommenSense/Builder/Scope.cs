@@ -16,8 +16,7 @@ partial class Builder
 	{
 		public readonly Builder builder;
 		public readonly Scope? parent;
-		readonly Dictionary<string, StructAst> structs = new Dictionary<string, StructAst>();
-		readonly Dictionary<string, ClassAst> classes = new Dictionary<string, ClassAst>();
+		readonly Dictionary<string, Container> ctnrs = new Dictionary<string, Container>();
 		readonly Dictionary<string, Value> symbols = new Dictionary<string, Value>();
 
 		public Scope(Builder builder, Scope? parent = null)
@@ -26,19 +25,16 @@ partial class Builder
 			this.parent = parent;
 		}
 
-		public void Define(string name, StructAst ztruct) =>
-			structs.Add(name, ztruct);
+		public void Define(string name, Container ctnr) =>
+			ctnrs.Add(name, ctnr);
 
-		public void Define(string name, ClassAst clazz) =>
-			classes.Add(name, clazz);
-
-		public StructAst GetStruct(string name)
+		public Container GetCtnr(string name)
 		{
-			if (structs.TryGetValue(name, out StructAst? ztruct))
-				return ztruct;
+			if (ctnrs.TryGetValue(name, out Container? ctnr))
+				return ctnr;
 			if (parent is not null)
-				return parent!.GetStruct(name);
-			throw new Exception("struct don't exist man");
+				return parent!.GetCtnr(name);
+			throw new Exception("ctnr don't exist man");
 		}
 
 		public Value Find(string name)

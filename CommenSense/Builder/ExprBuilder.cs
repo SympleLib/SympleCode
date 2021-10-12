@@ -73,8 +73,8 @@ partial class Builder
 	Value BuildExpr(MemberExprAst ast)
 	{
 		Value container = BuildPtr(ast.container);
-		StructAst ztruct = scope.GetStruct(container.TypeOf.ElementType.StructName);
-		uint i = ztruct.GetFieldWithLvl(ast.memberName, LLVMDefaultVisibility);
+		Container ctnr = scope.GetCtnr(container.TypeOf.ElementType.StructName);
+		uint i = ctnr.GetFieldWithLvl(ast.memberName, LLVMDefaultVisibility);
 		return llBuilder.BuildLoad(llBuilder.BuildStructGEP(container, i));
 	}
 
@@ -162,13 +162,13 @@ partial class Builder
 		return llBuilder.BuildBinOp(op, left, right);
 	}
 
-	Value BuildStructExpr(Type type, StructAst ztruct)
+	Value BuildCtnrExpr(Type type, Container ctnr)
 	{
 		Value ptr = llBuilder.BuildAlloca(type);
 
-		for (uint i = 0; i < ztruct.fields.Length; i++)
+		for (uint i = 0; i < ctnr.fields.Length; i++)
 		{
-			Value ele = BuildCast(BuildExpr(ztruct.fields[i].initializer), type.StructElementTypes[i]);
+			Value ele = BuildCast(BuildExpr(ctnr.fields[i].initializer), type.StructElementTypes[i]);
 			Value fieldPtr = llBuilder.BuildStructGEP(ptr, i);
 			llBuilder.BuildStore(ele, fieldPtr);
 		}

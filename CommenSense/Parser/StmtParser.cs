@@ -91,7 +91,7 @@ partial class Parser
 
 		MaybeEndLine();
 		var ztruct = new StructAst(visibility, name, fields.ToArray());
-		structs.Add(ztruct);
+		ctnrs.Add(ztruct);
 		return ztruct;
 	}
 
@@ -118,7 +118,7 @@ partial class Parser
 		Match(TokenKind.RightBrace);
 		MaybeEndLine();
 		var clazz = new ClassAst(visibility, name, fields.ToArray(), funcs.ToArray());
-		classes.Add(clazz);
+		ctnrs.Add(clazz);
 		return clazz;
 	}
 

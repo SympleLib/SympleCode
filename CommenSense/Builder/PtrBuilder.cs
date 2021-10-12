@@ -35,8 +35,8 @@ partial class Builder
 	Value BuildPtr(MemberExprAst ast)
 	{
 		Value container = BuildPtr(ast.container);
-		StructAst ztruct = scope.GetStruct(container.TypeOf.ElementType.StructName);
-		uint i = ztruct.GetField(ast.memberName);
+		Container ctnr = scope.GetCtnr(container.TypeOf.ElementType.StructName);
+		uint i = ctnr.GetField(ast.memberName);
 		return llBuilder.BuildStructGEP(container, i);
 	}
 }

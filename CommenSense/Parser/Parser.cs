@@ -4,8 +4,7 @@ partial class Parser
 {
 	readonly Lexer lxr;
 	readonly List<Token> tokens = new List<Token>();
-	readonly List<StructAst> structs = new List<StructAst>();
-	readonly List<ClassAst> classes = new List<ClassAst>();
+	readonly List<Container> ctnrs = new List<Container>();
 	int pos = 0;
 	Token prev => Peek(-1);
 	Token current => Peek();
@@ -34,7 +33,7 @@ partial class Parser
 		while (current.kind is not TokenKind.Eof)
 			members.Add(Stmt());
 
-		return new ModuleAst(name, members.ToArray(), structs.ToArray(), classes.ToArray());
+		return new ModuleAst(name, members.ToArray(), ctnrs.ToArray());
 	}
 
 	bool IsType(Token token)

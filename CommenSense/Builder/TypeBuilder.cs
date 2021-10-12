@@ -81,8 +81,8 @@ partial class Builder
 
 		if (from == uninitType && to.StructName != string.Empty)
 		{
-			StructAst ztruct = scope.GetStruct(to.StructName);
-			return BuildStructExpr(to, ztruct);
+			Container ctnr = scope.GetCtnr(to.StructName);
+			return BuildCtnrExpr(to, ctnr); // TODO: Class Constructors
 		}
 		return llBuilder.BuildIntCast(val, to);
 	}
