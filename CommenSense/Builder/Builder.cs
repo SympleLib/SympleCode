@@ -67,12 +67,12 @@ partial class Builder
 	void Build(ClassAst ast)
 	{
 		foreach (FuncAst func in ast.funcs)
-			Build(func);
+			Build(func, ast.prefix);
 	}
 
-	void Build(FuncAst ast)
+	void Build(FuncAst ast, string prefix = "")
 	{
-		Value fn = scope.Find(ast.realName);
+		Value fn = scope.Find(prefix + ast.realName);
 		Type[] paramTypes = fn.TypeOf.ElementType.ParamTypes;
 		LLVMBasicBlockRef entry = fn.AppendBasicBlock(string.Empty);
 		llBuilder.PositionAtEnd(entry);

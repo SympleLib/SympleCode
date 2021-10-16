@@ -21,15 +21,16 @@ partial class Builder
 			Decl(clazz);
 	}
 
-	void Decl(DeclVarAst ast)
+	Value Decl(DeclVarAst ast)
 	{
 		Type type = BuildType(ast.type);
 		Value var = llModule.AddGlobal(type, ast.asmName);
 		var.Visibility = ast.visibility;
 		scope.Define(ast.realName, var);
+		return var;
 	}
 
-	void Decl(FuncAst ast)
+	Value Decl(FuncAst ast, string prefix = "")
 	{
 		Type[] paramTypes = new Type[ast.paramz.Length];
 		for (int i = 0; i < ast.paramz.Length; i++)
@@ -40,18 +41,20 @@ partial class Builder
 		Value func = llModule.AddFunction(ast.asmName, type);
 		func.Visibility = ast.visibility;
 		// func.FunctionCallConv = (uint) ast.conv;
-		scope.Define(ast.realName, func);
+		scope.Define(prefix + ast.realName, func);
+		return func;
 	}
 
-	void Decl(VarAst ast)
+	Value Decl(VarAst ast)
 	{
 		if (currentFunc != null)
-			return;
+			return null;
 
 		Type type = BuildType(ast.type);
 		Value var = llModule.AddGlobal(type, ast.asmName);
 		var.Visibility = ast.visibility;
 		scope.Define(ast.realName, var);
+		return var;
 	}
 
 	void Decl(StructAst ast)
@@ -72,6 +75,6 @@ partial class Builder
 		type.StructSetBody(elTypes, false);
 
 		foreach (FuncAst func in ast.funcs)
-			Decl(func);
+			Decl(func, ast.prefix);
 	}
 }

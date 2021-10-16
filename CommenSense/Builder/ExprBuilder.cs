@@ -75,9 +75,12 @@ partial class Builder
 		Value container = BuildPtr(ast.container);
 		Container ctnr = scope.GetCtnr(container.TypeOf.ElementType.StructName);
 		uint i = ctnr.GetFieldWithLvl(ast.memberName, LLVMDefaultVisibility);
-		// TODO: make half decent
-		if (i == ~0U && ctnr is ClassAst clazz)
-			return scope.Find(Array.Find(clazz.funcs, func => func.realName == ast.memberName)!.realName);
+		if (i == ~0U)
+		{
+			if (ctnr is ClassAst clazz)
+				return scope.Find(clazz.prefix + clazz.funcs[clazz.GetFuncWithLvl(ast.memberName, LLVMDefaultVisibility)].realName);
+			throw new Exception("we ain't got dat field");
+		}
 		return llBuilder.BuildLoad(llBuilder.BuildStructGEP(container, i));
 	}
 

@@ -4,13 +4,18 @@ public decl void puts(char*)
 
 public decl void MessageBoxA(byte* wnd, char* text, char* title, int type)
 
+void func1(int w) {
+	puts('func1 (global)');
+	// printf('%i, %i, %i\n', this.x, y + w, z);
+}
+	
 class Test {
 	int x = 6,
 	int y = 9,
 	long z;
 	
 	void func1(int w) {
-		puts('func1');
+		puts('func1 (class)');
 		// printf('%i, %i, %i\n', this.x, y + w, z);
 	}
 	
@@ -24,6 +29,7 @@ public void run {
 	Test test;
 	printf('%i%i %i\n', test.x, test.y, test.z);
 	test.func1(69);
+	func1(420);
 	
 	// MessageBoxA(0, 'Test Works!', 'Test', 0);
 }

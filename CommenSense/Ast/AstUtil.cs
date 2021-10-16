@@ -1,5 +1,6 @@
 ﻿namespace CommenSense;
 
+using System;
 using System.Linq;
 
 using LLVMSharp;
@@ -53,19 +54,21 @@ partial record FieldAst
 
 partial record ClassAst
 {
+	public string prefix => name + '.';
+
+	// i can be ~0 (-1)
 	public uint GetField(string name)
 	{
 		int i = Array.FindIndex(fields, field => field.name == name);
-		if (i == -1 && Array.Find(funcs, func => func.realName == name) is null)
-			throw new Exception("we ain't got dat field");
 		return (uint) i;
 	}
 
+	// i can be ~0
 	public uint GetFieldWithLvl(string name, Visibility permLvl)
 	{
 		uint i = GetField(name);
 		if (i == ~0U)
-			return ~0U;
+			return i;
 		Visibility vis = fields[i].visibility;
 		if (permLvl is Visibility.LLVMHiddenVisibility)
 			return i;
@@ -75,7 +78,31 @@ partial record ClassAst
 			return i;
 		throw new Exception("Ya ain't got perms");
 	}
-	
+
+
+	// i cant be ~0
+	public uint GetFunc(string name)
+{
+		int i = Array.FindIndex(funcs, func => func.realName == name);
+		if (i == -1)
+			throw new Exception("we ain't got dat func");
+		return (uint) i;
+	}
+
+	// i cant be ~0
+	public uint GetFuncWithLvl(string name, Visibility permLvl)
+	{
+		uint i = GetFunc(name);
+		Visibility vis = funcs[i].visibility;
+		if (permLvl is Visibility.LLVMHiddenVisibility)
+			return i;
+		if (permLvl is Visibility.LLVMProtectedVisibility && vis is not Visibility.LLVMHiddenVisibility)
+			return i;
+		if (permLvl is Visibility.LLVMDefaultVisibility && vis is Visibility.LLVMDefaultVisibility)
+			return i;
+		throw new Exception("Ya ain't got perms");
+	}
+
 	public override string ToString() => $"{visibility} class {name} {{\n{IncTab()}{string.Join<FieldAst>("\n" + GetTabs(), fields)}{"\n\n" + GetTabs()}{string.Join<FuncAst>("\n\n" + GetTabs(), funcs)}{DecTab()}\n{GetTabs()}}}";
 }
 
