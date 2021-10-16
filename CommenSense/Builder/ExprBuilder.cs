@@ -75,6 +75,9 @@ partial class Builder
 		Value container = BuildPtr(ast.container);
 		Container ctnr = scope.GetCtnr(container.TypeOf.ElementType.StructName);
 		uint i = ctnr.GetFieldWithLvl(ast.memberName, LLVMDefaultVisibility);
+		// TODO: make half decent
+		if (i == ~0U && ctnr is ClassAst clazz)
+			return scope.Find(Array.Find(clazz.funcs, func => func.realName == ast.memberName)!.realName);
 		return llBuilder.BuildLoad(llBuilder.BuildStructGEP(container, i));
 	}
 

@@ -56,7 +56,7 @@ partial record ClassAst
 	public uint GetField(string name)
 	{
 		int i = Array.FindIndex(fields, field => field.name == name);
-		if (i == -1)
+		if (i == -1 && Array.Find(funcs, func => func.realName == name) is null)
 			throw new Exception("we ain't got dat field");
 		return (uint) i;
 	}
@@ -64,6 +64,8 @@ partial record ClassAst
 	public uint GetFieldWithLvl(string name, Visibility permLvl)
 	{
 		uint i = GetField(name);
+		if (i == ~0U)
+			return ~0U;
 		Visibility vis = fields[i].visibility;
 		if (permLvl is Visibility.LLVMHiddenVisibility)
 			return i;

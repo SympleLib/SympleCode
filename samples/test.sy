@@ -23,7 +23,7 @@ class Test {
 public void run {
 	Test test;
 	printf('%i%i %i\n', test.x, test.y, test.z);
-	test.func1();
+	test.func1(69);
 	
 	// MessageBoxA(0, 'Test Works!', 'Test', 0);
 }
