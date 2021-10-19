@@ -54,8 +54,6 @@ partial record FieldAst
 
 partial record ClassAst
 {
-	public string prefix => name + '.';
-
 	// i can be ~0 (-1)
 	public uint GetField(string name)
 	{

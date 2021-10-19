@@ -30,7 +30,7 @@ partial class Builder
 		return var;
 	}
 
-	Value Decl(FuncAst ast, string prefix = "")
+	Value Decl(FuncAst ast)
 	{
 		Type[] paramTypes = new Type[ast.paramz.Length];
 		for (int i = 0; i < ast.paramz.Length; i++)
@@ -41,7 +41,23 @@ partial class Builder
 		Value func = llModule.AddFunction(ast.asmName, type);
 		func.Visibility = ast.visibility;
 		// func.FunctionCallConv = (uint) ast.conv;
-		scope.Define(prefix + ast.realName, func);
+		scope.Define(ast.realName, func);
+		return func;
+	}
+
+	Value Decl(FuncAst ast, Type clsType)
+	{
+		Type[] paramTypes = new Type[ast.paramz.Length + 1];
+		paramTypes[0] = Type.CreatePointer(clsType, 0);
+		for (int i = 0; i < ast.paramz.Length; i++)
+			paramTypes[i + 1] = BuildType(ast.paramz[i].type);
+
+		Type retType = BuildType(ast.retType);
+		Type type = Type.CreateFunction(retType, paramTypes, ast.vaArg);
+		Value func = llModule.AddFunction(ast.asmName, type);
+		func.Visibility = ast.visibility;
+		// func.FunctionCallConv = (uint) ast.conv;
+		scope.Define(clsType.StructName + "." + ast.realName, func);
 		return func;
 	}
 
@@ -75,6 +91,6 @@ partial class Builder
 		type.StructSetBody(elTypes, false);
 
 		foreach (FuncAst func in ast.funcs)
-			Decl(func, ast.prefix);
+			Decl(func, type);
 	}
 }

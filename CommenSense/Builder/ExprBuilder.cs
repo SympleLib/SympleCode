@@ -78,7 +78,7 @@ partial class Builder
 		if (i == ~0U)
 		{
 			if (ctnr is ClassAst clazz)
-				return scope.Find(clazz.prefix + clazz.funcs[clazz.GetFuncWithLvl(ast.memberName, LLVMDefaultVisibility)].realName);
+				return scope.Find(clazz.name + "." + clazz.funcs[clazz.GetFuncWithLvl(ast.memberName, LLVMDefaultVisibility)].realName);
 			throw new Exception("we ain't got dat field");
 		}
 		return llBuilder.BuildLoad(llBuilder.BuildStructGEP(container, i));

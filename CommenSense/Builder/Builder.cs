@@ -2,6 +2,8 @@
 
 using System;
 
+using Microsoft.VisualBasic;
+
 using Type = LLVMTypeRef;
 using Value = LLVMValueRef;
 
@@ -66,13 +68,14 @@ partial class Builder
 
 	void Build(ClassAst ast)
 	{
+		Type type = llModule.GetTypeByName(ast.name);
 		foreach (FuncAst func in ast.funcs)
-			Build(func, ast.prefix);
+			Build(func, type);
 	}
 
-	void Build(FuncAst ast, string prefix = "")
+	void Build(FuncAst ast)
 	{
-		Value fn = scope.Find(prefix + ast.realName);
+		Value fn = scope.Find(ast.realName);
 		Type[] paramTypes = fn.TypeOf.ElementType.ParamTypes;
 		LLVMBasicBlockRef entry = fn.AppendBasicBlock(string.Empty);
 		llBuilder.PositionAtEnd(entry);
@@ -83,6 +86,35 @@ partial class Builder
 		{
 			Value ptr = llBuilder.BuildAlloca(paramTypes[i]);
 			llBuilder.BuildStore(fn.Params[i], ptr);
+			scope.Define(ast.paramz[i].name, ptr);
+		}
+
+		foreach (StmtAst stmt in ast.body)
+			Decl(stmt);
+		foreach (StmtAst stmt in ast.body)
+		{
+			Build(stmt);
+			// In case new func
+			currentFunc = fn;
+		}
+		ExitScope();
+		if (fn.TypeOf.ElementType.ReturnType == Type.Void && entry.Terminator == null)
+			llBuilder.BuildRetVoid();
+	}
+
+	void Build(FuncAst ast, Type clsType)
+	{
+		Value fn = scope.Find(clsType.StructName + "." + ast.realName);
+		Type[] paramTypes = fn.TypeOf.ElementType.ParamTypes;
+		LLVMBasicBlockRef entry = fn.AppendBasicBlock(string.Empty);
+		llBuilder.PositionAtEnd(entry);
+		currentFunc = fn;
+
+		EnterScope();
+		for (int i = 0; i < ast.paramz.Length; i++)
+		{
+			Value ptr = llBuilder.BuildAlloca(paramTypes[i + 1]);
+			llBuilder.BuildStore(fn.Params[i + 1], ptr);
 			scope.Define(ast.paramz[i].name, ptr);
 		}
 
