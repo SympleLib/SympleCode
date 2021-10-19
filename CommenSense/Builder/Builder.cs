@@ -70,7 +70,7 @@ partial class Builder
 	{
 		Type type = llModule.GetTypeByName(ast.name);
 		foreach (FuncAst func in ast.funcs)
-			Build(func, type);
+			Build(func, ast, type);
 	}
 
 	void Build(FuncAst ast)
@@ -102,7 +102,7 @@ partial class Builder
 			llBuilder.BuildRetVoid();
 	}
 
-	void Build(FuncAst ast, Type clsType)
+	void Build(FuncAst ast, ClassAst clazz, Type clsType)
 	{
 		Value fn = scope.Find(clsType.StructName + "." + ast.realName);
 		Type[] paramTypes = fn.TypeOf.ElementType.ParamTypes;
@@ -116,6 +116,13 @@ partial class Builder
 			Value ptr = llBuilder.BuildAlloca(paramTypes[i + 1]);
 			llBuilder.BuildStore(fn.Params[i + 1], ptr);
 			scope.Define(ast.paramz[i].name, ptr);
+		}
+
+		Value thiz = fn.Params[0];
+		for (uint i = 0; i < clazz.fields.Length; i++)
+		{
+			Value ptr = llBuilder.BuildStructGEP(thiz, i);
+			scope.Define(clazz.fields[i].name, ptr);
 		}
 
 		foreach (StmtAst stmt in ast.body)
