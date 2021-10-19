@@ -131,6 +131,10 @@ partial record StructAst
 }
 
 
+partial record UsingAst
+{ public override string ToString() => $"using {realType} as {alias}"; }
+
+
 partial record DeclFuncAst
 { public override string ToString() => $"{visibility} decl {retType} {realName}({string.Join<ParamAst>(", ", paramz)}{PrintWithVaArgMaybeIHonestlyDontKnowWhatToCallThisFunction(vaArg)}): '{asmName}'"; }
 

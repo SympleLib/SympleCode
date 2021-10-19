@@ -19,6 +19,8 @@ partial class Builder
 			Decl(ztruct);
 		else if (ast is ClassAst clazz)
 			Decl(clazz);
+		else if (ast is UsingAst uzing)
+			Decl(uzing);
 	}
 
 	Value Decl(DeclVarAst ast)
@@ -90,7 +92,14 @@ partial class Builder
 			elTypes[i] = BuildType(ast.fields[i].type);
 		type.StructSetBody(elTypes, false);
 
+		// TODO: move after types are loaded
 		foreach (FuncAst func in ast.funcs)
 			Decl(func, type);
+	}
+
+	void Decl(UsingAst ast)
+	{
+		Type realType = BuildType(ast.realType);
+		scope.Define(ast.alias, realType);
 	}
 }

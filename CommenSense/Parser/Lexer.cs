@@ -58,6 +58,8 @@ enum TokenKind
 	PublicKeyword,
 	PrivateKeyword,
 	ProtectedKeyword,
+
+	UsingKeyword,
 }
 
 partial class Parser
@@ -112,6 +114,8 @@ partial class Parser
 			"public",
 			"private",
 			"protected",
+
+			"using",
 		};
 
 		readonly string src;

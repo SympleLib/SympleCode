@@ -55,10 +55,10 @@ partial class Builder
 		throw new Exception("Bob the builder can't build this ◁[<");
 	}
 
+	// Hacky Move
 	Value BuildExpr(CallExprAst ast)
 	{
 		Value ptr = BuildExpr(ast.ptr);
-		// TODO: dont cheat
 
 		int add = 0;
 		if (ast.ptr is MemberExprAst)

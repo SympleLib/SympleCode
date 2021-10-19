@@ -6,8 +6,13 @@ partial class Parser
 {
 	StmtAst Stmt()
 	{
-		if (current.kind is TokenKind.RetKeyword)
+		switch (current.kind)
+		{
+		case TokenKind.RetKeyword:
 			return Ret();
+		case TokenKind.UsingKeyword:
+			return Using();
+		}
 
 		bool illegal = true;
 		Visibility visibility;
@@ -71,6 +76,16 @@ partial class Parser
 		ExprAst expr = Expr();
 		EndLine();
 		return new RetStmtAst(expr);
+	}
+
+	UsingAst Using()
+	{
+		Match(TokenKind.UsingKeyword);
+		TypeAst realType = Type();
+		Match(TokenKind.AsKeyword);
+		string alias = Name();
+		EndLine();
+		return new UsingAst(realType, alias);
 	}
 
 	StructAst Struct(Visibility visibility)

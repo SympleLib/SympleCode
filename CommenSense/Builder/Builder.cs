@@ -52,6 +52,7 @@ partial class Builder
 		else if (ast is StructAst) { }
 		else if (ast is ClassAst clazz)
 			Build(clazz);
+		else if (ast is UsingAst) { }
 		else if (ast is RetStmtAst retStmt)
 		{
 			Value expr = BuildExpr(retStmt.expr);

@@ -5,15 +5,6 @@ using Value = LLVMValueRef;
 
 partial class Builder
 {
-	Type NonNativeType(string name)
-	{
-		Type type = llModule.GetTypeByName(name);
-		if (type.Handle != IntPtr.Zero)
-			return type;
-
-		throw new Exception("type ain't existensial");
-	}
-
 	Type BuildType(TypeAst ast)
 	{
 		if (ast is BaseTypeAst baseType)
@@ -37,7 +28,7 @@ partial class Builder
 			"float" => Type.Float,
 			"double" => Type.Double,
 
-			_ => NonNativeType(ast.typeBase),
+			_ => scope.FindType(ast.typeBase),
 		};
 
 		for (int i = 0; i < ast.ptrCount; i++)

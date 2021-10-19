@@ -30,6 +30,15 @@ partial class Parser
 	{
 		switch (current.kind)
 		{
+		case TokenKind.UsingKeyword:
+			JumpTo(TokenKind.AsKeyword);
+			typeNames.Add(Match(TokenKind.Identifier).text);
+			MaybeEndLine();
+			return;
+		}
+
+		switch (current.kind)
+		{
 		case TokenKind.PublicKeyword:
 		case TokenKind.PrivateKeyword:
 		case TokenKind.ProtectedKeyword:
