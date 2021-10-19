@@ -111,18 +111,20 @@ partial class Builder
 		currentFunc = fn;
 
 		EnterScope();
+		Value thiz = fn.Params[0];
+		scope.Define("this", thiz);
+		for (uint i = 0; i < clazz.fields.Length; i++)
+		{
+			Value ptr = llBuilder.BuildStructGEP(thiz, i);
+			scope.Define(clazz.fields[i].name, ptr);
+		}
+
+		EnterScope();
 		for (int i = 0; i < ast.paramz.Length; i++)
 		{
 			Value ptr = llBuilder.BuildAlloca(paramTypes[i + 1]);
 			llBuilder.BuildStore(fn.Params[i + 1], ptr);
 			scope.Define(ast.paramz[i].name, ptr);
-		}
-
-		Value thiz = fn.Params[0];
-		for (uint i = 0; i < clazz.fields.Length; i++)
-		{
-			Value ptr = llBuilder.BuildStructGEP(thiz, i);
-			scope.Define(clazz.fields[i].name, ptr);
 		}
 
 		foreach (StmtAst stmt in ast.body)
@@ -134,6 +136,8 @@ partial class Builder
 			currentFunc = fn;
 		}
 		ExitScope();
+		ExitScope();
+
 		if (fn.TypeOf.ElementType.ReturnType == Type.Void && entry.Terminator == null)
 			llBuilder.BuildRetVoid();
 	}

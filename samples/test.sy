@@ -10,14 +10,13 @@ class Test {
 	long z;
 	
 	void test() {
-		printf('%i\n', x);
+		printf('%i\n', this.x);
 	}
 }
 
 public void run {
 	Test test;
 	test.test();
-	test.x = 59;
 	test.test();
 	
 	// MessageBoxA(0, 'Test Works!', 'Test', 0);
