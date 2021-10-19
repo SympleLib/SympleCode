@@ -58,13 +58,21 @@ partial class Builder
 	Value BuildExpr(CallExprAst ast)
 	{
 		Value ptr = BuildExpr(ast.ptr);
-		Value[] args = new Value[ast.args.Length];
-		for (int i = 0; i < args.Length; i++)
+		// TODO: dont cheat
+
+		int add = 0;
+		if (ast.ptr is MemberExprAst)
+			add = 1;
+		Value[] args = new Value[ast.args.Length + add];
+		if (ast.ptr is MemberExprAst memAst)
+			args[0] = BuildPtr(memAst.container);
+
+		for (int i = 0; i < ast.args.Length; i++)
 		{
 			Value arg = BuildExpr(ast.args[i]);
 			if (ptr.IsAFunction != null && i < ptr.ParamsCount)
-				arg = BuildCast(arg, ptr.Params[i].TypeOf);
-			args[i] = arg;
+				arg = BuildCast(arg, ptr.Params[i + add].TypeOf);
+			args[i + add] = arg;
 		}
 
 		return llBuilder.BuildCall(ptr, args);
