@@ -4,8 +4,6 @@
 
 // public decl void MessageBoxA(byte* wnd, char* text, char* title, int type)
 
-public decl void test();
-
 public void run {
 	test();
 }

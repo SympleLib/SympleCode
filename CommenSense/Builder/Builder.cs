@@ -2,8 +2,6 @@
 
 using System;
 
-using Microsoft.VisualBasic;
-
 using Type = LLVMTypeRef;
 using Value = LLVMValueRef;
 
@@ -16,6 +14,7 @@ partial class Builder
 	static readonly Type uninitType = Type.CreateInt(1);
 
 	Value currentFunc;
+	readonly List<ModuleAst> links = new List<ModuleAst>();
 
 	public Builder(ModuleAst module)
 	{
@@ -25,6 +24,18 @@ partial class Builder
 		scope = new Scope(this);
 	}
 
+	public void Link(params ModuleAst[] asts)
+	{
+		if (asts.Length <= 0)
+			throw new Exception("Must link something");
+
+		foreach (ModuleAst ast in asts)
+			links.Add(ast);
+	}
+
+	public void Link(ModuleAst ast) =>
+		links.Add(ast);
+
 	public LLVMModuleRef Build()
 	{
 		foreach (Container ctnr in module.ctnrs)
@@ -33,8 +44,20 @@ partial class Builder
 			scope.Define(ctnr.name, ctnr);
 		}
 
+		foreach (ModuleAst link in links)
+			foreach (Container ctnr in link.ctnrs)
+			{
+				llModule.Context.CreateNamedStruct(ctnr.name);
+				scope.Define(ctnr.name, ctnr);
+			}
+
 		foreach (StmtAst member in module.members)
 			Decl(member);
+
+		foreach (ModuleAst link in links)
+			foreach (StmtAst member in link.members)
+				Decl(member);
+
 		foreach (StmtAst member in module.members)
 			Build(member);
 		return llModule;

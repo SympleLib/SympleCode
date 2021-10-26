@@ -83,16 +83,15 @@ void Optimize(LLVMModuleRef module)
 	pass.Run(module);
 }
 
-LLVMModuleRef? CompileSingle(string path)
+ModuleAst ParseSingle(string path)
 {
 	string src = File.ReadAllText(path);
 	Parser parser = new Parser(src);
-	ModuleAst ast = parser.Parse();
-	Console.WriteLine(ast);
+	return parser.Parse();
+}
 
-	Console.WriteLine("---");
-
-	Builder builder = new Builder(ast);
+LLVMModuleRef? BuildSingle(Builder builder)
+{
 	LLVMModuleRef llModule = builder.Build();
 #if false // No need for the Infini-Mizing (The tiny program will run too fast, too much power ⚡ for mere mortals to handle)
 	//      👇 To insure COMPLETE optimization
@@ -117,15 +116,30 @@ LLVMExecutionEngineRef? Compile(string path, params string[] paths)
 	LLVMModuleRef llModule;
 	LLVMModuleRef[] llMods = new LLVMModuleRef[paths.Length];
 
-	LLVMModuleRef? tmp = CompileSingle(path);
+	ModuleAst ast = ParseSingle(path);
+	ModuleAst[] asts = new ModuleAst[paths.Length];
+	for (int i = 0; i < paths.Length; i++)
+		asts[i] = ParseSingle(paths[i]);
+
+
+	Builder builder = new Builder(ast);
+	builder.Link(asts);
+	LLVMModuleRef? tmp = BuildSingle(builder);
 	if (tmp is null)
 		return null;
 
 	llModule = tmp.Value;
 
-	for (int i = 0; i < paths.Length; i++)
+	for (int i = 0; i < asts.Length; i++)
 	{
-		tmp = CompileSingle(paths[i]);
+		builder = new Builder(asts[i]);
+		builder.Link(ast);
+
+		for (int j = 0; j < asts.Length; j++)
+			if (j != i)
+				builder.Link(asts);
+
+		tmp = BuildSingle(builder);
 		if (tmp is null)
 			return null;
 
