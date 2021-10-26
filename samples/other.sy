@@ -1,0 +1,5 @@
+public decl void puts(char*)
+
+public void test {
+	puts('test works!');
+}

@@ -149,7 +149,7 @@ LLVMExecutionEngineRef? Compile(string path, params string[] paths)
 	return engine;
 }
 
-LLVMExecutionEngineRef? _engine = Compile("samples/test.sy");
+LLVMExecutionEngineRef? _engine = Compile("samples/test.sy", "samples/other.sy");
 if (_engine is null)
 	goto End;
 

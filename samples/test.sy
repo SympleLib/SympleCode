@@ -1,22 +1,11 @@
-public decl void printf(char* fmt, ...)
-public decl void putchar(char)
-public decl void puts(char*)
+// public decl void printf(char* fmt, ...)
+// public decl void putchar(char)
+// public decl void puts(char*)
 
-public decl void MessageBoxA(byte* wnd, char* text, char* title, int type)
+// public decl void MessageBoxA(byte* wnd, char* text, char* title, int type)
 
-using Test as Chicken;
-class Test {
-	int x = 6,
-	int y = 9,
-	long z;
-	
-	void test() {
-		printf('%i\n', this.x);
-	}
-}
+public decl void test();
 
 public void run {
-	Chicken test;
-	test.test();
-	test.test();
+	test();
 }
