@@ -4,6 +4,8 @@
 
 // public decl void MessageBoxA(byte* wnd, char* text, char* title, int type)
 
+link 'other.sy';
+
 public void run {
 	test();
 }

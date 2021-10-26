@@ -36,7 +36,7 @@ static class _
 }
 
 partial record ModuleAst
-{ public override string ToString() => $"module '{name}' {{\n{IncTab()}{string.Join<StmtAst>("\n\n\t", members)}\n}}"; }
+{ public override string ToString() => $"module '{name}' links {string.Join<string>(", ", links)} {{\n{IncTab()}{string.Join<StmtAst>("\n\n\t", members)}\n}}"; }
 
 
 partial record BaseTypeAst
@@ -133,6 +133,9 @@ partial record StructAst
 
 partial record UsingAst
 { public override string ToString() => $"using {realType} as {alias}"; }
+
+partial record LinkAst
+{ public override string ToString() => $"link {filename}"; }
 
 
 partial record DeclFuncAst

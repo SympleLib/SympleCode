@@ -35,6 +35,8 @@ partial class Parser
 			typeNames.Add(Match(TokenKind.Identifier).text);
 			MaybeEndLine();
 			return;
+		case TokenKind.LinkKeyword:
+			
 		}
 
 		switch (current.kind)

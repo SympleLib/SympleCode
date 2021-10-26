@@ -60,6 +60,7 @@ enum TokenKind
 	ProtectedKeyword,
 
 	UsingKeyword,
+	LinkKeyword,
 }
 
 partial class Parser
@@ -116,6 +117,7 @@ partial class Parser
 			"protected",
 
 			"using",
+			"link",
 		};
 
 		readonly string src;
