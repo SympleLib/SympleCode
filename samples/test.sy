@@ -8,4 +8,5 @@ link 'other.sy';
 
 public void run {
 	test();
+	puts('test shain\'t works!');
 }
