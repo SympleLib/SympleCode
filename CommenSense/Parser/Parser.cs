@@ -42,12 +42,12 @@ partial class Parser
 		return new ModuleAst(name, members.ToArray(), ctnrs.ToArray());
 	}
 
-	static bool IsType(Token token)
+	bool IsType(Token token)
 	{
 		if (token.kind is not TokenKind.Identifier)
 			return false;
 
-		return typeNames.Contains(token.text);
+		return typeNames.ContainsKey(token.text);
 	}
 
 	TypeAst Type()

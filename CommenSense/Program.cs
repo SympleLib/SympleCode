@@ -152,7 +152,12 @@ LLVMExecutionEngineRef? Compile(string filename)
 	{
 		List<ModuleAst> moduleList = new List<ModuleAst>();
 		foreach (Parser parser in Parser.parsers.Values)
-			moduleList.Add(parser.Parse());
+		{
+			ModuleAst module = parser.Parse();
+			Console.WriteLine(module);
+			Console.WriteLine("---");
+			moduleList.Add(module);
+		}
 		modules = moduleList.ToArray();
 	}
 

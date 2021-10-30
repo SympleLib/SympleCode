@@ -5,7 +5,20 @@ namespace CommenSense;
 partial class Parser
 {
 	// Store the names of symbols to tell what an identifier means
-	readonly List<string> preParse = new List<string>();
+	readonly Dictionary<string, bool> preParse = new Dictionary<string, bool>();
+
+	readonly Dictionary<string, bool>  varNames = new Dictionary<string, bool>();
+	readonly Dictionary<string, bool> funcNames = new Dictionary<string, bool>();
+	readonly Dictionary<string, bool> typeNames = new Dictionary<string, bool>()
+	{
+		{ "void", false },
+		{ "bool", false },
+		{ "char", false },
+		{ "int", false },
+		{ "long", false },
+		{ "float", false },
+		{ "double", false },
+	};
 
 	// Iterate through code as if parsing it, but only care about the top-level stmts
 	// returns imports that also need to be pre-parsed
@@ -19,50 +32,72 @@ partial class Parser
 		// Reset for the actual parser
 		pos = 0;
 
-		foreach (string filename in preParse)
+		foreach (var import in preParse)
 		{
+			string filename;
+			if (import.Key.Contains(':'))
+				filename = import.Key;
+			else
+				filename = folder + '/' + import.Key;
+
 			if (parsers.ContainsKey(filename))
 				continue;
 
-			string src = File.ReadAllText(folder + '/' + filename);
-			Parser tmpParser = new Parser(src, folder + filename);
+			string src = File.ReadAllText(filename);
+			Parser tmpParser = new Parser(src, filename);
 			tmpParser.PreParse();
+			foreach (var varName in tmpParser.varNames)
+				if (varName.Value)
+					varNames.Add(varName.Key, import.Value);
+			foreach (var funcName in tmpParser.funcNames)
+				if (funcName.Value)
+					funcNames.Add(funcName.Key, import.Value);
+			foreach (var typeName in tmpParser.varNames)
+				if (typeName.Value)
+					typeNames.Add(typeName.Key, import.Value);
 		}
 	}
 
 	void PreStmt()
 	{
-		switch (current.kind)
-		{
-		case TokenKind.UsingKeyword:
-			JumpTo(TokenKind.AsKeyword);
-			typeNames.Add(Match(TokenKind.Identifier).text);
-			MaybeEndLine();
-			return;
-		}
-
+		bool isPublic = true;
 		switch (current.kind)
 		{
 		case TokenKind.PublicKeyword:
+			Next();
+			break;
 		case TokenKind.PrivateKeyword:
 		case TokenKind.ProtectedKeyword:
+			isPublic = false;
 			Next();
 			break;
 		};
 
 		if (current.kind is TokenKind.StructKeyword)
-			PreStruct();
+			PreStruct(isPublic);
 		else if (current.kind is TokenKind.ClassKeyword)
-			PreClass();
+			PreClass(isPublic);
+		else if (current.kind is TokenKind.UsingKeyword)
+		{
+			JumpTo(TokenKind.AsKeyword);
+			typeNames.Add(Match(TokenKind.Identifier).text, isPublic);
+			MaybeEndLine();
+		}
+		else if (current.kind is TokenKind.LinkKeyword)
+		{
+			string filename = JumpTo(TokenKind.Str).text;
+			preParse.Add(filename, isPublic);
+			EndLine();
+		}
 		else if (current.kind is TokenKind.DeclKeyword)
 		{
 			Next();
 			Type();
 			string name = Name();
 			if (current.kind is TokenKind.LeftParen)
-				PreDeclFunc(name);
+				PreDeclFunc(isPublic, name);
 			else
-				PreDeclVar(name);
+				PreDeclVar(isPublic, name);
 		}
 		else if (current.kind is TokenKind.Identifier && !(scope.VarExists(current.text) || scope.FuncExists(current.text)) && next.kind is TokenKind.Star or TokenKind.Identifier)
 		{
@@ -78,35 +113,29 @@ partial class Parser
 			}
 
 			if (current.kind is TokenKind.LeftParen or TokenKind.LeftBrace or TokenKind.Arrow)
-				PreFunc(name, asmified);
+				PreFunc(isPublic, name, asmified);
 			else
-				PreVar(name, asmified);
-		}
-		else if (current.kind is TokenKind.LinkKeyword)
-		{
-			string filename = JumpTo(TokenKind.Str).text;
-			preParse.Add(filename);
-			EndLine();
+				PreVar(isPublic, name, asmified);
 		}
 	}
 
-	void PreStruct()
+	void PreStruct(bool isPublic)
 	{
 		Match(TokenKind.StructKeyword);
-		typeNames.Add(Name());
+		typeNames.Add(Name(), isPublic);
 		Follow(TokenKind.LeftBrace, TokenKind.RightBrace);
 		MaybeEndLine();
 	}
 
-	void PreClass()
+	void PreClass(bool isPublic)
 	{
 		Match(TokenKind.ClassKeyword);
-		typeNames.Add(Name());
+		typeNames.Add(Name(), isPublic);
 		Follow(TokenKind.LeftBrace, TokenKind.RightBrace);
 		MaybeEndLine();
 	}
 
-	void PreFunc(string name, bool asmified)
+	void PreFunc(bool isPublic, string name, bool asmified)
 	{
 		if (current.kind is TokenKind.LeftParen)
 			Follow(TokenKind.LeftParen, TokenKind.RightParen);
@@ -125,10 +154,10 @@ partial class Parser
 			Follow(TokenKind.LeftBrace, TokenKind.RightBrace);
 		MaybeEndLine();
 
-		funcNames.Add(name);
+		funcNames.Add(name, isPublic);
 	}
 
-	void PreVar(string name, bool asmified)
+	void PreVar(bool isPublic, string name, bool asmified)
 	{
 		if (!asmified && current.kind is TokenKind.Colon)
 		{
@@ -139,10 +168,10 @@ partial class Parser
 		JumpTo(TokenKind.Semicol);
 		MaybeEndLine();
 
-		varNames.Add(name);
+		varNames.Add(name, isPublic);
 	}
 
-	void PreDeclFunc(string name)
+	void PreDeclFunc(bool isPublic, string name)
 	{
 		Follow(TokenKind.LeftParen, TokenKind.RightParen);
 		if (current.kind is TokenKind.Colon)
@@ -156,10 +185,10 @@ partial class Parser
 
 		MaybeEndLine();
 
-		funcNames.Add(name);
+		funcNames.Add(name, isPublic);
 	}
 
-	void PreDeclVar(string name)
+	void PreDeclVar(bool isPublic, string name)
 	{
 		if (current.kind is TokenKind.Colon)
 		{
@@ -168,7 +197,7 @@ partial class Parser
 		}
 
 		MaybeEndLine();
-		varNames.Add(name);
+		varNames.Add(name, isPublic);
 	}
 
 
