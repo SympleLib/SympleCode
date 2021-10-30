@@ -1,12 +1,1 @@
-// public decl void printf(char* fmt, ...)
-// public decl void putchar(char)
-// public decl void puts(char*)
-
-// public decl void MessageBoxA(byte* wnd, char* text, char* title, int type)
-
-link 'other.sy';
-
 public void run {
-	test();
-	puts('test shain\'t works!');
-}
