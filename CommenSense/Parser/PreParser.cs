@@ -1,29 +1,33 @@
-﻿namespace CommenSense;
+﻿using System.IO;
+
+namespace CommenSense;
 
 partial class Parser
 {
 	// Store the names of symbols to tell what an identifier means
-	readonly List<string> varNames = new List<string>();
-	readonly List<string> funcNames = new List<string>();
-	readonly List<string> typeNames = new List<string>()
-	{
-		"void",
-		"bool",
-		"char",
-		"int",
-		"long",
-		"float",
-		"double",
-	};
+	readonly List<string> preParse = new List<string>();
 
 	// Iterate through code as if parsing it, but only care about the top-level stmts
-	void PreParse()
+	// returns imports that also need to be pre-parsed
+	public void PreParse()
 	{
+		MaybeEndLine();
+
 		while (current.kind is not TokenKind.Eof)
 			PreStmt();
 
 		// Reset for the actual parser
 		pos = 0;
+
+		foreach (string filename in preParse)
+		{
+			if (parsers.ContainsKey(filename))
+				continue;
+
+			string src = File.ReadAllText(folder + '/' + filename);
+			Parser tmpParser = new Parser(src, folder + filename);
+			tmpParser.PreParse();
+		}
 	}
 
 	void PreStmt()
@@ -35,8 +39,6 @@ partial class Parser
 			typeNames.Add(Match(TokenKind.Identifier).text);
 			MaybeEndLine();
 			return;
-		case TokenKind.LinkKeyword:
-			
 		}
 
 		switch (current.kind)
@@ -79,6 +81,12 @@ partial class Parser
 				PreFunc(name, asmified);
 			else
 				PreVar(name, asmified);
+		}
+		else if (current.kind is TokenKind.LinkKeyword)
+		{
+			string filename = JumpTo(TokenKind.Str).text;
+			preParse.Add(filename);
+			EndLine();
 		}
 	}
 
@@ -164,14 +172,14 @@ partial class Parser
 	}
 
 
-	void JumpTo(TokenKind kind)
+	Token JumpTo(TokenKind kind)
 	{
 		while (current.kind is not TokenKind.Eof && current.kind != kind)
 			Next();
-		Match(kind);
+		return Match(kind);
 	}
 
-	void Follow(TokenKind open, TokenKind close)
+	Token Follow(TokenKind open, TokenKind close)
 	{
 		int depth = 0;
 		Match(open);
@@ -185,6 +193,6 @@ partial class Parser
 			Next();
 		}
 
-		Match(close);
+		return Match(close);
 	}
 }

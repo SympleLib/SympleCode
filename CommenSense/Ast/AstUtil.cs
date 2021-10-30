@@ -36,7 +36,7 @@ static class _
 }
 
 partial record ModuleAst
-{ public override string ToString() => $"module '{name}' links {string.Join<string>(", ", links)} {{\n{IncTab()}{string.Join<StmtAst>("\n\n\t", members)}\n}}"; }
+{ public override string ToString() => $"module '{name}' {{\n{IncTab()}{string.Join<StmtAst>("\n\n\t", members)}\n}}"; }
 
 
 partial record BaseTypeAst

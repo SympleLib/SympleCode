@@ -1,7 +1,11 @@
-﻿namespace CommenSense;
+﻿using System.IO;
+
+namespace CommenSense;
 
 partial class Parser
 {
+	readonly string folder;
+	readonly string filename;
 	readonly Lexer lxr;
 	readonly List<Token> tokens = new List<Token>();
 	readonly List<Container> ctnrs = new List<Container>();
@@ -10,8 +14,12 @@ partial class Parser
 	Token current => Peek();
 	Token next => Peek(1);
 
-	public Parser(string source)
+	public Parser(string source, string filename)
 	{
+		this.filename = filename;
+		folder = Path.GetFileName(Path.GetDirectoryName(this.filename)!);
+		parsers.Add(filename, this);
+
 		lxr = new Lexer(source);
 		Token token = lxr.LexNext();
 		tokens.Add(token);
@@ -24,8 +32,6 @@ partial class Parser
 
 	public ModuleAst Parse()
 	{
-		MaybeEndLine();
-		PreParse();
 		MaybeEndLine();
 
 		const string name = "simple-code";

@@ -20,7 +20,6 @@ using CommenSense;
 // I wont use this buddy for debugging
 #pragma warning disable CS8321 // Local function is declared but never used
 void Optimize(LLVMModuleRef module)
-#pragma warning restore CS8321 // Local function is declared but never used
 {
 	LLVMPassManagerRef pass = LLVMPassManagerRef.Create();
 	pass.AddAggressiveDCEPass();
@@ -86,7 +85,7 @@ void Optimize(LLVMModuleRef module)
 ModuleAst ParseSingle(string path)
 {
 	string src = File.ReadAllText(path);
-	Parser parser = new Parser(src);
+	Parser parser = new Parser(src, "");
 	return parser.Parse();
 }
 
@@ -111,15 +110,15 @@ LLVMModuleRef? BuildSingle(Builder builder)
 	return llModule;
 }
 
-LLVMExecutionEngineRef? Compile(string path, params string[] paths)
+LLVMExecutionEngineRef? CompileMulti(string filename, params string[] filenames)
 {
 	LLVMModuleRef llModule;
-	LLVMModuleRef[] llMods = new LLVMModuleRef[paths.Length];
+	LLVMModuleRef[] llMods = new LLVMModuleRef[filenames.Length];
 
-	ModuleAst ast = ParseSingle(path);
-	ModuleAst[] asts = new ModuleAst[paths.Length];
-	for (int i = 0; i < paths.Length; i++)
-		asts[i] = ParseSingle(paths[i]);
+	ModuleAst ast = ParseSingle(filename);
+	ModuleAst[] asts = new ModuleAst[filenames.Length];
+	for (int i = 0; i < filenames.Length; i++)
+		asts[i] = ParseSingle(filenames[i]);
 
 
 	Builder builder = new Builder(ast);
@@ -161,6 +160,24 @@ LLVMExecutionEngineRef? Compile(string path, params string[] paths)
 		engine.AddModule(llMod);
 
 	return engine;
+}
+
+
+LLVMExecutionEngineRef? Compile(string filename)
+{
+	// pre-parse
+	{
+		string src = File.ReadAllText(filename);
+		Parser parser = new Parser(src, filename);
+		parser.PreParse();
+	}
+
+	// parse
+	List<ModuleAst> modules = new List<ModuleAst>();
+	foreach (Parser parser in Parser.parsers.Values)
+		modules.Add(parser.Parse());
+
+	return null;
 }
 
 LLVMExecutionEngineRef? _engine = Compile("samples/test.sy");

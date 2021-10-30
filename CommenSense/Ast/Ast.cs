@@ -1,7 +1,7 @@
 ﻿namespace CommenSense;
 
 partial record Ast;
-partial record ModuleAst(string name, StmtAst[] members, Container[] ctnrs, string[] links);
+partial record ModuleAst(string name, StmtAst[] members, Container[] ctnrs);
 
 partial record TypeAst(int ptrCount): Ast;
 partial record BaseTypeAst(string typeBase, int ptrCount): TypeAst(ptrCount);
