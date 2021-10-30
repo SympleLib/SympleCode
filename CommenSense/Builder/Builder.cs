@@ -16,25 +16,15 @@ partial class Builder
 	Value currentFunc;
 	readonly List<ModuleAst> links = new List<ModuleAst>();
 
-	public Builder(ModuleAst module)
+	public Builder(ModuleAst[] modules, int index)
 	{
-		this.module = module;
+		module = modules[index];
+		links.AddRange(modules);
+
 		llModule = LLVMModuleRef.CreateWithName(module.name);
 		llBuilder = LLVMBuilderRef.Create(llModule.Context);
 		scope = new Scope(this);
 	}
-
-	public void Link(params ModuleAst[] asts)
-	{
-		if (asts.Length <= 0)
-			throw new Exception("Must link something");
-
-		foreach (ModuleAst ast in asts)
-			links.Add(ast);
-	}
-
-	public void Link(ModuleAst ast) =>
-		links.Add(ast);
 
 	public LLVMModuleRef Build()
 	{
@@ -55,8 +45,9 @@ partial class Builder
 			Decl(member);
 
 		foreach (ModuleAst link in links)
-			foreach (StmtAst member in link.members)
-				Decl(member);
+			if (link != module)
+				foreach (StmtAst member in link.members)
+					Decl(member);
 
 		foreach (StmtAst member in module.members)
 			Build(member);
@@ -76,6 +67,7 @@ partial class Builder
 		else if (ast is ClassAst clazz)
 			Build(clazz);
 		else if (ast is UsingAst) { }
+		else if (ast is LinkAst) { }
 		else if (ast is RetStmtAst retStmt)
 		{
 			Value expr = BuildExpr(retStmt.expr);

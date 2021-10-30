@@ -25,8 +25,8 @@ partial record ImplAst(Visibility visibility, string name, FuncAst[] funcs): Stm
 partial record StructAst(Visibility visibility, string name, FieldAst[] fields): StmtAst, Container;
 partial record ClassAst(Visibility visibility, string name, FieldAst[] fields, FuncAst[] funcs): StmtAst, Container;
 
-partial record UsingAst(TypeAst realType, string alias): StmtAst;
-partial record LinkAst(string filename): StmtAst;
+partial record UsingAst(Visibility visibility, TypeAst realType, string alias): StmtAst;
+partial record LinkAst(Visibility visibility, string filename): StmtAst;
 
 partial record DeclFuncAst(Visibility visibility, TypeAst retType, string realName, string asmName, ParamAst[] paramz, bool vaArg): StmtAst;
 partial record FuncAst(Visibility visibility, TypeAst retType, string realName, string asmName, ParamAst[] paramz, bool vaArg, StmtAst[] body): StmtAst;

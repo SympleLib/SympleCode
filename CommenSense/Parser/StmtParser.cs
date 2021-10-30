@@ -10,8 +10,6 @@ partial class Parser
 		{
 		case TokenKind.RetKeyword:
 			return Ret();
-		case TokenKind.UsingKeyword:
-			return Using();
 		}
 
 		bool illegal = true;
@@ -40,6 +38,10 @@ partial class Parser
 			return Struct(visibility);
 		if (current.kind is TokenKind.ClassKeyword)
 			return Class(visibility);
+		if (current.kind is TokenKind.UsingKeyword)
+			return Using(visibility);
+		if (current.kind is TokenKind.LinkKeyword)
+			return Link(visibility);
 		if (current.kind is TokenKind.DeclKeyword)
 		{
 			Next();
@@ -78,14 +80,24 @@ partial class Parser
 		return new RetStmtAst(expr);
 	}
 
-	UsingAst Using()
+	UsingAst Using(Visibility visibility)
 	{
 		Match(TokenKind.UsingKeyword);
 		TypeAst realType = Type();
 		Match(TokenKind.AsKeyword);
 		string alias = Name();
 		EndLine();
-		return new UsingAst(realType, alias);
+
+		return new UsingAst(visibility, realType, alias);
+	}
+
+	LinkAst Link(Visibility visibility)
+	{
+		Match(TokenKind.LinkKeyword);
+		string filename = Match(TokenKind.Str).text;
+		EndLine();
+
+		return new LinkAst(visibility, filename);
 	}
 
 	StructAst Struct(Visibility visibility)

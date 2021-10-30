@@ -16,6 +16,7 @@ using System.IO;
 using System.Runtime.InteropServices;
 
 using CommenSense;
+using System.Reflection;
 
 // I wont use this buddy for debugging
 #pragma warning disable CS8321 // Local function is declared but never used
@@ -82,34 +83,7 @@ void Optimize(LLVMModuleRef module)
 	pass.Run(module);
 }
 
-ModuleAst ParseSingle(string path)
-{
-	string src = File.ReadAllText(path);
-	Parser parser = new Parser(src, "");
-	return parser.Parse();
-}
-
-LLVMModuleRef? BuildSingle(Builder builder)
-{
-	LLVMModuleRef llModule = builder.Build();
-#if false // No need for the Infini-Mizing (The tiny program will run too fast, too much power ⚡ for mere mortals to handle)
-	//      👇 To insure COMPLETE optimization
-	while (true)
-#endif
-	//Optimize(llModule);
-	Console.WriteLine(llModule);
-
-	Console.WriteLine("---");
-	if (!llModule.TryVerify(LLVMVerifierFailureAction.LLVMPrintMessageAction, out string error))
-	{
-		Console.WriteLine($"Error: {error}");
-		Console.WriteLine("---");
-		return null;
-	}
-
-	return llModule;
-}
-
+/*
 LLVMExecutionEngineRef? CompileMulti(string filename, params string[] filenames)
 {
 	LLVMModuleRef llModule;
@@ -161,6 +135,7 @@ LLVMExecutionEngineRef? CompileMulti(string filename, params string[] filenames)
 
 	return engine;
 }
+*/
 
 
 LLVMExecutionEngineRef? Compile(string filename)
@@ -173,11 +148,54 @@ LLVMExecutionEngineRef? Compile(string filename)
 	}
 
 	// parse
-	List<ModuleAst> modules = new List<ModuleAst>();
-	foreach (Parser parser in Parser.parsers.Values)
-		modules.Add(parser.Parse());
+	ModuleAst[] modules;
+	{
+		List<ModuleAst> moduleList = new List<ModuleAst>();
+		foreach (Parser parser in Parser.parsers.Values)
+			moduleList.Add(parser.Parse());
+		modules = moduleList.ToArray();
+	}
 
-	return null;
+	// build
+	List<LLVMModuleRef> llModules = new List<LLVMModuleRef>();
+	for (int i = 0; i < modules.Length; i++)
+	{
+		Builder builder = new Builder(modules, i);
+
+		LLVMModuleRef llModule = builder.Build();
+#if false // No need for the Infini-Mizing (The tiny program will run too fast, too much power ⚡ for mere mortals to handle)
+	//      👇 To insure COMPLETE optimization
+	while (true)
+#endif
+		// Optimize(llModule);
+		Console.WriteLine(llModule);
+
+		Console.WriteLine("---");
+		if (!llModule.TryVerify(LLVMVerifierFailureAction.LLVMPrintMessageAction, out string err))
+		{
+			Console.WriteLine($"Error: {err}");
+			Console.WriteLine("---");
+			return null;
+		}
+
+		llModules.Add(llModule);
+	}
+
+	LLVM.LinkInMCJIT();
+	LLVM.InitializeNativeTarget();
+	LLVM.InitializeNativeAsmPrinter();
+
+	LLVMMCJITCompilerOptions options = new LLVMMCJITCompilerOptions { NoFramePointerElim = 1 };
+	if (!llModules[0].TryCreateMCJITCompiler(out LLVMExecutionEngineRef engine, ref options, out string error))
+	{
+		Console.WriteLine($"Error: {error}");
+		return null;
+	}
+
+	foreach (LLVMModuleRef llModule in llModules)
+		engine.AddModule(llModule);
+
+	return engine;
 }
 
 LLVMExecutionEngineRef? _engine = Compile("samples/test.sy");

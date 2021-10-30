@@ -132,10 +132,10 @@ partial record StructAst
 
 
 partial record UsingAst
-{ public override string ToString() => $"using {realType} as {alias}"; }
+{ public override string ToString() => $"{visibility} using {realType} as {alias}"; }
 
 partial record LinkAst
-{ public override string ToString() => $"link {filename}"; }
+{ public override string ToString() => $"{visibility} link {filename}"; }
 
 
 partial record DeclFuncAst
