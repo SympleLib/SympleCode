@@ -102,8 +102,10 @@ partial class Parser
 				return GroupExpr(groupType: type);
 			}
 
-			if (scope.FuncExists(current.text) || next.kind is TokenKind.LeftParen)
+			if (scope.FuncExists(current.text))
 				return new FuncPtrAst(Next().text);
+			if (!scope.VarExists(current.text))
+				throw new SyntaxError($"symbol '{current.text}' doesn't exist", current);
 			return new VarExprAst(Next().text);
 		case TokenKind.LeftParen:
 			Next();

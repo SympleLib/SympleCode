@@ -79,7 +79,7 @@ partial class Builder
 		else if (ast is ExprStmtAst exprStmt)
 			BuildExpr(exprStmt.expr);
 		else
-			throw new Exception("Bob the builder can't build this ◁[<");
+			throw new InvalidOperationException("Bob the builder can't build this ◁[<");
 	}
 
 	void Build(ClassAst ast)

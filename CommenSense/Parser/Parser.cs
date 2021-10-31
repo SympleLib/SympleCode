@@ -156,7 +156,7 @@ partial class Parser
 	{
 		if (current.kind == kind)
 			return Next();
-		throw new Exception($"incorrect tokenkind: {current.kind}");
+		throw new SyntaxError($"expected {kind}", current);
 	}
 
 	Token Next()

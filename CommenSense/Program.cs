@@ -93,7 +93,7 @@ LLVMExecutionEngineRef? Compile(string filename)
 		{
 			parser.PreParse();
 		}
-		catch (Exception e)
+		catch (SyntaxError e)
 		{
 			Console.WriteLine(e.Message);
 			return null;
@@ -113,10 +113,10 @@ LLVMExecutionEngineRef? Compile(string filename)
 				Console.WriteLine("---");
 				moduleList.Add(module);
 			}
-			catch (Exception e)
+			catch (SyntaxError e)
 			{
 				Console.WriteLine(e.Message);
-				break;
+				return null;
 			}
 		}
 		modules = moduleList.ToArray();

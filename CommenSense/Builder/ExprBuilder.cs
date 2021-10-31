@@ -8,7 +8,7 @@ partial class Builder
 	Value BuildExpr(ExprAst ast)
 	{
 		if (ast is StrLiteralExprAst strLiteral)
-			return llBuilder.BuildGlobalString(strLiteral.value);
+			return BuildCast(llBuilder.BuildGlobalString(strLiteral.value), Type.CreatePointer(Type.Int8, 0));
 		if (ast is CharLiteralExprAst charLiteral)
 		{
 			return Value.CreateConstInt(Type.CreateInt((uint) charLiteral.nBits), charLiteral.value);

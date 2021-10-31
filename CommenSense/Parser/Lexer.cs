@@ -65,7 +65,7 @@ enum TokenKind
 
 partial class Parser
 {
-	record Token(TokenKind kind, string text);
+	public record Token(TokenKind kind, string text, int line, int col);
 
 	class Lexer
 	{
@@ -122,6 +122,10 @@ partial class Parser
 
 		readonly string src;
 		int pos;
+		int col;
+		int colStart;
+		int currentCol => pos - colStart;
+		int line = 1;
 		char current => Peek();
 		char next => Peek(1);
 
@@ -132,7 +136,13 @@ partial class Parser
 		{
 			while (true)
 			{
-				if (char.IsWhiteSpace(current))
+				if (current is '\n')
+				{
+					pos++;
+					colStart = pos;
+					line++;
+				}
+				else if (char.IsWhiteSpace(current))
 					pos++;
 				else if (current is '/' && next is '/')
 					SingleComment();
@@ -142,8 +152,9 @@ partial class Parser
 					break;
 			}
 
+			col = currentCol;
 			if (current is '\0')
-				return new Token(TokenKind.Eof, string.Empty);
+				return new Token(TokenKind.Eof, string.Empty, line, col);
 
 			if (char.IsDigit(current))
 				return Num();
@@ -175,7 +186,7 @@ partial class Parser
 				pos++;
 			}
 
-			return new Token(kind, src[start..pos]);
+			return new Token(kind, src[start..pos], line, col);
 		}
 
 		Token Str()
@@ -229,7 +240,7 @@ partial class Parser
 			}
 
 			Next();
-			return new Token(TokenKind.Str, sb.ToString());
+			return new Token(TokenKind.Str, sb.ToString(), line, col);
 		}
 
 		Token Char()
@@ -282,7 +293,7 @@ partial class Parser
 
 			if (Next() is not '`')
 				throw new Exception("literal can only have one char");
-			return new Token(TokenKind.Char, text);
+			return new Token(TokenKind.Char, text, line, col);
 		}
 
 		Token Identifier()
@@ -294,9 +305,9 @@ partial class Parser
 			string text = src[start..pos];
 			for (int i = 0; i < keywords.Length; i++)
 				if (keywords[i] == text)
-					return new Token(keywordStart + i, text);
+					return new Token(keywordStart + i, text, line, col);
 
-			return new Token(TokenKind.Identifier, text);
+			return new Token(TokenKind.Identifier, text, line, col);
 		}
 
 		Token Annotation()
@@ -306,16 +317,16 @@ partial class Parser
 			while (char.IsLetterOrDigit(current))
 pos++;
 
-			return new Token(TokenKind.Annotation, src[start..pos]);
+			return new Token(TokenKind.Annotation, src[start..pos], line, col);
 		}
 
 		Token Punctuator()
 		{
 			for (int i = punctuators.Length - 1; i >= 0; i--)
 				if (src[pos..].StartsWith(punctuators[i]))
-					return new Token(punctuatorStart + i, src[pos..(pos += punctuators[i].Length)]);
+					return new Token(punctuatorStart + i, src[pos..(pos += punctuators[i].Length)], line, col);
 
-			return new Token(TokenKind.Unknown, src[pos..++pos]);
+			return new Token(TokenKind.Unknown, src[pos..++pos], line, col);
 		}
 
 		void SingleComment()
