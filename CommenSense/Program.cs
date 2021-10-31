@@ -83,68 +83,21 @@ void Optimize(LLVMModuleRef module)
 	pass.Run(module);
 }
 
-/*
-LLVMExecutionEngineRef? CompileMulti(string filename, params string[] filenames)
-{
-	LLVMModuleRef llModule;
-	LLVMModuleRef[] llMods = new LLVMModuleRef[filenames.Length];
-
-	ModuleAst ast = ParseSingle(filename);
-	ModuleAst[] asts = new ModuleAst[filenames.Length];
-	for (int i = 0; i < filenames.Length; i++)
-		asts[i] = ParseSingle(filenames[i]);
-
-
-	Builder builder = new Builder(ast);
-	builder.Link(asts);
-	LLVMModuleRef? tmp = BuildSingle(builder);
-	if (tmp is null)
-		return null;
-
-	llModule = tmp.Value;
-
-	for (int i = 0; i < asts.Length; i++)
-	{
-		builder = new Builder(asts[i]);
-		builder.Link(ast);
-
-		for (int j = 0; j < asts.Length; j++)
-			if (j != i)
-				builder.Link(asts);
-
-		tmp = BuildSingle(builder);
-		if (tmp is null)
-			return null;
-
-		llMods[i] = tmp.Value;
-	}
-
-	LLVM.LinkInMCJIT();
-	LLVM.InitializeNativeTarget();
-	LLVM.InitializeNativeAsmPrinter();
-
-	LLVMMCJITCompilerOptions options = new LLVMMCJITCompilerOptions { NoFramePointerElim = 1 };
-	if (!llModule.TryCreateMCJITCompiler(out LLVMExecutionEngineRef engine, ref options, out string error))
-	{
-		Console.WriteLine($"Error: {error}");
-		return null;
-	}
-
-	foreach (LLVMModuleRef llMod in llMods)
-		engine.AddModule(llMod);
-
-	return engine;
-}
-*/
-
-
 LLVMExecutionEngineRef? Compile(string filename)
 {
 	// pre-parse
 	{
 		string src = File.ReadAllText(filename);
 		Parser parser = new Parser(src, filename);
-		parser.PreParse();
+		try
+		{
+			parser.PreParse();
+		}
+		catch (Exception e)
+		{
+			Console.WriteLine(e.Message);
+			return null;
+		}
 	}
 
 	// parse
@@ -153,10 +106,18 @@ LLVMExecutionEngineRef? Compile(string filename)
 		List<ModuleAst> moduleList = new List<ModuleAst>();
 		foreach (Parser parser in Parser.parsers.Values)
 		{
-			ModuleAst module = parser.Parse();
-			Console.WriteLine(module);
-			Console.WriteLine("---");
-			moduleList.Add(module);
+			try
+			{
+				ModuleAst module = parser.Parse();
+				Console.WriteLine(module);
+				Console.WriteLine("---");
+				moduleList.Add(module);
+			}
+			catch (Exception e)
+			{
+				Console.WriteLine(e.Message);
+				break;
+			}
 		}
 		modules = moduleList.ToArray();
 	}
