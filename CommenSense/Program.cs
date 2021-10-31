@@ -89,13 +89,12 @@ LLVMExecutionEngineRef? Compile(string filename)
 	{
 		string src = File.ReadAllText(filename);
 		Parser parser = new Parser(src, filename);
-		try
+		parser.PreParse();
+
+		if (BadCode.errors.Count > 0)
 		{
-			parser.PreParse();
-		}
-		catch (SyntaxError e)
-		{
-			Console.WriteLine(e.Message);
+			foreach (SyntaxError err in BadCode.errors)
+				Console.WriteLine(err);
 			return null;
 		}
 	}
@@ -106,19 +105,19 @@ LLVMExecutionEngineRef? Compile(string filename)
 		List<ModuleAst> moduleList = new List<ModuleAst>();
 		foreach (Parser parser in Parser.parsers.Values)
 		{
-			try
-			{
-				ModuleAst module = parser.Parse();
-				Console.WriteLine(module);
-				Console.WriteLine("---");
-				moduleList.Add(module);
-			}
-			catch (SyntaxError e)
-			{
-				Console.WriteLine(e.Message);
-				return null;
-			}
+			ModuleAst module = parser.Parse();
+			Console.WriteLine(module);
+			Console.WriteLine("---");
+			moduleList.Add(module);
 		}
+
+		if (BadCode.errors.Count > 0)
+		{
+			foreach (SyntaxError err in BadCode.errors)
+				Console.WriteLine(err);
+			return null;
+		}
+
 		modules = moduleList.ToArray();
 	}
 

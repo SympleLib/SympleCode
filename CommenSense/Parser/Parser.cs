@@ -156,7 +156,8 @@ partial class Parser
 	{
 		if (current.kind == kind)
 			return Next();
-		throw new SyntaxError($"expected {kind}", current);
+		BadCode.Report(new SyntaxError($"expected {kind}", current));
+		return current;
 	}
 
 	Token Next()

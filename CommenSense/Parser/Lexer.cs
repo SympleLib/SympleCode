@@ -4,7 +4,7 @@ using static System.Net.Mime.MediaTypeNames;
 
 namespace CommenSense;
 
-enum TokenKind
+public enum TokenKind
 {
 	Unknown = -1,
 	Eof,
@@ -63,10 +63,10 @@ enum TokenKind
 	LinkKeyword,
 }
 
+public record Token(TokenKind kind, string text, int line, int col);
+
 partial class Parser
 {
-	public record Token(TokenKind kind, string text, int line, int col);
-
 	class Lexer
 	{
 		const TokenKind punctuatorStart = TokenKind.Plus;

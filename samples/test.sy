@@ -1,6 +1,7 @@
 decl void putString(char* str): 'puts';
 
 public void run {
-	void(char*)* test = &putString;
+	void(char*)* test = putString;
 	test('hello, world!');
+	test(':)');
 }
