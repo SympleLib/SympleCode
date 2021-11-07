@@ -11,5 +11,7 @@ struct Object {
 
 public void run {
 	Object obj = Object { 6, 9 };
+#ifdef TEST
 	print(obj);
+#endif
 }
