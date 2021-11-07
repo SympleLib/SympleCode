@@ -190,7 +190,7 @@ partial class Parser
 
 		default:
 			BadCode.Report(new SyntaxError("not a literal", current));
-			throw new Exception("not a literal");
+			return new LiteralExprAst(current);
 		}
 	}
 }

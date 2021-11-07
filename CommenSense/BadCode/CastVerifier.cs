@@ -14,11 +14,16 @@ static class CastVerifier
 			if (to.IntWidth == 1)
 				return true;
 
-			if (from.IntWidth != to.IntWidth)
+			// cast from bool
+			if (from.IntWidth == 1)
+				return false;
+
+			if (from.IntWidth > to.IntWidth)
 				return false;
 		}
 
-		// TODO: add more
+		if (from.Kind is LLVMDoubleTypeKind && to.Kind is LLVMFloatTypeKind)
+			return false;
 		return true;
 	}
 }
