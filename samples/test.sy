@@ -1,7 +1,11 @@
+#define Capucorny
+
 decl void puts(char* str);
 decl void printf(char* fmt, ...);
 
+#ifdef Capucorny
 public void run {
 	int x = false to int;
 	printf('%i\n', x);
 }
+#endif
