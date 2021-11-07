@@ -1,7 +1,7 @@
-decl void putString(char* str): 'puts';
+decl void puts(char* str);
+decl void printf(char* fmt, ...);
 
 public void run {
-	void(char*)* test = putString;
-	test('hello, world!');
-	test(':)');
+	int x = false;
+	printf('%i\n', x);
 }

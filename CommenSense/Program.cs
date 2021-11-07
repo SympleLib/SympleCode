@@ -8,6 +8,7 @@ global using System.Linq;
 global using static LLVMSharp.Interop.LLVMOpcode;
 global using static LLVMSharp.Interop.LLVMVisibility;
 global using static LLVMSharp.Interop.LLVMCallConv;
+global using static LLVMSharp.Interop.LLVMTypeKind;
 
 global using Visibility = LLVMSharp.Interop.LLVMVisibility;
 global using CallConv = LLVMSharp.Interop.LLVMCallConv;
@@ -128,6 +129,13 @@ LLVMExecutionEngineRef? Compile(string filename)
 		Builder builder = new Builder(modules, i);
 
 		LLVMModuleRef llModule = builder.Build();
+		if (BadCode.errors.Count > 0)
+		{
+			foreach (SyntaxError erronius in BadCode.errors)
+				Console.WriteLine(erronius);
+			return null;
+		}
+
 #if false // No need for the Infini-Mizing (The tiny program will run too fast, too much power ⚡ for mere mortals to handle)
 	//      👇 To insure COMPLETE optimization
 	while (true)

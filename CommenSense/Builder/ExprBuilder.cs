@@ -8,7 +8,7 @@ partial class Builder
 	Value BuildExpr(ExprAst ast)
 	{
 		if (ast is StrLiteralExprAst strLiteral)
-			return BuildCast(llBuilder.BuildGlobalString(strLiteral.value), Type.CreatePointer(Type.Int8, 0));
+			return BuildCast(llBuilder.BuildGlobalString(strLiteral.value), Type.CreatePointer(Type.Int8, 0), strLiteral.token);
 		if (ast is CharLiteralExprAst charLiteral)
 		{
 			return Value.CreateConstInt(Type.CreateInt((uint) charLiteral.nBits), charLiteral.value);
@@ -42,7 +42,7 @@ partial class Builder
 		if (ast is IndexExprAst idxExpr)
 			return BuildExpr(idxExpr);
 		if (ast is CastExprAst castExpr)
-			return BuildCast(BuildExpr(castExpr.value), BuildType(castExpr.to));
+			return BuildCast(BuildExpr(castExpr.value), BuildType(castExpr.to), true);
 		if (ast is BitCastExprAst bitCastExpr)
 			return llBuilder.BuildBitCast(BuildExpr(bitCastExpr.value), BuildType(bitCastExpr.to));
 

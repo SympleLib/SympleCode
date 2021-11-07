@@ -52,9 +52,12 @@ partial class Builder
 		return type;
 	}
 
-	Value BuildCast(Value val, Type to)
+	Value BuildCast(Value val, Type to, Token? token)
 	{
 		Type from = val.TypeOf;
+
+		if (token is not null && !CastVerifier.CastWorks(from, to))
+			BadCode.Report(new SyntaxError($"cant implicitly cast {from} to {to}", token!));
 
 		if (from.IsFloat() && to.IsFloat())
 			return llBuilder.BuildFPCast(val, to);
