@@ -35,11 +35,12 @@ partial class Builder
 		}
 
 		foreach (ModuleAst link in links)
-			foreach (Container ctnr in link.ctnrs)
-			{
-				llModule.Context.CreateNamedStruct(ctnr.name);
-				scope.Define(ctnr.name, ctnr);
-			}
+			if (link != module)
+				foreach (Container ctnr in link.ctnrs)
+				{
+					llModule.Context.CreateNamedStruct(ctnr.name);
+					scope.Define(ctnr.name, ctnr);
+				}
 
 		foreach (StmtAst member in module.members)
 			Decl(member);

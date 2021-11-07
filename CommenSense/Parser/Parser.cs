@@ -22,10 +22,14 @@ partial class Parser
 
 		lxr = new Lexer(source);
 		Token token = lxr.LexNext();
+		if (token.kind is TokenKind.Unknown)
+			BadCode.Report(new SyntaxError($"unknown token '{token.text}'", token));
 		tokens.Add(token);
 		while (token.kind is not TokenKind.Eof)
 		{
 			token = lxr.LexNext();
+			if (token.kind is TokenKind.Unknown)
+				BadCode.Report(new SyntaxError($"unknown token '{token.text}'", token));
 			tokens.Add(token);
 		}
 	}

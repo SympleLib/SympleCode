@@ -109,7 +109,11 @@ partial class Parser
 		List<FieldAst> fields = new List<FieldAst>();
 		while (current.kind is not TokenKind.Eof and not TokenKind.RightBrace)
 		{
+			int start = pos;
 			fields.Add(Field());
+			if (start == pos)
+				break;
+
 			if (current.kind is not TokenKind.RightBrace)
 				Match(TokenKind.Comma);
 		}
@@ -131,7 +135,18 @@ partial class Parser
 		List<FieldAst> fields = new List<FieldAst>();
 		while (current.kind is not TokenKind.Eof and not TokenKind.Semicol)
 		{
+			int start = pos;
 			fields.Add(Field());
+			if (start == pos)
+				break;
+
+			// maybe made function?
+			if (current.kind is TokenKind.LeftParen)
+			{
+				BadCode.Report(new SyntaxError("func is not field", tokens[start]));
+				break;
+			}
+
 			if (current.kind is not TokenKind.Semicol)
 				Match(TokenKind.Comma);
 		}
@@ -200,7 +215,11 @@ partial class Parser
 					break;
 				}
 
+				int start = pos;
 				ParamAst param = Param();
+				if (start == pos)
+					break;
+
 				paramz.Add(param);
 				scope.DefineVar(param.name);
 				if (current.kind is not TokenKind.RightParen)

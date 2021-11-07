@@ -92,7 +92,6 @@ partial class Builder
 			elTypes[i] = BuildType(ast.fields[i].type);
 		type.StructSetBody(elTypes, false);
 
-		// TODO: move after types are loaded
 		foreach (FuncAst func in ast.funcs)
 			Decl(func, type);
 	}

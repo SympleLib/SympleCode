@@ -57,6 +57,7 @@ partial class Parser
 		}
 		else if (current.kind is TokenKind.Dot)
 		{
+			Next();
 			Token name = Match(TokenKind.Identifier);
 			operand = new MemberExprAst(operand, name);
 			goto Loop;

@@ -90,6 +90,13 @@ LLVMExecutionEngineRef? Compile(string filename)
 	{
 		string src = File.ReadAllText(filename);
 		Parser parser = new Parser(src, filename);
+		if (BadCode.errors.Count > 0)
+		{
+			foreach (SyntaxError err in BadCode.errors)
+				Console.WriteLine(err);
+			return null;
+		}
+
 		parser.PreParse();
 
 		if (BadCode.errors.Count > 0)
@@ -107,8 +114,10 @@ LLVMExecutionEngineRef? Compile(string filename)
 		foreach (Parser parser in Parser.parsers.Values)
 		{
 			ModuleAst module = parser.Parse();
+#if DBG
 			Console.WriteLine(module);
 			Console.WriteLine("---");
+#endif
 			moduleList.Add(module);
 		}
 
@@ -141,9 +150,13 @@ LLVMExecutionEngineRef? Compile(string filename)
 	while (true)
 #endif
 		// Optimize(llModule);
+
+#if DBG
 		Console.WriteLine(llModule);
 
 		Console.WriteLine("---");
+#endif
+
 		if (!llModule.TryVerify(LLVMVerifierFailureAction.LLVMPrintMessageAction, out string err))
 		{
 			Console.WriteLine($"Error: {err}");

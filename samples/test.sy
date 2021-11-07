@@ -1,11 +1,15 @@
-#define Capucorny
-
 decl void puts(char* str);
 decl void printf(char* fmt, ...);
 
-#ifdef Capucorny
-public void run {
-	int x = false to int;
-	printf('%i\n', x);
+void print(Object obj) {
+	printf('%i, %i\n', obj.x, obj.y);
 }
-#endif
+
+struct Object {
+	int x, int y,
+}
+
+public void run {
+	Object obj = Object { 6, 9 };
+	print(obj);
+}
