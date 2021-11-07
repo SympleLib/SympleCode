@@ -40,7 +40,11 @@ partial record ModuleAst
 
 
 partial record BaseTypeAst
-{ public override string ToString() => $"{typeBase}{new string('*', ptrCount)}"; }
+{
+	public string typeBase => token.text;
+
+	public override string ToString() => $"{typeBase}{new string('*', ptrCount)}";
+}
 
 partial record FuncTypeAst
 { public override string ToString() => $"{retType} ({string.Join<TypeAst>(", ", paramTypes)}{PrintWithVaArgMaybeIHonestlyDontKnowWhatToCallThisFunction(vaArg)}){new string('*', ptrCount)}"; }
@@ -49,11 +53,17 @@ partial record ParamAst
 { public override string ToString() => $"{type} {name} = {defaultExpr}"; }
 
 partial record FieldAst
-{ public override string ToString() => $"{visibility} {type} {name} = {initializer}"; }
+{
+	public string name => token.text;
+
+	public override string ToString() => $"{visibility} {type} {name} = {initializer}";
+}
 
 
 partial record ClassAst
 {
+	public string name => token.text;
+
 	// i can be ~0 (-1)
 	public uint GetField(string name)
 	{
@@ -106,6 +116,8 @@ partial record ClassAst
 
 partial record StructAst
 {
+	public string name => token.text;
+
 	public uint GetField(string name)
 	{
 		int i = Array.FindIndex(fields, field => field.name == name);
@@ -139,16 +151,33 @@ partial record LinkAst
 
 
 partial record DeclFuncAst
-{ public override string ToString() => $"{visibility} decl {retType} {realName}({string.Join<ParamAst>(", ", paramz)}{PrintWithVaArgMaybeIHonestlyDontKnowWhatToCallThisFunction(vaArg)}): '{asmName}'"; }
+{
+	public string realName => token.text;
+	
+	public override string ToString() => $"{visibility} decl {retType} {realName}({string.Join<ParamAst>(", ", paramz)}{PrintWithVaArgMaybeIHonestlyDontKnowWhatToCallThisFunction(vaArg)}): '{asmName}'";
+}
 
 partial record FuncAst
-{ public override string ToString() => $"{visibility} {retType} {realName}({string.Join<ParamAst>(", ", paramz)}{PrintWithVaArgMaybeIHonestlyDontKnowWhatToCallThisFunction(vaArg)}): '{asmName}' {{\n{IncTab()}{string.Join<StmtAst>($"\n{GetTabs()}", body)}{DecTab()}\n{GetTabs()}}}"; }
+{
+
+	public string realName => token.text;
+
+	public override string ToString() => $"{visibility} {retType} {realName}({string.Join<ParamAst>(", ", paramz)}{PrintWithVaArgMaybeIHonestlyDontKnowWhatToCallThisFunction(vaArg)}): '{asmName}' {{\n{IncTab()}{string.Join<StmtAst>($"\n{GetTabs()}", body)}{DecTab()}\n{GetTabs()}}}";
+}
 
 partial record DeclVarAst
-{ public override string ToString() => $"{visibility} decl {type} {realName}: '{asmName}'"; }
+{
+	public string realName => token.text;
+	
+	public override string ToString() => $"{visibility} decl {type} {realName}: '{asmName}'";
+}
 
 partial record VarAst
-{ public override string ToString() => $"{visibility} {type} {realName}: '{asmName}' = {initializer}"; }
+{
+	public string realName => token.text;
+	
+	public override string ToString() => $"{visibility} {type} {realName}: '{asmName}' = {initializer}";
+}
 
 
 partial record RetStmtAst
@@ -181,13 +210,25 @@ partial record CallExprAst
 { public override string ToString() => $"{ptr}({string.Join<ExprAst>(", ", args)})"; }
 
 partial record FuncPtrAst
-{ public override string ToString() => $"&{funcName}"; }
+{
+	public string funcName => token.text;
+	
+	public override string ToString() => $"&{funcName}";
+}
 
 partial record MemberExprAst
-{ public override string ToString() => $"{container}.{memberName}"; }
+{
+	public string memberName => token.text;
+	
+	public override string ToString() => $"{container}.{memberName}";
+}
 
 partial record VarExprAst
-{ public override string ToString() => $"{varName}"; }
+{
+	public string varName => token.text;
+	
+	public override string ToString() => $"{varName}";
+}
 
 
 partial record ArrayExprAst

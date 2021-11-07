@@ -161,7 +161,7 @@ partial class Builder
 	void Build(VarAst ast)
 	{
 		Type type = BuildType(ast.type);
-		Value initializer = BuildCast(BuildExpr(ast.initializer), type);
+		Value initializer = BuildCast(BuildExpr(ast.initializer), type, ast.token);
 
 		if (currentFunc == null)
 		{

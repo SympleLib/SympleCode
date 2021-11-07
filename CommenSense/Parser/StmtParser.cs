@@ -46,7 +46,7 @@ partial class Parser
 		{
 			Next();
 			TypeAst type = Type();
-			string name = Name();
+			Token name = Match(TokenKind.Identifier);
 			if (current.kind is TokenKind.LeftParen)
 				return DeclFunc(visibility, retType: type, name);
 			return DeclVar(visibility, type, name);
@@ -54,7 +54,7 @@ partial class Parser
 		if (current.kind is TokenKind.Identifier && !(scope.VarExists(current.text) || scope.FuncExists(current.text)) && IsType(current))
 		{
 			TypeAst type = Type();
-			string name = Name();
+			Token name = Match(TokenKind.Identifier);
 			string? asmName = null;
 			if (current.kind is TokenKind.Colon)
 			{
@@ -74,36 +74,36 @@ partial class Parser
 
 	RetStmtAst Ret()
 	{
-		Match(TokenKind.RetKeyword);
+		Token keywrd = Match(TokenKind.RetKeyword);
 		ExprAst expr = Expr();
 		EndLine();
-		return new RetStmtAst(expr);
+		return new RetStmtAst(keywrd, expr);
 	}
 
 	UsingAst Using(Visibility visibility)
 	{
-		Match(TokenKind.UsingKeyword);
+		Token keywrd = Match(TokenKind.UsingKeyword);
 		TypeAst realType = Type();
 		Match(TokenKind.AsKeyword);
 		string alias = Name();
 		EndLine();
 
-		return new UsingAst(visibility, realType, alias);
+		return new UsingAst(visibility, keywrd, realType, alias);
 	}
 
 	LinkAst Link(Visibility visibility)
 	{
-		Match(TokenKind.LinkKeyword);
+		Token keywrd = Match(TokenKind.LinkKeyword);
 		string filename = Match(TokenKind.Str).text;
 		EndLine();
 
-		return new LinkAst(visibility, filename);
+		return new LinkAst(visibility, keywrd, filename);
 	}
 
 	StructAst Struct(Visibility visibility)
 	{
 		Match(TokenKind.StructKeyword);
-		string name = Name();
+		Token name = Match(TokenKind.Identifier);
 		Match(TokenKind.LeftBrace);
 
 		List<FieldAst> fields = new List<FieldAst>();
@@ -125,7 +125,7 @@ partial class Parser
 	ClassAst Class(Visibility visibility)
 	{
 		Match(TokenKind.ClassKeyword);
-		string name = Name();
+		Token name = Match(TokenKind.Identifier);
 		Match(TokenKind.LeftBrace);
 
 		List<FieldAst> fields = new List<FieldAst>();
@@ -140,7 +140,7 @@ partial class Parser
 
 		List<FuncAst> funcs = new List<FuncAst>();
 		while (current.kind is not TokenKind.Eof and not TokenKind.RightBrace)
-			funcs.Add(Func(name));
+			funcs.Add(Func(name.text));
 
 		Match(TokenKind.RightBrace);
 		MaybeEndLine();
@@ -172,7 +172,7 @@ partial class Parser
 		};
 
 		TypeAst retType = Type();
-		string name = Name();
+		Token name = Match(TokenKind.Identifier);
 		string asmName = $"{className}.{name}";
 		if (current.kind is TokenKind.Colon)
 		{
@@ -183,7 +183,7 @@ partial class Parser
 		return Func(visibility, retType, name, asmName);
 	}
 
-	FuncAst Func(Visibility visibility, TypeAst retType, string name, string? asmName)
+	FuncAst Func(Visibility visibility, TypeAst retType, Token name, string? asmName)
 	{
 		EnterScope();
 		bool vaArg = false;
@@ -212,7 +212,7 @@ partial class Parser
 
 		if (asmName is null)
 		{
-			asmName = name;
+			asmName = name.text;
 			if (current.kind is TokenKind.Colon)
 			{
 				Next();
@@ -226,7 +226,7 @@ partial class Parser
 			Next();
 			ExprAst expr = Expr();
 			MaybeEndLine();
-			return new FuncAst(visibility, retType, name, asmName ?? name, paramz.ToArray(), vaArg, new StmtAst[] { new RetStmtAst(expr) });
+			return new FuncAst(visibility, retType, name, asmName?? name.text, paramz.ToArray(), vaArg, new StmtAst[] { new RetStmtAst(Token.devault, expr) });
 		}
 
 		List<StmtAst> body = new List<StmtAst>();
@@ -237,19 +237,19 @@ partial class Parser
 		Match(TokenKind.RightBrace);
 
 		MaybeEndLine();
-		scope.DefineFunc(name);
-		return new FuncAst(visibility, retType, name, asmName?? name, paramz.ToArray(), vaArg, body.ToArray());
+		scope.DefineFunc(name.text);
+		return new FuncAst(visibility, retType, name, asmName?? name.text, paramz.ToArray(), vaArg, body.ToArray());
 	}
 
-	VarAst Var(Visibility visibility, TypeAst type, string name, string? asmName)
+	VarAst Var(Visibility visibility, TypeAst type, Token name, string? asmName)
 	{
-		scope.DefineVar(name);
+		scope.DefineVar(name.text);
 		if (asmName is null && current.kind is TokenKind.Colon)
 		{
 			Next();
 			asmName = Match(TokenKind.Str).text;
 		}
-		ExprAst initializer = new ExprAst();
+		ExprAst initializer = new ExprAst(Token.devault);
 		if (current.kind is TokenKind.Eql)
 		{
 			Next();
@@ -257,12 +257,12 @@ partial class Parser
 		}
 
 		EndLine();
-		return new VarAst(visibility, type, name, asmName?? name, initializer);
+		return new VarAst(visibility, type, name, asmName?? name.text, initializer);
 	}
 
-	DeclFuncAst DeclFunc(Visibility visibility, TypeAst retType, string name)
+	DeclFuncAst DeclFunc(Visibility visibility, TypeAst retType, Token name)
 	{
-		scope.DefineFunc(name);
+		scope.DefineFunc(name.text);
 		List<ParamAst> paramz = new List<ParamAst>();
 		Match(TokenKind.LeftParen);
 		bool vaArg = false;
@@ -283,7 +283,7 @@ partial class Parser
 
 		Match(TokenKind.RightParen);
 
-		string asmName = name;
+		string asmName = name.text;
 		if (current.kind is TokenKind.Colon)
 		{
 			Next();
@@ -295,14 +295,14 @@ partial class Parser
 		return new DeclFuncAst(visibility, retType, name, asmName, paramz.ToArray(), vaArg);
 	}
 
-	DeclVarAst DeclVar(Visibility visibility, TypeAst type, string name)
+	DeclVarAst DeclVar(Visibility visibility, TypeAst type, Token name)
 	{
-		scope.DefineVar(name);
-		string asmName = name;
+		scope.DefineVar(name.text);
+		string asmName = name.text;
 		if (current.kind is TokenKind.Colon)
 		{
 			Next();
-			name = Match(TokenKind.Str).text;
+			name = Match(TokenKind.Str);
 		}
 		return new DeclVarAst(visibility, type, name, asmName);
 	}

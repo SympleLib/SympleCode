@@ -52,7 +52,7 @@ partial class Parser
 
 	TypeAst Type()
 	{
-		string typeBase = Name();
+		Token typeBase = Match(TokenKind.Identifier);
 		int ptrCount = 0;
 		while (current.kind is TokenKind.Star)
 		{
@@ -64,7 +64,7 @@ partial class Parser
 
 		if (current.kind == TokenKind.LeftParen)
 		{
-			Next();
+			Token open = Next();
 
 			bool vaArg = false;
 			List<TypeAst> paramTypes = new List<TypeAst>();
@@ -90,7 +90,7 @@ partial class Parser
 				ptrCount++;
 				Next();
 			}
-			return new FuncTypeAst(baseType, paramTypes.ToArray(), vaArg, ptrCount);
+			return new FuncTypeAst(baseType, open, paramTypes.ToArray(), vaArg, ptrCount);
 		}
 
 		return baseType;
@@ -99,15 +99,27 @@ partial class Parser
 	ParamAst Param()
 	{
 		TypeAst type = Type();
-		string name = current.kind is TokenKind.Identifier ? Next().text : string.Empty;
-		ExprAst defaultExpr = new ExprAst();
+		Token token;
+		string name;
+		if (current.kind is TokenKind.Identifier)
+		{
+			token = Next();
+			name = token.text;
+		}
+		else
+		{
+			token = type.token;
+			name = string.Empty;
+		}
+
+			ExprAst defaultExpr = new ExprAst(Token.devault);
 		if (current.kind is TokenKind.Eql)
 		{
 			Next();
 			defaultExpr = Expr();
 		}
 
-		return new ParamAst(type, name, defaultExpr);
+		return new ParamAst(type, token, name, defaultExpr);
 	}
 
 	FieldAst Field()
@@ -133,8 +145,8 @@ partial class Parser
 		};
 
 		TypeAst type = Type();
-		string name = current.kind is TokenKind.Identifier ? Next().text : string.Empty;
-		ExprAst initializer = new ExprAst();
+		Token name = Match(TokenKind.Identifier);
+		ExprAst initializer = new ExprAst(Token.devault);
 		if (current.kind is TokenKind.Eql)
 		{
 			Next();

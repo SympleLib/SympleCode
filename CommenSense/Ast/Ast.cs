@@ -3,17 +3,18 @@
 partial record Ast(Token token);
 partial record ModuleAst(string name, StmtAst[] members, Container[] ctnrs);
 
-partial record TypeAst(int ptrCount): Ast;
-partial record BaseTypeAst(string typeBase, int ptrCount): TypeAst(ptrCount);
-partial record FuncTypeAst(TypeAst retType, TypeAst[] paramTypes, bool vaArg, int ptrCount): TypeAst(ptrCount);
-partial record ParamAst(TypeAst type, string name, ExprAst defaultExpr): Ast;
-partial record FieldAst(Visibility visibility, TypeAst type, string name, ExprAst initializer): Ast;
+partial record TypeAst(int ptrCount, Token token): Ast(token);
+partial record BaseTypeAst(Token token, int ptrCount): TypeAst(ptrCount, token);
+partial record FuncTypeAst(TypeAst retType, Token token, TypeAst[] paramTypes, bool vaArg, int ptrCount): TypeAst(ptrCount, token);
+partial record ParamAst(TypeAst type, Token token, string name, ExprAst defaultExpr): Ast(token);
+partial record FieldAst(Visibility visibility, TypeAst type, Token token, ExprAst initializer): Ast(token);
 
 
-partial record StmtAst: Ast;
+partial record StmtAst(Token token): Ast(token);
 
 interface Container
 {
+	public Token token { get; }
 	public string name { get; }
 	public FieldAst[] fields { get; }
 
@@ -21,41 +22,41 @@ interface Container
 	public uint GetFieldWithLvl(string name, Visibility accessVis);
 }
 
-partial record ImplAst(Visibility visibility, string name, FuncAst[] funcs): StmtAst;
-partial record StructAst(Visibility visibility, string name, FieldAst[] fields): StmtAst, Container;
-partial record ClassAst(Visibility visibility, string name, FieldAst[] fields, FuncAst[] funcs): StmtAst, Container;
+partial record ImplAst(Visibility visibility, Token token, FuncAst[] funcs): StmtAst(token);
+partial record StructAst(Visibility visibility, Token token, FieldAst[] fields): StmtAst(token), Container;
+partial record ClassAst(Visibility visibility, Token token, FieldAst[] fields, FuncAst[] funcs): StmtAst(token), Container;
 
-partial record UsingAst(Visibility visibility, TypeAst realType, string alias): StmtAst;
-partial record LinkAst(Visibility visibility, string filename): StmtAst;
+partial record UsingAst(Visibility visibility, Token token, TypeAst realType, string alias): StmtAst(token);
+partial record LinkAst(Visibility visibility, Token token, string filename): StmtAst(token);
 
-partial record DeclFuncAst(Visibility visibility, TypeAst retType, string realName, string asmName, ParamAst[] paramz, bool vaArg): StmtAst;
-partial record FuncAst(Visibility visibility, TypeAst retType, string realName, string asmName, ParamAst[] paramz, bool vaArg, StmtAst[] body): StmtAst;
-partial record DeclVarAst(Visibility visibility, TypeAst type, string realName, string asmName): StmtAst;
-partial record VarAst(Visibility visibility, TypeAst type, string realName, string asmName, ExprAst initializer): StmtAst;
+partial record DeclFuncAst(Visibility visibility, TypeAst retType, Token token, string asmName, ParamAst[] paramz, bool vaArg): StmtAst(token);
+partial record FuncAst(Visibility visibility, TypeAst retType, Token token, string asmName, ParamAst[] paramz, bool vaArg, StmtAst[] body): StmtAst(token);
+partial record DeclVarAst(Visibility visibility, TypeAst type, Token token, string asmName): StmtAst(token);
+partial record VarAst(Visibility visibility, TypeAst type, Token token, string asmName, ExprAst initializer): StmtAst(token);
 
-partial record RetStmtAst(ExprAst expr): StmtAst;
-partial record ExprStmtAst(ExprAst expr): StmtAst;
+partial record RetStmtAst(Token token, ExprAst expr): StmtAst(token);
+partial record ExprStmtAst(ExprAst expr): StmtAst(expr.token);
 
 
-partial record ExprAst: Ast;
+partial record ExprAst(Token token): Ast(token);
 
-partial record LiteralExprAst(): ExprAst;
-partial record IntLiteralExprAst(ulong value): LiteralExprAst;
-partial record BoolLiteralExprAst(bool value): LiteralExprAst;
-partial record StrLiteralExprAst(string value): LiteralExprAst;
-partial record CharLiteralExprAst(ulong value, int nBits): LiteralExprAst;
-partial record FloatLiteralExprAst(double value): LiteralExprAst;
+partial record LiteralExprAst(Token token): ExprAst(token);
+partial record IntLiteralExprAst(Token token, ulong value): LiteralExprAst(token);
+partial record BoolLiteralExprAst(Token token, bool value): LiteralExprAst(token);
+partial record StrLiteralExprAst(Token token, string value): LiteralExprAst(token);
+partial record CharLiteralExprAst(Token token, ulong value, int nBits): LiteralExprAst(token);
+partial record FloatLiteralExprAst(Token token, double value): LiteralExprAst(token);
 
-partial record CallExprAst(ExprAst ptr, ExprAst[] args): ExprAst;
-partial record VarExprAst(string varName): ExprAst;
-partial record FuncPtrAst(string funcName): ExprAst;
-partial record MemberExprAst(ExprAst container, string memberName): ExprAst;
+partial record CallExprAst(ExprAst ptr, Token token, ExprAst[] args): ExprAst(token);
+partial record VarExprAst(Token token): ExprAst(token);
+partial record FuncPtrAst(Token token): ExprAst(token);
+partial record MemberExprAst(ExprAst container, Token token): ExprAst(token);
 
-partial record ArrayExprAst(TypeAst? eleType, ExprAst[] elements): ExprAst;
-partial record GroupExprAst(TypeAst groupType, ExprAst[] members): ExprAst;
-partial record IndexExprAst(ExprAst ptr, ExprAst index): ExprAst;
-partial record CastExprAst(ExprAst value, TypeAst to): ExprAst;
-partial record BitCastExprAst(ExprAst value, TypeAst to): ExprAst;
+partial record ArrayExprAst(TypeAst? eleType, Token token, ExprAst[] elements): ExprAst(token);
+partial record GroupExprAst(TypeAst groupType, Token token, ExprAst[] members): ExprAst(token);
+partial record IndexExprAst(ExprAst ptr, Token token, ExprAst index): ExprAst(token);
+partial record CastExprAst(ExprAst value, Token token, TypeAst to): ExprAst(token);
+partial record BitCastExprAst(ExprAst value, Token token, TypeAst to): ExprAst(token);
 
-partial record UnExprAst(Enum op, ExprAst operand): ExprAst;
-partial record BiExprAst(Enum op, ExprAst left, ExprAst right): ExprAst;
+partial record UnExprAst(Enum op, Token token, ExprAst operand): ExprAst(token);
+partial record BiExprAst(Enum op, Token token, ExprAst left, ExprAst right): ExprAst(token);

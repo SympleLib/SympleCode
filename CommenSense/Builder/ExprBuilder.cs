@@ -42,7 +42,7 @@ partial class Builder
 		if (ast is IndexExprAst idxExpr)
 			return BuildExpr(idxExpr);
 		if (ast is CastExprAst castExpr)
-			return BuildCast(BuildExpr(castExpr.value), BuildType(castExpr.to), true);
+			return BuildCast(BuildExpr(castExpr.value), BuildType(castExpr.to), null);
 		if (ast is BitCastExprAst bitCastExpr)
 			return llBuilder.BuildBitCast(BuildExpr(bitCastExpr.value), BuildType(bitCastExpr.to));
 
@@ -71,7 +71,7 @@ partial class Builder
 		{
 			Value arg = BuildExpr(ast.args[i]);
 			if (ptr.IsAFunction != null && i < ptr.ParamsCount)
-				arg = BuildCast(arg, ptr.Params[i + add].TypeOf);
+				arg = BuildCast(arg, ptr.Params[i + add].TypeOf, ast.token);
 			args[i + add] = arg;
 		}
 
@@ -102,12 +102,12 @@ partial class Builder
 		Value array = llBuilder.BuildAlloca(Type.CreateArray(eleType, (uint) ast.elements.Length));
 		Value ptr = llBuilder.BuildBitCast(array, Type.CreatePointer(eleType, 0));
 		Value elePtr = llBuilder.BuildInBoundsGEP(ptr, new Value[] { Value.CreateConstInt(Type.Int64, 0) });
-		llBuilder.BuildStore(BuildCast(firstEle, eleType), elePtr);
+		llBuilder.BuildStore(BuildCast(firstEle, eleType, ast.token), elePtr);
 
 		for (int i = 1; i < ast.elements.Length; i++)
 		{
 			elePtr = llBuilder.BuildInBoundsGEP(ptr, new Value[] { Value.CreateConstInt(Type.Int64, (ulong) i) });
-			llBuilder.BuildStore(BuildCast(BuildExpr(ast.elements[i]), eleType), elePtr);
+			llBuilder.BuildStore(BuildCast(BuildExpr(ast.elements[i]), eleType, ast.token), elePtr);
 		}
 
 		return ptr;
@@ -120,7 +120,7 @@ partial class Builder
 
 		for (uint i = 0; i < ast.members.Length; i++)
 		{
-			Value ele = BuildCast(BuildExpr(ast.members[i]), type.StructElementTypes[i]);
+			Value ele = BuildCast(BuildExpr(ast.members[i]), type.StructElementTypes[i], ast.token);
 			Value fieldPtr = llBuilder.BuildStructGEP(ptr, i);
 			llBuilder.BuildStore(ele, fieldPtr);
 		}
@@ -158,7 +158,7 @@ partial class Builder
 		if (ast.op is TokenKind.Eql)
 		{
 			Value ptr = BuildPtr(ast.left);
-			Value val = BuildCast(BuildExpr(ast.right), ptr.TypeOf.ElementType);
+			Value val = BuildCast(BuildExpr(ast.right), ptr.TypeOf.ElementType, ast.token);
 
 			llBuilder.BuildStore(val, ptr);
 			return val;
@@ -171,7 +171,7 @@ partial class Builder
 		Type type = left.TypeOf;
 		if (type.ElementType == default && type.IsFloat())
 			op++;
-		right = BuildCast(right, type);
+		right = BuildCast(right, type, ast.token);
 
 		return llBuilder.BuildBinOp(op, left, right);
 	}
@@ -182,7 +182,7 @@ partial class Builder
 
 		for (uint i = 0; i < ctnr.fields.Length; i++)
 		{
-			Value ele = BuildCast(BuildExpr(ctnr.fields[i].initializer), type.StructElementTypes[i]);
+			Value ele = BuildCast(BuildExpr(ctnr.fields[i].initializer), type.StructElementTypes[i], ctnr.token);
 			Value fieldPtr = llBuilder.BuildStructGEP(ptr, i);
 			llBuilder.BuildStore(ele, fieldPtr);
 		}

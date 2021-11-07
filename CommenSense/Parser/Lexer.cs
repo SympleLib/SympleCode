@@ -63,7 +63,10 @@ public enum TokenKind
 	LinkKeyword,
 }
 
-public record Token(TokenKind kind, string text, int line, int col);
+public record Token(TokenKind kind, string text, int line, int col)
+{
+	public static readonly Token devault = new Token(TokenKind.Unknown, string.Empty, 0, 0);
+}
 
 partial class Parser
 {

@@ -17,7 +17,7 @@ partial class Parser
 
 			Token op = Next();
 			ExprAst right = BiExpr(precedence);
-			left = new BiExprAst(BiOpcode(op.kind), left, right);
+			left = new BiExprAst(BiOpcode(op.kind), op, left, right);
 		}
 
 		return left;
@@ -27,9 +27,10 @@ partial class Parser
 	{
 		if (unOps.Contains(current.kind))
 		{
-			Enum op = UnOpcode(Next().kind);
+			Token token = Next();
+			Enum op = UnOpcode(token.kind);
 			ExprAst operand = PreExpr();
-			return new UnExprAst(op, operand);
+			return new UnExprAst(op, token, operand);
 		}
 
 		return PostExpr(PrimExpr());
@@ -40,7 +41,7 @@ partial class Parser
 	Loop:
 		if (current.kind is TokenKind.LeftParen)
 		{
-			Next();
+			Token open = Next();
 
 			List<ExprAst> args = new List<ExprAst>();
 			while (current.kind is not TokenKind.Eof and not TokenKind.RightParen)
@@ -51,36 +52,35 @@ partial class Parser
 			}
 
 			Match(TokenKind.RightParen);
-			operand = new CallExprAst(operand, args.ToArray());
+			operand = new CallExprAst(operand, open, args.ToArray());
 			goto Loop;
 		}
 		else if (current.kind is TokenKind.Dot)
 		{
-			Next();
-			string memberName = Name();
-			operand = new MemberExprAst(operand, memberName);
+			Token name = Match(TokenKind.Identifier);
+			operand = new MemberExprAst(operand, name);
 			goto Loop;
 		}
 		else if (current.kind is TokenKind.AsKeyword)
 		{
-			Next();
+			Token keywrd = Next();
 			TypeAst to = Type();
-			operand = new BitCastExprAst(operand, to);
+			operand = new BitCastExprAst(operand, keywrd, to);
 			goto Loop;
 		}
 		else if (current.kind is TokenKind.ToKeyword)
 		{
-			Next();
+			Token keywrd = Next();
 			TypeAst to = Type();
-			operand = new CastExprAst(operand, to);
+			operand = new CastExprAst(operand, keywrd, to);
 			goto Loop;
 		}
 		else if (current.kind is TokenKind.LeftBracket)
 		{
-			Next();
+			Token open = Next();
 			ExprAst idx = Expr();
 			Match(TokenKind.RightBracket);
-			operand = new IndexExprAst(operand, idx);
+			operand = new IndexExprAst(operand, open, idx);
 			goto Loop;
 		}
 
@@ -92,7 +92,8 @@ partial class Parser
 		switch (current.kind)
 		{
 		case TokenKind.Percent:
-			return new UnExprAst(UnOpcode(Next().kind), PrimExpr());
+			Token op = Next();
+			return new UnExprAst(UnOpcode(op.kind), op, PrimExpr());
 		case TokenKind.Identifier:
 			if (IsType(current))
 			{
@@ -103,18 +104,18 @@ partial class Parser
 			}
 
 			if (scope.FuncExists(current.text))
-				return new FuncPtrAst(Next().text);
+				return new FuncPtrAst(Next());
 			if (!scope.VarExists(current.text))
 				BadCode.Report(new SyntaxError($"symbol '{current.text}' doesn't exist", current));
-			return new VarExprAst(Next().text);
+			return new VarExprAst(Next());
 		case TokenKind.LeftParen:
 			Next();
 			if (IsType(current))
 			{
 				TypeAst to = Type();
-				Match(TokenKind.RightParen);
+				Token open = Match(TokenKind.RightParen);
 				ExprAst value = PreExpr();
-				return new CastExprAst(value, to);
+				return new CastExprAst(value, open, to);
 			}
 			ExprAst expr = Expr();
 			Match(TokenKind.RightParen);
@@ -124,9 +125,9 @@ partial class Parser
 			{
 				Next();
 				TypeAst to = Type();
-				Match(TokenKind.RightBracket);
+				Token open = Match(TokenKind.RightBracket);
 				ExprAst value = PreExpr();
-				return new BitCastExprAst(value, to);
+				return new BitCastExprAst(value, open, to);
 			}
 			return ArrayExpr();
 
@@ -137,7 +138,7 @@ partial class Parser
 
 	ArrayExprAst ArrayExpr(TypeAst? eleType = null)
 	{
-		Match(TokenKind.LeftBracket);
+		Token open = Match(TokenKind.LeftBracket);
 
 		List<ExprAst> elements = new List<ExprAst>();
 		while (current.kind is not TokenKind.Eof and not TokenKind.RightBracket)
@@ -149,12 +150,12 @@ partial class Parser
 		}
 
 		Match(TokenKind.RightBracket);
-		return new ArrayExprAst(eleType, elements.ToArray());
+		return new ArrayExprAst(eleType, open, elements.ToArray());
 	}
 
 	GroupExprAst GroupExpr(TypeAst groupType)
 	{
-		Match(TokenKind.LeftBrace);
+		Token open = Match(TokenKind.LeftBrace);
 
 		List<ExprAst> members = new List<ExprAst>();
 		while (current.kind is not TokenKind.Eof and not TokenKind.RightBrace)
@@ -165,7 +166,7 @@ partial class Parser
 				Match(TokenKind.Comma);
 		}
 		Match(TokenKind.RightBrace);
-		return new GroupExprAst(groupType, members.ToArray());
+		return new GroupExprAst(groupType, open, members.ToArray());
 	}
 
 	LiteralExprAst LiteralExpr()
@@ -173,21 +174,22 @@ partial class Parser
 		switch (current.kind)
 		{
 		case TokenKind.Str:
-			return new StrLiteralExprAst(Next().text);
+			return new StrLiteralExprAst(current, Next().text);
 		case TokenKind.Char:
-			return new CharLiteralExprAst(Next().text[0], 8);
+			return new CharLiteralExprAst(current, Next().text[0], 8);
 		case TokenKind.Int:
-			return new IntLiteralExprAst(ulong.Parse(Next().text));
+			return new IntLiteralExprAst(current, ulong.Parse(Next().text));
 		case TokenKind.Float:
-			return new FloatLiteralExprAst(double.Parse(Next().text));
+			return new FloatLiteralExprAst(current, double.Parse(Next().text));
 		case TokenKind.TrueKeyword:
 			Next();
-			return new BoolLiteralExprAst(true);
+			return new BoolLiteralExprAst(current, true);
 		case TokenKind.FalseKeyword:
 			Next();
-			return new BoolLiteralExprAst(false);
+			return new BoolLiteralExprAst(current, false);
 
 		default:
+			BadCode.Report(new SyntaxError("not a literal", current));
 			throw new Exception("not a literal");
 		}
 	}
