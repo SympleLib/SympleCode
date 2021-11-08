@@ -6,8 +6,7 @@ partial class Parser
 {
 	readonly string folder;
 	readonly string filename;
-	readonly Lexer lxr;
-	readonly List<Token> tokens = new List<Token>();
+	readonly Token[] tokens;
 	readonly List<Container> ctnrs = new List<Container>();
 	int pos = 0;
 	Token prev => Peek(-1);
@@ -20,18 +19,14 @@ partial class Parser
 		folder = Path.GetFileName(Path.GetDirectoryName(this.filename)!);
 		parsers.Add(filename, this);
 
-		lxr = new Lexer(source);
-		Token token = lxr.LexNext();
-		if (token.kind is TokenKind.Unknown)
-			BadCode.Report(new SyntaxError($"unknown token '{token.text}'", token));
-		tokens.Add(token);
-		while (token.kind is not TokenKind.Eof)
-		{
-			token = lxr.LexNext();
+		Preprocessor preprocessor = new Preprocessor(source, folder, this.filename);
+		tokens = preprocessor.PreProcess();
+
+		foreach (Token token in tokens)
 			if (token.kind is TokenKind.Unknown)
-				BadCode.Report(new SyntaxError($"unknown token '{token.text}'", token));
-			tokens.Add(token);
-		}
+				BadCode.Report(new SyntaxError("unrecognized token", token));
+			else if (token.kind is TokenKind.HashTag)
+				throw new Exception("preprocessor directive after preprocessing!!");
 	}
 
 	public ModuleAst Parse()
@@ -163,7 +158,7 @@ partial class Parser
 	Token Peek(int offset = 0)
 	{
 		int i = pos + offset;
-		if (i >= tokens.Count)
+		if (i >= tokens.Length)
 			return tokens.Last();
 		return tokens[i];
 	}

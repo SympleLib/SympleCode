@@ -9,6 +9,8 @@ struct Object {
 	int x, int y,
 }
 
+#define TES
+
 public void run {
 	Object obj = Object { 6, 9 };
 #ifdef TEST
