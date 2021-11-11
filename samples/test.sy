@@ -3,8 +3,8 @@ decl void printf(char* fmt, ...);
 
 public void run {
 	int x = 0;
-	while (x < 5) {
+	while (x <= 10) {
 		printf('%i\n', x);
-		x = x + 1;
+		x += 2;
 	}
 }

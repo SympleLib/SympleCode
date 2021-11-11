@@ -155,20 +155,17 @@ partial class Builder
 
 	Value BuildExpr(BiExprAst ast)
 	{
-		if (ast.op is TokenKind.Eql)
-		{
-			Value ptr = BuildPtr(ast.left);
-			Value val = BuildCast(BuildExpr(ast.right), ptr.TypeOf.ElementType, ast.token);
-
-			llBuilder.BuildStore(val, ptr);
-			return val;
-		}
-
 		Value left = BuildExpr(ast.left);
 		Value right = BuildExpr(ast.right);
 
 		Type type = left.TypeOf;
 		right = BuildCast(right, type, ast.right.token);
+
+		if (ast.op is TokenKind assign)
+		{
+			Value ptr = BuildPtr(ast.left);
+			return BuildAssign(ptr, assign, left, right);
+		}
 
 		if (ast.op is LLVMIntPredicate _op)
 			return BuildPred(_op, left, right);
@@ -178,6 +175,28 @@ partial class Builder
 			op++;
 
 		return llBuilder.BuildBinOp(op, left, right);
+	}
+
+	Value BuildAssign(Value ptr, TokenKind op, Value left, Value right)
+	{
+		if (op is TokenKind.Eql)
+			return llBuilder.BuildLoad(llBuilder.BuildStore(right, ptr));
+
+		LLVMOpcode vop = op switch
+		{
+			TokenKind.PlusEql => LLVMAdd,
+			TokenKind.MinusEql => LLVMSub,
+			TokenKind.StarEql => LLVMMul,
+			TokenKind.SlashEql => LLVMSDiv,
+			TokenKind.PercentEql => LLVMSRem,
+
+			_ => throw new NotImplementedException(),
+		};
+
+		Type type = left.TypeOf;
+		Value val = llBuilder.BuildBinOp(vop, left, right);
+		llBuilder.BuildStore(val, ptr);
+		return val;
 	}
 
 	Value BuildPred(LLVMIntPredicate iop, Value left, Value right)

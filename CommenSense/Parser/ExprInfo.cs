@@ -27,14 +27,15 @@ partial class Parser
 			   TokenKind.Star or TokenKind.Slash or TokenKind.Percent or TokenKind.SlashDash or TokenKind.PercentDash => 4,
 			   TokenKind.Plus or TokenKind.Minus => 3,
 			   TokenKind.LeftChevron or TokenKind.RightChevron or TokenKind.LEql or TokenKind.REql => 2,
-			   TokenKind.Eql => 1,
+			   TokenKind.Eql or TokenKind.PlusEql or TokenKind.MinusEql or TokenKind.StarEql or TokenKind.SlashEql or TokenKind.PercentEql => 1,
 			   _ => 0,
 		   };
 
 	static Enum BiOpcode(TokenKind kind) =>
 		kind switch
 		{
-			TokenKind.Eql or TokenKind.Dot => kind,
+			TokenKind.Eql or TokenKind.PlusEql or TokenKind.MinusEql or TokenKind.StarEql or TokenKind.SlashEql or TokenKind.PercentEql
+				or TokenKind.Dot => kind,
 			TokenKind.Plus => LLVMAdd,
 			TokenKind.Minus => LLVMSub,
 			TokenKind.Star => LLVMMul,

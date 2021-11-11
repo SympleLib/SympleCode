@@ -41,6 +41,12 @@ public enum TokenKind
 	LeftChevron,
 	RightChevron,
 
+	PlusEql,
+	MinusEql,
+	StarEql,
+	SlashEql,
+	PercentEql,
+	AndEql,
 	LEql,
 	REql,
 
@@ -101,6 +107,12 @@ class Lexer
 			"<",
 			">",
 
+			"+=",
+			"-=",
+			"*=",
+			"/=",
+			"%=",
+			"&=",
 			"<=",
 			">=",
 

@@ -4,5 +4,7 @@ void run {
 	int factor = 3;
 	int q = (int) sqrt(sieveSize);
 	
-	
+	while (factor < q) {
+		factor += 2;
+	}
 }
