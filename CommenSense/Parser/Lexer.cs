@@ -38,6 +38,11 @@ public enum TokenKind
 	RightBracket,
 	LeftParen,
 	RightParen,
+	LeftChevron,
+	RightChevron,
+
+	LEql,
+	REql,
 
 	Comma,
 	Colon,
@@ -51,6 +56,7 @@ public enum TokenKind
 	StructKeyword,
 	ClassKeyword,
 
+	WhileKeyword,
 	RetKeyword,
 
 	AsKeyword,
@@ -92,6 +98,11 @@ class Lexer
 			"]",
 			"(",
 			")",
+			"<",
+			">",
+
+			"<=",
+			">=",
 
 			",",
 			":",
@@ -107,6 +118,7 @@ class Lexer
 			"struct",
 			"class",
 
+			"while",
 			"ret",
 
 			"as",

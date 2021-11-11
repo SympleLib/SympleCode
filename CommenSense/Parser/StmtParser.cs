@@ -8,6 +8,10 @@ partial class Parser
 	{
 		switch (current.kind)
 		{
+		case TokenKind.LeftBrace:
+			return Block();
+		case TokenKind.WhileKeyword:
+			return While();
 		case TokenKind.RetKeyword:
 			return Ret();
 		}
@@ -70,6 +74,34 @@ partial class Parser
 			return ExprStmt();
 
 		throw new Exception("Illegal");
+	}
+
+	BlockStmtAst Block()
+	{
+		Token open = Match(TokenKind.LeftBrace);
+		List<StmtAst> stmts = new List<StmtAst>();
+		while (current.kind is not TokenKind.Eof and not TokenKind.RightBrace)
+		{
+			int start = pos;
+			stmts.Add(Stmt());
+			if (start == pos)
+				break;
+		}
+
+		Match(TokenKind.RightBrace);
+
+		return new BlockStmtAst(open, stmts.ToArray());
+	}
+
+	WhileStmtAst While()
+	{
+		Token keywrd = Match(TokenKind.WhileKeyword);
+		Match(TokenKind.LeftParen);
+		ExprAst cond = Expr();
+		Match(TokenKind.RightParen);
+		StmtAst stmt = Stmt();
+
+		return new WhileStmtAst(keywrd, cond, stmt);
 	}
 
 	RetStmtAst Ret()

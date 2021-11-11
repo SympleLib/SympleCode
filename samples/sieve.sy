@@ -1,0 +1,8 @@
+int sieveSize = 10;
+
+void run {
+	int factor = 3;
+	int q = (int) sqrt(sieveSize);
+	
+	
+}

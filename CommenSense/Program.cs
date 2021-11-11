@@ -1,4 +1,6 @@
-﻿global using LLVMSharp;
+﻿//#define DBG
+
+global using LLVMSharp;
 global using LLVMSharp.Interop;
 
 global using System;
@@ -9,6 +11,7 @@ global using static LLVMSharp.Interop.LLVMOpcode;
 global using static LLVMSharp.Interop.LLVMVisibility;
 global using static LLVMSharp.Interop.LLVMCallConv;
 global using static LLVMSharp.Interop.LLVMTypeKind;
+global using static LLVMSharp.Interop.LLVMIntPredicate;
 
 global using Visibility = LLVMSharp.Interop.LLVMVisibility;
 global using CallConv = LLVMSharp.Interop.LLVMCallConv;

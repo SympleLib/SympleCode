@@ -13,6 +13,7 @@ partial class Builder
 
 	static readonly Type uninitType = Type.CreateInt(1);
 
+	bool returned = false;
 	Value currentFunc;
 	readonly List<ModuleAst> links = new List<ModuleAst>();
 
@@ -69,6 +70,10 @@ partial class Builder
 			Build(clazz);
 		else if (ast is UsingAst) { }
 		else if (ast is LinkAst) { }
+		else if (ast is WhileStmtAst whileAst)
+			Build(whileAst);
+		else if (ast is BlockStmtAst block)
+			Build(block);
 		else if (ast is RetStmtAst retStmt)
 		{
 			Value expr = BuildExpr(retStmt.expr);
@@ -76,11 +81,38 @@ partial class Builder
 				llBuilder.BuildRetVoid();
 			else
 				llBuilder.BuildRet(expr);
+			returned = true;
 		}
 		else if (ast is ExprStmtAst exprStmt)
 			BuildExpr(exprStmt.expr);
 		else
 			throw new InvalidOperationException("Bob the builder can't build this ◁[<");
+	}
+
+	void Build(WhileStmtAst ast)
+	{
+		var loop = currentFunc.AppendBasicBlock(string.Empty);
+		var then = currentFunc.AppendBasicBlock(string.Empty);
+		var end = currentFunc.AppendBasicBlock(string.Empty);
+		llBuilder.BuildBr(loop);
+
+		llBuilder.PositionAtEnd(loop);
+		Value cond = BuildExpr(ast.cond);
+		llBuilder.BuildCondBr(cond, then, end);
+
+		llBuilder.PositionAtEnd(then);
+		Build(ast.stmt);
+		llBuilder.BuildBr(loop);
+
+		llBuilder.PositionAtEnd(end);
+	}
+
+	void Build(BlockStmtAst ast)
+	{
+		EnterScope();
+		foreach (StmtAst stmt in ast.stmts)
+			Build(stmt);
+		ExitScope();
 	}
 
 	void Build(ClassAst ast)
@@ -115,7 +147,7 @@ partial class Builder
 			currentFunc = fn;
 		}
 		ExitScope();
-		if (fn.TypeOf.ElementType.ReturnType == Type.Void && entry.Terminator == null)
+		if (fn.TypeOf.ElementType.ReturnType == Type.Void && returned == false)
 			llBuilder.BuildRetVoid();
 	}
 

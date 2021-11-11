@@ -1,19 +1,10 @@
 decl void puts(char* str);
 decl void printf(char* fmt, ...);
 
-void print(Object obj) {
-	printf('%i, %i\n', obj.x, obj.y);
-}
-
-struct Object {
-	int x, int y,
-}
-
-#define TES
-
 public void run {
-	Object obj = Object { 6, 9 };
-#ifdef TEST
-	print(obj);
-#endif
+	int x = 0;
+	while (x < 5) {
+		printf('%i\n', x);
+		x = x + 1;
+	}
 }

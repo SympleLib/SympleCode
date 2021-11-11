@@ -23,9 +23,10 @@ partial class Parser
 	static int BiPrecendence(TokenKind kind) =>
 		   kind switch
 		   {
-			   TokenKind.Dot => 3,
-			   TokenKind.Star or TokenKind.Slash or TokenKind.Percent or TokenKind.SlashDash or TokenKind.PercentDash => 3,
-			   TokenKind.Plus or TokenKind.Minus => 2,
+			   TokenKind.Dot => 5,
+			   TokenKind.Star or TokenKind.Slash or TokenKind.Percent or TokenKind.SlashDash or TokenKind.PercentDash => 4,
+			   TokenKind.Plus or TokenKind.Minus => 3,
+			   TokenKind.LeftChevron or TokenKind.RightChevron or TokenKind.LEql or TokenKind.REql => 2,
 			   TokenKind.Eql => 1,
 			   _ => 0,
 		   };
@@ -41,6 +42,11 @@ partial class Parser
 			TokenKind.Percent => LLVMSRem,
 			TokenKind.SlashDash => LLVMUDiv,
 			TokenKind.PercentDash => LLVMURem,
+
+			TokenKind.LeftChevron => LLVMIntSLT,
+			TokenKind.RightChevron => LLVMIntSGT,
+			TokenKind.LEql => LLVMIntSLE,
+			TokenKind.REql => LLVMIntSGE,
 			_ => (LLVMOpcode) 0,
 		};
 }

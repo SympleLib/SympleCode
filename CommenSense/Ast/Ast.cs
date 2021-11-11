@@ -34,6 +34,9 @@ partial record FuncAst(Visibility visibility, TypeAst retType, Token token, stri
 partial record DeclVarAst(Visibility visibility, TypeAst type, Token token, string asmName): StmtAst(token);
 partial record VarAst(Visibility visibility, TypeAst type, Token token, string asmName, ExprAst initializer): StmtAst(token);
 
+partial record WhileStmtAst(Token token, ExprAst cond, StmtAst stmt): StmtAst(token);
+partial record BlockStmtAst(Token token, StmtAst[] stmts): StmtAst(token);
+
 partial record RetStmtAst(Token token, ExprAst expr): StmtAst(token);
 partial record ExprStmtAst(ExprAst expr): StmtAst(expr.token);
 

@@ -167,13 +167,28 @@ partial class Builder
 		Value left = BuildExpr(ast.left);
 		Value right = BuildExpr(ast.right);
 
-		var op = (LLVMOpcode) ast.op;
 		Type type = left.TypeOf;
+		right = BuildCast(right, type, ast.right.token);
+
+		if (ast.op is LLVMIntPredicate _op)
+			return BuildPred(_op, left, right);
+
+		var op = (LLVMOpcode) ast.op;
 		if (type.ElementType == default && type.IsFloat())
 			op++;
-		right = BuildCast(right, type, ast.token);
 
 		return llBuilder.BuildBinOp(op, left, right);
+	}
+
+	Value BuildPred(LLVMIntPredicate iop, Value left, Value right)
+	{
+		if (left.TypeOf.IsFloat())
+		{
+			// TODO
+			throw new NotImplementedException();
+		}
+
+		return llBuilder.BuildICmp(iop, left, right);
 	}
 
 	Value BuildCtnrExpr(Type type, Container ctnr)

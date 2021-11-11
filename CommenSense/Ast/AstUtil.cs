@@ -180,6 +180,13 @@ partial record VarAst
 }
 
 
+partial record WhileStmtAst
+{ public override string ToString() => $"while ({cond}) {stmt}"; }
+
+partial record BlockStmtAst
+{ public override string ToString() => $"{{\n{IncTab()}{string.Join<StmtAst>($"\n{GetTabs()}", stmts)}{DecTab()}\n{GetTabs()}}}"; }
+
+
 partial record RetStmtAst
 { public override string ToString() => $"ret {expr}"; }
 
