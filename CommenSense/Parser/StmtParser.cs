@@ -12,6 +12,8 @@ partial class Parser
 			return Block();
 		case TokenKind.WhileKeyword:
 			return While();
+		case TokenKind.ForKeyword:
+			return For();
 		case TokenKind.RetKeyword:
 			return Ret();
 		}
@@ -99,9 +101,23 @@ partial class Parser
 		Match(TokenKind.LeftParen);
 		ExprAst cond = Expr();
 		Match(TokenKind.RightParen);
-		StmtAst stmt = Stmt();
+		StmtAst then = Stmt();
 
-		return new WhileStmtAst(keywrd, cond, stmt);
+		return new WhileStmtAst(keywrd, cond, then);
+	}
+
+	ForStmtAst For()
+	{
+		Token keywrd = Match(TokenKind.ForKeyword);
+		Match(TokenKind.LeftParen);
+		StmtAst init = Stmt();
+		ExprAst cond = Expr();
+		Match(TokenKind.Semicol);
+		ExprAst step = Expr();
+		Match(TokenKind.RightParen);
+		StmtAst then = Stmt();
+
+		return new ForStmtAst(keywrd, init, cond, step, then);
 	}
 
 	RetStmtAst Ret()

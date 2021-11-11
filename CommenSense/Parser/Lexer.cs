@@ -63,6 +63,7 @@ public enum TokenKind
 	ClassKeyword,
 
 	WhileKeyword,
+	ForKeyword,
 	RetKeyword,
 
 	AsKeyword,
@@ -131,6 +132,7 @@ class Lexer
 			"class",
 
 			"while",
+			"for",
 			"ret",
 
 			"as",

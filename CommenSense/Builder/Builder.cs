@@ -72,6 +72,8 @@ partial class Builder
 		else if (ast is LinkAst) { }
 		else if (ast is WhileStmtAst whileAst)
 			Build(whileAst);
+		else if (ast is ForStmtAst forAst)
+			Build(forAst);
 		else if (ast is BlockStmtAst block)
 			Build(block);
 		else if (ast is RetStmtAst retStmt)
@@ -101,7 +103,28 @@ partial class Builder
 		llBuilder.BuildCondBr(cond, then, end);
 
 		llBuilder.PositionAtEnd(then);
-		Build(ast.stmt);
+		Build(ast.then);
+		llBuilder.BuildBr(loop);
+
+		llBuilder.PositionAtEnd(end);
+	}
+
+	void Build(ForStmtAst ast)
+	{
+		Build(ast.init);
+
+		var loop = currentFunc.AppendBasicBlock(string.Empty);
+		var then = currentFunc.AppendBasicBlock(string.Empty);
+		var end = currentFunc.AppendBasicBlock(string.Empty);
+		llBuilder.BuildBr(loop);
+
+		llBuilder.PositionAtEnd(loop);
+		Value cond = BuildExpr(ast.cond);
+		llBuilder.BuildCondBr(cond, then, end);
+
+		llBuilder.PositionAtEnd(then);
+		Build(ast.then);
+		BuildExpr(ast.step);
 		llBuilder.BuildBr(loop);
 
 		llBuilder.PositionAtEnd(end);

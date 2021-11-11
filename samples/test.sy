@@ -2,9 +2,6 @@ decl void puts(char* str);
 decl void printf(char* fmt, ...);
 
 public void run {
-	int x = 0;
-	while (x <= 10) {
+	for (int x = 0; x <= 10; x += 2)
 		printf('%i\n', x);
-		x += 2;
-	}
 }

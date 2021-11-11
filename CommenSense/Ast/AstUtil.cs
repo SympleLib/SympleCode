@@ -181,7 +181,10 @@ partial record VarAst
 
 
 partial record WhileStmtAst
-{ public override string ToString() => $"while ({cond}) {stmt}"; }
+{ public override string ToString() => $"while ({cond})\n{GetTabs()}{then}"; }
+
+partial record ForStmtAst
+{ public override string ToString() => $"for ({init}\n{GetTabs()}{cond}\n{GetTabs()}{step})\n{GetTabs()}{then}"; }
 
 partial record BlockStmtAst
 { public override string ToString() => $"{{\n{IncTab()}{string.Join<StmtAst>($"\n{GetTabs()}", stmts)}{DecTab()}\n{GetTabs()}}}"; }
