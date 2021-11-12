@@ -81,7 +81,10 @@ partial class Parser
 					break;
 				}
 
+				int start = pos;
 				paramTypes.Add(Type());
+				if (start == pos)
+					break;
 
 				if (current.kind is not TokenKind.RightParen)
 					Match(TokenKind.Comma);
