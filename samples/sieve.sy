@@ -12,12 +12,13 @@ struct Sieve {
 	bool* prime,
 }
 
-void timedTest(int n) {
+void timedTest(int n, bool printVals) {
 	double start = (double) (clock());
 	Sieve test = sieve(n);
 	double end = (double) (clock());
-	printSieve(test);
-	printf('Time took %gms to print %i primes up to %i\n', end - start, test.count, test.n);
+	if (printVals)
+		printSieve(test);
+	printf('Time took %gms to calculate %i primes up to %i\n', end - start, test.count, test.n);
 }
 
 void printSieve(Sieve test) {
@@ -27,16 +28,16 @@ void printSieve(Sieve test) {
 		}
 }
 
-int sieve(int n) {
+Sieve sieve(int n) {
 	bool* prime = malloc(n + 1);
 	memset(prime, true to byte, n + 1);
 	
-	int count = n;
+	int count = n - 1;
 	
 	for (int p = 2; p * p <= n; p += 1) {
 		if (prime[p]) {
 			for (int i = p * p; i <= n; i += p) {
-				if (prime[i] == false)
+				if (prime[i])
 					count -= 1;
 				prime[i] = false;
 			}

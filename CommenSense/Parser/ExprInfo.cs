@@ -26,7 +26,7 @@ partial class Parser
 			   TokenKind.Dot => 5,
 			   TokenKind.Star or TokenKind.Slash or TokenKind.Percent or TokenKind.SlashDash or TokenKind.PercentDash => 4,
 			   TokenKind.Plus or TokenKind.Minus => 3,
-			   TokenKind.LeftChevron or TokenKind.RightChevron or TokenKind.LEql or TokenKind.REql => 2,
+			   TokenKind.LeftChevron or TokenKind.RightChevron or TokenKind.LEql or TokenKind.REql or TokenKind.EqlEql => 2,
 			   TokenKind.Eql or TokenKind.PlusEql or TokenKind.MinusEql or TokenKind.StarEql or TokenKind.SlashEql or TokenKind.PercentEql => 1,
 			   _ => 0,
 		   };
@@ -48,6 +48,7 @@ partial class Parser
 			TokenKind.RightChevron => LLVMIntSGT,
 			TokenKind.LEql => LLVMIntSLE,
 			TokenKind.REql => LLVMIntSGE,
+			TokenKind.EqlEql => LLVMIntEQ,
 			_ => (LLVMOpcode) 0,
 		};
 }

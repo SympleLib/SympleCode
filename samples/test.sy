@@ -4,5 +4,6 @@
 link 'sieve.sy';
 
 public void run {
-	timedTest(1000000);
+	timedTest(69, true);
+	timedTest(1000000, false);
 }

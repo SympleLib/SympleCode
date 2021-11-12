@@ -49,6 +49,7 @@ public enum TokenKind
 	AndEql,
 	LEql,
 	REql,
+	EqlEql,
 
 	Comma,
 	Colon,
@@ -118,6 +119,7 @@ class Lexer
 			"&=",
 			"<=",
 			">=",
+			"==",
 
 			",",
 			":",
