@@ -180,7 +180,10 @@ partial class Builder
 	Value BuildAssign(Value ptr, TokenKind op, Value left, Value right)
 	{
 		if (op is TokenKind.Eql)
-			return llBuilder.BuildLoad(llBuilder.BuildStore(right, ptr));
+		{
+			llBuilder.BuildStore(right, ptr);
+			return right;
+		}
 
 		LLVMOpcode vop = op switch
 		{
@@ -194,6 +197,9 @@ partial class Builder
 		};
 
 		Type type = left.TypeOf;
+		if (type.IsFloat())
+			vop++;
+
 		Value val = llBuilder.BuildBinOp(vop, left, right);
 		llBuilder.BuildStore(val, ptr);
 		return val;

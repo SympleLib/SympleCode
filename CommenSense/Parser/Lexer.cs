@@ -62,6 +62,8 @@ public enum TokenKind
 	StructKeyword,
 	ClassKeyword,
 
+	IfKeyword,
+	ElseKeyword,
 	WhileKeyword,
 	ForKeyword,
 	RetKeyword,
@@ -131,6 +133,8 @@ class Lexer
 			"struct",
 			"class",
 
+			"if",
+			"else",
 			"while",
 			"for",
 			"ret",

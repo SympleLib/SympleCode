@@ -33,6 +33,13 @@ static class _
 			return ", ...";
 		return string.Empty;
 	}
+
+	public static string Else(StmtAst? elze)
+	{
+		if (elze is null)
+			return string.Empty;
+		return $"\n{GetTabs()}{elze}";
+	}
 }
 
 partial record ModuleAst
@@ -179,6 +186,9 @@ partial record VarAst
 	public override string ToString() => $"{visibility} {type} {realName}: '{asmName}' = {initializer}";
 }
 
+
+partial record IfStmtAst
+{ public override string ToString() => $"if ({cond})\n{GetTabs()}{then}{Else(elze)}"; }
 
 partial record WhileStmtAst
 { public override string ToString() => $"while ({cond})\n{GetTabs()}{then}"; }

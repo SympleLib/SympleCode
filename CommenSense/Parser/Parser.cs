@@ -15,6 +15,7 @@ partial class Parser
 
 	public Parser(string source, string filename)
 	{
+		scope = new Scope(this);
 		this.filename = filename;
 		folder = Path.GetFileName(Path.GetDirectoryName(this.filename)!);
 		parsers.Add(filename, this);
@@ -36,7 +37,12 @@ partial class Parser
 		const string name = "simple-code";
 		List<StmtAst> members = new List<StmtAst>();
 		while (current.kind is not TokenKind.Eof)
+		{
+			int start = pos;
 			members.Add(Stmt());
+			if (start == pos)
+				break;
+		}
 
 		return new ModuleAst(name, members.ToArray(), ctnrs.ToArray());
 	}

@@ -1,10 +1,49 @@
-int sieveSize = 10;
+decl byte* malloc(int sz);
+decl void free(byte* ptr);
+decl void memset(byte* ptr, byte val, int sz);
+decl void printf(char* fmt, ...);
+decl void putchar(char);
 
-void run {
-	int factor = 3;
-	int q = (int) sqrt(sieveSize);
+decl long clock();
+
+struct Sieve {
+	int count,
+	int n,
+	bool* prime,
+}
+
+void timedTest(int n) {
+	double start = (double) (clock());
+	Sieve test = sieve(n);
+	double end = (double) (clock());
+	printSieve(test);
+	printf('Time took %gms to print %i primes up to %i\n', end - start, test.count, test.n);
+}
+
+void printSieve(Sieve test) {
+	for (int p = 2; p <= test.n; p += 1)
+		if (test.prime[p]) {
+			printf('%i\n', p);
+		}
+}
+
+int sieve(int n) {
+	bool* prime = malloc(n + 1);
+	memset(prime, true to byte, n + 1);
 	
-	while (factor < q) {
-		factor += 2;
+	int count = n;
+	
+	for (int p = 2; p * p <= n; p += 1) {
+		if (prime[p]) {
+			for (int i = p * p; i <= n; i += p) {
+				if (prime[i] == false)
+					count -= 1;
+				prime[i] = false;
+			}
+		}
 	}
+	
+
+	free(prime);
+	ret Sieve { count, n, prime };
 }

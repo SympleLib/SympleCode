@@ -10,6 +10,8 @@ partial class Parser
 		{
 		case TokenKind.LeftBrace:
 			return Block();
+		case TokenKind.IfKeyword:
+			return If();
 		case TokenKind.WhileKeyword:
 			return While();
 		case TokenKind.ForKeyword:
@@ -93,6 +95,24 @@ partial class Parser
 		Match(TokenKind.RightBrace);
 
 		return new BlockStmtAst(open, stmts.ToArray());
+	}
+
+	IfStmtAst If()
+	{
+		Token keywrd = Match(TokenKind.IfKeyword);
+		Match(TokenKind.LeftParen);
+		ExprAst cond = Expr();
+		Match(TokenKind.RightParen);
+		StmtAst then = Stmt();
+
+		StmtAst? elze = null;
+		if (current.kind is TokenKind.ElseKeyword)
+		{
+			Next();
+			elze = Stmt();
+		}
+
+		return new IfStmtAst(keywrd, cond, then, elze);
 	}
 
 	WhileStmtAst While()
@@ -299,7 +319,12 @@ partial class Parser
 		List<StmtAst> body = new List<StmtAst>();
 		Match(TokenKind.LeftBrace);
 		while (current.kind is not TokenKind.Eof and not TokenKind.RightBrace)
+		{
+			int start = pos;
 			body.Add(Stmt());
+			if (start == pos)
+				break;
+		}
 		ExitScope();
 		Match(TokenKind.RightBrace);
 

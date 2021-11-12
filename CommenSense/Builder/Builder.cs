@@ -62,14 +62,15 @@ partial class Builder
 			Build(func);
 		else if (ast is VarAst var)
 			Build(var);
-		else if (ast is DeclFuncAst declFunc)
-			Build(declFunc);
+		else if (ast is DeclFuncAst) { }
 		else if (ast is DeclVarAst) { }
 		else if (ast is StructAst) { }
 		else if (ast is ClassAst clazz)
 			Build(clazz);
 		else if (ast is UsingAst) { }
 		else if (ast is LinkAst) { }
+		else if (ast is IfStmtAst ifAst)
+			Build(ifAst);
 		else if (ast is WhileStmtAst whileAst)
 			Build(whileAst);
 		else if (ast is ForStmtAst forAst)
@@ -91,6 +92,44 @@ partial class Builder
 			throw new InvalidOperationException("Bob the builder can't build this ◁[<");
 	}
 
+	void Build(IfStmtAst ast)
+	{
+		var then = currentFunc.AppendBasicBlock(string.Empty);
+		var end = currentFunc.AppendBasicBlock(string.Empty);
+
+		Value cond = BuildExpr(ast.cond);
+
+		if (ast.elze is null)
+		{
+			EnterScope();
+			llBuilder.BuildCondBr(cond, then, end);
+			llBuilder.PositionAtEnd(then);
+			Build(ast.then);
+			llBuilder.BuildBr(end);
+			ExitScope();
+
+			llBuilder.PositionAtEnd(end);
+			return;
+		}
+
+		var elze = currentFunc.AppendBasicBlock(string.Empty);
+		llBuilder.BuildCondBr(cond, then, elze);
+
+		EnterScope();
+		llBuilder.PositionAtEnd(then);
+		Build(ast.then);
+		llBuilder.BuildBr(end);
+		ExitScope();
+
+		EnterScope();
+		llBuilder.PositionAtEnd(elze);
+		Build(ast.elze);
+		llBuilder.BuildBr(end);
+		ExitScope();
+
+		llBuilder.PositionAtEnd(end);
+	}
+
 	void Build(WhileStmtAst ast)
 	{
 		var loop = currentFunc.AppendBasicBlock(string.Empty);
@@ -102,15 +141,18 @@ partial class Builder
 		Value cond = BuildExpr(ast.cond);
 		llBuilder.BuildCondBr(cond, then, end);
 
+		EnterScope();
 		llBuilder.PositionAtEnd(then);
 		Build(ast.then);
 		llBuilder.BuildBr(loop);
+		ExitScope();
 
 		llBuilder.PositionAtEnd(end);
 	}
 
 	void Build(ForStmtAst ast)
 	{
+		EnterScope();
 		Build(ast.init);
 
 		var loop = currentFunc.AppendBasicBlock(string.Empty);
@@ -127,6 +169,7 @@ partial class Builder
 		BuildExpr(ast.step);
 		llBuilder.BuildBr(loop);
 
+		ExitScope();
 		llBuilder.PositionAtEnd(end);
 	}
 
@@ -147,6 +190,7 @@ partial class Builder
 
 	void Build(FuncAst ast)
 	{
+		returned = false;
 		Value fn = scope.Find(ast.realName);
 		Type[] paramTypes = fn.TypeOf.ElementType.ParamTypes;
 		LLVMBasicBlockRef entry = fn.AppendBasicBlock(string.Empty);
@@ -230,18 +274,5 @@ partial class Builder
 			llBuilder.BuildStore(initializer, var);
 			scope.Define(ast.realName, var);
 		}
-	}
-
-	void Build(DeclFuncAst ast)
-	{
-		Type[] paramTypes = new Type[ast.paramz.Length];
-		for (int i = 0; i < ast.paramz.Length; i++)
-			paramTypes[i] = BuildType(ast.paramz[i].type);
-
-		Type retType = BuildType(ast.retType);
-		Type ty = Type.CreateFunction(retType, paramTypes, ast.vaArg);
-		Value fn = llModule.AddFunction(ast.asmName, ty);
-		// fn.FunctionCallConv = (uint) ast.conv;
-		scope.Define(ast.realName, fn);
 	}
 }

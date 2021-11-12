@@ -11,6 +11,8 @@ partial class Builder
 	{
 		if (ast is DeclVarAst declVar)
 			Decl(declVar);
+		else if (ast is DeclFuncAst declFunc)
+			Decl(declFunc);
 		else if (ast is FuncAst func)
 			Decl(func);
 		else if (ast is VarAst var)
@@ -27,9 +29,22 @@ partial class Builder
 	{
 		Type type = BuildType(ast.type);
 		Value var = llModule.AddGlobal(type, ast.asmName);
-		var.Visibility = ast.visibility;
 		scope.Define(ast.realName, var);
 		return var;
+	}
+
+	Value Decl(DeclFuncAst ast)
+	{
+		Type[] paramTypes = new Type[ast.paramz.Length];
+		for (int i = 0; i < ast.paramz.Length; i++)
+			paramTypes[i] = BuildType(ast.paramz[i].type);
+
+		Type retType = BuildType(ast.retType);
+		Type ty = Type.CreateFunction(retType, paramTypes, ast.vaArg);
+		Value fn = llModule.AddFunction(ast.asmName, ty);
+		// fn.FunctionCallConv = (uint) ast.conv;
+		scope.Define(ast.realName, fn);
+		return fn;
 	}
 
 	Value Decl(FuncAst ast)
