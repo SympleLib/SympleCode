@@ -13,7 +13,6 @@ partial class Builder
 
 	static readonly Type uninitType = Type.CreateInt(1);
 
-	bool returned = false;
 	Value currentFunc;
 	readonly List<ModuleAst> links = new List<ModuleAst>();
 
@@ -84,7 +83,6 @@ partial class Builder
 				llBuilder.BuildRetVoid();
 			else
 				llBuilder.BuildRet(expr);
-			returned = true;
 		}
 		else if (ast is ExprStmtAst exprStmt)
 			BuildExpr(exprStmt.expr);
@@ -105,7 +103,8 @@ partial class Builder
 			llBuilder.BuildCondBr(cond, then, end);
 			llBuilder.PositionAtEnd(then);
 			Build(ast.then);
-			llBuilder.BuildBr(end);
+			if (then.Terminator == null)
+				llBuilder.BuildBr(end);
 			ExitScope();
 
 			llBuilder.PositionAtEnd(end);
@@ -118,13 +117,16 @@ partial class Builder
 		EnterScope();
 		llBuilder.PositionAtEnd(then);
 		Build(ast.then);
-		llBuilder.BuildBr(end);
+		if (then.Terminator == null)
+			llBuilder.BuildBr(end);
+		
 		ExitScope();
 
 		EnterScope();
 		llBuilder.PositionAtEnd(elze);
 		Build(ast.elze);
-		llBuilder.BuildBr(end);
+		if (elze.Terminator == null)
+			llBuilder.BuildBr(end);
 		ExitScope();
 
 		llBuilder.PositionAtEnd(end);
@@ -168,7 +170,6 @@ partial class Builder
 		Build(ast.then);
 		BuildExpr(ast.step);
 		llBuilder.BuildBr(loop);
-
 		ExitScope();
 		llBuilder.PositionAtEnd(end);
 	}
@@ -190,7 +191,6 @@ partial class Builder
 
 	void Build(FuncAst ast)
 	{
-		returned = false;
 		Value fn = scope.Find(ast.realName);
 		Type[] paramTypes = fn.TypeOf.ElementType.ParamTypes;
 		LLVMBasicBlockRef entry = fn.AppendBasicBlock(string.Empty);
@@ -214,7 +214,7 @@ partial class Builder
 			currentFunc = fn;
 		}
 		ExitScope();
-		if (fn.TypeOf.ElementType.ReturnType == Type.Void && returned == false)
+		if (fn.TypeOf.ElementType.ReturnType == Type.Void && fn.LastBasicBlock.Terminator == null)
 			llBuilder.BuildRetVoid();
 	}
 

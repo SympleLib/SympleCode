@@ -1,6 +1,4 @@
-﻿//#define DBG
-
-global using LLVMSharp;
+﻿global using LLVMSharp;
 global using LLVMSharp.Interop;
 
 global using System;
@@ -89,6 +87,8 @@ void Optimize(LLVMModuleRef module)
 
 LLVMExecutionEngineRef? Compile(string filename)
 {
+	using StreamWriter dbgout = new StreamWriter(File.OpenWrite("dbgout.txt"));
+
 	// pre-parse
 	{
 		string src = File.ReadAllText(filename);
@@ -96,7 +96,10 @@ LLVMExecutionEngineRef? Compile(string filename)
 		if (BadCode.errors.Count > 0)
 		{
 			foreach (SyntaxError err in BadCode.errors)
+			{
 				Console.WriteLine(err);
+				dbgout.WriteLine(err);
+			}
 			return null;
 		}
 
@@ -117,17 +120,18 @@ LLVMExecutionEngineRef? Compile(string filename)
 		foreach (Parser parser in Parser.parsers.Values)
 		{
 			ModuleAst module = parser.Parse();
-#if DBG
-			Console.WriteLine(module);
-			Console.WriteLine("---");
-#endif
+			dbgout.WriteLine(module);
+			dbgout.WriteLine("---");
 			moduleList.Add(module);
 		}
 
 		if (BadCode.errors.Count > 0)
 		{
 			foreach (SyntaxError err in BadCode.errors)
+			{
 				Console.WriteLine(err);
+				dbgout.WriteLine(err);
+			}
 			return null;
 		}
 
@@ -144,7 +148,10 @@ LLVMExecutionEngineRef? Compile(string filename)
 		if (BadCode.errors.Count > 0)
 		{
 			foreach (SyntaxError erronius in BadCode.errors)
+			{
 				Console.WriteLine(erronius);
+				dbgout.WriteLine(erronius);
+			}
 			return null;
 		}
 
@@ -154,16 +161,13 @@ LLVMExecutionEngineRef? Compile(string filename)
 #endif
 		// Optimize(llModule);
 
-#if DBG
-		Console.WriteLine(llModule);
-
-		Console.WriteLine("---");
-#endif
+		dbgout.WriteLine(llModule);
 
 		if (!llModule.TryVerify(LLVMVerifierFailureAction.LLVMPrintMessageAction, out string err))
 		{
 			Console.WriteLine($"Error: {err}");
-			Console.WriteLine("---");
+			dbgout.WriteLine("---");
+			dbgout.WriteLine($"Error: {err}");
 			return null;
 		}
 
@@ -178,6 +182,7 @@ LLVMExecutionEngineRef? Compile(string filename)
 	if (!llModules[0].TryCreateMCJITCompiler(out LLVMExecutionEngineRef engine, ref options, out string error))
 	{
 		Console.WriteLine($"Error: {error}");
+		dbgout.WriteLine($"Error: {error}");
 		return null;
 	}
 

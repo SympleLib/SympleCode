@@ -1,9 +1,4 @@
-// decl void puts(char* str);
-// decl void printf(char* fmt, ...);
+decl void puts(char* str);
+decl void printf(char* fmt, ...);
 
 link 'sieve.sy';
-
-public void run {
-	timedTest(69, true);
-	timedTest(1000000, false);
-}

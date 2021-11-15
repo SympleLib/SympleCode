@@ -222,7 +222,7 @@ partial class Builder
 
 		for (uint i = 0; i < ctnr.fields.Length; i++)
 		{
-			Value ele = BuildCast(BuildExpr(ctnr.fields[i].initializer), type.StructElementTypes[i], ctnr.token);
+			Value ele = BuildCast(BuildExpr(ctnr.fields[i].initializer), type.StructElementTypes[i], null);
 			Value fieldPtr = llBuilder.BuildStructGEP(ptr, i);
 			llBuilder.BuildStore(ele, fieldPtr);
 		}

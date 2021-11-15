@@ -17,6 +17,7 @@ partial class Builder
 	{
 		public readonly Builder builder;
 		public readonly Scope? parent;
+
 		readonly Dictionary<string, Container> ctnrs = new Dictionary<string, Container>();
 		readonly Dictionary<string, Value> symbols = new Dictionary<string, Value>();
 		readonly Dictionary<string, Type> typedefs = new Dictionary<string, Type>();
@@ -28,10 +29,10 @@ partial class Builder
 		}
 
 		public void Define(string alias, Type realType) =>
-			typedefs.Add(alias, realType);
+			typedefs.TryAdd(alias, realType);
 
 		public void Define(string name, Container ctnr) =>
-			ctnrs.Add(name, ctnr);
+			ctnrs.TryAdd(name, ctnr);
 
 		public Container GetCtnr(string name)
 		{
@@ -68,6 +69,6 @@ partial class Builder
 		}
 
 		public void Define(string name, Value symbol) =>
-			symbols.Add(name, symbol);
+			symbols.TryAdd(name, symbol);
 	}
 }

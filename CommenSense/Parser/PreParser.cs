@@ -48,13 +48,13 @@ partial class Parser
 			tmpParser.PreParse();
 			foreach (var varName in tmpParser.varNames)
 				if (varName.Value)
-					varNames.Add(varName.Key, import.Value);
+					varNames.TryAdd(varName.Key, import.Value);
 			foreach (var funcName in tmpParser.funcNames)
 				if (funcName.Value)
-					funcNames.Add(funcName.Key, import.Value);
+					funcNames.TryAdd(funcName.Key, import.Value);
 			foreach (var typeName in tmpParser.varNames)
 				if (typeName.Value)
-					typeNames.Add(typeName.Key, import.Value);
+					typeNames.TryAdd(typeName.Key, import.Value);
 		}
 	}
 

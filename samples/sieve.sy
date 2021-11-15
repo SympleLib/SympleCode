@@ -6,26 +6,60 @@ decl void putchar(char);
 
 decl long clock();
 
+public void run {
+	double start = (double) (clock());
+	
+	int passes = 0;
+	Sieve test;
+	while ((clock() - start) < 5000000) {
+		test = sieve(1000000);
+		passes += 1;
+	}
+	
+	double end = (double) (clock());
+	
+	printSieve(false, test, (end - start) * 1000000, passes);
+}
+
 struct Sieve {
 	int count,
 	int n,
 	bool* prime,
 }
 
-void timedTest(int n, bool printVals) {
-	double start = (double) (clock());
-	Sieve test = sieve(n);
-	double end = (double) (clock());
-	if (printVals)
-		printSieve(test);
-	printf('Time took %gms to calculate %i primes up to %i\n', end - start, test.count, test.n);
+char* bool2str(bool b) {
+	if (b)
+		ret 'true';
+	ret 'false';
 }
 
-void printSieve(Sieve test) {
+bool validate(Sieve test) {
+	if (test.n == 10)
+		ret test.count == 1;
+	if (test.n == 100)
+		ret test.count == 25;
+	if (test.n == 1000)
+		ret test.count == 168;
+	if (test.n == 10000)
+		ret test.count == 1229;
+	if (test.n == 100000)
+		ret test.count == 9592;
+	if (test.n == 1000000)
+		ret test.count == 78498;
+	if (test.n == 10000000)
+		ret test.count == 664579;
+	if (test.n == 100000000)
+		ret test.count == 5761455;
+	ret false;
+}
+
+void printSieve(bool showResults, Sieve test, double duration, int passes) {
 	for (int p = 2; p <= test.n; p += 1)
 		if (test.prime[p]) {
 			printf('%i\n', p);
 		}
+	
+	printf('Passes: %i, Time: %f, Avg: %f, Limit: %i, Count: %i, Valid: %s\n', passes, duration, duration / (double) passes, test.n, test.count, bool2str(validate(test)));
 }
 
 Sieve sieve(int n) {
