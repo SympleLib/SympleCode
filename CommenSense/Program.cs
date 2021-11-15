@@ -85,7 +85,113 @@ void Optimize(LLVMModuleRef module)
 	pass.Run(module);
 }
 
-LLVMExecutionEngineRef? Compile(string filename)
+void Compile(string filename)
+{
+	using StreamWriter dbgout = new StreamWriter(File.OpenWrite("dbgout.txt"));
+
+	// pre-parse
+	{
+		string src = File.ReadAllText(filename);
+		Parser parser = new Parser(src, filename);
+		if (BadCode.errors.Count > 0)
+		{
+			foreach (SyntaxError err in BadCode.errors)
+			{
+				Console.WriteLine(err);
+				dbgout.WriteLine(err);
+			}
+			return;
+		}
+
+		parser.PreParse();
+
+		if (BadCode.errors.Count > 0)
+		{
+			foreach (SyntaxError err in BadCode.errors)
+			{
+				Console.WriteLine(err);
+				dbgout.WriteLine(err);
+			}
+			return;
+		}
+	}
+
+	// parse
+	ModuleAst[] modules;
+	{
+		List<ModuleAst> moduleList = new List<ModuleAst>();
+		foreach (Parser parser in Parser.parsers.Values)
+		{
+			ModuleAst module = parser.Parse();
+			dbgout.WriteLine(module);
+			dbgout.WriteLine("---");
+			moduleList.Add(module);
+		}
+
+		dbgout.Flush();
+
+		if (BadCode.errors.Count > 0)
+		{
+			foreach (SyntaxError err in BadCode.errors)
+			{
+				Console.WriteLine(err);
+				dbgout.WriteLine(err);
+			}
+			return;
+		}
+
+		modules = moduleList.ToArray();
+	}
+
+	// build
+	List<LLVMModuleRef> llModules = new List<LLVMModuleRef>();
+	for (int i = 0; i < modules.Length; i++)
+	{
+		Builder builder = new Builder(modules, i);
+
+		LLVMModuleRef llModule = builder.Build();
+		if (BadCode.errors.Count > 0)
+		{
+			foreach (SyntaxError erronius in BadCode.errors)
+			{
+				Console.WriteLine(erronius);
+				dbgout.WriteLine(erronius);
+			}
+			return;
+		}
+
+#if false // No need for the Infini-Mizing (The tiny program will run too fast, too much power ⚡ for mere mortals to handle)
+	//      👇 To insure COMPLETE optimization
+	while (true)
+#endif
+		// Optimize(llModule);
+
+		dbgout.WriteLine(llModule);
+
+		if (!llModule.TryVerify(LLVMVerifierFailureAction.LLVMPrintMessageAction, out string err))
+		{
+			dbgout.WriteLine("---");
+			dbgout.WriteLine(err);
+			return;
+		}
+
+		llModules.Add(llModule);
+	}
+
+	LLVM.LinkInMCJIT();
+	LLVM.InitializeNativeTarget();
+	LLVM.InitializeNativeAsmPrinter();
+
+	for (int i = 0; i < llModules.Count; i++)
+	{
+		LLVMTargetRef target = LLVMTargetRef.GetTargetFromTriple(LLVMTargetRef.DefaultTriple);
+		LLVMTargetMachineRef machine = target.CreateTargetMachine(target.Name, "generic", "",
+					LLVMCodeGenOptLevel.LLVMCodeGenLevelAggressive, LLVMRelocMode.LLVMRelocDefault, LLVMCodeModel.LLVMCodeModelDefault);
+		machine.EmitToFile(llModules[i], modules[i].name[..^3] + ".o", LLVMCodeGenFileType.LLVMObjectFile);
+	}
+}
+
+LLVMExecutionEngineRef? Debug(string filename)
 {
 	using StreamWriter dbgout = new StreamWriter(File.OpenWrite("dbgout.txt"));
 
@@ -196,7 +302,17 @@ LLVMExecutionEngineRef? Compile(string filename)
 	return engine;
 }
 
-LLVMExecutionEngineRef? _engine = Compile("samples/test.sy");
+Console.WriteLine("Welcome to the 'Sieve' pre-release of SympleCode");
+Console.WriteLine("This compiler is still in dev so it may cause a freeze or a crash if the input code has syntax errors");
+Console.WriteLine("This compiler is meant mainly to run the Prime Sieve for the Drag Race by Dave's Garage");
+Console.WriteLine("---");
+Console.WriteLine("Compiling 'sieve.sy' -> 'sieve.o'...");
+
+Compile("sieve.sy");
+goto End;
+
+RealCode:
+LLVMExecutionEngineRef? _engine = Debug("sieve.sy");
 if (_engine is null)
 	goto End;
 

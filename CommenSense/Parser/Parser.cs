@@ -17,10 +17,10 @@ partial class Parser
 	{
 		scope = new Scope(this);
 		this.filename = filename;
-		folder = Path.GetFileName(Path.GetDirectoryName(this.filename)!);
+		folder = Path.GetFileName(Path.GetDirectoryName(filename)!);
 		parsers.Add(filename, this);
 
-		Preprocessor preprocessor = new Preprocessor(source, folder, this.filename);
+		Preprocessor preprocessor = new Preprocessor(source, folder, filename);
 		tokens = preprocessor.PreProcess();
 
 		foreach (Token token in tokens)
@@ -34,7 +34,6 @@ partial class Parser
 	{
 		MaybeEndLine();
 
-		const string name = "simple-code";
 		List<StmtAst> members = new List<StmtAst>();
 		while (current.kind is not TokenKind.Eof)
 		{
@@ -44,7 +43,7 @@ partial class Parser
 				break;
 		}
 
-		return new ModuleAst(name, members.ToArray(), ctnrs.ToArray());
+		return new ModuleAst(filename, members.ToArray(), ctnrs.ToArray());
 	}
 
 	bool IsType(Token token)
