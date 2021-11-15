@@ -92,8 +92,8 @@ partial class Builder
 
 	void Build(IfStmtAst ast)
 	{
-		var then = currentFunc.AppendBasicBlock(string.Empty);
-		var end = currentFunc.AppendBasicBlock(string.Empty);
+		var then = currentFunc.AppendBasicBlock("then");
+		var end = currentFunc.AppendBasicBlock("end");
 
 		Value cond = BuildExpr(ast.cond);
 
@@ -103,7 +103,7 @@ partial class Builder
 			llBuilder.BuildCondBr(cond, then, end);
 			llBuilder.PositionAtEnd(then);
 			Build(ast.then);
-			if (then.Terminator == null)
+			if (llBuilder.InsertBlock.Terminator == null)
 				llBuilder.BuildBr(end);
 			ExitScope();
 
@@ -111,13 +111,13 @@ partial class Builder
 			return;
 		}
 
-		var elze = currentFunc.AppendBasicBlock(string.Empty);
+		var elze = currentFunc.AppendBasicBlock("else");
 		llBuilder.BuildCondBr(cond, then, elze);
 
 		EnterScope();
 		llBuilder.PositionAtEnd(then);
 		Build(ast.then);
-		if (then.Terminator == null)
+		if (llBuilder.InsertBlock.Terminator == null)
 			llBuilder.BuildBr(end);
 		
 		ExitScope();
@@ -125,7 +125,7 @@ partial class Builder
 		EnterScope();
 		llBuilder.PositionAtEnd(elze);
 		Build(ast.elze);
-		if (elze.Terminator == null)
+		if (llBuilder.InsertBlock.Terminator == null)
 			llBuilder.BuildBr(end);
 		ExitScope();
 
@@ -134,9 +134,9 @@ partial class Builder
 
 	void Build(WhileStmtAst ast)
 	{
-		var loop = currentFunc.AppendBasicBlock(string.Empty);
-		var then = currentFunc.AppendBasicBlock(string.Empty);
-		var end = currentFunc.AppendBasicBlock(string.Empty);
+		var loop = currentFunc.AppendBasicBlock("while-loop");
+		var then = currentFunc.AppendBasicBlock("while-then");
+		var end = currentFunc.AppendBasicBlock("while-end");
 		llBuilder.BuildBr(loop);
 
 		llBuilder.PositionAtEnd(loop);
@@ -157,9 +157,9 @@ partial class Builder
 		EnterScope();
 		Build(ast.init);
 
-		var loop = currentFunc.AppendBasicBlock(string.Empty);
-		var then = currentFunc.AppendBasicBlock(string.Empty);
-		var end = currentFunc.AppendBasicBlock(string.Empty);
+		var loop = currentFunc.AppendBasicBlock("for-loop");
+		var then = currentFunc.AppendBasicBlock("for-then");
+		var end = currentFunc.AppendBasicBlock("for-end");
 		llBuilder.BuildBr(loop);
 
 		llBuilder.PositionAtEnd(loop);
@@ -214,7 +214,7 @@ partial class Builder
 			currentFunc = fn;
 		}
 		ExitScope();
-		if (fn.TypeOf.ElementType.ReturnType == Type.Void && fn.LastBasicBlock.Terminator == null)
+		if (fn.TypeOf.ElementType.ReturnType == Type.Void && llBuilder.InsertBlock.Terminator == null)
 			llBuilder.BuildRetVoid();
 	}
 
@@ -254,7 +254,7 @@ partial class Builder
 		ExitScope();
 		ExitScope();
 
-		if (fn.TypeOf.ElementType.ReturnType == Type.Void && entry.Terminator == null)
+		if (fn.TypeOf.ElementType.ReturnType == Type.Void && llBuilder.InsertBlock.Terminator == null)
 			llBuilder.BuildRetVoid();
 	}
 

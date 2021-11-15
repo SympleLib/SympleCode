@@ -20,14 +20,14 @@ module 'simple-code' {
 	LLVMDefaultVisibility decl long clock(): 'clock'
 
 	LLVMDefaultVisibility void run(): 'run' {
-			LLVMDefaultVisibility double start: 'start' = &clock() to double
+			LLVMDefaultVisibility long start: 'start' = &clock()
 			LLVMDefaultVisibility int passes: 'passes' = 0
 			LLVMDefaultVisibility Sieve test: 'test' = null
 			while (LLVMIntSLT
 				LLVMSub
 					&clock()
 					start
-				5000000)
+				10000)
 			{
 				Eql
 					test
@@ -36,16 +36,15 @@ module 'simple-code' {
 					passes
 					1
 			}
-			LLVMDefaultVisibility double end: 'end' = &clock() to double
-			&printSieve(False, test, LLVMMul
+			LLVMDefaultVisibility long end: 'end' = &clock()
+			&printSieve(False, test, LLVMSDiv
 				LLVMSub
 					end
-					start
-				1000000, passes)
+					start to double
+				1000, passes)
 		}
 
 	LLVMDefaultVisibility struct Sieve {
-			LLVMDefaultVisibility int count = null
 			LLVMDefaultVisibility int n = null
 			LLVMDefaultVisibility bool* prime = null
 		}
@@ -56,59 +55,60 @@ module 'simple-code' {
 			ret 'false'
 		}
 
-	LLVMDefaultVisibility bool validate(Sieve test = null): 'validate' {
+	LLVMDefaultVisibility bool validate(Sieve test = null, int count = null): 'validate' {
 			if (LLVMIntEQ
 				test.n
 				10)
 			ret LLVMIntEQ
-				test.count
+				count
 				1
 			if (LLVMIntEQ
 				test.n
 				100)
 			ret LLVMIntEQ
-				test.count
+				count
 				25
 			if (LLVMIntEQ
 				test.n
 				1000)
 			ret LLVMIntEQ
-				test.count
+				count
 				168
 			if (LLVMIntEQ
 				test.n
 				10000)
 			ret LLVMIntEQ
-				test.count
+				count
 				1229
 			if (LLVMIntEQ
 				test.n
 				100000)
 			ret LLVMIntEQ
-				test.count
+				count
 				9592
 			if (LLVMIntEQ
 				test.n
 				1000000)
 			ret LLVMIntEQ
-				test.count
+				count
 				78498
 			if (LLVMIntEQ
 				test.n
 				10000000)
 			ret LLVMIntEQ
-				test.count
+				count
 				664579
 			if (LLVMIntEQ
 				test.n
 				100000000)
 			ret LLVMIntEQ
-				test.count
+				count
 				5761455
 			ret False
 		}
 
 	LLVMDefaultVisibility void printSieve(bool showResults = null, Sieve test = null, double duration = null, int passes = null): 'printSieve' {
+			LLVMDefaultVisibility int count: 'count' = 0
 			for (LLVMDefaultVisibility int p: 'p' = 2
 			LLVMIntSLE
 				p
@@ -118,13 +118,16 @@ module 'simple-code' {
 				1)
 			if (test.prime[p])
 			{
-				&printf('%i
-', p)
+				if (showResults)
+				&printf('%i, ', p)
+				PlusEql
+					count
+					1
 			}
 			&printf('Passes: %i, Time: %f, Avg: %f, Limit: %i, Count: %i, Valid: %s
 ', passes, duration, LLVMSDiv
 				duration
-				passes to double, test.n, test.count, &bool2str(&validate(test)))
+				passes to double, test.n, count, &bool2str(&validate(test, count)))
 		}
 
 	LLVMDefaultVisibility Sieve sieve(int n = null): 'sieve' {
@@ -134,9 +137,6 @@ module 'simple-code' {
 			&memset(prime, True to byte, LLVMAdd
 				n
 				1)
-			LLVMDefaultVisibility int count: 'count' = LLVMSub
-				n
-				1
 			for (LLVMDefaultVisibility int p: 'p' = 2
 			LLVMIntSLE
 				LLVMMul
@@ -159,10 +159,6 @@ module 'simple-code' {
 						i
 						p)
 					{
-						if (prime[i])
-						MinusEql
-							count
-							1
 						Eql
 							prime[i]
 							False
@@ -170,14 +166,14 @@ module 'simple-code' {
 				}
 			}
 			&free(prime)
-			ret Sieve { count, n, prime }
+			ret Sieve { n, prime }
 		}
 }
 ---
 ; ModuleID = 'simple-code'
 source_filename = "simple-code"
 
-%Sieve = type { i32, i32, i1* }
+%Sieve = type { i32, i1* }
 
 declare void @puts(i8*)
 
@@ -199,7 +195,7 @@ declare void @run()
 
 declare i8* @bool2str(i1)
 
-declare i1 @validate(%Sieve)
+declare i1 @validate(%Sieve, i32)
 
 declare void @printSieve(i1, %Sieve, double, i32)
 
@@ -208,11 +204,11 @@ declare %Sieve @sieve(i32)
 ; ModuleID = 'simple-code'
 source_filename = "simple-code"
 
-%Sieve = type { i32, i32, i1* }
+%Sieve = type { i32, i1* }
 
 @0 = private unnamed_addr constant [5 x i8] c"true\00", align 1
 @1 = private unnamed_addr constant [6 x i8] c"false\00", align 1
-@2 = private unnamed_addr constant [4 x i8] c"%i\0A\00", align 1
+@2 = private unnamed_addr constant [5 x i8] c"%i, \00", align 1
 @3 = private unnamed_addr constant [64 x i8] c"Passes: %i, Time: %f, Avg: %f, Limit: %i, Count: %i, Valid: %s\0A\00", align 1
 
 declare i8* @malloc(i32)
@@ -229,52 +225,48 @@ declare i64 @clock()
 
 define void @run() {
   %1 = call i64 @clock()
-  %2 = sitofp i64 %1 to double
-  %start = alloca double, align 8
-  store double %2, double* %start, align 8
+  %start = alloca i64, align 8
+  store i64 %1, i64* %start, align 4
   %passes = alloca i32, align 4
   store i32 0, i32* %passes, align 4
-  %3 = alloca %Sieve, align 8
-  %4 = getelementptr inbounds %Sieve, %Sieve* %3, i32 0, i32 0
-  store i32 0, i32* %4, align 4
-  %5 = getelementptr inbounds %Sieve, %Sieve* %3, i32 0, i32 1
-  store i32 0, i32* %5, align 4
-  %6 = getelementptr inbounds %Sieve, %Sieve* %3, i32 0, i32 2
-  store i1* null, i1** %6, align 8
-  %7 = load %Sieve, %Sieve* %3, align 8
+  %2 = alloca %Sieve, align 8
+  %3 = getelementptr inbounds %Sieve, %Sieve* %2, i32 0, i32 0
+  store i32 0, i32* %3, align 4
+  %4 = getelementptr inbounds %Sieve, %Sieve* %2, i32 0, i32 1
+  store i1* null, i1** %4, align 8
+  %5 = load %Sieve, %Sieve* %2, align 8
   %test = alloca %Sieve, align 8
-  store %Sieve %7, %Sieve* %test, align 8
-  br label %8
+  store %Sieve %5, %Sieve* %test, align 8
+  br label %while-loop
 
-8:                                                ; preds = %14, %0
-  %9 = call i64 @clock()
-  %10 = load double, double* %start, align 8
-  %11 = fptosi double %10 to i64
-  %12 = sub i64 %9, %11
-  %13 = icmp slt i64 %12, 5000000
-  br i1 %13, label %14, label %19
+while-loop:                                       ; preds = %while-then, %0
+  %6 = call i64 @clock()
+  %7 = load i64, i64* %start, align 4
+  %8 = sub i64 %6, %7
+  %9 = icmp slt i64 %8, 10000
+  br i1 %9, label %while-then, label %while-end
 
-14:                                               ; preds = %8
+while-then:                                       ; preds = %while-loop
+  %10 = load %Sieve, %Sieve* %test, align 8
+  %11 = call %Sieve @sieve(i32 1000000)
+  store %Sieve %11, %Sieve* %test, align 8
+  %12 = load i32, i32* %passes, align 4
+  %13 = add i32 %12, 1
+  store i32 %13, i32* %passes, align 4
+  br label %while-loop
+
+while-end:                                        ; preds = %while-loop
+  %14 = call i64 @clock()
+  %end = alloca i64, align 8
+  store i64 %14, i64* %end, align 4
   %15 = load %Sieve, %Sieve* %test, align 8
-  %16 = call %Sieve @sieve(i32 1000000)
-  store %Sieve %16, %Sieve* %test, align 8
-  %17 = load i32, i32* %passes, align 4
-  %18 = add i32 %17, 1
-  store i32 %18, i32* %passes, align 4
-  br label %8
-
-19:                                               ; preds = %8
-  %20 = call i64 @clock()
-  %21 = sitofp i64 %20 to double
-  %end = alloca double, align 8
-  store double %21, double* %end, align 8
-  %22 = load %Sieve, %Sieve* %test, align 8
-  %23 = load double, double* %end, align 8
-  %24 = load double, double* %start, align 8
-  %25 = fsub double %23, %24
-  %26 = fmul double %25, 1.000000e+06
-  %27 = load i32, i32* %passes, align 4
-  call void @printSieve(i1 false, %Sieve %22, double %26, i32 %27)
+  %16 = load i64, i64* %end, align 4
+  %17 = load i64, i64* %start, align 4
+  %18 = sub i64 %16, %17
+  %19 = sitofp i64 %18 to double
+  %20 = fdiv double %19, 1.000000e+03
+  %21 = load i32, i32* %passes, align 4
+  call void @printSieve(i1 false, %Sieve %15, double %20, i32 %21)
   ret void
 }
 
@@ -282,114 +274,108 @@ define i8* @bool2str(i1 %0) {
   %2 = alloca i1, align 1
   store i1 %0, i1* %2, align 1
   %3 = load i1, i1* %2, align 1
-  br i1 %3, label %4, label %5
+  br i1 %3, label %then, label %end
 
-4:                                                ; preds = %1
+then:                                             ; preds = %1
   ret i8* getelementptr inbounds ([5 x i8], [5 x i8]* @0, i32 0, i32 0)
 
-5:                                                ; preds = %1
+end:                                              ; preds = %1
   ret i8* getelementptr inbounds ([6 x i8], [6 x i8]* @1, i32 0, i32 0)
 }
 
-define i1 @validate(%Sieve %0) {
-  %2 = alloca %Sieve, align 8
-  store %Sieve %0, %Sieve* %2, align 8
-  %3 = getelementptr inbounds %Sieve, %Sieve* %2, i32 0, i32 1
-  %4 = load i32, i32* %3, align 4
-  %5 = icmp eq i32 %4, 10
-  br i1 %5, label %6, label %10
+define i1 @validate(%Sieve %0, i32 %1) {
+  %3 = alloca %Sieve, align 8
+  store %Sieve %0, %Sieve* %3, align 8
+  %4 = alloca i32, align 4
+  store i32 %1, i32* %4, align 4
+  %5 = getelementptr inbounds %Sieve, %Sieve* %3, i32 0, i32 0
+  %6 = load i32, i32* %5, align 4
+  %7 = icmp eq i32 %6, 10
+  br i1 %7, label %then, label %end
 
-6:                                                ; preds = %1
-  %7 = getelementptr inbounds %Sieve, %Sieve* %2, i32 0, i32 0
-  %8 = load i32, i32* %7, align 4
+then:                                             ; preds = %2
+  %8 = load i32, i32* %4, align 4
   %9 = icmp eq i32 %8, 1
   ret i1 %9
 
-10:                                               ; preds = %1
-  %11 = getelementptr inbounds %Sieve, %Sieve* %2, i32 0, i32 1
-  %12 = load i32, i32* %11, align 4
-  %13 = icmp eq i32 %12, 100
-  br i1 %13, label %14, label %18
+end:                                              ; preds = %2
+  %10 = getelementptr inbounds %Sieve, %Sieve* %3, i32 0, i32 0
+  %11 = load i32, i32* %10, align 4
+  %12 = icmp eq i32 %11, 100
+  br i1 %12, label %then1, label %end2
 
-14:                                               ; preds = %10
-  %15 = getelementptr inbounds %Sieve, %Sieve* %2, i32 0, i32 0
+then1:                                            ; preds = %end
+  %13 = load i32, i32* %4, align 4
+  %14 = icmp eq i32 %13, 25
+  ret i1 %14
+
+end2:                                             ; preds = %end
+  %15 = getelementptr inbounds %Sieve, %Sieve* %3, i32 0, i32 0
   %16 = load i32, i32* %15, align 4
-  %17 = icmp eq i32 %16, 25
-  ret i1 %17
+  %17 = icmp eq i32 %16, 1000
+  br i1 %17, label %then3, label %end4
 
-18:                                               ; preds = %10
-  %19 = getelementptr inbounds %Sieve, %Sieve* %2, i32 0, i32 1
-  %20 = load i32, i32* %19, align 4
-  %21 = icmp eq i32 %20, 1000
-  br i1 %21, label %22, label %26
+then3:                                            ; preds = %end2
+  %18 = load i32, i32* %4, align 4
+  %19 = icmp eq i32 %18, 168
+  ret i1 %19
 
-22:                                               ; preds = %18
-  %23 = getelementptr inbounds %Sieve, %Sieve* %2, i32 0, i32 0
-  %24 = load i32, i32* %23, align 4
-  %25 = icmp eq i32 %24, 168
-  ret i1 %25
+end4:                                             ; preds = %end2
+  %20 = getelementptr inbounds %Sieve, %Sieve* %3, i32 0, i32 0
+  %21 = load i32, i32* %20, align 4
+  %22 = icmp eq i32 %21, 10000
+  br i1 %22, label %then5, label %end6
 
-26:                                               ; preds = %18
-  %27 = getelementptr inbounds %Sieve, %Sieve* %2, i32 0, i32 1
-  %28 = load i32, i32* %27, align 4
-  %29 = icmp eq i32 %28, 10000
-  br i1 %29, label %30, label %34
+then5:                                            ; preds = %end4
+  %23 = load i32, i32* %4, align 4
+  %24 = icmp eq i32 %23, 1229
+  ret i1 %24
 
-30:                                               ; preds = %26
-  %31 = getelementptr inbounds %Sieve, %Sieve* %2, i32 0, i32 0
-  %32 = load i32, i32* %31, align 4
-  %33 = icmp eq i32 %32, 1229
-  ret i1 %33
+end6:                                             ; preds = %end4
+  %25 = getelementptr inbounds %Sieve, %Sieve* %3, i32 0, i32 0
+  %26 = load i32, i32* %25, align 4
+  %27 = icmp eq i32 %26, 100000
+  br i1 %27, label %then7, label %end8
 
-34:                                               ; preds = %26
-  %35 = getelementptr inbounds %Sieve, %Sieve* %2, i32 0, i32 1
+then7:                                            ; preds = %end6
+  %28 = load i32, i32* %4, align 4
+  %29 = icmp eq i32 %28, 9592
+  ret i1 %29
+
+end8:                                             ; preds = %end6
+  %30 = getelementptr inbounds %Sieve, %Sieve* %3, i32 0, i32 0
+  %31 = load i32, i32* %30, align 4
+  %32 = icmp eq i32 %31, 1000000
+  br i1 %32, label %then9, label %end10
+
+then9:                                            ; preds = %end8
+  %33 = load i32, i32* %4, align 4
+  %34 = icmp eq i32 %33, 78498
+  ret i1 %34
+
+end10:                                            ; preds = %end8
+  %35 = getelementptr inbounds %Sieve, %Sieve* %3, i32 0, i32 0
   %36 = load i32, i32* %35, align 4
-  %37 = icmp eq i32 %36, 100000
-  br i1 %37, label %38, label %42
+  %37 = icmp eq i32 %36, 10000000
+  br i1 %37, label %then11, label %end12
 
-38:                                               ; preds = %34
-  %39 = getelementptr inbounds %Sieve, %Sieve* %2, i32 0, i32 0
-  %40 = load i32, i32* %39, align 4
-  %41 = icmp eq i32 %40, 9592
-  ret i1 %41
+then11:                                           ; preds = %end10
+  %38 = load i32, i32* %4, align 4
+  %39 = icmp eq i32 %38, 664579
+  ret i1 %39
 
-42:                                               ; preds = %34
-  %43 = getelementptr inbounds %Sieve, %Sieve* %2, i32 0, i32 1
-  %44 = load i32, i32* %43, align 4
-  %45 = icmp eq i32 %44, 1000000
-  br i1 %45, label %46, label %50
+end12:                                            ; preds = %end10
+  %40 = getelementptr inbounds %Sieve, %Sieve* %3, i32 0, i32 0
+  %41 = load i32, i32* %40, align 4
+  %42 = icmp eq i32 %41, 100000000
+  br i1 %42, label %then13, label %end14
 
-46:                                               ; preds = %42
-  %47 = getelementptr inbounds %Sieve, %Sieve* %2, i32 0, i32 0
-  %48 = load i32, i32* %47, align 4
-  %49 = icmp eq i32 %48, 78498
-  ret i1 %49
+then13:                                           ; preds = %end12
+  %43 = load i32, i32* %4, align 4
+  %44 = icmp eq i32 %43, 5761455
+  ret i1 %44
 
-50:                                               ; preds = %42
-  %51 = getelementptr inbounds %Sieve, %Sieve* %2, i32 0, i32 1
-  %52 = load i32, i32* %51, align 4
-  %53 = icmp eq i32 %52, 10000000
-  br i1 %53, label %54, label %58
-
-54:                                               ; preds = %50
-  %55 = getelementptr inbounds %Sieve, %Sieve* %2, i32 0, i32 0
-  %56 = load i32, i32* %55, align 4
-  %57 = icmp eq i32 %56, 664579
-  ret i1 %57
-
-58:                                               ; preds = %50
-  %59 = getelementptr inbounds %Sieve, %Sieve* %2, i32 0, i32 1
-  %60 = load i32, i32* %59, align 4
-  %61 = icmp eq i32 %60, 100000000
-  br i1 %61, label %62, label %66
-
-62:                                               ; preds = %58
-  %63 = getelementptr inbounds %Sieve, %Sieve* %2, i32 0, i32 0
-  %64 = load i32, i32* %63, align 4
-  %65 = icmp eq i32 %64, 5761455
-  ret i1 %65
-
-66:                                               ; preds = %58
+end14:                                            ; preds = %end12
   ret i1 false
 }
 
@@ -402,51 +388,64 @@ define void @printSieve(i1 %0, %Sieve %1, double %2, i32 %3) {
   store double %2, double* %7, align 8
   %8 = alloca i32, align 4
   store i32 %3, i32* %8, align 4
+  %count = alloca i32, align 4
+  store i32 0, i32* %count, align 4
   %p = alloca i32, align 4
   store i32 2, i32* %p, align 4
-  br label %9
+  br label %for-loop
 
-9:                                                ; preds = %36, %4
-  %10 = load i32, i32* %p, align 4
-  %11 = getelementptr inbounds %Sieve, %Sieve* %6, i32 0, i32 1
-  %12 = load i32, i32* %11, align 4
-  %13 = icmp sle i32 %10, %12
-  br i1 %13, label %14, label %20
+for-loop:                                         ; preds = %end, %4
+  %9 = load i32, i32* %p, align 4
+  %10 = getelementptr inbounds %Sieve, %Sieve* %6, i32 0, i32 0
+  %11 = load i32, i32* %10, align 4
+  %12 = icmp sle i32 %9, %11
+  br i1 %12, label %for-then, label %for-end
 
-14:                                               ; preds = %9
-  %15 = getelementptr inbounds %Sieve, %Sieve* %6, i32 0, i32 2
-  %16 = load i1*, i1** %15, align 8
-  %17 = load i32, i32* %p, align 4
-  %18 = getelementptr inbounds i1, i1* %16, i32 %17
-  %19 = load i1, i1* %18, align 1
-  br i1 %19, label %34, label %36
+for-then:                                         ; preds = %for-loop
+  %13 = getelementptr inbounds %Sieve, %Sieve* %6, i32 0, i32 1
+  %14 = load i1*, i1** %13, align 8
+  %15 = load i32, i32* %p, align 4
+  %16 = getelementptr inbounds i1, i1* %14, i32 %15
+  %17 = load i1, i1* %16, align 1
+  br i1 %17, label %then, label %end
 
-20:                                               ; preds = %9
+for-end:                                          ; preds = %for-loop
+  %18 = load i32, i32* %8, align 4
+  %19 = load double, double* %7, align 8
+  %20 = load double, double* %7, align 8
   %21 = load i32, i32* %8, align 4
-  %22 = load double, double* %7, align 8
-  %23 = load double, double* %7, align 8
-  %24 = load i32, i32* %8, align 4
-  %25 = sitofp i32 %24 to double
-  %26 = fdiv double %23, %25
-  %27 = getelementptr inbounds %Sieve, %Sieve* %6, i32 0, i32 1
-  %28 = load i32, i32* %27, align 4
-  %29 = getelementptr inbounds %Sieve, %Sieve* %6, i32 0, i32 0
-  %30 = load i32, i32* %29, align 4
-  %31 = load %Sieve, %Sieve* %6, align 8
-  %32 = call i1 @validate(%Sieve %31)
-  %33 = call i8* @bool2str(i1 %32)
-  call void (i8*, ...) @printf(i8* getelementptr inbounds ([64 x i8], [64 x i8]* @3, i32 0, i32 0), i32 %21, double %22, double %26, i32 %28, i32 %30, i8* %33)
+  %22 = sitofp i32 %21 to double
+  %23 = fdiv double %20, %22
+  %24 = getelementptr inbounds %Sieve, %Sieve* %6, i32 0, i32 0
+  %25 = load i32, i32* %24, align 4
+  %26 = load i32, i32* %count, align 4
+  %27 = load %Sieve, %Sieve* %6, align 8
+  %28 = load i32, i32* %count, align 4
+  %29 = call i1 @validate(%Sieve %27, i32 %28)
+  %30 = call i8* @bool2str(i1 %29)
+  call void (i8*, ...) @printf(i8* getelementptr inbounds ([64 x i8], [64 x i8]* @3, i32 0, i32 0), i32 %18, double %19, double %23, i32 %25, i32 %26, i8* %30)
+  ret void
 
-34:                                               ; preds = %14
-  %35 = load i32, i32* %p, align 4
-  call void (i8*, ...) @printf(i8* getelementptr inbounds ([4 x i8], [4 x i8]* @2, i32 0, i32 0), i32 %35)
-  br label %36
+then:                                             ; preds = %for-then
+  %31 = load i1, i1* %5, align 1
+  br i1 %31, label %then1, label %end2
 
-36:                                               ; preds = %34, %14
-  %37 = load i32, i32* %p, align 4
-  %38 = add i32 %37, 1
-  store i32 %38, i32* %p, align 4
-  br label %9
+end:                                              ; preds = %end2, %for-then
+  %32 = load i32, i32* %p, align 4
+  %33 = add i32 %32, 1
+  store i32 %33, i32* %p, align 4
+  br label %for-loop
+
+then1:                                            ; preds = %then
+  %34 = load i32, i32* %p, align 4
+  call void (i8*, ...) @printf(i8* getelementptr inbounds ([5 x i8], [5 x i8]* @2, i32 0, i32 0), i32 %34)
+  br label %end2
+
+end2:                                             ; preds = %then1, %then
+  %35 = load i32, i32* %count, align 4
+  %36 = add i32 %35, 1
+  store i32 %36, i32* %count, align 4
+  br label %end
 }
 
 define %Sieve @sieve(i32 %0) {
@@ -463,156 +462,118 @@ define %Sieve @sieve(i32 %0) {
   %9 = load i32, i32* %2, align 4
   %10 = add i32 %9, 1
   call void @memset(i8* %8, i8 -1, i32 %10)
-  %11 = load i32, i32* %2, align 4
-  %12 = sub i32 %11, 1
-  %count = alloca i32, align 4
-  store i32 %12, i32* %count, align 4
   %p = alloca i32, align 4
   store i32 2, i32* %p, align 4
-  br label %13
+  br label %for-loop
 
-13:                                               ; preds = %39, %1
-  %14 = load i32, i32* %p, align 4
-  %15 = load i32, i32* %p, align 4
-  %16 = mul i32 %14, %15
-  %17 = load i32, i32* %2, align 4
-  %18 = icmp sle i32 %16, %17
-  br i1 %18, label %19, label %24
+for-loop:                                         ; preds = %end, %1
+  %11 = load i32, i32* %p, align 4
+  %12 = load i32, i32* %p, align 4
+  %13 = mul i32 %11, %12
+  %14 = load i32, i32* %2, align 4
+  %15 = icmp sle i32 %13, %14
+  br i1 %15, label %for-then, label %for-end
 
-19:                                               ; preds = %13
+for-then:                                         ; preds = %for-loop
+  %16 = load i1*, i1** %prime, align 8
+  %17 = load i32, i32* %p, align 4
+  %18 = getelementptr inbounds i1, i1* %16, i32 %17
+  %19 = load i1, i1* %18, align 1
+  br i1 %19, label %then, label %end
+
+for-end:                                          ; preds = %for-loop
   %20 = load i1*, i1** %prime, align 8
-  %21 = load i32, i32* %p, align 4
-  %22 = getelementptr inbounds i1, i1* %20, i32 %21
-  %23 = load i1, i1* %22, align 1
-  br i1 %23, label %35, label %39
-
-24:                                               ; preds = %13
+  %21 = bitcast i1* %20 to i8*
+  call void @free(i8* %21)
+  %22 = alloca %Sieve, align 8
+  %23 = load i32, i32* %2, align 4
+  %24 = getelementptr inbounds %Sieve, %Sieve* %22, i32 0, i32 0
+  store i32 %23, i32* %24, align 4
   %25 = load i1*, i1** %prime, align 8
-  %26 = bitcast i1* %25 to i8*
-  call void @free(i8* %26)
-  %27 = alloca %Sieve, align 8
-  %28 = load i32, i32* %count, align 4
-  %29 = getelementptr inbounds %Sieve, %Sieve* %27, i32 0, i32 0
-  store i32 %28, i32* %29, align 4
-  %30 = load i32, i32* %2, align 4
-  %31 = getelementptr inbounds %Sieve, %Sieve* %27, i32 0, i32 1
-  store i32 %30, i32* %31, align 4
-  %32 = load i1*, i1** %prime, align 8
-  %33 = getelementptr inbounds %Sieve, %Sieve* %27, i32 0, i32 2
-  store i1* %32, i1** %33, align 8
-  %34 = load %Sieve, %Sieve* %27, align 8
-  ret %Sieve %34
+  %26 = getelementptr inbounds %Sieve, %Sieve* %22, i32 0, i32 1
+  store i1* %25, i1** %26, align 8
+  %27 = load %Sieve, %Sieve* %22, align 8
+  ret %Sieve %27
 
-35:                                               ; preds = %19
-  %36 = load i32, i32* %p, align 4
-  %37 = load i32, i32* %p, align 4
-  %38 = mul i32 %36, %37
+then:                                             ; preds = %for-then
+  %28 = load i32, i32* %p, align 4
+  %29 = load i32, i32* %p, align 4
+  %30 = mul i32 %28, %29
   %i = alloca i32, align 4
-  store i32 %38, i32* %i, align 4
-  br label %42
+  store i32 %30, i32* %i, align 4
+  br label %for-loop1
 
-39:                                               ; preds = %19
-  %40 = load i32, i32* %p, align 4
-  %41 = add i32 %40, 1
-  store i32 %41, i32* %p, align 4
-  br label %13
+end:                                              ; preds = %for-end3, %for-then
+  %31 = load i32, i32* %p, align 4
+  %32 = add i32 %31, 1
+  store i32 %32, i32* %p, align 4
+  br label %for-loop
 
-42:                                               ; preds = %55, %35
+for-loop1:                                        ; preds = %for-then2, %then
+  %33 = load i32, i32* %i, align 4
+  %34 = load i32, i32* %2, align 4
+  %35 = icmp sle i32 %33, %34
+  br i1 %35, label %for-then2, label %for-end3
+
+for-then2:                                        ; preds = %for-loop1
+  %36 = load i1*, i1** %prime, align 8
+  %37 = load i32, i32* %i, align 4
+  %38 = getelementptr inbounds i1, i1* %36, i32 %37
+  %39 = load i1, i1* %38, align 1
+  %40 = load i1*, i1** %prime, align 8
+  %41 = load i32, i32* %i, align 4
+  %42 = getelementptr inbounds i1, i1* %40, i32 %41
+  store i1 false, i1* %42, align 1
   %43 = load i32, i32* %i, align 4
-  %44 = load i32, i32* %2, align 4
-  %45 = icmp sle i32 %43, %44
-  br i1 %45, label %46, label %51
+  %44 = load i32, i32* %p, align 4
+  %45 = add i32 %43, %44
+  store i32 %45, i32* %i, align 4
+  br label %for-loop1
 
-46:                                               ; preds = %42
-  %47 = load i1*, i1** %prime, align 8
-  %48 = load i32, i32* %i, align 4
-  %49 = getelementptr inbounds i1, i1* %47, i32 %48
-  %50 = load i1, i1* %49, align 1
-  br i1 %50, label %52, label %55
-
-51:                                               ; preds = %42
-
-52:                                               ; preds = %46
-  %53 = load i32, i32* %count, align 4
-  %54 = sub i32 %53, 1
-  store i32 %54, i32* %count, align 4
-  br label %55
-
-55:                                               ; preds = %52, %46
-  %56 = load i1*, i1** %prime, align 8
-  %57 = load i32, i32* %i, align 4
-  %58 = getelementptr inbounds i1, i1* %56, i32 %57
-  %59 = load i1, i1* %58, align 1
-  %60 = load i1*, i1** %prime, align 8
-  %61 = load i32, i32* %i, align 4
-  %62 = getelementptr inbounds i1, i1* %60, i32 %61
-  store i1 false, i1* %62, align 1
-  %63 = load i32, i32* %i, align 4
-  %64 = load i32, i32* %p, align 4
-  %65 = add i32 %63, %64
-  store i32 %65, i32* %i, align 4
-  br label %42
+for-end3:                                         ; preds = %for-loop1
+  br label %end
 }
 
 declare void @puts(i8*)
 
 declare void @printf.1(i8*, ...)
 
----
-Error: Basic Block in function 'printSieve' does not have terminator!
-label %20
-Basic Block in function 'sieve' does not have terminator!
-label %51
+ %39 = icmp sle i32 %37, %38
+  br i1 %39, label %for-then2, label %for-end3
 
-(i8*)
+for-then2:                                        ; preds = %for-loop1
+  %40 = load i1*, i1** %prime, align 8
+  %41 = load i32, i32* %i, align 4
+  %42 = getelementptr inbounds i1, i1* %40, i32 %41
+  %43 = load i1, i1* %42, align 1
+  br i1 %43, label %then4, label %end5
+
+for-end3:                                         ; preds = %for-loop1
+  br label %end
+
+then4:                                            ; preds = %for-then2
+  %44 = load i32, i32* %count, align 4
+  %45 = sub i32 %44, 1
+  store i32 %45, i32* %count, align 4
+  br label %end5
+
+end5:                                             ; preds = %then4, %for-then2
+  %46 = load i1*, i1** %prime, align 8
+  %47 = load i32, i32* %i, align 4
+  %48 = getelementptr inbounds i1, i1* %46, i32 %47
+  %49 = load i1, i1* %48, align 1
+  %50 = load i1*, i1** %prime, align 8
+  %51 = load i32, i32* %i, align 4
+  %52 = getelementptr inbounds i1, i1* %50, i32 %51
+  store i1 false, i1* %52, align 1
+  %53 = load i32, i32* %i, align 4
+  %54 = load i32, i32* %p, align 4
+  %55 = add i32 %53, %54
+  store i32 %55, i32* %i, align 4
+  br label %for-loop1
+}
+
+declare void @puts(i8*)
 
 declare void @printf.1(i8*, ...)
 
----
-Error: Terminator found in the middle of a basic block!
-label %4
-Terminator found in the middle of a basic block!
-label %6
-Terminator found in the middle of a basic block!
-label %14
-Terminator found in the middle of a basic block!
-label %22
-Terminator found in the middle of a basic block!
-label %30
-Terminator found in the middle of a basic block!
-label %38
-Terminator found in the middle of a basic block!
-label %46
-Terminator found in the middle of a basic block!
-label %54
-Terminator found in the middle of a basic block!
-label %62
-Basic Block in function 'printSieve' does not have terminator!
-label %20
-
-inator!
-label %39
-
-ieve' does not have terminator!
-label %39
-
-p instruction are not of the same type!
-  %40 = icmp eq %Sieve %39, i1 false
-Both operands to ICmp instruction are not of the same type!
-  %43 = icmp eq %Sieve %42, i1 true
-Terminator found in the middle of a basic block!
-label %41
-Both operands to ICmp instruction are not of the same type!
-  %46 = icmp eq %Sieve %45, i1 false
-Both operands to ICmp instruction are not of the same type!
-  %49 = icmp eq %Sieve %48, i1 true
-Terminator found in the middle of a basic block!
-label %47
-Basic Block in function 'printSieve' does not have terminator!
-label %20
-Basic Block in function 'sieve' does not have terminator!
-label %39
-
-9
-
----

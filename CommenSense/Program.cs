@@ -108,7 +108,10 @@ LLVMExecutionEngineRef? Compile(string filename)
 		if (BadCode.errors.Count > 0)
 		{
 			foreach (SyntaxError err in BadCode.errors)
+			{
 				Console.WriteLine(err);
+				dbgout.WriteLine(err);
+			}
 			return null;
 		}
 	}
@@ -124,6 +127,8 @@ LLVMExecutionEngineRef? Compile(string filename)
 			dbgout.WriteLine("---");
 			moduleList.Add(module);
 		}
+
+		dbgout.Flush();
 
 		if (BadCode.errors.Count > 0)
 		{
@@ -165,9 +170,8 @@ LLVMExecutionEngineRef? Compile(string filename)
 
 		if (!llModule.TryVerify(LLVMVerifierFailureAction.LLVMPrintMessageAction, out string err))
 		{
-			Console.WriteLine($"Error: {err}");
 			dbgout.WriteLine("---");
-			dbgout.WriteLine($"Error: {err}");
+			dbgout.WriteLine(err);
 			return null;
 		}
 
@@ -181,8 +185,8 @@ LLVMExecutionEngineRef? Compile(string filename)
 	LLVMMCJITCompilerOptions options = new LLVMMCJITCompilerOptions { NoFramePointerElim = 1 };
 	if (!llModules[0].TryCreateMCJITCompiler(out LLVMExecutionEngineRef engine, ref options, out string error))
 	{
-		Console.WriteLine($"Error: {error}");
-		dbgout.WriteLine($"Error: {error}");
+		Console.WriteLine(error);
+		dbgout.WriteLine(error);
 		return null;
 	}
 
