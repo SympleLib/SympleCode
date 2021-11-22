@@ -1,6 +1,6 @@
 # Symple C *(Symple Code)* [![License](https://img.shields.io/github/license/SympleLib/SympleCode?label=License)](LICENSE) ![Activity](https://img.shields.io/github/commit-activity/y/SympleLib/SympleCode?color=4&label=Commits)
 
-![Symple](/res/Symple.png "Symple")
+![Symple](https://symplelib.github.io/syc/icon.png "Symple")
 
 ## About Symple C
 
