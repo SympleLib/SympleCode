@@ -12,11 +12,8 @@
     <PackageTags>compiler symple-code syc</PackageTags>
     <NeutralLanguage>en</NeutralLanguage>
     <AssemblyVersion></AssemblyVersion>
+    <AssemblyName>SympleCode</AssemblyName>
   </PropertyGroup>
-
-  <ItemGroup>
-    <None Include="https:\symple.github.io\syc\icon.png" />
-  </ItemGroup>
 
   <ItemGroup>
     <PackageReference Include="libLLVM" Version="12.0.0" />
