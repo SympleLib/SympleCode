@@ -4,7 +4,19 @@
     <OutputType>Exe</OutputType>
     <TargetFramework>net6.0</TargetFramework>
     <Nullable>enable</Nullable>
+    <PackageId>SympleCode.$(AssemblyName)</PackageId>
+    <Authors>Treidex</Authors>
+    <Product>SympleCode ($(AssemblyName))</Product>
+    <RepositoryUrl>https://github.com/SympleLib/SympleCode.git</RepositoryUrl>
+    <RepositoryType></RepositoryType>
+    <PackageTags>compiler symple-code syc</PackageTags>
+    <NeutralLanguage>en</NeutralLanguage>
+    <AssemblyVersion></AssemblyVersion>
   </PropertyGroup>
+
+  <ItemGroup>
+    <None Include="https:\symple.github.io\syc\icon.png" />
+  </ItemGroup>
 
   <ItemGroup>
     <PackageReference Include="libLLVM" Version="12.0.0" />
