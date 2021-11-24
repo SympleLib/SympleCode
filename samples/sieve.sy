@@ -2,15 +2,21 @@ decl byte* malloc(int sz);
 decl void free(byte* ptr);
 decl void memset(byte* ptr, byte val, int sz);
 decl void printf(char* fmt, ...);
+decl void puts(char* str);
 decl void putchar(char);
 
 decl long clock();
+
+public void main ->
+	run();
 
 public void run {
 	long start = clock();
 	
 	int passes = 0;
 	Sieve test;
+	
+	puts('running sieve for 10s...');
 	
 	// do this for 10 secs
 	while ((clock() - start) < 10000) {

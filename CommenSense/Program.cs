@@ -178,16 +178,18 @@ void Compile(string filename)
 		llModules.Add(llModule);
 	}
 
-	LLVM.LinkInMCJIT();
-	LLVM.InitializeNativeTarget();
-	LLVM.InitializeNativeAsmPrinter();
+	LLVM.InitializeAllTargetInfos();
+	LLVM.InitializeAllTargets();
+	LLVM.InitializeAllTargetMCs();
+	LLVM.InitializeAllAsmParsers();
+	LLVM.InitializeAllAsmPrinters();
 
+	LLVMTargetRef target = LLVMTargetRef.GetTargetFromTriple(LLVMTargetRef.DefaultTriple);
+	LLVMTargetMachineRef machine = target.CreateTargetMachine(LLVMTargetRef.DefaultTriple, "generic", "",
+				LLVMCodeGenOptLevel.LLVMCodeGenLevelAggressive, LLVMRelocMode.LLVMRelocDefault, LLVMCodeModel.LLVMCodeModelDefault);
 	for (int i = 0; i < llModules.Count; i++)
 	{
-		LLVMTargetRef target = LLVMTargetRef.GetTargetFromTriple(LLVMTargetRef.DefaultTriple);
-		LLVMTargetMachineRef machine = target.CreateTargetMachine(target.Name, "generic", "",
-					LLVMCodeGenOptLevel.LLVMCodeGenLevelAggressive, LLVMRelocMode.LLVMRelocDefault, LLVMCodeModel.LLVMCodeModelDefault);
-		machine.EmitToFile(llModules[i], modules[i].name[..^3] + ".o", LLVMCodeGenFileType.LLVMObjectFile);
+		machine.EmitToFile(llModules[i], modules[i].name[..modules[i].name.LastIndexOf('.')] + ".o", LLVMCodeGenFileType.LLVMObjectFile);
 	}
 }
 
@@ -321,7 +323,7 @@ var runFn = (Run) Marshal.GetDelegateForFunctionPointer((IntPtr) engine.GetFunct
 runFn();
 
 End:
-Console.WriteLine("---");
+Console.WriteLine("Press any key to continue...");
 Console.ReadKey();
 
 
