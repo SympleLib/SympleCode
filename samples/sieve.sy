@@ -26,7 +26,10 @@ public void run {
 	
 	long end = clock();
 	
+	// run one last time since we free it in while loop
+	test = sieve(1000000);
 	printSieve(false, test, (double) (end - start) / 1000, passes);
+	free(test.prime);
 }
 
 struct Sieve {
