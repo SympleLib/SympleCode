@@ -16,12 +16,12 @@ public void run {
 	int passes = 0;
 	Sieve test;
 	
-	puts('running sieve for 10s...');
+	puts('running sieve for 5s...');
 	
-	// do this for 10 secs
-	while ((clock() - start) < 10000) {
+	while ((clock() - start) < 5000) {
 		test = sieve(1000000);
 		passes += 1;
+		free(test.prime);
 	}
 	
 	long end = clock();
@@ -62,12 +62,16 @@ bool validate(Sieve test, int count) {
 
 void printSieve(bool showResults, Sieve test, double duration, int passes) {
 	int count = 0;
+	if (showResults)
+		printf('[ ');
 	for (int p = 2; p <= test.n; p += 1)
 		if (test.prime[p]) {
 			if (showResults)
 				printf('%i, ', p);
 			count += 1;
 		}
+	if (showResults)
+		puts(' ]');
 	
 	printf('Passes: %i, Time: %g, Avg: %g, Limit: %i, Count: %i, Valid: %s\n', passes, duration, duration / (double) passes, test.n, count, bool2str(validate(test, count)));
 }
@@ -83,8 +87,6 @@ Sieve sieve(int n) {
 			}
 		}
 	}
-	
 
-	free(prime);
 	ret Sieve { n, prime };
 }
