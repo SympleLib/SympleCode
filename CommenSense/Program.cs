@@ -311,7 +311,8 @@ Console.WriteLine("---");
 Console.WriteLine("Compiling 'sieve.sy' -> 'sieve.o'...");
 
 Compile("sieve.sy");
-goto End;
+return;
+//goto End;
 
 RealCode:
 LLVMExecutionEngineRef? _engine = Debug("sieve.sy");
