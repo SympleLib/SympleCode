@@ -93,6 +93,8 @@ void Compile(string filename)
 		return;
 	}
 
+	Parser.parsers.Clear();
+
 	// pre-parse
 	{
 		string src = File.ReadAllText(filename);
@@ -176,6 +178,7 @@ void Compile(string filename)
 LLVMExecutionEngineRef? Debug(string filename)
 {
 	using StreamWriter dbgout = new StreamWriter(File.OpenWrite("dbgout.txt"));
+	Parser.parsers.Clear();
 
 	// pre-parse
 	{
@@ -305,19 +308,14 @@ else
 Console.WriteLine($"compiling '{filename}' -> '{filename[..filename.LastIndexOf('.')] + ".o"}'...");
 Compile(filename);
 
-#if false
-LLVMExecutionEngineRef? _engine = Debug("sieve.sy");
+#if DEBUG
+LLVMExecutionEngineRef? _engine = Debug(filename);
 if (_engine is null)
-	goto End;
+	return;
 
 var engine = _engine.Value;
 var runFn = (Run) Marshal.GetDelegateForFunctionPointer((IntPtr) engine.GetFunctionAddress("run"), typeof(Run));
 runFn();
-
-End:
-Console.WriteLine("Press any key to continue...");
-Console.ReadKey();
-
 
 [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
 delegate void Run();

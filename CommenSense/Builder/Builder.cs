@@ -82,14 +82,18 @@ partial class Builder
 			Scope _scope = scope;
 			for (int i = 0; i < breaq.depth; i++)
 			{
-				if (!_scope.exit.HasValue)
+				if (_scope.parent is null)
 				{
 					BadCode.Report(new SyntaxError("cannot break outside local scope", breaq.token));
 					break;
 				}
 				
 				_scope = _scope.parent!;
+				while (!_scope.exit.HasValue)
+					_scope = _scope.parent!;
 			}
+
+			llBuilder.BuildBr(_scope.exit!.Value);
 		}
 		else if (ast is RetStmtAst retStmt)
 		{
@@ -192,7 +196,7 @@ partial class Builder
 
 	void Build(BlockStmtAst ast)
 	{
-		EnterScope(scope.exit);
+		EnterScope(null);
 		foreach (StmtAst stmt in ast.stmts)
 			Build(stmt);
 		ExitScope();

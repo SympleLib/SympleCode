@@ -38,7 +38,7 @@ static class _
 	{
 		if (elze is null)
 			return string.Empty;
-		return $"\n{GetTabs()}{elze}";
+		return $"\n{IncTab()}{elze}{DecTab()}";
 	}
 }
 
@@ -188,13 +188,13 @@ partial record VarAst
 
 
 partial record IfStmtAst
-{ public override string ToString() => $"if ({cond})\n{GetTabs()}{then}{Else(elze)}"; }
+{ public override string ToString() => $"if ({cond})\n{IncTab()}{then}{DecTab()}{Else(elze)}"; }
 
 partial record WhileStmtAst
-{ public override string ToString() => $"while ({cond})\n{GetTabs()}{then}"; }
+{ public override string ToString() => $"while ({cond})\n{IncTab()}{then}{DecTab()}"; }
 
 partial record ForStmtAst
-{ public override string ToString() => $"for ({init}\n{GetTabs()}{cond}\n{GetTabs()}{step})\n{GetTabs()}{then}"; }
+{ public override string ToString() => $"for ({init}\n{GetTabs()}{cond}\n{GetTabs()}{step})\n{IncTab()}{then}{DecTab()}"; }
 
 partial record BlockStmtAst
 { public override string ToString() => $"{{\n{IncTab()}{string.Join<StmtAst>($"\n{GetTabs()}", stmts)}{DecTab()}\n{GetTabs()}}}"; }

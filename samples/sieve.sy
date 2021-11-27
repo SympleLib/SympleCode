@@ -65,10 +65,10 @@ bool validate(Sieve test, int count) {
 }
 
 void printSieve(bool showResults, Sieve test, double duration, int passes) {
-	int count = 0;
+	int count = 1;
 	if (showResults)
-		printf('[ ');
-	for (int p = 2; p <= test.n; p += 1)
+		printf('[ 2, ');
+	for (int p = 3; p <= test.n; p += 1)
 		if (getBit(test.arr, p)) {
 			if (showResults)
 				printf('%i, ', p);
@@ -97,12 +97,13 @@ Sieve sieve(int n) {
 	int factor = 3;
 	int q = (int) sqrtf(n to float);
 	
-	while (factor < q) {
-		for (int x = factor; x <= n; x += 1)
+	while (factor <= q) {
+		for (int x = factor; x <= n; x += 1) {
 			if (getBit(arr, x)) {
 				factor = x;
 				break 2;
 			}
+		}
 			
 		for (int x = factor * 3; x <= n; x += factor * 2)
 			clearBit(arr, x);
