@@ -118,7 +118,7 @@ partial class Builder
 
 		if (ast.elze is null)
 		{
-			EnterScope(end);
+			EnterScope(null);
 			llBuilder.BuildCondBr(cond, then, end);
 			llBuilder.PositionAtEnd(then);
 			Build(ast.then);
@@ -133,7 +133,7 @@ partial class Builder
 		var elze = currentFunc.AppendBasicBlock("else");
 		llBuilder.BuildCondBr(cond, then, elze);
 
-		EnterScope(end);
+		EnterScope(null);
 		llBuilder.PositionAtEnd(then);
 		Build(ast.then);
 		if (llBuilder.InsertBlock.Terminator == null)
@@ -141,7 +141,7 @@ partial class Builder
 		
 		ExitScope();
 
-		EnterScope(end);
+		EnterScope(null);
 		llBuilder.PositionAtEnd(elze);
 		Build(ast.elze);
 		if (llBuilder.InsertBlock.Terminator == null)
