@@ -200,6 +200,9 @@ partial record BlockStmtAst
 { public override string ToString() => $"{{\n{IncTab()}{string.Join<StmtAst>($"\n{GetTabs()}", stmts)}{DecTab()}\n{GetTabs()}}}"; }
 
 
+partial record BreakStmtAst
+{ public override string ToString() => $"break {depth}"; }
+
 partial record RetStmtAst
 { public override string ToString() => $"ret {expr}"; }
 

@@ -13,6 +13,7 @@ partial class Parser
 	{
 		{ "void", false },
 		{ "bool", false },
+		{ "byte", false },
 		{ "char", false },
 		{ "int", false },
 		{ "long", false },

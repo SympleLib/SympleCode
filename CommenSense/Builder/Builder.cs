@@ -4,6 +4,7 @@ using System;
 
 using Type = LLVMTypeRef;
 using Value = LLVMValueRef;
+using Block = LLVMBasicBlockRef;
 
 partial class Builder
 {
@@ -23,7 +24,7 @@ partial class Builder
 
 		llModule = LLVMModuleRef.CreateWithName(module.name);
 		llBuilder = LLVMBuilderRef.Create(llModule.Context);
-		scope = new Scope(this);
+		scope = new Scope(this, null);
 	}
 
 	public LLVMModuleRef Build()
@@ -76,6 +77,20 @@ partial class Builder
 			Build(forAst);
 		else if (ast is BlockStmtAst block)
 			Build(block);
+		else if (ast is BreakStmtAst breaq)
+		{
+			Scope _scope = scope;
+			for (int i = 0; i < breaq.depth; i++)
+			{
+				if (!_scope.exit.HasValue)
+				{
+					BadCode.Report(new SyntaxError("cannot break outside local scope", breaq.token));
+					break;
+				}
+				
+				_scope = _scope.parent!;
+			}
+		}
 		else if (ast is RetStmtAst retStmt)
 		{
 			Value expr = BuildExpr(retStmt.expr);
@@ -99,7 +114,7 @@ partial class Builder
 
 		if (ast.elze is null)
 		{
-			EnterScope();
+			EnterScope(end);
 			llBuilder.BuildCondBr(cond, then, end);
 			llBuilder.PositionAtEnd(then);
 			Build(ast.then);
@@ -114,7 +129,7 @@ partial class Builder
 		var elze = currentFunc.AppendBasicBlock("else");
 		llBuilder.BuildCondBr(cond, then, elze);
 
-		EnterScope();
+		EnterScope(end);
 		llBuilder.PositionAtEnd(then);
 		Build(ast.then);
 		if (llBuilder.InsertBlock.Terminator == null)
@@ -122,7 +137,7 @@ partial class Builder
 		
 		ExitScope();
 
-		EnterScope();
+		EnterScope(end);
 		llBuilder.PositionAtEnd(elze);
 		Build(ast.elze);
 		if (llBuilder.InsertBlock.Terminator == null)
@@ -143,7 +158,7 @@ partial class Builder
 		Value cond = BuildExpr(ast.cond);
 		llBuilder.BuildCondBr(cond, then, end);
 
-		EnterScope();
+		EnterScope(end);
 		llBuilder.PositionAtEnd(then);
 		Build(ast.then);
 		llBuilder.BuildBr(loop);
@@ -154,12 +169,13 @@ partial class Builder
 
 	void Build(ForStmtAst ast)
 	{
-		EnterScope();
-		Build(ast.init);
-
 		var loop = currentFunc.AppendBasicBlock("for-loop");
 		var then = currentFunc.AppendBasicBlock("for-then");
 		var end = currentFunc.AppendBasicBlock("for-end");
+		
+		EnterScope(end);
+		Build(ast.init);
+
 		llBuilder.BuildBr(loop);
 
 		llBuilder.PositionAtEnd(loop);
@@ -176,7 +192,7 @@ partial class Builder
 
 	void Build(BlockStmtAst ast)
 	{
-		EnterScope();
+		EnterScope(scope.exit);
 		foreach (StmtAst stmt in ast.stmts)
 			Build(stmt);
 		ExitScope();
@@ -193,11 +209,11 @@ partial class Builder
 	{
 		Value fn = scope.Find(ast.realName);
 		Type[] paramTypes = fn.TypeOf.ElementType.ParamTypes;
-		LLVMBasicBlockRef entry = fn.AppendBasicBlock(string.Empty);
+		Block entry = fn.AppendBasicBlock(string.Empty);
 		llBuilder.PositionAtEnd(entry);
 		currentFunc = fn;
 
-		EnterScope();
+		EnterScope(null);
 		for (int i = 0; i < ast.paramz.Length; i++)
 		{
 			Value ptr = llBuilder.BuildAlloca(paramTypes[i]);
@@ -222,11 +238,11 @@ partial class Builder
 	{
 		Value fn = scope.Find(clsType.StructName + "." + ast.realName);
 		Type[] paramTypes = fn.TypeOf.ElementType.ParamTypes;
-		LLVMBasicBlockRef entry = fn.AppendBasicBlock(string.Empty);
+		Block entry = fn.AppendBasicBlock(string.Empty);
 		llBuilder.PositionAtEnd(entry);
 		currentFunc = fn;
 
-		EnterScope();
+		EnterScope(null);
 		Value thiz = fn.Params[0];
 		scope.Define("this", thiz);
 		for (uint i = 0; i < clazz.fields.Length; i++)
@@ -235,7 +251,7 @@ partial class Builder
 			scope.Define(clazz.fields[i].name, ptr);
 		}
 
-		EnterScope();
+		EnterScope(null);
 		for (int i = 0; i < ast.paramz.Length; i++)
 		{
 			Value ptr = llBuilder.BuildAlloca(paramTypes[i + 1]);

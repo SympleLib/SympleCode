@@ -4,6 +4,7 @@ decl void memset(byte* ptr, byte val, int sz);
 decl void printf(char* fmt, ...);
 decl void puts(char* str);
 decl void putchar(char);
+decl float sqrtf(float);
 
 decl long clock();
 
@@ -21,7 +22,7 @@ public void run {
 	while ((clock() - start) < 5000) {
 		test = sieve(1000000);
 		passes += 1;
-		free(test.prime);
+		free(test.arr);
 	}
 	
 	long end = clock();
@@ -29,12 +30,12 @@ public void run {
 	// run one last time since we free it in while loop
 	test = sieve(1000000);
 	printSieve(false, test, (double) (end - start) / 1000, passes);
-	free(test.prime);
+	free(test.arr);
 }
 
 struct Sieve {
 	int n,
-	bool* prime,
+	bool* arr,
 }
 
 char* bool2str(bool b) {
@@ -68,7 +69,7 @@ void printSieve(bool showResults, Sieve test, double duration, int passes) {
 	if (showResults)
 		printf('[ ');
 	for (int p = 2; p <= test.n; p += 1)
-		if (test.prime[p]) {
+		if (getBit(test.arr, p)) {
 			if (showResults)
 				printf('%i, ', p);
 			count += 1;
@@ -79,17 +80,34 @@ void printSieve(bool showResults, Sieve test, double duration, int passes) {
 	printf('Passes: %i, Time: %g, Avg: %g, Limit: %i, Count: %i, Valid: %s\n', passes, duration, duration / (double) passes, test.n, count, bool2str(validate(test, count)));
 }
 
+bool getBit(bool* arr, int idx) {
+	if (idx % 2 == 0)
+		ret false;
+	ret arr[idx / 2];
+}
+
+void clearBit(bool* arr, int idx) {
+	arr[idx / 2] = false;
+}
+
 Sieve sieve(int n) {
-	bool* prime = malloc(n + 1);
-	memset(prime, true to byte, n + 1);
+	bool* arr = malloc((n + 1) / 2);
+	memset(arr, true to byte, (n + 1) / 2);
 	
-	for (int p = 2; p * p <= n; p += 1) {
-		if (prime[p]) {
-			for (int i = p * p; i <= n; i += p) {
-				prime[i] = false;
+	int factor = 3;
+	int q = (int) sqrtf(n to float);
+	
+	while (factor < q) {
+		for (int x = factor; x <= n; x += 1)
+			if (getBit(arr, x)) {
+				factor = x;
+				break 2;
 			}
-		}
+			
+		for (int x = factor * 3; x <= n; x += factor * 2)
+			clearBit(arr, x);
+		factor += 2;
 	}
 
-	ret Sieve { n, prime };
+	ret Sieve { n, arr };
 }

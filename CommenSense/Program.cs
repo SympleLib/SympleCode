@@ -87,7 +87,11 @@ void Optimize(LLVMModuleRef module)
 
 void Compile(string filename)
 {
-	using StreamWriter dbgout = new StreamWriter(File.OpenWrite("dbgout.txt"));
+	if (!File.Exists(filename))
+	{
+		Console.WriteLine($"file '{filename}' does not exist");
+		return;
+	}
 
 	// pre-parse
 	{
@@ -96,10 +100,7 @@ void Compile(string filename)
 		if (BadCode.errors.Count > 0)
 		{
 			foreach (SyntaxError err in BadCode.errors)
-			{
 				Console.WriteLine(err);
-				dbgout.WriteLine(err);
-			}
 			return;
 		}
 
@@ -108,10 +109,7 @@ void Compile(string filename)
 		if (BadCode.errors.Count > 0)
 		{
 			foreach (SyntaxError err in BadCode.errors)
-			{
 				Console.WriteLine(err);
-				dbgout.WriteLine(err);
-			}
 			return;
 		}
 	}
@@ -123,20 +121,13 @@ void Compile(string filename)
 		foreach (Parser parser in Parser.parsers.Values)
 		{
 			ModuleAst module = parser.Parse();
-			dbgout.WriteLine(module);
-			dbgout.WriteLine("---");
 			moduleList.Add(module);
 		}
-
-		dbgout.Flush();
 
 		if (BadCode.errors.Count > 0)
 		{
 			foreach (SyntaxError err in BadCode.errors)
-			{
 				Console.WriteLine(err);
-				dbgout.WriteLine(err);
-			}
 			return;
 		}
 
@@ -153,10 +144,7 @@ void Compile(string filename)
 		if (BadCode.errors.Count > 0)
 		{
 			foreach (SyntaxError erronius in BadCode.errors)
-			{
 				Console.WriteLine(erronius);
-				dbgout.WriteLine(erronius);
-			}
 			return;
 		}
 
@@ -166,14 +154,8 @@ void Compile(string filename)
 #endif
 		// Optimize(llModule);
 
-		dbgout.WriteLine(llModule);
-
 		if (!llModule.TryVerify(LLVMVerifierFailureAction.LLVMPrintMessageAction, out string err))
-		{
-			dbgout.WriteLine("---");
-			dbgout.WriteLine(err);
 			return;
-		}
 
 		llModules.Add(llModule);
 	}
@@ -188,9 +170,7 @@ void Compile(string filename)
 	LLVMTargetMachineRef machine = target.CreateTargetMachine(LLVMTargetRef.DefaultTriple, "generic", "",
 				LLVMCodeGenOptLevel.LLVMCodeGenLevelAggressive, LLVMRelocMode.LLVMRelocDefault, LLVMCodeModel.LLVMCodeModelDefault);
 	for (int i = 0; i < llModules.Count; i++)
-	{
 		machine.EmitToFile(llModules[i], modules[i].name[..modules[i].name.LastIndexOf('.')] + ".o", LLVMCodeGenFileType.LLVMObjectFile);
-	}
 }
 
 LLVMExecutionEngineRef? Debug(string filename)
@@ -304,17 +284,28 @@ LLVMExecutionEngineRef? Debug(string filename)
 	return engine;
 }
 
-Console.WriteLine("Welcome to the 'Sieve' pre-release of SympleCode");
-Console.WriteLine("This compiler is still in dev so it may cause a freeze or a crash if the input code has syntax errors");
-Console.WriteLine("This compiler is meant mainly to run the Prime Sieve for the Drag Race by Dave's Garage");
-Console.WriteLine("---");
-Console.WriteLine("Compiling 'sieve.sy' -> 'sieve.o'...");
+string filename = "samples/sieve.sy";
+/*
+if (args.Length > 0)
+	filename = args[0];
+else
+{
+	Console.WriteLine("type in the name of file you want to compile");
+	string? tmp = Console.ReadLine();
+	if (string.IsNullOrEmpty(tmp))
+	{
+		Console.WriteLine("invalid response, aborting...");
+		return;
+	}
 
-Compile("sieve.sy");
-return;
-//goto End;
+	filename = tmp;
+}
+*/
 
-RealCode:
+Console.WriteLine($"compiling '{filename}' -> '{filename[..filename.LastIndexOf('.')] + ".o"}'...");
+Compile(filename);
+
+#if false
 LLVMExecutionEngineRef? _engine = Debug("sieve.sy");
 if (_engine is null)
 	goto End;
@@ -330,3 +321,4 @@ Console.ReadKey();
 
 [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
 delegate void Run();
+#endif

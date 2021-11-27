@@ -16,6 +16,8 @@ partial class Parser
 			return While();
 		case TokenKind.ForKeyword:
 			return For();
+		case TokenKind.BreakKeyword:
+			return Break();
 		case TokenKind.RetKeyword:
 			return Ret();
 		}
@@ -138,6 +140,19 @@ partial class Parser
 		StmtAst then = Stmt();
 
 		return new ForStmtAst(keywrd, init, cond, step, then);
+	}
+
+	BreakStmtAst Break()
+	{
+		Token keywrd = Match(TokenKind.BreakKeyword);
+		int depth = 1;
+		if (current.kind is not TokenKind.Semicol)
+		{
+			Token depthKwrd = Match(TokenKind.Int);
+			depth = int.Parse(depthKwrd.text);
+		}
+		EndLine();
+		return new BreakStmtAst(keywrd, depth);
 	}
 
 	RetStmtAst Ret()

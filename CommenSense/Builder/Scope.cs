@@ -2,13 +2,14 @@
 
 using Value = LLVMValueRef;
 using Type = LLVMTypeRef;
+using Block = LLVMBasicBlockRef;
 
 partial class Builder
 {
 	Scope scope;
 
-	void EnterScope() =>
-		scope = new Scope(this, scope);
+	void EnterScope(Block? exit) =>
+		scope = new Scope(this, exit, scope);
 
 	void ExitScope() =>
 		scope = scope.parent!;
@@ -18,14 +19,17 @@ partial class Builder
 		public readonly Builder builder;
 		public readonly Scope? parent;
 
+		public readonly Block? exit;
+
 		readonly Dictionary<string, Container> ctnrs = new Dictionary<string, Container>();
 		readonly Dictionary<string, Value> symbols = new Dictionary<string, Value>();
 		readonly Dictionary<string, Type> typedefs = new Dictionary<string, Type>();
 
-		public Scope(Builder builder, Scope? parent = null)
+		public Scope(Builder builder, Block? exit, Scope? parent = null)
 		{
 			this.builder = builder;
 			this.parent = parent;
+			this.exit = exit;
 		}
 
 		public void Define(string alias, Type realType) =>
