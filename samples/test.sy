@@ -1,4 +1,13 @@
 decl void puts(char* str);
 decl void printf(char* fmt, ...);
 
-link 'sieve.sy';
+void run {
+	for (int a = 0; a < 3; a++)
+	for (int b = 0; b < 3; b++)
+	for (int c = 0; c < 3; c++)
+	for (int d = 1; d < 3; d++) {
+		if (d == c)
+			break 3;
+		printf('a: %i, b: %i, c: %i, d: %i\n', a, b, c, d);
+	}
+}

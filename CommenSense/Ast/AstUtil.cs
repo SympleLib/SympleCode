@@ -270,8 +270,11 @@ partial record BitCastExprAst
 { public override string ToString() => $"{value} as {to}"; }
 
 
-partial record UnExprAst
+partial record PreExprAst
 { public override string ToString() => $"{op} {operand}"; }
+
+partial record PostExprAst
+{ public override string ToString() => $"{operand} {op}"; }
 
 partial record BiExprAst
 { public override string ToString() => $"{op}\n{IncTab()}{left}\n{GetTabs()}{right}{DecTab()}"; }

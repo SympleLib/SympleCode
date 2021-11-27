@@ -46,8 +46,10 @@ partial class Builder
 		if (ast is BitCastExprAst bitCastExpr)
 			return llBuilder.BuildBitCast(BuildExpr(bitCastExpr.value), BuildType(bitCastExpr.to));
 
-		if (ast is UnExprAst unExpr)
-			return BuildExpr(unExpr);
+		if (ast is PreExprAst preExpr)
+			return BuildExpr(preExpr);
+		if (ast is PostExprAst postExpr)
+			return BuildExpr(postExpr);
 		if (ast is BiExprAst biExpr)
 			return BuildExpr(biExpr);
 		if (ast.GetType() == typeof(ExprAst))
@@ -131,7 +133,7 @@ partial class Builder
 	Value BuildExpr(IndexExprAst ast) =>
 		llBuilder.BuildLoad(BuildPtr(ast));
 
-	Value BuildExpr(UnExprAst ast)
+	Value BuildExpr(PreExprAst ast)
 	{
 		switch (ast.op)
 		{
@@ -151,6 +153,31 @@ partial class Builder
 		default:
 			throw new Exception("bob the builders cannt build (nor spell)");
 		}
+	}
+
+	Value BuildExpr(PostExprAst ast)
+	{
+		Value ptr = BuildPtr(ast.operand);
+		Value left = BuildExpr(ast.operand);
+		Value right = Value.CreateConstInt(Type.Int32, 1);
+		Value val;
+
+		Type type = left.TypeOf;
+		right = BuildCast(right, type, null);
+
+		if (ast.op is TokenKind.Bang2)
+			val = llBuilder.BuildNot(left);
+		else
+		{
+			var op = (LLVMOpcode) ast.op;
+			if (type.ElementType == default && type.IsFloat())
+				op++;
+
+			val = llBuilder.BuildBinOp(op, left, right);
+		}
+
+		llBuilder.BuildStore(val, ptr);
+		return val;
 	}
 
 	Value BuildExpr(BiExprAst ast)

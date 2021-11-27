@@ -287,7 +287,7 @@ LLVMExecutionEngineRef? Debug(string filename)
 	return engine;
 }
 
-string filename = "samples/sieve.sy";
+string filename = "samples/test.sy";
 /*
 if (args.Length > 0)
 	filename = args[0];

@@ -64,5 +64,6 @@ partial record IndexExprAst(ExprAst ptr, Token token, ExprAst index): ExprAst(to
 partial record CastExprAst(ExprAst value, Token token, TypeAst to): ExprAst(token);
 partial record BitCastExprAst(ExprAst value, Token token, TypeAst to): ExprAst(token);
 
-partial record UnExprAst(Enum op, Token token, ExprAst operand): ExprAst(token);
+partial record PreExprAst(Enum op, Token token, ExprAst operand): ExprAst(token);
+partial record PostExprAst(Token token, Enum op, ExprAst operand): ExprAst(token);
 partial record BiExprAst(Enum op, Token token, ExprAst left, ExprAst right): ExprAst(token);

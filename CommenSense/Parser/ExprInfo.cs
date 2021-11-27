@@ -2,7 +2,7 @@
 
 partial class Parser
 {
-	static readonly TokenKind[] unOps = {
+	static readonly TokenKind[] preOps = {
 		TokenKind.Plus,
 		TokenKind.Minus,
 
@@ -10,13 +10,29 @@ partial class Parser
 		// TokenKind.Percent,
 	};
 
-	static Enum UnOpcode(TokenKind kind) =>
+	static Enum PreOpcode(TokenKind kind) =>
 		kind switch
 		{
 			TokenKind.And => kind,
 			TokenKind.Plus => LLVMAdd,
 			TokenKind.Minus => LLVMFNeg,
 			TokenKind.Percent => LLVMLoad,
+			_ => (LLVMOpcode) 0,
+		};
+
+	static readonly TokenKind[] postOps = {
+		TokenKind.Plus2,
+		TokenKind.Minus2,
+		TokenKind.Bang2,
+		TokenKind.Tilde2,
+	};
+
+	static Enum PostOpcode(TokenKind kind) =>
+		kind switch {
+			TokenKind.Plus2 => LLVMAdd,
+			TokenKind.Minus2 => LLVMSub,
+			TokenKind.Bang2 => kind,
+			TokenKind.Tilde2 => LLVMXor,
 			_ => (LLVMOpcode) 0,
 		};
 

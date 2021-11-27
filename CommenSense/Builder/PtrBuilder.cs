@@ -15,12 +15,12 @@ partial class Builder
 			return BuildPtr(memberExpr);
 		if (ast is IndexExprAst idxExpr)
 			return BuildPtr(idxExpr);
-		if (ast is UnExprAst unExpr)
+		if (ast is PreExprAst preExpr)
 		{
 			//if (unExpr.op is TokenKind.And)
 			//	return BuildPtr(unExpr.operand);
-			if (unExpr.op is LLVMLoad)
-				return BuildExpr(unExpr.operand);
+			if (preExpr.op is LLVMLoad)
+				return BuildExpr(preExpr.operand);
 		}
 		throw new Exception("not a ptr D:{");
 	}

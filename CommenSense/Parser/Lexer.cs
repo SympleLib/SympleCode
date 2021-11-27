@@ -25,7 +25,11 @@ public enum TokenKind
 	SlashDash,
 	PercentDash,
 
+	Bang,
 	And,
+	Pipe,
+	Carot,
+	Tilde,
 
 	Eql,
 	Dot,
@@ -50,6 +54,12 @@ public enum TokenKind
 	LEql,
 	REql,
 	EqlEql,
+
+	Plus2,
+	Minus2,
+	Star2,
+	Bang2,
+	Tilde2,
 
 	Comma,
 	Colon,
@@ -96,7 +106,11 @@ class Lexer
 			"/-",
 			"%-",
 
+			"!",
 			"&",
+			"|",
+			"^",
+			"~",
 
 			"=",
 			".",
@@ -121,6 +135,12 @@ class Lexer
 			"<=",
 			">=",
 			"==",
+
+			"++",
+			"--",
+			"**",
+			"!!",
+			"~~",
 
 			",",
 			":",

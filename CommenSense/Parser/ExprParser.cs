@@ -25,12 +25,12 @@ partial class Parser
 
 	ExprAst PreExpr()
 	{
-		if (unOps.Contains(current.kind))
+		if (preOps.Contains(current.kind))
 		{
 			Token token = Next();
-			Enum op = UnOpcode(token.kind);
+			Enum op = PreOpcode(token.kind);
 			ExprAst operand = PreExpr();
-			return new UnExprAst(op, token, operand);
+			return new PreExprAst(op, token, operand);
 		}
 
 		return PostExpr(PrimExpr());
@@ -39,6 +39,13 @@ partial class Parser
 	ExprAst PostExpr(ExprAst operand)
 	{
 	Loop:
+		if (postOps.Contains(current.kind))
+		{
+			Token token = Next();
+			Enum op = PostOpcode(token.kind);
+			operand = new PostExprAst(token, op, operand);
+			goto Loop;
+		}
 		if (current.kind is TokenKind.LeftParen)
 		{
 			Token open = Next();
@@ -94,7 +101,7 @@ partial class Parser
 		{
 		case TokenKind.Percent:
 			Token op = Next();
-			return new UnExprAst(UnOpcode(op.kind), op, PrimExpr());
+			return new PreExprAst(PreOpcode(op.kind), op, PrimExpr());
 		case TokenKind.Identifier:
 			if (IsType(current))
 			{
