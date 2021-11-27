@@ -287,8 +287,8 @@ LLVMExecutionEngineRef? Debug(string filename)
 	return engine;
 }
 
-string filename = "samples/test.sy";
-/*
+#if RELEASE
+string filename;
 if (args.Length > 0)
 	filename = args[0];
 else
@@ -303,12 +303,11 @@ else
 
 	filename = tmp;
 }
-*/
 
 Console.WriteLine($"compiling '{filename}' -> '{filename[..filename.LastIndexOf('.')] + ".o"}'...");
 Compile(filename);
-
-#if DEBUG
+#elif DEBUG
+string filename = "samples/test.sy";
 LLVMExecutionEngineRef? _engine = Debug(filename);
 if (_engine is null)
 	return;

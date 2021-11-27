@@ -6,8 +6,8 @@ using Block = LLVMBasicBlockRef;
 
 partial class Builder
 {
+	Scope globalScope;
 	Scope scope;
-
 	void EnterScope(Block? exit) =>
 		scope = new Scope(this, exit, scope);
 
@@ -20,6 +20,7 @@ partial class Builder
 		public readonly Scope? parent;
 
 		public readonly Block? exit;
+		public readonly int depth;
 
 		readonly Dictionary<string, Container> ctnrs = new Dictionary<string, Container>();
 		readonly Dictionary<string, Value> symbols = new Dictionary<string, Value>();
@@ -30,6 +31,7 @@ partial class Builder
 			this.builder = builder;
 			this.parent = parent;
 			this.exit = exit;
+			depth = parent is null ? 0 : parent.depth + 1;
 		}
 
 		public void Define(string alias, Type realType) =>

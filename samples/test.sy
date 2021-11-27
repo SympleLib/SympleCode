@@ -7,7 +7,7 @@ void run {
 	for (int c = 0; c < 3; c++)
 	for (int d = 1; d < 3; d++) {
 		if (d == c)
-			break 3;
+			breakall;
 		printf('a: %i, b: %i, c: %i, d: %i\n', a, b, c, d);
 	}
 }

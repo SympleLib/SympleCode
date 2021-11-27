@@ -18,6 +18,8 @@ partial class Parser
 			return For();
 		case TokenKind.BreakKeyword:
 			return Break();
+		case TokenKind.BreakAllKeyword:
+			return BreakAll();
 		case TokenKind.RetKeyword:
 			return Ret();
 		}
@@ -162,6 +164,13 @@ partial class Parser
 		}
 		EndLine();
 		return new BreakStmtAst(keywrd, depth);
+	}
+
+	BreakAllStmtAst BreakAll()
+	{
+		Token keywrd = Match(TokenKind.BreakAllKeyword);
+		EndLine();
+		return new BreakAllStmtAst(keywrd);
 	}
 
 	RetStmtAst Ret()

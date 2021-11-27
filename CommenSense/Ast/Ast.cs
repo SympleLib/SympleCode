@@ -40,6 +40,7 @@ partial record ForStmtAst(Token token, StmtAst init, ExprAst cond, ExprAst step,
 partial record BlockStmtAst(Token token, StmtAst[] stmts): StmtAst(token);
 
 partial record BreakStmtAst(Token token, int depth): StmtAst(token);
+partial record BreakAllStmtAst(Token token): StmtAst(token);
 partial record RetStmtAst(Token token, ExprAst expr): StmtAst(token);
 partial record ExprStmtAst(ExprAst expr): StmtAst(expr.token);
 

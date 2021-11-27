@@ -24,7 +24,8 @@ partial class Builder
 
 		llModule = LLVMModuleRef.CreateWithName(module.name);
 		llBuilder = LLVMBuilderRef.Create(llModule.Context);
-		scope = new Scope(this, null);
+		globalScope = new Scope(this, null);
+		scope = globalScope;
 	}
 
 	public LLVMModuleRef Build()
@@ -77,6 +78,31 @@ partial class Builder
 			Build(forAst);
 		else if (ast is BlockStmtAst block)
 			Build(block);
+		else if (ast is BreakAllStmtAst breakall)
+		{
+			Scope _scope = scope;
+
+			while (_scope.parent is not null)
+			{
+				Scope tmp = _scope.parent;
+
+				while (!tmp.exit.HasValue)
+				{
+					if (tmp.parent is null)
+						goto OutOfLoop;
+
+					tmp = tmp.parent;
+				}
+
+				_scope = tmp;
+			}
+
+		OutOfLoop:
+			if (_scope.exit.HasValue)
+				llBuilder.BuildBr(_scope.exit.Value);
+			else
+				BadCode.Report(new SyntaxError("cannot breakall outside loop", breakall.token));
+		}
 		else if (ast is BreakStmtAst breaq)
 		{
 			Scope _scope = scope;
@@ -84,16 +110,26 @@ partial class Builder
 			{
 				if (_scope.parent is null)
 				{
-					BadCode.Report(new SyntaxError("cannot break outside local scope", breaq.token));
+					BadCode.Report(new SyntaxError("cannot break outside loop", breaq.token));
 					break;
 				}
-				
-				_scope = _scope.parent!;
+
 				while (!_scope.exit.HasValue)
+				{
+					if (_scope.parent is null)
+					{
+						BadCode.Report(new SyntaxError("cannot break outside loop", breaq.token));
+						return;
+					}
+
 					_scope = _scope.parent!;
+				}
+
+				_scope = _scope.parent!;
 			}
 
-			llBuilder.BuildBr(_scope.exit!.Value);
+			if (_scope.exit.HasValue)
+				llBuilder.BuildBr(_scope.exit.Value);
 		}
 		else if (ast is RetStmtAst retStmt)
 		{

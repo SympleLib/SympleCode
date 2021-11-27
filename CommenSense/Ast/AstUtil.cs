@@ -203,6 +203,9 @@ partial record BlockStmtAst
 partial record BreakStmtAst
 { public override string ToString() => $"break {depth}"; }
 
+partial record BreakAllStmtAst
+{ public override string ToString() => $"breakall"; }
+
 partial record RetStmtAst
 { public override string ToString() => $"ret {expr}"; }
 
