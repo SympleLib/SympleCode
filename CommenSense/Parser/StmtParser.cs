@@ -148,8 +148,17 @@ partial class Parser
 		int depth = 1;
 		if (current.kind is not TokenKind.Semicol)
 		{
-			Token depthKwrd = Match(TokenKind.Int);
+			Token depthKwrd = Next();
+			if (depthKwrd.kind is not TokenKind.Int)
+			{
+				BadCode.Report(new SyntaxError("expected positive integer above 0", depthKwrd));
+				MaybeEndLine();
+				return new BreakStmtAst(keywrd, depth);
+			}
+
 			depth = int.Parse(depthKwrd.text);
+			if (depth <= 0)
+				BadCode.Report(new SyntaxError("expected positive integer above 0", depthKwrd));
 		}
 		EndLine();
 		return new BreakStmtAst(keywrd, depth);

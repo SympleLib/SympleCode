@@ -101,7 +101,7 @@ Sieve sieve(int n) {
 		for (int x = factor; x <= n; x += 1) {
 			if (getBit(arr, x)) {
 				factor = x;
-				break 2;
+				break;
 			}
 		}
 			
