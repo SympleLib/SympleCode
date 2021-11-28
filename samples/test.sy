@@ -1,13 +1,37 @@
 decl void puts(char* str);
 decl void printf(char* fmt, ...);
 
+int powi(int base, int exp) {
+    int result = 1;
+    while (exp) {
+        if (exp % 2)
+           result *= base;
+        exp /= 2;
+        base *= base;
+    }
+    ret result;
+}
+
 void run {
-	for (int a = 0; a < 3; a++)
-	for (int b = 0; b < 3; b++)
-	for (int c = 0; c < 3; c++)
-	for (int d = 1; d < 3; d++) {
-		if (d == c)
-			breakall;
-		printf('a: %i, b: %i, c: %i, d: %i\n', a, b, c, d);
-	}
+	int a = 6;
+	int b = 6;
+
+	printf('+%i', a + b);
+	printf('-%i', a - b);
+	printf('*%i', a * b);
+	printf('/%i', a / b);
+	printf('%%i', a % b);
+	printf('**%i', a ** b);
+	printf('&%i', a & b);
+	printf('|%i', a | b);
+	printf('^%i', a ^ b);
+	printf('&&%i', a && b);
+	printf('||%i', a || b);
+	printf('<%i', a < b);
+	printf('>%i', a > b);
+	printf('>=%i', a <= b);
+	printf('<=%i', a >= b);
+	printf('~=%i', a ~= b);
+	printf('==%i', a == b);
+	printf('!=%i', a != b);
 }
