@@ -39,9 +39,11 @@ partial class Parser
 	static int BiPrecendence(TokenKind kind) =>
 		   kind switch
 		   {
-			   TokenKind.Dot => 5,
-			   TokenKind.Star or TokenKind.Slash or TokenKind.Percent or TokenKind.SlashDash or TokenKind.PercentDash => 4,
-			   TokenKind.Plus or TokenKind.Minus => 3,
+			   TokenKind.Dot => 7,
+			   TokenKind.Star or TokenKind.Slash or TokenKind.Percent or TokenKind.SlashDash or TokenKind.PercentDash => 6,
+			   TokenKind.Plus or TokenKind.Minus => 5,
+			   TokenKind.LeftChevron2 or TokenKind.RightChevron2 => 4,
+			   TokenKind.And or TokenKind.Pipe or TokenKind.Carot or TokenKind.And2 or TokenKind.Pipe2 => 3,
 			   TokenKind.LeftChevron or TokenKind.RightChevron or TokenKind.LEql or TokenKind.REql or TokenKind.EqlEql => 2,
 			   TokenKind.Eql or TokenKind.PlusEql or TokenKind.MinusEql or TokenKind.StarEql or TokenKind.SlashEql or TokenKind.PercentEql => 1,
 			   _ => 0,

@@ -66,6 +66,8 @@ public enum TokenKind
 	Tilde2,
 	And2,
 	Pipe2,
+	LeftChevron2,
+	RightChevron2,
 
 	And2Eql,
 	Pipe2Eql,

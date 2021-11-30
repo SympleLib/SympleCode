@@ -14,19 +14,21 @@ int powi(int base, int exp) {
 
 void run {
 	int a = 6;
-	int b = 6;
+	int b = 9;
 
 	printf('+%i', a + b);
 	printf('-%i', a - b);
 	printf('*%i', a * b);
 	printf('/%i', a / b);
-	printf('%%i', a % b);
+	printf('%%%i', a % b);
 	printf('**%i', a ** b);
 	printf('&%i', a & b);
 	printf('|%i', a | b);
 	printf('^%i', a ^ b);
 	printf('&&%i', a && b);
 	printf('||%i', a || b);
+	printf('<<%i', a << b);
+	printf('>>%i', a >> b);
 	printf('<%i', a < b);
 	printf('>%i', a > b);
 	printf('>=%i', a <= b);
