@@ -43,10 +43,12 @@ partial class Parser
 			   TokenKind.Star2 => 7,
 			   TokenKind.Star or TokenKind.Slash or TokenKind.Percent or TokenKind.SlashDash or TokenKind.PercentDash => 6,
 			   TokenKind.Plus or TokenKind.Minus => 5,
-			   TokenKind.LeftChevron2 or TokenKind.RightChevron2 => 4,
+			   TokenKind.Left2 or TokenKind.Right2 => 4,
 			   TokenKind.And or TokenKind.Pipe or TokenKind.Carot or TokenKind.And2 or TokenKind.Pipe2 => 3,
 			   TokenKind.LeftChevron or TokenKind.RightChevron or TokenKind.LEql or TokenKind.REql or TokenKind.EqlEql or TokenKind.TildeEql or TokenKind.BangEql => 2,
-			   TokenKind.Eql or TokenKind.PlusEql or TokenKind.MinusEql or TokenKind.StarEql or TokenKind.SlashEql or TokenKind.PercentEql => 1,
+			   TokenKind.Eql or TokenKind.PlusEql or TokenKind.MinusEql or TokenKind.StarEql or TokenKind.SlashEql or TokenKind.PercentEql or
+			   TokenKind.Star2Eql or TokenKind.Left2Eql or TokenKind.Right2Eql or
+			   TokenKind.AndEql or TokenKind.PipeEql or TokenKind.CarotEql => 1,
 			   _ => 0,
 		   };
 
@@ -54,9 +56,11 @@ partial class Parser
 		kind switch
 		{
 			TokenKind.Eql or TokenKind.PlusEql or TokenKind.MinusEql or TokenKind.StarEql or TokenKind.SlashEql or TokenKind.PercentEql or
+			TokenKind.Star2Eql or TokenKind.Left2Eql or TokenKind.Right2Eql or
 			TokenKind.TildeEql or
 			TokenKind.And2 or TokenKind.Pipe2 or
 			TokenKind.Star2 or
+			TokenKind.AndEql or TokenKind.PipeEql or TokenKind.CarotEql or
 			TokenKind.Dot => kind,
 
 			TokenKind.Plus => LLVMAdd,
@@ -67,8 +71,8 @@ partial class Parser
 			TokenKind.SlashDash => LLVMUDiv,
 			TokenKind.PercentDash => LLVMURem,
 
-			TokenKind.LeftChevron2 => LLVMShl,
-			TokenKind.RightChevron2 => LLVMAShr,
+			TokenKind.Left2 => LLVMShl,
+			TokenKind.Right2 => LLVMAShr,
 
 			TokenKind.And => LLVMAnd,
 			TokenKind.Pipe => LLVMOr,

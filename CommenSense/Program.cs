@@ -307,6 +307,8 @@ else
 Console.WriteLine($"compiling '{filename}' -> '{filename[..filename.LastIndexOf('.')] + ".o"}'...");
 Compile(filename);
 #elif DEBUG
+Lexer.PrintMatching();
+
 string filename = "samples/test.sy";
 LLVMExecutionEngineRef? _engine = Debug(filename);
 if (_engine is null)

@@ -201,7 +201,7 @@ partial class Builder
 			default:
 				right = BuildCast(right, type, ast.right.token);
 				Value ptr = BuildPtr(ast.left);
-				return BuildAssign(ptr, kind, left, right);
+				return BuildAssign(ptr, ast.token, left, right);
 			}
 		}
 
@@ -215,6 +215,34 @@ partial class Builder
 			op++;
 
 		return llBuilder.BuildBinOp(op, left, right);
+	}
+
+	Value BuildBi(Enum op, Token tok, Value left, Value right)
+	{
+		Type type = left.TypeOf;
+
+		if (op is TokenKind kind)
+		{
+			switch (kind)
+			{
+			case TokenKind.Star2:
+				return llBuilder.BuildCall(llModule.GetNamedFunction("powi"), new Value[] { left, right });
+
+			default:
+				throw new NotImplementedException();
+			}
+		}
+
+		right = BuildCast(right, type, tok);
+
+		if (op is LLVMIntPredicate _op)
+			return BuildPred(_op, left, right);
+
+		var xop = (LLVMOpcode) op;
+		if (type.ElementType == default && type.IsFloat())
+			xop++;
+
+		return llBuilder.BuildBinOp(xop, left, right);
 	}
 
 	Value BuildLogic(TokenKind op, BiExprAst ast, Value left, Value right)
@@ -234,30 +262,34 @@ partial class Builder
 		}
 	}
 
-	Value BuildAssign(Value ptr, TokenKind op, Value left, Value right)
+	Value BuildAssign(Value ptr, Token tok, Value left, Value right)
 	{
-		if (op is TokenKind.Eql)
+		if (tok.kind is TokenKind.Eql)
 		{
 			llBuilder.BuildStore(right, ptr);
 			return right;
 		}
 
-		LLVMOpcode vop = op switch
+		Enum vop = tok.kind switch
 		{
 			TokenKind.PlusEql => LLVMAdd,
 			TokenKind.MinusEql => LLVMSub,
 			TokenKind.StarEql => LLVMMul,
 			TokenKind.SlashEql => LLVMSDiv,
 			TokenKind.PercentEql => LLVMSRem,
+			
+			TokenKind.AndEql => LLVMAnd,
+			TokenKind.PipeEql => LLVMOr,
+			TokenKind.CarotEql => LLVMXor,
+
+			TokenKind.Star2Eql => TokenKind.Star2,
+			TokenKind.Left2Eql => LLVMShl,
+			TokenKind.Right2Eql => LLVMAShr,
 
 			_ => throw new NotImplementedException(),
 		};
 
-		Type type = left.TypeOf;
-		if (type.IsFloat())
-			vop++;
-
-		Value val = llBuilder.BuildBinOp(vop, left, right);
+		Value val = BuildBi(vop, tok, left, right);
 		llBuilder.BuildStore(val, ptr);
 		return val;
 	}

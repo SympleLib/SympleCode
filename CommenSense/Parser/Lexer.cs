@@ -66,11 +66,12 @@ public enum TokenKind
 	Tilde2,
 	And2,
 	Pipe2,
-	LeftChevron2,
-	RightChevron2,
+	Left2,
+	Right2,
 
-	And2Eql,
-	Pipe2Eql,
+	Star2Eql,
+	Left2Eql,
+	Right2Eql,
 
 	Comma,
 	Colon,
@@ -170,8 +171,10 @@ class Lexer
 			"||",
 			"<<",
 			">>",
-			"&&=",
-			"||=",
+
+			"**=",
+			"<<=",
+			">>=",
 
 			",",
 			":",

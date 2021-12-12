@@ -12,31 +12,19 @@ int powi(int base, int exp) {
     ret result;
 }
 
-int roundEqu(int a, int b) {
-	
-}
-
 void run {
 	int a = 3;
 	int b = 3;
 
-	printf('+%i\n', a + b);
-	printf('-%i\n', a - b);
-	printf('*%i\n', a * b);
-	printf('/%i\n', a / b);
-	printf('%%%i\n', a % b);
-	printf('**%i\n', a ** b);
-	printf('&%i\n', a & b);
-	printf('|%i\n', a | b);
-	printf('^%i\n', a ^ b);
-	printf('&&%i\n', a && b);
-	printf('||%i\n', a || b);
-	printf('<<%i\n', a << b);
-	printf('>>%i\n', a >> b);
-	printf('<%i\n', a < b);
-	printf('>%i\n', a > b);
-	printf('>=%i\n', a <= b);
-	printf('<=%i\n', a >= b);
-	printf('==%i\n', a == b);
-	printf('!=%i\n', a != b);
+	a += b;
+	a -= b;
+	a *= b;
+	a /= b;
+	a %= b;
+	a **= b;
+	// a &= b;
+	// a |= b;
+	a ^= b;
+	a <<= b;
+	a >>= b;
 }
