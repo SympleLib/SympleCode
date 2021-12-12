@@ -56,6 +56,7 @@ partial class Parser
 			TokenKind.Eql or TokenKind.PlusEql or TokenKind.MinusEql or TokenKind.StarEql or TokenKind.SlashEql or TokenKind.PercentEql or
 			TokenKind.TildeEql or
 			TokenKind.And2 or TokenKind.Pipe2 or
+			TokenKind.Star2 or
 			TokenKind.Dot => kind,
 
 			TokenKind.Plus => LLVMAdd,
@@ -65,6 +66,9 @@ partial class Parser
 			TokenKind.Percent => LLVMSRem,
 			TokenKind.SlashDash => LLVMUDiv,
 			TokenKind.PercentDash => LLVMURem,
+
+			TokenKind.LeftChevron2 => LLVMShl,
+			TokenKind.RightChevron2 => LLVMAShr,
 
 			TokenKind.And => LLVMAnd,
 			TokenKind.Pipe => LLVMOr,

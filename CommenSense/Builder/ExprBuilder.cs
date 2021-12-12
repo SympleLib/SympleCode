@@ -191,11 +191,13 @@ partial class Builder
 		{
 			switch (kind)
 			{
+			case TokenKind.Star2:
+				return llBuilder.BuildCall(llModule.GetNamedFunction("powi"), new Value[] { left, right });
+
 			case TokenKind.And2:
 			case TokenKind.Pipe2:
 				return BuildLogic(kind, ast, left, right);
 
-			case TokenKind.TildeEql:
 			default:
 				right = BuildCast(right, type, ast.right.token);
 				Value ptr = BuildPtr(ast.left);

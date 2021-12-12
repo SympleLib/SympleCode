@@ -270,8 +270,14 @@ partial class Builder
 			currentFunc = fn;
 		}
 		ExitScope();
-		if (fn.TypeOf.ElementType.ReturnType == Type.Void && llBuilder.InsertBlock.Terminator == null)
-			llBuilder.BuildRetVoid();
+
+		if (llBuilder.InsertBlock.Terminator == null)
+		{
+			if (fn.TypeOf.ElementType.ReturnType == Type.Void)
+				llBuilder.BuildRetVoid();
+			else
+				BadCode.Report(new SyntaxError("no return", ast.token));
+		}
 	}
 
 	void Build(FuncAst ast, ClassAst clazz, Type clsType)
