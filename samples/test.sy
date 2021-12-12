@@ -1,5 +1,5 @@
 decl void puts(char* str);
-decl void printf(char* fmt, ...);
+decl void printf(char* fmt, int trickToCompiler);
 
 int powi(int base, int exp) {
     int result = 1;
@@ -16,24 +16,24 @@ void run {
 	int a = 6;
 	int b = 9;
 
-	printf('+%i', a + b);
-	printf('-%i', a - b);
-	printf('*%i', a * b);
-	printf('/%i', a / b);
-	printf('%%%i', a % b);
-	printf('**%i', a ** b);
-	printf('&%i', a & b);
-	printf('|%i', a | b);
-	printf('^%i', a ^ b);
-	printf('&&%i', a && b);
-	printf('||%i', a || b);
-	printf('<<%i', a << b);
-	printf('>>%i', a >> b);
-	printf('<%i', a < b);
-	printf('>%i', a > b);
-	printf('>=%i', a <= b);
-	printf('<=%i', a >= b);
-	printf('~=%i', a ~= b);
-	printf('==%i', a == b);
-	printf('!=%i', a != b);
+	printf('+%i\n', a + b);
+	printf('-%i\n', a - b);
+	printf('*%i\n', a * b);
+	printf('/%i\n', a / b);
+	printf('%%%i\n', a % b);
+	// printf('**%i\n', a ** b);
+	printf('&%i\n', a & b);
+	printf('|%i\n', a | b);
+	printf('^%i\n', a ^ b);
+	printf('&&%i\n', a && b);
+	printf('||%i\n', a || b);
+	// printf('<<%i\n', a << b);
+	// printf('>>%i\n', a >> b);
+	printf('<%i\n', a < b);
+	printf('>%i\n', a > b);
+	printf('>=%i\n', a <= b);
+	printf('<=%i\n', a >= b);
+	// printf('~=%i\n', a ~= b);
+	printf('==%i\n', a == b);
+	printf('!=%i\n', a != b);
 }

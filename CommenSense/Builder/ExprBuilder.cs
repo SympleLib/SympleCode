@@ -186,13 +186,24 @@ partial class Builder
 		Value right = BuildExpr(ast.right);
 
 		Type type = left.TypeOf;
-		right = BuildCast(right, type, ast.right.token);
 
-		if (ast.op is TokenKind assign)
+		if (ast.op is TokenKind kind)
 		{
-			Value ptr = BuildPtr(ast.left);
-			return BuildAssign(ptr, assign, left, right);
+			switch (kind)
+			{
+			case TokenKind.And2:
+			case TokenKind.Pipe2:
+				return BuildLogic(kind, ast, left, right);
+
+			case TokenKind.TildeEql:
+			default:
+				right = BuildCast(right, type, ast.right.token);
+				Value ptr = BuildPtr(ast.left);
+				return BuildAssign(ptr, kind, left, right);
+			}
 		}
+
+		right = BuildCast(right, type, ast.right.token);
 
 		if (ast.op is LLVMIntPredicate _op)
 			return BuildPred(_op, left, right);
@@ -202,6 +213,23 @@ partial class Builder
 			op++;
 
 		return llBuilder.BuildBinOp(op, left, right);
+	}
+
+	Value BuildLogic(TokenKind op, BiExprAst ast, Value left, Value right)
+	{
+		left = BuildCast(left, Type.Int1, ast.left.token);
+		right = BuildCast(right, Type.Int1, ast.right.token);
+
+		switch (op)
+		{
+		case TokenKind.And2:
+			return llBuilder.BuildAnd(left, right);
+		case TokenKind.Pipe2:
+			return llBuilder.BuildOr(left, right);
+
+		default:
+			throw new NotImplementedException();
+		}
 	}
 
 	Value BuildAssign(Value ptr, TokenKind op, Value left, Value right)

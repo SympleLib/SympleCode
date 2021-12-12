@@ -56,7 +56,8 @@ partial class Builder
 	{
 		Type from = val.TypeOf;
 
-		if (token is not null && !CastVerifier.CastWorks(from, to))
+		bool signExt = false;
+		if (token is not null && !CastVerifier.CastWorks(from, to, out signExt))
 			BadCode.Report(new SyntaxError($"cant implicitly cast {from} to {to}", token!));
 
 		if (from.IsFloat() && to.IsFloat())
@@ -78,6 +79,8 @@ partial class Builder
 			Container ctnr = scope.GetCtnr(to.StructName);
 			return BuildCtnrExpr(to, ctnr); // TODO: Class Constructors
 		}
+		if (signExt)
+			return llBuilder.BuildZExtOrBitCast(val, to);
 		return llBuilder.BuildIntCast(val, to);
 	}
 }

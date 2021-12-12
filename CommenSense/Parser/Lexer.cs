@@ -108,6 +108,15 @@ public record Token(TokenKind kind, string text, int line, int col)
 
 class Lexer
 {
+	public static void PrintMatching()
+	{
+		var vals = Enum.GetValues<TokenKind>();
+		for (int i = (int)punctuatorStart; i < (int) keywordStart; i++)
+			Console.WriteLine($"{vals[i]}: '{punctuators[i - (int) punctuatorStart]}'");
+		for (int i = (int) keywordStart; i < vals.Length - 2; i++)
+			Console.WriteLine($"{vals[i]}: '{keywords[i - (int) keywordStart]}'");
+	}
+
 	const TokenKind punctuatorStart = TokenKind.Plus;
 	static readonly string[] punctuators = {
 			"+",
@@ -144,15 +153,25 @@ class Lexer
 			"/=",
 			"%=",
 			"&=",
+			"|=",
+			"^=",
 			"<=",
 			">=",
 			"==",
+			"!=",
+			"~=",
 
 			"++",
 			"--",
 			"**",
 			"!!",
 			"~~",
+			"&&",
+			"||",
+			"<<",
+			">>",
+			"&&=",
+			"||=",
 
 			",",
 			":",

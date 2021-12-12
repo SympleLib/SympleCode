@@ -150,7 +150,7 @@ partial class Builder
 		var then = currentFunc.AppendBasicBlock("then");
 		var end = currentFunc.AppendBasicBlock("end");
 
-		Value cond = BuildExpr(ast.cond);
+		Value cond = BuildCast(BuildExpr(ast.cond), Type.Int1, ast.cond.token);
 
 		if (ast.elze is null)
 		{
@@ -195,7 +195,7 @@ partial class Builder
 		llBuilder.BuildBr(loop);
 
 		llBuilder.PositionAtEnd(loop);
-		Value cond = BuildExpr(ast.cond);
+		Value cond = BuildCast(BuildExpr(ast.cond), Type.Int1, ast.cond.token);
 		llBuilder.BuildCondBr(cond, then, end);
 
 		EnterScope(end);
@@ -219,7 +219,7 @@ partial class Builder
 		llBuilder.BuildBr(loop);
 
 		llBuilder.PositionAtEnd(loop);
-		Value cond = BuildExpr(ast.cond);
+		Value cond = BuildCast(BuildExpr(ast.cond), Type.Int1, ast.cond.token);
 		llBuilder.BuildCondBr(cond, then, end);
 
 		llBuilder.PositionAtEnd(then);

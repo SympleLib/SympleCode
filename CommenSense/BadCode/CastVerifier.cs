@@ -6,8 +6,9 @@ using Value = LLVMValueRef;
 static class CastVerifier
 {
 	// Always for implicit casts
-	public static bool CastWorks(Type from, Type to)
+	public static bool CastWorks(Type from, Type to, out bool signExt)
 	{
+		signExt = false;
 		if (from.Kind is LLVMIntegerTypeKind && to.Kind is LLVMIntegerTypeKind)
 		{
 			// cast to bool
@@ -16,7 +17,10 @@ static class CastVerifier
 
 			// cast from bool
 			if (from.IntWidth == 1)
-				return false;
+			{
+				signExt = true;
+				return true;
+			}
 
 			if (from.IntWidth > to.IntWidth)
 				return false;
