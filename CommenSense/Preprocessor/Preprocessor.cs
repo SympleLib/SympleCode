@@ -13,6 +13,8 @@ class Preprocessor
 
 	readonly Stack<bool> codeYes = new Stack<bool>();
 
+	Lexer lxr;
+
 	public Preprocessor(string source, string folder, string filename)
 	{
 		this.source = source;
@@ -42,7 +44,7 @@ class Preprocessor
 
 	void RunCommand(string line)
 	{
-		Lexer lxr = new Lexer(line);
+		lxr = new Lexer(line);
 		string name = lxr.LexNext().text;
 
 		switch (name)
@@ -51,8 +53,14 @@ class Preprocessor
 			defines.Add(lxr.LexNext().text);
 			break;
 
-		case "ifdef":
-			codeYes.Push(defines.Contains(lxr.LexNext().text));
+		case "if":
+			codeYes.Push(Expr());
+			break;
+		case "elif":
+			codeYes.Push(!codeYes.Last() && Expr());
+			break;
+		case "else":
+			codeYes.Push(!codeYes.Pop());
 			break;
 		case "endif":
 			if (codeYes.Count <= 1)
@@ -60,5 +68,16 @@ class Preprocessor
 			codeYes.Pop();
 			break;
 		}
+	}
+
+	bool Expr()
+	{
+		string x = lxr.LexNext().text;
+		if (x == "def")
+		{
+			return defines.Contains(lxr.LexNext().text);
+		}
+
+		return false;
 	}
 }
