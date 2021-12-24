@@ -11,9 +11,10 @@ class Preprocessor
 	readonly List<Token> tokens = new List<Token>();
 	readonly List<string> defines = new List<string>();
 
-	readonly Stack<bool> codeYes = new Stack<bool>();
+	readonly List<bool> codeYes = new List<bool>();
+	readonly List<bool> ifYes = new List<bool>();
 
-	Lexer lxr;
+	private Lexer? lxr;
 
 	public Preprocessor(string source, string folder, string filename)
 	{
@@ -24,15 +25,15 @@ class Preprocessor
 
 	public Token[] PreProcess()
 	{
-		Lexer lxr = new Lexer(this.source);
+		Lexer lxr = new Lexer(source);
 		Token token = lxr.LexNext();
-		codeYes.Push(true);
+		codeYes.Add(true);
 
 		do
 		{
 			if (token.kind is TokenKind.HashTag)
 				RunCommand(token.text);
-			else if (codeYes.First())
+			else if (codeYes[^1])
 				tokens.Add(token);
 			token = lxr.LexNext();
 		}
@@ -52,27 +53,37 @@ class Preprocessor
 		case "define":
 			defines.Add(lxr.LexNext().text);
 			break;
-
 		case "if":
-			codeYes.Push(Expr());
+		{
+			bool yes = Expr();
+			codeYes.Add(yes);
+			ifYes.Add(yes);
 			break;
+		}
 		case "elif":
-			codeYes.Push(!codeYes.Last() && Expr());
+		{
+			bool yes = Expr();
+			codeYes[^1] = !ifYes[^1] && yes;
+			ifYes[^1] |= yes;
 			break;
+		}
 		case "else":
-			codeYes.Push(!codeYes.Pop());
+		{
+			codeYes[^1] = !ifYes[^1];
 			break;
+		}
 		case "endif":
-			if (codeYes.Count <= 1)
+			if (codeYes.Count <= 1 || ifYes.Count < 0)
 				throw new Exception("no matching if for #endif");
-			codeYes.Pop();
+			codeYes.RemoveAt(codeYes.Count - 1);
+			ifYes.RemoveAt(ifYes.Count - 1);
 			break;
 		}
 	}
 
 	bool Expr()
 	{
-		string x = lxr.LexNext().text;
+		string x = lxr!.LexNext().text;
 		if (x == "def")
 		{
 			return defines.Contains(lxr.LexNext().text);

@@ -6,7 +6,7 @@ decl void puts(char* str);
 void run {
 #if def SHAINT_WORK
 	puts('test shaint work');
-#elif def SHAINT_WORK
+#elif def SHOULD_WORK
 	puts('test ye works');
 #else
 	puts('test no works');
