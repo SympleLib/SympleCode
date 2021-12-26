@@ -130,13 +130,15 @@ class Preprocessor
 		if (current.kind is TokenKind.Eof)
 			return;
 			
-		if (defines.ContainsKey(current.text))
-			list.AddRange(defines[current.text]);
+		if (defines.ContainsKey(current.text) && current.kind is not TokenKind.Str)
+			list.AddRange(defines[Match(TokenKind.Annotation).text]);
 		else if (dyDefines.ContainsKey(current.text))
+		{
 			dyDefines[current.text](current);
+			Match(TokenKind.Annotation);
+		}
 		else
-			list.Add(current);
-		Next();
+			list.Add(Next());
 	}
 
 	bool Expr()
