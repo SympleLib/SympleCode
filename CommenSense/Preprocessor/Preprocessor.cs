@@ -9,12 +9,13 @@ class Preprocessor
 	readonly string folder;
 	readonly string filename;
 	readonly List<Token> tokens = new List<Token>();
-	readonly List<string> defines = new List<string>();
+	readonly Dictionary<string, Token[]> defines = new Dictionary<string, Token[]>();
 
 	readonly List<bool> codeYes = new List<bool>();
 	readonly List<bool> ifYes = new List<bool>();
 
-	private Lexer? lxr;
+	private Lexer lxr;
+	private Token current;
 
 	public Preprocessor(string source, string folder, string filename)
 	{
@@ -26,19 +27,27 @@ class Preprocessor
 	public Token[] PreProcess()
 	{
 		Lexer lxr = new Lexer(source);
-		Token token = lxr.LexNext();
+		current = lxr.LexNext();
 		codeYes.Add(true);
 
 		do
 		{
-			if (token.kind is TokenKind.HashTag)
-				RunCommand(token.text);
+			if (current.kind is TokenKind.HashTag)
+			{
+				RunCommand(current.text);
+				this.lxr = lxr;
+				Next();
+			}
 			else if (codeYes[^1])
-				tokens.Add(token);
-			token = lxr.LexNext();
+			{
+				this.lxr = lxr;
+				AppendToken(tokens);
+			}
+			else
+				Next();
 		}
-		while (token.kind is not TokenKind.Eof);
-		tokens.Add(token);
+		while (current.kind is not TokenKind.Eof);
+		tokens.Add(current);
 
 		return tokens.ToArray();
 	}
@@ -46,13 +55,19 @@ class Preprocessor
 	void RunCommand(string line)
 	{
 		lxr = new Lexer(line);
-		string name = lxr.LexNext().text;
+		Next();
+		string name = Next().text;
 
 		switch (name)
 		{
 		case "define":
-			defines.Add(lxr.LexNext().text);
+		{
+			string define = Next().text;
+			List<Token> tokens = new List<Token>();
+			AppendTokens(tokens);
+			defines.Add(define, tokens.ToArray());
 			break;
+		}
 		case "if":
 		{
 			bool yes = Expr();
@@ -81,14 +96,52 @@ class Preprocessor
 		}
 	}
 
+	void AppendTokens(List<Token> list)
+	{
+		if (!codeYes[^1])
+			return;
+		
+		do
+			AppendToken(list);
+		while (current.kind is not TokenKind.Eof);
+	}
+
+	void AppendToken(List<Token> list)
+	{
+		if (current.kind is TokenKind.Eof)
+			return;
+			
+		if (defines.ContainsKey(current.text))
+			list.AddRange(defines[current.text]);
+		else
+			list.Add(current);
+		Next();
+	}
+
 	bool Expr()
 	{
-		string x = lxr!.LexNext().text;
-		if (x == "def")
-		{
-			return defines.Contains(lxr.LexNext().text);
-		}
+		List<Token> _ = new List<Token>();
+		AppendToken(_);
+		if (_[0].text is "true" or "1")
+			return true;
+		if (_[0].text == "def")
+			return defines.ContainsKey(Next().text);
 
 		return false;
+	}
+
+	Token Next()
+	{
+		Token c = current;
+		current = lxr.LexNext();
+		return c;
+	}
+
+	Token Match(TokenKind kind)
+	{
+		if (current.kind == kind)
+			return Next();
+		BadCode.Report(new SyntaxError($"expected {kind}", current));
+		return current;
 	}
 }

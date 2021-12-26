@@ -408,7 +408,7 @@ class Lexer
 	Token Identifier()
 	{
 		int start = pos;
-		while (char.IsLetterOrDigit(current))
+		while (char.IsLetterOrDigit(current) || '_' == current)
 			pos++;
 
 		string text = src[start..pos];
