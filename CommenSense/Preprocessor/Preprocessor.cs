@@ -30,6 +30,11 @@ class Preprocessor
 		dyDefines.Add("FILEPATH", oldTok => { tokens.Add(new Token(TokenKind.Str, folder + "/" + filename, oldTok.line, oldTok.col)); });
 		dyDefines.Add("FILEDIR", oldTok => { tokens.Add(new Token(TokenKind.Str, folder, oldTok.line, oldTok.col)); });
 		dyDefines.Add("FILENAME", oldTok => { tokens.Add(new Token(TokenKind.Str, filename, oldTok.line, oldTok.col)); });
+		dyDefines.Add("LINE", oldTok => { tokens.Add(new Token(TokenKind.Str, oldTok.line.ToString(), oldTok.line, oldTok.col)); });
+		dyDefines.Add("TIME", oldTok => { tokens.Add(new Token(TokenKind.Str, DateTime.Now.ToLongTimeString(), oldTok.line, oldTok.col)); });
+		dyDefines.Add("UTCTIME", oldTok => { tokens.Add(new Token(TokenKind.Str, DateTime.Now.ToUniversalTime().ToLongTimeString(), oldTok.line, oldTok.col)); });
+		dyDefines.Add("DATE", oldTok => { tokens.Add(new Token(TokenKind.Str, DateTime.Now.ToLongDateString(), oldTok.line, oldTok.col)); });
+		dyDefines.Add("UTCDATE", oldTok => { tokens.Add(new Token(TokenKind.Str, DateTime.Now.ToUniversalTime().ToLongDateString(), oldTok.line, oldTok.col)); });
 	}
 
 	public Token[] PreProcess()

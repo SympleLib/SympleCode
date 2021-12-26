@@ -1,7 +1,12 @@
 decl void puts(char* str);
 
 void run {
-	puts(FILEPATH);
-	puts(FILEDIR);
-	puts(FILENAME);
+	puts(@FILEPATH);
+	puts(@FILEDIR);
+	puts(@FILENAME);
+	puts(@LINE);
+	puts('TIME');
+	puts(@UTCTIME);
+	puts(@DATE);
+	puts(@UTCDATE);
 }
