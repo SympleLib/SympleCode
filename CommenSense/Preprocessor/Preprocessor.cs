@@ -5,11 +5,15 @@ namespace CommenSense;
 // Psuedo Parser
 class Preprocessor
 {
+	delegate void DyMacroFn(Token oldTok);
+	
 	readonly string source;
 	readonly string folder;
 	readonly string filename;
 	readonly List<Token> tokens = new List<Token>();
 	readonly Dictionary<string, Token[]> defines = new Dictionary<string, Token[]>();
+
+	private readonly Dictionary<string, DyMacroFn> dyDefines = new Dictionary<string, DyMacroFn>();
 
 	readonly List<bool> codeYes = new List<bool>();
 	readonly List<bool> ifYes = new List<bool>();
@@ -22,6 +26,10 @@ class Preprocessor
 		this.source = source;
 		this.folder = folder;
 		this.filename = filename;
+		
+		dyDefines.Add("FILEPATH", oldTok => { tokens.Add(new Token(TokenKind.Str, folder + "/" + filename, oldTok.line, oldTok.col)); });
+		dyDefines.Add("FILEDIR", oldTok => { tokens.Add(new Token(TokenKind.Str, folder, oldTok.line, oldTok.col)); });
+		dyDefines.Add("FILENAME", oldTok => { tokens.Add(new Token(TokenKind.Str, filename, oldTok.line, oldTok.col)); });
 	}
 
 	public Token[] PreProcess()
@@ -66,6 +74,12 @@ class Preprocessor
 			List<Token> tokens = new List<Token>();
 			AppendTokens(tokens);
 			defines.Add(define, tokens.ToArray());
+			break;
+		}
+		case "undef":
+		{
+			string define = Next().text;
+			defines.Remove(define);
 			break;
 		}
 		case "if":
@@ -113,6 +127,8 @@ class Preprocessor
 			
 		if (defines.ContainsKey(current.text))
 			list.AddRange(defines[current.text]);
+		else if (dyDefines.ContainsKey(current.text))
+			dyDefines[current.text](current);
 		else
 			list.Add(current);
 		Next();
@@ -125,7 +141,10 @@ class Preprocessor
 		if (_[0].text is "true" or "1")
 			return true;
 		if (_[0].text == "def")
-			return defines.ContainsKey(Next().text);
+		{
+			string test = Next().text;
+			return defines.ContainsKey(test) || dyDefines.ContainsKey(test);
+		}
 
 		return false;
 	}

@@ -1,14 +1,7 @@
 decl void puts(char* str);
 
-#define SHOULD_WORK
-#define SHAINT_WORK
-
 void run {
-#if def SHAINT_WORK
-	puts('test shaint work');
-#elif def SHOULD_WORK
-	puts('test ye works');
-#else
-	puts('test no works');
-#endif
+	puts(FILEPATH);
+	puts(FILEDIR);
+	puts(FILENAME);
 }

@@ -13,12 +13,12 @@ partial class Parser
 	Token current => Peek();
 	Token next => Peek(1);
 
-	public Parser(string source, string filename)
+	public Parser(string source, string file)
 	{
 		scope = new Scope(this);
-		this.filename = filename;
-		folder = Path.GetFileName(Path.GetDirectoryName(filename)!);
-		parsers.Add(filename, this);
+		folder = Path.GetFileName(Path.GetDirectoryName(file)!);
+		filename = Path.GetFileName(file);
+		parsers.Add(folder + filename, this);
 
 		Preprocessor preprocessor = new Preprocessor(source, folder, filename);
 		tokens = preprocessor.PreProcess();

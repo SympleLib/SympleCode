@@ -85,11 +85,11 @@ void Optimize(LLVMModuleRef module)
 	pass.Run(module);
 }
 
-void Compile(string filename)
+void Compile(string file)
 {
-	if (!File.Exists(filename))
+	if (!File.Exists(file))
 	{
-		Console.WriteLine($"file '{filename}' does not exist");
+		Console.WriteLine($"file '{file}' does not exist");
 		return;
 	}
 
@@ -97,8 +97,8 @@ void Compile(string filename)
 
 	// pre-parse
 	{
-		string src = File.ReadAllText(filename);
-		Parser parser = new Parser(src, filename);
+		string src = File.ReadAllText(file);
+		Parser parser = new Parser(src, file);
 		if (BadCode.errors.Count > 0)
 		{
 			foreach (SyntaxError err in BadCode.errors)
@@ -175,15 +175,15 @@ void Compile(string filename)
 		machine.EmitToFile(llModules[i], modules[i].name[..modules[i].name.LastIndexOf('.')] + ".o", LLVMCodeGenFileType.LLVMObjectFile);
 }
 
-LLVMExecutionEngineRef? Debug(string filename)
+LLVMExecutionEngineRef? Debug(string file)
 {
 	using StreamWriter dbgout = new StreamWriter(File.OpenWrite("dbgout.txt"));
 	Parser.parsers.Clear();
 
 	// pre-parse
 	{
-		string src = File.ReadAllText(filename);
-		Parser parser = new Parser(src, filename);
+		string src = File.ReadAllText(file);
+		Parser parser = new Parser(src, file);
 		if (BadCode.errors.Count > 0)
 		{
 			foreach (SyntaxError err in BadCode.errors)
