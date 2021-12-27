@@ -314,6 +314,7 @@ if (_engine is null)
 	return;
 
 var engine = _engine.Value;
+
 var runFn = (Run) Marshal.GetDelegateForFunctionPointer((IntPtr) engine.GetFunctionAddress("run"), typeof(Run));
 runFn();
 [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
