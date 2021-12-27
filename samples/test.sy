@@ -41,7 +41,21 @@ void run() {
 	bool(GLFWwindow*)* glfwWindowShouldClose = GetProcAddress(glfw, 'glfwWindowShouldClose');
 	void(GLFWwindow*)* glfwSwapBuffers = GetProcAddress(glfw, 'glfwSwapBuffers');
 	void()* glfwPollEvents = GetProcAddress(glfw, 'glfwPollEvents');
+	
+	Module gl = LoadLibraryA('opengl32');
+	if (gl == null) {
+		puts('gl not loaded');
+		ret;
+	}
+	
+	puts('glfw loaded');
+	
+	void(int)* glClear = GetProcAddress(gl, 'glClear');
+	void(float, float, float, float)* glClearColor = GetProcAddress(gl, 'glClearColor');
+	glClearColor(.25, .25, .25, 1);
+	
 	while (glfwWindowShouldClose(wnd) == false) {
+		glClear(16384);
 		glfwSwapBuffers(wnd);
 		glfwPollEvents();
 	}

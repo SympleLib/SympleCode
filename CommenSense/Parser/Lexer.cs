@@ -254,7 +254,7 @@ class Lexer
 		if (current is '\0')
 			return new Token(TokenKind.Eof, string.Empty, line, col);
 
-		if (char.IsDigit(current))
+		if (char.IsDigit(current) || (current is '.' && char.IsDigit(next)))
 			return Num();
 		if (char.IsLetter(current))
 			return Identifier();

@@ -79,6 +79,8 @@ partial class Builder
 			Value arg = BuildExpr(ast.args[i]);
 			if (ptr.IsAFunction != null && i < ptr.ParamsCount)
 				arg = BuildCast(arg, ptr.Params[i + add].TypeOf, ast.token);
+			if (ptr.TypeOf.ElementType != null && i < ptr.TypeOf.ElementType.ParamTypes.Length)
+				arg = BuildCast(arg, ptr.TypeOf.ElementType.ParamTypes[i + add], ast.token);
 			args[i + add] = arg;
 		}
 
