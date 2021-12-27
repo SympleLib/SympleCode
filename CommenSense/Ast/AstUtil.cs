@@ -169,7 +169,7 @@ partial record FuncAst
 
 	public string realName => token.text;
 
-	public override string ToString() => $"{visibility} {retType} {realName}({string.Join<ParamAst>(", ", paramz)}{PrintWithVaArgMaybeIHonestlyDontKnowWhatToCallThisFunction(vaArg)}): '{asmName}' {{\n{IncTab()}{string.Join<StmtAst>($"\n{GetTabs()}", body)}{DecTab()}\n{GetTabs()}}}";
+	public override string ToString() => $"{string.Join<string>(" @", metadata)} {visibility} {retType} {realName}({string.Join<ParamAst>(", ", paramz)}{PrintWithVaArgMaybeIHonestlyDontKnowWhatToCallThisFunction(vaArg)}): '{asmName}' {{\n{IncTab()}{string.Join<StmtAst>($"\n{GetTabs()}", body)}{DecTab()}\n{GetTabs()}}}";
 }
 
 partial record DeclVarAst
@@ -215,6 +215,9 @@ partial record ExprStmtAst
 partial record ExprAst
 { public override string ToString() => "null"; }
 
+
+partial record NullLiteralExprAst
+{ public override string ToString() => "null"; }
 
 partial record IntLiteralExprAst
 { public override string ToString() => $"{value}"; }

@@ -1,12 +1,50 @@
-decl void puts(char* str);
+using byte* as Module;
+using byte as GLFWwindow;
 
-void run {
-	puts(@FILEPATH);
-	puts(@FILEDIR);
-	puts(@FILENAME);
-	puts(@LINE);
-	puts('TIME');
-	puts(@UTCTIME);
-	puts(@DATE);
-	puts(UTCDATE);
+decl Module LoadLibraryA(char* name);
+decl byte* GetProcAddress(Module, char* name);
+decl void puts(char*);
+
+void run() {
+	puts('hi');
+	
+	Module glfw = LoadLibraryA('glfw');
+	if (glfw == null) {
+		puts('glfw not loaded');
+		ret;
+	}
+	
+	puts('glfw loaded');
+	
+	bool()* glfwInit = GetProcAddress(glfw, 'glfwInit');
+	void()* glfwTerminate = GetProcAddress(glfw, 'glfwTerminate');
+	if (glfwInit() == false) {
+		puts('glfw not init');
+		ret;
+	}
+	
+	puts('glfw init');
+		
+	GLFWwindow*(int, int, char*, byte*, byte*)* glfwCreateWindow = GetProcAddress(glfw, 'glfwCreateWindow');
+	GLFWwindow* wnd = glfwCreateWindow(640, 480, 'Hello, world!', null, null);
+	if (wnd == null) {
+		puts('window no make');
+		glfwTerminate();
+		ret;
+	}
+	
+	puts('window make');
+	
+	void(GLFWwindow*)* glfwMakeContextCurrent = GetProcAddress(glfw, 'glfwMakeContextCurrent');
+	glfwMakeContextCurrent(wnd);
+	
+	bool(GLFWwindow*)* glfwWindowShouldClose = GetProcAddress(glfw, 'glfwWindowShouldClose');
+	void(GLFWwindow*)* glfwSwapBuffers = GetProcAddress(glfw, 'glfwSwapBuffers');
+	void()* glfwPollEvents = GetProcAddress(glfw, 'glfwPollEvents');
+	while (glfwWindowShouldClose(wnd) == false) {
+		glfwSwapBuffers(wnd);
+		glfwPollEvents();
+	}
+	
+	glfwTerminate();
 }

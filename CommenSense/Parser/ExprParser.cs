@@ -62,28 +62,28 @@ partial class Parser
 			operand = new CallExprAst(operand, open, args.ToArray());
 			goto Loop;
 		}
-		else if (current.kind is TokenKind.Dot)
+		if (current.kind is TokenKind.Dot)
 		{
 			Next();
 			Token name = Match(TokenKind.Identifier);
 			operand = new MemberExprAst(operand, name);
 			goto Loop;
 		}
-		else if (current.kind is TokenKind.AsKeyword)
+		if (current.kind is TokenKind.AsKeyword)
 		{
 			Token keywrd = Next();
 			TypeAst to = Type();
 			operand = new BitCastExprAst(operand, keywrd, to);
 			goto Loop;
 		}
-		else if (current.kind is TokenKind.ToKeyword)
+		if (current.kind is TokenKind.ToKeyword)
 		{
 			Token keywrd = Next();
 			TypeAst to = Type();
 			operand = new CastExprAst(operand, keywrd, to);
 			goto Loop;
 		}
-		else if (current.kind is TokenKind.LeftBracket)
+		if (current.kind is TokenKind.LeftBracket)
 		{
 			Token open = Next();
 			ExprAst idx = Expr();
@@ -185,6 +185,8 @@ partial class Parser
 			return new StrLiteralExprAst(current, Next().text);
 		case TokenKind.Char:
 			return new CharLiteralExprAst(current, Next().text[0], 8);
+		case TokenKind.NullKeyword:
+			return new NullLiteralExprAst(Next());
 		case TokenKind.Int:
 			return new IntLiteralExprAst(current, ulong.Parse(Next().text));
 		case TokenKind.Float:

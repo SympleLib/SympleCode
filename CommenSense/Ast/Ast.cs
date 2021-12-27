@@ -29,10 +29,10 @@ partial record ClassAst(Visibility visibility, Token token, FieldAst[] fields, F
 partial record UsingAst(Visibility visibility, Token token, TypeAst realType, string alias): StmtAst(token);
 partial record LinkAst(Visibility visibility, Token token, string filename): StmtAst(token);
 
-partial record DeclFuncAst(Visibility visibility, TypeAst retType, Token token, string asmName, ParamAst[] paramz, bool vaArg): StmtAst(token);
-partial record FuncAst(Visibility visibility, TypeAst retType, Token token, string asmName, ParamAst[] paramz, bool vaArg, StmtAst[] body): StmtAst(token);
-partial record DeclVarAst(Visibility visibility, TypeAst type, Token token, string asmName): StmtAst(token);
-partial record VarAst(Visibility visibility, TypeAst type, Token token, string asmName, ExprAst initializer): StmtAst(token);
+partial record DeclFuncAst(string[] metadata, Visibility visibility, TypeAst retType, Token token, string asmName, ParamAst[] paramz, bool vaArg): StmtAst(token);
+partial record FuncAst(string[] metadata, Visibility visibility, TypeAst retType, Token token, string asmName, ParamAst[] paramz, bool vaArg, StmtAst[] body): StmtAst(token);
+partial record DeclVarAst(string[] metadata, Visibility visibility, TypeAst type, Token token, string asmName): StmtAst(token);
+partial record VarAst(string[] metadata, Visibility visibility, TypeAst type, Token token, string asmName, ExprAst initializer): StmtAst(token);
 
 partial record IfStmtAst(Token token, ExprAst cond, StmtAst then, StmtAst? elze): StmtAst(token);
 partial record WhileStmtAst(Token token, ExprAst cond, StmtAst then): StmtAst(token);
@@ -49,6 +49,7 @@ partial record ExprAst(Token token): Ast(token);
 
 partial record LiteralExprAst(Token token): ExprAst(token);
 partial record IntLiteralExprAst(Token token, ulong value): LiteralExprAst(token);
+partial record NullLiteralExprAst(Token token): LiteralExprAst(token);
 partial record BoolLiteralExprAst(Token token, bool value): LiteralExprAst(token);
 partial record StrLiteralExprAst(Token token, string value): LiteralExprAst(token);
 partial record CharLiteralExprAst(Token token, ulong value, int nBits): LiteralExprAst(token);
