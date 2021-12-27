@@ -129,16 +129,21 @@ class Preprocessor
 	{
 		if (current.kind is TokenKind.Eof)
 			return;
-			
-		if (defines.ContainsKey(current.text) && current.kind is not TokenKind.Str)
-			list.AddRange(defines[Match(TokenKind.Annotation).text]);
-		else if (dyDefines.ContainsKey(current.text))
+
+		if (current.kind is TokenKind.Annotation)
 		{
-			dyDefines[current.text](current);
-			Match(TokenKind.Annotation);
+			if (defines.ContainsKey(current.text) && current.kind is not TokenKind.Str)
+				list.AddRange(defines[Match(TokenKind.Annotation).text]);
+			else if (dyDefines.ContainsKey(current.text))
+			{
+				dyDefines[current.text](current);
+				Next();
+			}
+			else
+				list.Add(Next());
 		}
-		else
-			list.Add(Next());
+
+		list.Add(Next());
 	}
 
 	bool Expr()
@@ -169,5 +174,12 @@ class Preprocessor
 			return Next();
 		BadCode.Report(new SyntaxError($"expected {kind}", current));
 		return current;
+	}
+
+	Token MatchAndGo(TokenKind kind)
+	{
+		if (current.kind != kind)
+			BadCode.Report(new SyntaxError($"expected {kind}", current));
+		return Next();
 	}
 }

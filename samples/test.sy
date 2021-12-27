@@ -8,5 +8,5 @@ void run {
 	puts('TIME');
 	puts(@UTCTIME);
 	puts(@DATE);
-	puts(@UTCDATE);
+	puts(UTCDATE);
 }
