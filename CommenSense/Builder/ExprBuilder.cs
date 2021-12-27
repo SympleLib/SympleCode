@@ -170,6 +170,7 @@ partial class Builder
 		Type type = left.TypeOf;
 		right = BuildCast(right, type, null);
 
+		// TODO: fix
 		if (ast.op is TokenKind.Bang2)
 			val = llBuilder.BuildNot(left);
 		else
