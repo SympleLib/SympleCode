@@ -103,7 +103,7 @@ partial class Parser
 			else
 				PreDeclVar(isPublic, name);
 		}
-		else if (current.kind is TokenKind.Identifier && !(scope.VarExists(current.text) || scope.FuncExists(current.text)) && next.kind is TokenKind.Star or TokenKind.Identifier)
+		else if (current.kind is TokenKind.Identifier && !(scope.VarExists(current.text) || scope.FuncExists(current.text)) && next.kind is TokenKind.Star or TokenKind.Identifier or TokenKind.LeftParen)
 		{
 			Type();
 			string name = Name();

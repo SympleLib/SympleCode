@@ -5,6 +5,8 @@ decl Module LoadLibraryA(char* name);
 decl byte* GetProcAddress(Module, char* name);
 decl void puts(char*);
 
+void(int, int, int, int)* glViewport;
+
 void run() {
 	puts('hi');
 	
@@ -26,7 +28,7 @@ void run() {
 	puts('glfw init');
 		
 	GLFWwindow*(int, int, char*, byte*, byte*)* glfwCreateWindow = GetProcAddress(glfw, 'glfwCreateWindow');
-	GLFWwindow* wnd = glfwCreateWindow(640, 480, 'Hello, world!', null, null);
+	GLFWwindow* wnd = glfwCreateWindow(720, 720, 'Hello, world!', null, null);
 	if (wnd == null) {
 		puts('window no make');
 		glfwTerminate();
@@ -52,13 +54,35 @@ void run() {
 	
 	void(int)* glClear = GetProcAddress(gl, 'glClear');
 	void(float, float, float, float)* glClearColor = GetProcAddress(gl, 'glClearColor');
+	void(int)* glBegin = GetProcAddress(gl, 'glBegin');
+	void()* glEnd = GetProcAddress(gl, 'glEnd');
+	void(float, float)* glVertex2f = GetProcAddress(gl, 'glVertex2f');
+	void(float, float, float)* glColor3f = GetProcAddress(gl, 'glColor3f');
+	glViewport = GetProcAddress(gl, 'glViewport');
 	glClearColor(.25, .25, .25, 1);
 	
+	void(GLFWwindow*, byte*)* glfwSetFramebufferSizeCallback = GetProcAddress(glfw, 'glfwSetFramebufferSizeCallback');
+	glfwSetFramebufferSizeCallback(wnd, fbszcb);
+	
 	while (glfwWindowShouldClose(wnd) == false) {
-		glClear(16384);
+		glClear(16384); // GL_COLOR_BUFFER_BIT
+		
+		glColor3f(0, 1, 0); // green
+		
+		glBegin(7); // GL_QUADS
+		glVertex2f(-.5, -.5);
+		glVertex2f(+.5, -.5);
+		glVertex2f(+.5, +.5);
+		glVertex2f(-.5, +.5);
+		glEnd();
+		
 		glfwSwapBuffers(wnd);
 		glfwPollEvents();
 	}
 	
 	glfwTerminate();
+}
+
+void fbszcb(GLFWwindow*, int w, int h) {
+	glViewport(0, 0, w, h);
 }

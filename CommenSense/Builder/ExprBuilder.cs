@@ -152,6 +152,8 @@ partial class Builder
 
 		switch (ast.op)
 		{
+		case LLVMAdd:
+			return operand;
 		case LLVMFNeg:
 			return operand.TypeOf.IsFloat() ? llBuilder.BuildFNeg(operand) : llBuilder.BuildNeg(operand);
 		case LLVMLoad:
