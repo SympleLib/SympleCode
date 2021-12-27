@@ -16,6 +16,7 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="glfw-net" Version="3.3.1" />
     <PackageReference Include="libLLVM" Version="12.0.0" />
     <PackageReference Include="libLLVM.runtime.osx-x64" Version="12.0.0" />
     <PackageReference Include="libLLVM.runtime.ubuntu.18.04-x64" Version="12.0.0" />

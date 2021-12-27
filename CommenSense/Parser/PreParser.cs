@@ -61,6 +61,9 @@ partial class Parser
 
 	void PreStmt()
 	{
+		while (current.kind is TokenKind.Annotation)
+			Next();
+		
 		bool isPublic = true;
 		switch (current.kind)
 		{
@@ -146,7 +149,7 @@ partial class Parser
 			Match(TokenKind.Str);
 		}
 
-		if (current.kind is TokenKind.Annotation)
+		while (current.kind is TokenKind.Annotation)
 			Next();
 
 		if (current.kind is TokenKind.Arrow)

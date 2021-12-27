@@ -80,6 +80,7 @@ public enum TokenKind
 
 	TrueKeyword,
 	FalseKeyword,
+	NullKeyword,
 
 	DeclKeyword,
 	StructKeyword,
@@ -185,6 +186,7 @@ class Lexer
 	static readonly string[] keywords = {
 			"true",
 			"false",
+			"null",
 
 			"decl",
 			"struct",

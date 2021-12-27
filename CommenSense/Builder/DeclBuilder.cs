@@ -43,6 +43,8 @@ partial class Builder
 		Type ty = Type.CreateFunction(retType, paramTypes, ast.vaArg);
 		Value fn = llModule.AddFunction(ast.asmName, ty);
 		// fn.FunctionCallConv = (uint) ast.conv;
+		if (ast.metadata.Contains("dllimport"))
+			fn.DLLStorageClass = LLVMDLLStorageClass.LLVMDLLImportStorageClass;
 		scope.Define(ast.realName, fn);
 		return fn;
 	}
@@ -57,6 +59,8 @@ partial class Builder
 		Type type = Type.CreateFunction(retType, paramTypes, ast.vaArg);
 		Value func = llModule.AddFunction(ast.asmName, type);
 		func.Visibility = ast.visibility;
+		if (ast.metadata.Contains("dllimport"))
+			func.DLLStorageClass = LLVMDLLStorageClass.LLVMDLLImportStorageClass;
 		// func.FunctionCallConv = (uint) ast.conv;
 		scope.Define(ast.realName, func);
 		return func;
@@ -73,6 +77,8 @@ partial class Builder
 		Type type = Type.CreateFunction(retType, paramTypes, ast.vaArg);
 		Value func = llModule.AddFunction(ast.asmName, type);
 		func.Visibility = ast.visibility;
+		if (ast.metadata.Contains("dllimport"))
+			func.DLLStorageClass = LLVMDLLStorageClass.LLVMDLLImportStorageClass;
 		// func.FunctionCallConv = (uint) ast.conv;
 		scope.Define(clsType.StructName + "." + ast.realName, func);
 		return func;
@@ -86,6 +92,8 @@ partial class Builder
 		Type type = BuildType(ast.type);
 		Value var = llModule.AddGlobal(type, ast.asmName);
 		var.Visibility = ast.visibility;
+		if (ast.metadata.Contains("dllimport"))
+			var.DLLStorageClass = LLVMDLLStorageClass.LLVMDLLImportStorageClass;
 		scope.Define(ast.realName, var);
 		return var;
 	}

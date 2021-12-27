@@ -13,6 +13,11 @@ partial class Builder
 		{
 			return Value.CreateConstInt(Type.CreateInt((uint) charLiteral.nBits), charLiteral.value);
 		}
+
+		if (ast is NullLiteralExprAst nullLiteral)
+		{
+			return Value.CreateConstNull(Type.CreatePointer(Type.Int8, 0));
+		}
 		if (ast is IntLiteralExprAst intLiteral)
 		{
 			Type type = (uint) intLiteral.value == intLiteral.value ? Type.Int32 : Type.Int64;

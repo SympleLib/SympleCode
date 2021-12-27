@@ -1,12 +1,19 @@
-decl void puts(char* str);
+using byte* as Module;
 
-void run {
-	puts(@FILEPATH);
-	puts(@FILEDIR);
-	puts(@FILENAME);
-	puts(@LINE);
-	puts('TIME');
-	puts(@UTCTIME);
-	puts(@DATE);
-	puts(UTCDATE);
+decl Module LoadLibraryA(char* name);
+decl byte* GetProcAddress(Module, char* name);
+decl void puts(char*);
+
+public void run() {
+	Module glfw = LoadLibraryA('glfw');
+	if (glfw == null) {
+		puts('glfw not loaded');
+		ret;
+	}
+	
+	bool() glfwInit = GetProcAddress(glfw, 'glfwInit');
+	if (glfwInit()~~) {
+		puts('glfw not init');
+		ret;
+	}
 }
