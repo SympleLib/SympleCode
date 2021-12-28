@@ -26,10 +26,7 @@ partial class Builder
 		if (ast is BoolLiteralExprAst boolLiteral)
 			return Value.CreateConstInt(Type.Int1, boolLiteral.value ? 1ul : 0ul);
 		if (ast is FloatLiteralExprAst floatLiteral)
-		{
-			Type type = (float) floatLiteral.value == floatLiteral.value ? Type.Float : Type.Double;
-			return Value.CreateConstReal(type, floatLiteral.value);
-		}
+			return Value.CreateConstReal(Type.Float, floatLiteral.value);
 
 		if (ast is FuncPtrAst funcExpr)
 			return scope.Find(funcExpr.funcName);

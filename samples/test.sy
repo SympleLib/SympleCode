@@ -26,14 +26,18 @@ void run() {
 	
 	glClearColor(.25, .25, .25, 1);
 	
-	glfwSetFramebufferSizeCallback(wnd, fbszcb);
+	glfwSetFramebufferSizeCallback(wnd, frameBuffSize);
+	
+	float g = 0;
 	
 	while (glfwWindowShouldClose(wnd) == false) {
-		glClear(16384); // GL_COLOR_BUFFER_BIT
+		glClear(GL_COLOR_BUFFER_BIT);
 		
-		glColor3f(0, 1, 0); // green
+		glColor3f(0, g, 0); // green
+		if (glfwGetKey(wnd, 32))
+			g = (g + 0.01) % 1;
 		
-		glBegin(7); // GL_QUADS
+		glBegin(GL_QUADS);
 		glVertex2f(-.5, -.5);
 		glVertex2f(+.5, -.5);
 		glVertex2f(+.5, +.5);
@@ -47,7 +51,7 @@ void run() {
 	glfwTerminate();
 }
 
-void fbszcb(GLFWwindow*, int w, int h) {
+void frameBuffSize(GLFWwindow*, int w, int h) {
 	glViewport(0, 0, w, h);
 }
 
@@ -69,7 +73,12 @@ bool(GLFWwindow*)* glfwWindowShouldClose;
 void(GLFWwindow*)* glfwSwapBuffers;
 void()* glfwPollEvents;
 void(int)* glfwSwapInterval;
+int(GLFWwindow*, int)* glfwGetKey;
+void(GLFWwindow*, byte*)* glfwSetKeyCallback;
 void(GLFWwindow*, byte*)* glfwSetFramebufferSizeCallback;
+
+int GL_COLOR_BUFFER_BIT = 16384;
+int GL_QUADS = 7;
 
 void loadGLFW() {
 	Module glfw = LoadLibraryA('glfw');
@@ -86,6 +95,8 @@ void loadGLFW() {
 	glfwSwapBuffers = GetProcAddress(glfw, 'glfwSwapBuffers');
 	glfwPollEvents = GetProcAddress(glfw, 'glfwPollEvents');
 	glfwSwapInterval = GetProcAddress(glfw, 'glfwSwapInterval');
+	glfwGetKey = GetProcAddress(glfw, 'glfwGetKey');
+	glfwSetKeyCallback = GetProcAddress(glfw, 'glfwSetKeyCallback');
 	glfwSetFramebufferSizeCallback = GetProcAddress(glfw, 'glfwSetFramebufferSizeCallback');
 }
 
