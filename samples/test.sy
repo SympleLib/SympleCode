@@ -1,8 +1,59 @@
 using byte* as Module;
 using byte as GLFWwindow;
 
+decl void puts(char*);
+decl void srand(int);
+decl int rand();
+decl int time(byte*);
+
+GLFWwindow* wnd;
+
+class Vase {
+	float x, float y, float w, float h;
+	
+	void $break() {
+		x = random(-1, 1);
+		y = random(-1, 1);
+	}
+	
+	void draw() {
+		glColor3f(.88, .1, .1);
+	
+		glBegin(GL_QUADS);
+		glVertex2f(x - w / 2, y - h / 2);
+		glVertex2f(x + w / 2, y - h / 2);
+		glVertex2f(x + w / 2, y + h / 2);
+		glVertex2f(x - w / 2, y + h / 2);
+		glEnd();
+	}
+}
+
 void run() {
 	puts('hi');
+	srand(time(null));
+	
+	windowStuff();
+	float g = 0;
+	
+	Vase vase = Vase { 0, 0, .15, .3 };
+	
+	while (glfwWindowShouldClose(wnd) == false) {
+		glClear(GL_COLOR_BUFFER_BIT);
+		
+		glColor3f(0, g, 0); // green
+		if (glfwGetMouseButton(wnd, 0))
+			vase.$break();
+		
+		vase.draw();
+		
+		glfwSwapBuffers(wnd);
+		glfwPollEvents();
+	}
+	
+	glfwTerminate();
+}
+
+void windowStuff() {
 	loadGLFW();
 	
 	if (glfwInit() == false) {
@@ -12,7 +63,7 @@ void run() {
 	
 	puts('glfw init');
 		
-	GLFWwindow* wnd = glfwCreateWindow(720, 720, 'Hello, world!', null, null);
+	wnd = glfwCreateWindow(720, 720, 'Hello, world!', null, null);
 	if (wnd == null) {
 		puts('window no make');
 		glfwTerminate();
@@ -23,32 +74,13 @@ void run() {
 	glfwSwapInterval(1);
 	
 	loadGL();
-	
-	glClearColor(.25, .25, .25, 1);
-	
 	glfwSetFramebufferSizeCallback(wnd, frameBuffSize);
 	
-	float g = 0;
-	
-	while (glfwWindowShouldClose(wnd) == false) {
-		glClear(GL_COLOR_BUFFER_BIT);
-		
-		glColor3f(0, g, 0); // green
-		if (glfwGetKey(wnd, 32))
-			g = (g + 0.01) % 1;
-		
-		glBegin(GL_QUADS);
-		glVertex2f(-.5, -.5);
-		glVertex2f(+.5, -.5);
-		glVertex2f(+.5, +.5);
-		glVertex2f(-.5, +.5);
-		glEnd();
-		
-		glfwSwapBuffers(wnd);
-		glfwPollEvents();
-	}
-	
-	glfwTerminate();
+	glClearColor(.25, .25, .25, 1);
+}
+
+float random(float min, float max) {
+	ret ((float) rand() / (float) 32767) * (max - min) + min;
 }
 
 void frameBuffSize(GLFWwindow*, int w, int h) {
@@ -63,7 +95,6 @@ so this is a work-around
 
 decl Module LoadLibraryA(char* name);
 decl byte* GetProcAddress(Module, char* name);
-decl void puts(char*);
 
 bool()* glfwInit;
 void()* glfwTerminate;
@@ -74,6 +105,7 @@ void(GLFWwindow*)* glfwSwapBuffers;
 void()* glfwPollEvents;
 void(int)* glfwSwapInterval;
 int(GLFWwindow*, int)* glfwGetKey;
+int(GLFWwindow*, int)* glfwGetMouseButton;
 void(GLFWwindow*, byte*)* glfwSetKeyCallback;
 void(GLFWwindow*, byte*)* glfwSetFramebufferSizeCallback;
 
@@ -96,6 +128,7 @@ void loadGLFW() {
 	glfwPollEvents = GetProcAddress(glfw, 'glfwPollEvents');
 	glfwSwapInterval = GetProcAddress(glfw, 'glfwSwapInterval');
 	glfwGetKey = GetProcAddress(glfw, 'glfwGetKey');
+	glfwGetMouseButton = GetProcAddress(glfw, 'glfwGetMouseButton');
 	glfwSetKeyCallback = GetProcAddress(glfw, 'glfwSetKeyCallback');
 	glfwSetFramebufferSizeCallback = GetProcAddress(glfw, 'glfwSetFramebufferSizeCallback');
 }

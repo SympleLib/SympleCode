@@ -320,6 +320,8 @@ partial class Builder
 
 		if (fn.TypeOf.ElementType.ReturnType == Type.Void && llBuilder.InsertBlock.Terminator == null)
 			llBuilder.BuildRetVoid();
+
+		currentFunc = null;
 	}
 
 	void Build(VarAst ast)

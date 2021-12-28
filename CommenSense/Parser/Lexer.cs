@@ -256,7 +256,7 @@ class Lexer
 
 		if (char.IsDigit(current) || (current is '.' && char.IsDigit(next)))
 			return Num();
-		if (char.IsLetter(current))
+		if (char.IsLetter(current) || current is '$')
 			return Identifier();
 		if (current is '@')
 			return Annotation();
@@ -410,7 +410,7 @@ class Lexer
 	Token Identifier()
 	{
 		int start = pos;
-		while (char.IsLetterOrDigit(current) || '_' == current)
+		while (char.IsLetterOrDigit(current) || current is '_' or '$')
 			pos++;
 
 		string text = src[start..pos];

@@ -9,6 +9,10 @@ static class CastVerifier
 	public static bool CastWorks(Type from, Type to, out bool signExt)
 	{
 		signExt = false;
+		
+		if (from == Type.Void)
+			return false;
+		
 		if (from.Kind is LLVMIntegerTypeKind && to.Kind is LLVMIntegerTypeKind)
 		{
 			// cast to bool

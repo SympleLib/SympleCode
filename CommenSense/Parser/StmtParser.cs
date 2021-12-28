@@ -264,7 +264,7 @@ partial class Parser
 
 		List<FuncAst> funcs = new List<FuncAst>();
 		while (current.kind is not TokenKind.Eof and not TokenKind.RightBrace)
-			funcs.Add(Func(name.text));
+			funcs.Add(Func(name.text, fields.ToArray()));
 
 		Match(TokenKind.RightBrace);
 		MaybeEndLine();
@@ -273,7 +273,7 @@ partial class Parser
 		return clazz;
 	}
 
-	FuncAst Func(string className)
+	FuncAst Func(string className, FieldAst[] fields)
 	{
 		List<string> metadata = new List<string>();
 		while (current.kind is TokenKind.Annotation)
@@ -301,14 +301,20 @@ partial class Parser
 
 		TypeAst retType = Type();
 		Token name = Match(TokenKind.Identifier);
-		string asmName = $"{className}.{name}";
+		string asmName = $"{className}.{name.text}";
 		if (current.kind is TokenKind.Colon)
 		{
 			Next();
 			asmName = Match(TokenKind.Str).text;
 		}
-
-		return Func(metadata.ToArray(), visibility, retType, name, asmName);
+		
+		EnterScope();
+		foreach (FieldAst field in fields)
+			scope.DefineVar(field.name);
+		scope.DefineVar("this");
+		FuncAst func = Func(metadata.ToArray(), visibility, retType, name, asmName);
+		ExitScope();
+		return func;
 	}
 
 	FuncAst Func(string[] metadata, Visibility visibility, TypeAst retType, Token name, string? asmName)
