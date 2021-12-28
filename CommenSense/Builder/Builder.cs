@@ -278,6 +278,8 @@ partial class Builder
 			else
 				BadCode.Report(new SyntaxError("no return", ast.token));
 		}
+
+		currentFunc = null;
 	}
 
 	void Build(FuncAst ast, ClassAst clazz, Type clsType)

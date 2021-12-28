@@ -1,18 +1,10 @@
-link 'loading.sy';
+using byte* as Module;
+using byte as GLFWwindow;
 
 void run() {
 	puts('hi');
+	loadGLFW();
 	
-	Module glfw = LoadLibraryA('glfw');
-	if (glfw == null) {
-		puts('glfw not loaded');
-		ret;
-	}
-	
-	puts('glfw loaded');
-	
-	bool()* glfwInit = GetProcAddress(glfw, 'glfwInit');
-	void()* glfwTerminate = GetProcAddress(glfw, 'glfwTerminate');
 	if (glfwInit() == false) {
 		puts('glfw not init');
 		ret;
@@ -20,7 +12,6 @@ void run() {
 	
 	puts('glfw init');
 		
-	GLFWwindow*(int, int, char*, byte*, byte*)* glfwCreateWindow = GetProcAddress(glfw, 'glfwCreateWindow');
 	GLFWwindow* wnd = glfwCreateWindow(720, 720, 'Hello, world!', null, null);
 	if (wnd == null) {
 		puts('window no make');
@@ -28,22 +19,13 @@ void run() {
 		ret;
 	}
 	
-	puts('window make');
-	
-	void(GLFWwindow*)* glfwMakeContextCurrent = GetProcAddress(glfw, 'glfwMakeContextCurrent');
 	glfwMakeContextCurrent(wnd);
-	
-	bool(GLFWwindow*)* glfwWindowShouldClose = GetProcAddress(glfw, 'glfwWindowShouldClose');
-	void(GLFWwindow*)* glfwSwapBuffers = GetProcAddress(glfw, 'glfwSwapBuffers');
-	void()* glfwPollEvents = GetProcAddress(glfw, 'glfwPollEvents');
+	glfwSwapInterval(1);
 	
 	loadGL();
 	
-	puts('glfw loaded');
-	
 	glClearColor(.25, .25, .25, 1);
 	
-	void(GLFWwindow*, byte*)* glfwSetFramebufferSizeCallback = GetProcAddress(glfw, 'glfwSetFramebufferSizeCallback');
 	glfwSetFramebufferSizeCallback(wnd, fbszcb);
 	
 	while (glfwWindowShouldClose(wnd) == false) {
@@ -67,4 +49,66 @@ void run() {
 
 void fbszcb(GLFWwindow*, int w, int h) {
 	glViewport(0, 0, w, h);
+}
+
+// IGNORE ALL BELOW THIS POINT ---
+/*
+I was too lazy to re-link every time I debug my code,
+so this is a work-around
+*/
+
+decl Module LoadLibraryA(char* name);
+decl byte* GetProcAddress(Module, char* name);
+decl void puts(char*);
+
+bool()* glfwInit;
+void()* glfwTerminate;
+GLFWwindow*(int, int, char*, byte*, byte*)* glfwCreateWindow;
+void(GLFWwindow*)* glfwMakeContextCurrent;
+bool(GLFWwindow*)* glfwWindowShouldClose;
+void(GLFWwindow*)* glfwSwapBuffers;
+void()* glfwPollEvents;
+void(int)* glfwSwapInterval;
+void(GLFWwindow*, byte*)* glfwSetFramebufferSizeCallback;
+
+void loadGLFW() {
+	Module glfw = LoadLibraryA('glfw');
+	if (glfw == null) {
+		puts('glfw not loaded');
+		ret;
+	}
+	
+	glfwInit = GetProcAddress(glfw, 'glfwInit');
+	glfwTerminate = GetProcAddress(glfw, 'glfwTerminate');
+	glfwCreateWindow = GetProcAddress(glfw, 'glfwCreateWindow');
+	glfwMakeContextCurrent = GetProcAddress(glfw, 'glfwMakeContextCurrent');
+	glfwWindowShouldClose = GetProcAddress(glfw, 'glfwWindowShouldClose');
+	glfwSwapBuffers = GetProcAddress(glfw, 'glfwSwapBuffers');
+	glfwPollEvents = GetProcAddress(glfw, 'glfwPollEvents');
+	glfwSwapInterval = GetProcAddress(glfw, 'glfwSwapInterval');
+	glfwSetFramebufferSizeCallback = GetProcAddress(glfw, 'glfwSetFramebufferSizeCallback');
+}
+
+void(int)* glClear;
+void(float, float, float, float)* glClearColor;
+void(int, int, int, int)* glViewport;
+void(int)* glBegin;
+void()* glEnd;
+void(float, float)* glVertex2f;
+void(float, float, float)* glColor3f;
+
+void loadGL() {
+	Module gl = LoadLibraryA('opengl32');
+	if (gl == null) {
+		puts('gl not loaded');
+		ret;
+	}
+	
+	glClear = GetProcAddress(gl, 'glClear');
+	glClearColor = GetProcAddress(gl, 'glClearColor');
+	glViewport = GetProcAddress(gl, 'glViewport');
+	glBegin = GetProcAddress(gl, 'glBegin');
+	glEnd = GetProcAddress(gl, 'glEnd');
+	glVertex2f = GetProcAddress(gl, 'glVertex2f');
+	glColor3f = GetProcAddress(gl, 'glColor3f');
 }
