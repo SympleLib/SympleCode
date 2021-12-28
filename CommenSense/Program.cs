@@ -171,7 +171,7 @@ void Compile(string file)
 	LLVMTargetMachineRef machine = target.CreateTargetMachine(LLVMTargetRef.DefaultTriple, "generic", "",
 				LLVMCodeGenOptLevel.LLVMCodeGenLevelAggressive, LLVMRelocMode.LLVMRelocDefault, LLVMCodeModel.LLVMCodeModelDefault);
 	for (int i = 0; i < llModules.Count; i++)
-		machine.EmitToFile(llModules[i], modules[i].name[..modules[i].name.LastIndexOf('.')] + ".o", LLVMCodeGenFileType.LLVMObjectFile);
+		machine.EmitToFile(llModules[i], modules[i].srcFile[..modules[i].srcFile.LastIndexOf('.')] + ".o", LLVMCodeGenFileType.LLVMObjectFile);
 }
 
 LLVMExecutionEngineRef? Debug(string file)

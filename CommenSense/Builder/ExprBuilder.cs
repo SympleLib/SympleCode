@@ -304,11 +304,7 @@ partial class Builder
 	Value BuildPred(LLVMIntPredicate iop, Value left, Value right)
 	{
 		if (left.TypeOf.IsFloat())
-		{
-			// TODO
-			throw new NotImplementedException();
-		}
-
+			return llBuilder.BuildFCmp(iop.ToRealPredicate(), left, right);
 		return llBuilder.BuildICmp(iop, left, right);
 	}
 

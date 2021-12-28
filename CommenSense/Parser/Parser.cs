@@ -43,7 +43,7 @@ partial class Parser
 				break;
 		}
 
-		return new ModuleAst(filename, members.ToArray(), ctnrs.ToArray());
+		return new ModuleAst(filename, folder + "/" + filename, members.ToArray(), ctnrs.ToArray());
 	}
 
 	bool IsType(Token token)

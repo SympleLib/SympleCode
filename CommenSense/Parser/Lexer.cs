@@ -444,7 +444,7 @@ class Lexer
 	{
 		Next();
 		Next();
-		while (current is not '\n')
+		while (current is not '\n' and not '\0')
 			Next();
 	}
 

@@ -7,6 +7,30 @@ decl int rand();
 decl int time(byte*);
 decl int printf(char*, ...);
 
+decl bool glfwInit();
+decl void glfwTerminate();
+decl GLFWwindow* glfwCreateWindow(int, int, char*, byte*, byte*);
+decl void glfwMakeContextCurrent(GLFWwindow*);
+decl bool glfwWindowShouldClose(GLFWwindow*);
+decl void glfwSwapBuffers(GLFWwindow*);
+decl void glfwPollEvents();
+decl void glfwSwapInterval(int);
+decl int glfwGetKey(GLFWwindow*, int);
+decl int glfwGetMouseButton(GLFWwindow*, int);
+decl int glfwGetCursorPos(GLFWwindow*, double*, double*);
+decl int glfwGetWindowSize(GLFWwindow*, int*, int*);
+decl void glfwSetKeyCallback(GLFWwindow*, byte*);
+decl void glfwSetFramebufferSizeCallback(GLFWwindow*, byte*);
+decl void glfwWindowHint(int, int);
+
+decl void glClear(int);
+decl void glClearColor(float, float, float, float);
+decl void glViewport(int, int, int, int);
+decl void glBegin(int);
+decl void glEnd();
+decl void glVertex2f(float, float);
+decl void glColor3f(float, float, float);
+
 GLFWwindow* wnd;
 
 class Vase {
@@ -46,11 +70,13 @@ class Vase {
 		mx = mx / ww / 2 - 1;
 		my = 1.0 - my / wh / 2;
 		
-		// printf('mx: %f, my: %f; ww: %f, wh: %f\n', mx to double, my to double, ww to double, wh to double);
+		// printf('mx: %f, my: %f; 1: %f, 2: %f\n', mx to double, my to double, (x - w / 2) to double, (x + w / 2) to double);
 		
-		ret mx > x - w / 2 && mx < x + w / 2;
+		ret mx > x - w / 2 && mx < x + w / 2 && my > y - h / 2 && my < y + h / 2;
 	}
 }
+
+void main() -> run();
 
 void run() {
 	puts('hi');
@@ -59,7 +85,7 @@ void run() {
 	windowStuff();
 	float g = 0;
 	
-	Vase vase = Vase { 0, 0, .15, .3 };
+	Vase vase = Vase { 0, 0, .3, .3 };
 	
 	while (glfwWindowShouldClose(wnd) == false) {
 		glClear(GL_COLOR_BUFFER_BIT);
@@ -79,7 +105,7 @@ void run() {
 }
 
 void windowStuff() {
-	loadGLFW();
+	// loadGLFW();
 	
 	if (glfwInit() == false) {
 		puts('glfw not init');
@@ -87,8 +113,9 @@ void windowStuff() {
 	}
 	
 	puts('glfw init');
-		
-	wnd = glfwCreateWindow(720, 720, 'Hello, world!', null, null);
+	
+	glfwWindowHint(GLFW_RESIZABLE, false);
+	wnd = glfwCreateWindow(720, 720, 'Click the Box!', null, null);
 	if (wnd == null) {
 		puts('window no make');
 		glfwTerminate();
@@ -98,7 +125,7 @@ void windowStuff() {
 	glfwMakeContextCurrent(wnd);
 	glfwSwapInterval(1);
 	
-	loadGL();
+	// loadGL();
 	glfwSetFramebufferSizeCallback(wnd, frameBuffSize);
 	
 	glClearColor(.25, .25, .25, 1);
@@ -118,70 +145,73 @@ I was too lazy to re-link every time I debug my code,
 so this is a work-around
 */
 
-decl Module LoadLibraryA(char* name);
-decl byte* GetProcAddress(Module, char* name);
+// decl Module LoadLibraryA(char* name);
+// decl byte* GetProcAddress(Module, char* name);
 
-bool()* glfwInit;
-void()* glfwTerminate;
-GLFWwindow*(int, int, char*, byte*, byte*)* glfwCreateWindow;
-void(GLFWwindow*)* glfwMakeContextCurrent;
-bool(GLFWwindow*)* glfwWindowShouldClose;
-void(GLFWwindow*)* glfwSwapBuffers;
-void()* glfwPollEvents;
-void(int)* glfwSwapInterval;
-int(GLFWwindow*, int)* glfwGetKey;
-int(GLFWwindow*, int)* glfwGetMouseButton;
-int(GLFWwindow*, double*, double*)* glfwGetCursorPos;
-int(GLFWwindow*, int*, int*)* glfwGetWindowSize;
-void(GLFWwindow*, byte*)* glfwSetKeyCallback;
-void(GLFWwindow*, byte*)* glfwSetFramebufferSizeCallback;
+// bool()* glfwInit;
+// void()* glfwTerminate;
+// GLFWwindow*(int, int, char*, byte*, byte*)* glfwCreateWindow;
+// void(GLFWwindow*)* glfwMakeContextCurrent;
+// bool(GLFWwindow*)* glfwWindowShouldClose;
+// void(GLFWwindow*)* glfwSwapBuffers;
+// void()* glfwPollEvents;
+// void(int)* glfwSwapInterval;
+// int(GLFWwindow*, int)* glfwGetKey;
+// int(GLFWwindow*, int)* glfwGetMouseButton;
+// int(GLFWwindow*, double*, double*)* glfwGetCursorPos;
+// int(GLFWwindow*, int*, int*)* glfwGetWindowSize;
+// void(GLFWwindow*, byte*)* glfwSetKeyCallback;
+// void(GLFWwindow*, byte*)* glfwSetFramebufferSizeCallback;
+// void(int, int)* glfwWindowHint;
 
 int GL_COLOR_BUFFER_BIT = 16384;
 int GL_QUADS = 7;
+int GLFW_RESIZABLE = 131075;
 
-void loadGLFW() {
-	Module glfw = LoadLibraryA('glfw');
-	if (glfw == null) {
-		puts('glfw not loaded');
-		ret;
-	}
+// void loadGLFW() {
+	// Module glfw = LoadLibraryA('glfw');
+	// if (glfw == null) {
+		// puts('glfw not loaded');
+		// ret;
+	// }
 	
-	glfwInit = GetProcAddress(glfw, 'glfwInit');
-	glfwTerminate = GetProcAddress(glfw, 'glfwTerminate');
-	glfwCreateWindow = GetProcAddress(glfw, 'glfwCreateWindow');
-	glfwMakeContextCurrent = GetProcAddress(glfw, 'glfwMakeContextCurrent');
-	glfwWindowShouldClose = GetProcAddress(glfw, 'glfwWindowShouldClose');
-	glfwSwapBuffers = GetProcAddress(glfw, 'glfwSwapBuffers');
-	glfwPollEvents = GetProcAddress(glfw, 'glfwPollEvents');
-	glfwSwapInterval = GetProcAddress(glfw, 'glfwSwapInterval');
-	glfwGetKey = GetProcAddress(glfw, 'glfwGetKey');
-	glfwGetMouseButton = GetProcAddress(glfw, 'glfwGetMouseButton');
-	glfwGetCursorPos = GetProcAddress(glfw, 'glfwGetCursorPos');
-	glfwGetWindowSize = GetProcAddress(glfw, 'glfwGetWindowSize');
-	glfwSetKeyCallback = GetProcAddress(glfw, 'glfwSetKeyCallback');
-	glfwSetFramebufferSizeCallback = GetProcAddress(glfw, 'glfwSetFramebufferSizeCallback');
-}
+	// glfwInit = GetProcAddress(glfw, 'glfwInit');
+	// glfwTerminate = GetProcAddress(glfw, 'glfwTerminate');
+	// glfwCreateWindow = GetProcAddress(glfw, 'glfwCreateWindow');
+	// glfwMakeContextCurrent = GetProcAddress(glfw, 'glfwMakeContextCurrent');
+	// glfwWindowShouldClose = GetProcAddress(glfw, 'glfwWindowShouldClose');
+	// glfwSwapBuffers = GetProcAddress(glfw, 'glfwSwapBuffers');
+	// glfwPollEvents = GetProcAddress(glfw, 'glfwPollEvents');
+	// glfwSwapInterval = GetProcAddress(glfw, 'glfwSwapInterval');
+	// glfwGetKey = GetProcAddress(glfw, 'glfwGetKey');
+	// glfwGetMouseButton = GetProcAddress(glfw, 'glfwGetMouseButton');
+	// glfwGetCursorPos = GetProcAddress(glfw, 'glfwGetCursorPos');
+	// glfwGetWindowSize = GetProcAddress(glfw, 'glfwGetWindowSize');
+	// glfwSetKeyCallback = GetProcAddress(glfw, 'glfwSetKeyCallback');
+	// glfwSetFramebufferSizeCallback = GetProcAddress(glfw, 'glfwSetFramebufferSizeCallback');
+	// glfwWindowHint = GetProcAddress(glfw, 'glfwWindowHint');
+// }
 
-void(int)* glClear;
-void(float, float, float, float)* glClearColor;
-void(int, int, int, int)* glViewport;
-void(int)* glBegin;
-void()* glEnd;
-void(float, float)* glVertex2f;
-void(float, float, float)* glColor3f;
+// void(int)* glClear;
+// void(float, float, float, float)* glClearColor;
+// void(int, int, int, int)* glViewport;
+// void(int)* glBegin;
+// void()* glEnd;
+// void(float, float)* glVertex2f;
+// void(float, float, float)* glColor3f;
 
-void loadGL() {
-	Module gl = LoadLibraryA('opengl32');
-	if (gl == null) {
-		puts('gl not loaded');
-		ret;
-	}
+// void loadGL() {
+	// Module gl = LoadLibraryA('opengl32');
+	// if (gl == null) {
+		// puts('gl not loaded');
+		// ret;
+	// }
 	
-	glClear = GetProcAddress(gl, 'glClear');
-	glClearColor = GetProcAddress(gl, 'glClearColor');
-	glViewport = GetProcAddress(gl, 'glViewport');
-	glBegin = GetProcAddress(gl, 'glBegin');
-	glEnd = GetProcAddress(gl, 'glEnd');
-	glVertex2f = GetProcAddress(gl, 'glVertex2f');
-	glColor3f = GetProcAddress(gl, 'glColor3f');
-}
+	// glClear = GetProcAddress(gl, 'glClear');
+	// glClearColor = GetProcAddress(gl, 'glClearColor');
+	// glViewport = GetProcAddress(gl, 'glViewport');
+	// glBegin = GetProcAddress(gl, 'glBegin');
+	// glEnd = GetProcAddress(gl, 'glEnd');
+	// glVertex2f = GetProcAddress(gl, 'glVertex2f');
+	// glColor3f = GetProcAddress(gl, 'glColor3f');
+// }

@@ -39,13 +39,14 @@ partial class Parser
 	static int BiPrecendence(TokenKind kind) =>
 		   kind switch
 		   {
-			   TokenKind.Dot => 8,
-			   TokenKind.Star2 => 7,
-			   TokenKind.Star or TokenKind.Slash or TokenKind.Percent or TokenKind.SlashDash or TokenKind.PercentDash => 6,
-			   TokenKind.Plus or TokenKind.Minus => 5,
-			   TokenKind.Left2 or TokenKind.Right2 => 4,
-			   TokenKind.And or TokenKind.Pipe or TokenKind.Carot or TokenKind.And2 or TokenKind.Pipe2 => 3,
-			   TokenKind.LeftChevron or TokenKind.RightChevron or TokenKind.LEql or TokenKind.REql or TokenKind.EqlEql or TokenKind.TildeEql or TokenKind.BangEql => 2,
+			   TokenKind.Dot => 9,
+			   TokenKind.Star2 => 8,
+			   TokenKind.Star or TokenKind.Slash or TokenKind.Percent or TokenKind.SlashDash or TokenKind.PercentDash => 7,
+			   TokenKind.Plus or TokenKind.Minus => 6,
+			   TokenKind.Left2 or TokenKind.Right2 => 5,
+			   TokenKind.And or TokenKind.Pipe or TokenKind.Carot => 4,
+			   TokenKind.LeftChevron or TokenKind.RightChevron or TokenKind.LEql or TokenKind.REql or TokenKind.EqlEql or TokenKind.TildeEql or TokenKind.BangEql => 3,
+			   TokenKind.And2 or TokenKind.Pipe2 => 2,
 			   TokenKind.Eql or TokenKind.PlusEql or TokenKind.MinusEql or TokenKind.StarEql or TokenKind.SlashEql or TokenKind.PercentEql or
 			   TokenKind.Star2Eql or TokenKind.Left2Eql or TokenKind.Right2Eql or
 			   TokenKind.AndEql or TokenKind.PipeEql or TokenKind.CarotEql => 1,
