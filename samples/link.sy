@@ -1,0 +1,11 @@
+public decl void puts(char*);
+
+void()* doTheThing;
+
+private void doTheThingFn() {
+	puts('I did the thing');
+}
+
+void loadDoTheThing() {
+	doTheThing = doTheThingFn;
+}

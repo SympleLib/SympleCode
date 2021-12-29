@@ -1,0 +1,131 @@
+using byte* as Module;
+using byte as GLFWwindow;
+
+decl void puts(char*);
+decl void srand(int);
+decl int rand();
+decl int time(byte*);
+decl int printf(char*, ...);
+
+decl bool glfwInit();
+decl void glfwTerminate();
+decl GLFWwindow* glfwCreateWindow(int, int, char*, byte*, byte*);
+decl void glfwMakeContextCurrent(GLFWwindow*);
+decl bool glfwWindowShouldClose(GLFWwindow*);
+decl void glfwSwapBuffers(GLFWwindow*);
+decl void glfwPollEvents();
+decl void glfwSwapInterval(int);
+decl int glfwGetKey(GLFWwindow*, int);
+decl int glfwGetMouseButton(GLFWwindow*, int);
+decl int glfwGetCursorPos(GLFWwindow*, double*, double*);
+decl int glfwGetWindowSize(GLFWwindow*, int*, int*);
+decl void glfwSetKeyCallback(GLFWwindow*, byte*);
+decl void glfwSetFramebufferSizeCallback(GLFWwindow*, byte*);
+decl void glfwWindowHint(int, int);
+
+int GL_COLOR_BUFFER_BIT = 16384;
+int GL_QUADS = 7;
+int GLFW_RESIZABLE = 131075;
+
+decl void glClear(int);
+decl void glClearColor(float, float, float, float);
+decl void glViewport(int, int, int, int);
+decl void glBegin(int);
+decl void glEnd();
+decl void glVertex2f(float, float);
+decl void glColor3f(float, float, float);
+
+GLFWwindow* wnd;
+
+class Vase {
+	float x, float y, float w, float h;
+	
+	void $break() {
+		x = random(-1, 1);
+		y = random(-1, 1);
+	}
+	
+	void draw() {
+		glColor3f(.88, .1, .1);
+	
+		glBegin(GL_QUADS);
+		glVertex2f(x - w / 2, y - h / 2);
+		glVertex2f(x + w / 2, y - h / 2);
+		glVertex2f(x + w / 2, y + h / 2);
+		glVertex2f(x - w / 2, y + h / 2);
+		glEnd();
+	}
+	
+	bool isHit() {
+		double dmx;
+		double dmy;
+		glfwGetCursorPos(wnd, &dmx, &dmy);
+		
+		float mx = dmx to float;
+		float my = dmy to float;
+		
+		int iww;
+		int iwh;
+		glfwGetWindowSize(wnd, &iww, &iwh);
+		
+		float ww = iww to float;
+		float wh = iwh to float;
+		
+		mx = mx / ww / 2 - 1;
+		my = 1.0 - my / wh / 2;
+		
+		ret mx > x - w / 2 && mx < x + w / 2 && my > y - h / 2 && my < y + h / 2;
+	}
+}
+
+void run() {
+	puts('hi');
+	srand(time(null));
+	
+	windowStuff();
+	Vase vase = Vase { 0, 0, .3, .3 };
+	
+	while (glfwWindowShouldClose(wnd) == false) {
+		glClear(GL_COLOR_BUFFER_BIT);
+		
+		if (glfwGetMouseButton(wnd, 0)) & (vase.isHit())
+			vase.$break();
+		
+		vase.draw();
+		
+		glfwSwapBuffers(wnd);
+		glfwPollEvents();
+	}
+	
+	glfwTerminate();
+}
+
+void windowStuff() {
+	if (glfwInit() == false) {
+		puts('glfw not init');
+		ret;
+	}
+	
+	glfwWindowHint(GLFW_RESIZABLE, false);
+	wnd = glfwCreateWindow(720, 720, 'Click the Box!', null, null);
+	if (wnd == null) {
+		puts('window no make');
+		glfwTerminate();
+		ret;
+	}
+	
+	glfwMakeContextCurrent(wnd);
+	glfwSwapInterval(1);
+	
+	glfwSetFramebufferSizeCallback(wnd, frameBuffSize);
+	
+	glClearColor(.25, .25, .25, 1);
+}
+
+float random(float min, float max) {
+	ret ((float) rand() / (float) 32767) * (max - min) + min;
+}
+
+void frameBuffSize(GLFWwindow*, int w, int h) {
+	glViewport(0, 0, w, h);
+}

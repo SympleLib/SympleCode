@@ -183,18 +183,8 @@ LLVMExecutionEngineRef? Debug(string file)
 	{
 		string src = File.ReadAllText(file);
 		Parser parser = new Parser(src, file);
-		if (BadCode.errors.Count > 0)
-		{
-			foreach (SyntaxError err in BadCode.errors)
-			{
-				Console.WriteLine(err);
-				dbgout.WriteLine(err);
-			}
-			return null;
-		}
-
 		parser.PreParse();
-
+		
 		if (BadCode.errors.Count > 0)
 		{
 			foreach (SyntaxError err in BadCode.errors)

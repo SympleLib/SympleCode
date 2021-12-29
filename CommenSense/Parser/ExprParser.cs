@@ -103,19 +103,19 @@ partial class Parser
 			Token op = Next();
 			return new PreExprAst(PreOpcode(op.kind), op, PrimExpr());
 		case TokenKind.Identifier:
-			if (IsType(current))
-			{
-				TypeAst type = Type();
-				if (current.kind is TokenKind.LeftBracket)
-					return ArrayExpr(eleType: type);
-				return GroupExpr(groupType: type);
-			}
-
+		{
 			if (scope.FuncExists(current.text))
 				return new FuncPtrAst(Next());
-			if (!scope.VarExists(current.text))
+			if (scope.VarExists(current.text))
+				return new VarExprAst(Next());
+			if (!IsType(current))
 				BadCode.Report(new SyntaxError($"symbol '{current.text}' doesn't exist", current));
-			return new VarExprAst(Next());
+			TypeAst type = Type();
+			if (current.kind is TokenKind.LeftBracket)
+				return ArrayExpr(eleType: type);
+			return GroupExpr(groupType: type);
+		}
+
 		case TokenKind.LeftParen:
 			Next();
 			if (IsType(current))

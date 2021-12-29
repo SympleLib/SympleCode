@@ -7,7 +7,7 @@ partial class Parser
 	// Store the names of symbols to tell what an identifier means
 	readonly Dictionary<string, bool> preParse = new Dictionary<string, bool>();
 
-	readonly Dictionary<string, bool>  varNames = new Dictionary<string, bool>();
+	readonly Dictionary<string, bool> varNames = new Dictionary<string, bool>();
 	readonly Dictionary<string, bool> funcNames = new Dictionary<string, bool>();
 	readonly Dictionary<string, bool> typeNames = new Dictionary<string, bool>()
 	{
@@ -35,17 +35,17 @@ partial class Parser
 
 		foreach (var import in preParse)
 		{
-			string filename;
+			string file;
 			if (import.Key.Contains(':'))
-				filename = import.Key;
+				file = import.Key;
 			else
-				filename = folder + '/' + import.Key;
+				file = folder + '/' + import.Key;
 
-			if (parsers.ContainsKey(filename))
+			if (parsers.ContainsKey(file))
 				continue;
 
-			string src = File.ReadAllText(filename);
-			Parser tmpParser = new Parser(src, filename);
+			string src = File.ReadAllText(file);
+			Parser tmpParser = new Parser(src, file);
 			tmpParser.PreParse();
 			foreach (var varName in tmpParser.varNames)
 				if (varName.Value)
@@ -53,7 +53,7 @@ partial class Parser
 			foreach (var funcName in tmpParser.funcNames)
 				if (funcName.Value)
 					funcNames.TryAdd(funcName.Key, import.Value);
-			foreach (var typeName in tmpParser.varNames)
+			foreach (var typeName in tmpParser.typeNames)
 				if (typeName.Value)
 					typeNames.TryAdd(typeName.Key, import.Value);
 		}
@@ -63,17 +63,20 @@ partial class Parser
 	{
 		while (current.kind is TokenKind.Annotation)
 			Next();
-		
+
+		bool defVis = true;
 		bool isPublic = true;
 		switch (current.kind)
 		{
 		case TokenKind.PublicKeyword:
 			Next();
+			defVis = false;
 			break;
 		case TokenKind.PrivateKeyword:
 		case TokenKind.ProtectedKeyword:
 			isPublic = false;
 			Next();
+			defVis = false;
 			break;
 		};
 
@@ -99,9 +102,9 @@ partial class Parser
 			Type();
 			string name = Name();
 			if (current.kind is TokenKind.LeftParen)
-				PreDeclFunc(isPublic, name);
+				PreDeclFunc(!defVis && isPublic, name);
 			else
-				PreDeclVar(isPublic, name);
+				PreDeclVar(!defVis && isPublic, name);
 		}
 		else if (current.kind is TokenKind.Identifier && !(scope.VarExists(current.text) || scope.FuncExists(current.text)) && next.kind is TokenKind.Star or TokenKind.Identifier or TokenKind.LeftParen)
 		{
