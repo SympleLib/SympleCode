@@ -1,11 +1,21 @@
-public decl void puts(char*);
+public decl void puts(char*): 'puts';
 
 void()* doTheThing;
+private char* strToPrintOut;
 
 private void doTheThingFn() {
-	puts('I did the thing');
+	puts(strToPrintOut);
+}
+
+private void doTheOtherThingFn() {
+	puts('u called wrong loader fn');
+}
+
+void loadDoTheThing(char* _strToPrintOut) {
+	doTheThing = doTheThingFn;
+	strToPrintOut = _strToPrintOut;
 }
 
 void loadDoTheThing() {
-	doTheThing = doTheThingFn;
+	doTheThing = doTheOtherThingFn;
 }

@@ -1,7 +1,6 @@
 link 'link.sy';
 
 void run() {
-	loadDoTheThing();
-	puts('hola');
+	loadDoTheThing('this is the string to print out');
 	doTheThing();
 }

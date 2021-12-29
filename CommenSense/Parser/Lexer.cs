@@ -256,7 +256,7 @@ class Lexer
 
 		if (char.IsDigit(current) || (current is '.' && char.IsDigit(next)))
 			return Num();
-		if (char.IsLetter(current) || current is '$')
+		if (char.IsLetter(current) || current is '$' or '_')
 			return Identifier();
 		if (current is '@')
 			return Annotation();

@@ -1,4 +1,5 @@
 ﻿using System.IO;
+using System.Text;
 
 namespace CommenSense;
 
@@ -97,6 +98,7 @@ partial class Parser
 				ptrCount++;
 				Next();
 			}
+			
 			return new FuncTypeAst(baseType, open, paramTypes.ToArray(), vaArg, ptrCount);
 		}
 

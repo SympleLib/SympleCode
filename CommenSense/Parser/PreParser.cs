@@ -161,7 +161,7 @@ partial class Parser
 			Follow(TokenKind.LeftBrace, TokenKind.RightBrace);
 		MaybeEndLine();
 
-		funcNames.Add(name, isPublic);
+		funcNames.TryAdd(name, isPublic);
 	}
 
 	void PreVar(bool isPublic, string name, bool asmified)

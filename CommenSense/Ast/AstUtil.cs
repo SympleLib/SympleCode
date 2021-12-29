@@ -1,9 +1,8 @@
-﻿namespace CommenSense;
+﻿using System.Text;
+
+namespace CommenSense;
 
 using System;
-using System.Linq;
-
-using LLVMSharp;
 
 using static _;
 
@@ -46,15 +45,47 @@ partial record ModuleAst
 { public override string ToString() => $"module '{name}': '{srcFile}' {{\n{IncTab()}{string.Join<StmtAst>("\n\n\t", members)}\n}}"; }
 
 
+partial record TypeAst
+{
+	private string? _name;
+	public string name => _name??= GenName();
+	protected abstract string GenName();
+}
+
 partial record BaseTypeAst
 {
 	public string typeBase => token.text;
 
+	protected override string GenName()
+	{
+		StringBuilder sb = new StringBuilder();
+		sb.Append('*', ptrCount);
+		sb.Append(typeBase);
+		return sb.ToString();
+	}
+	
 	public override string ToString() => $"{typeBase}{new string('*', ptrCount)}";
 }
 
 partial record FuncTypeAst
-{ public override string ToString() => $"{retType} ({string.Join<TypeAst>(", ", paramTypes)}{PrintWithVaArgMaybeIHonestlyDontKnowWhatToCallThisFunction(vaArg)}){new string('*', ptrCount)}"; }
+{
+	protected override string GenName()
+	{
+		StringBuilder sb = new StringBuilder();
+		sb.Append('*', ptrCount);
+		sb.Append('(');
+		foreach (TypeAst paramType in paramTypes)
+		{
+			sb.Append(paramType);
+			sb.Append(',');
+		}
+		sb.Append(')');
+		return sb.ToString();
+	}
+	
+	public override string ToString() =>
+		$"{retType} ({string.Join<TypeAst>(", ", paramTypes)}{PrintWithVaArgMaybeIHonestlyDontKnowWhatToCallThisFunction(vaArg)}){new string('*', ptrCount)}";
+}
 
 partial record ParamAst
 { public override string ToString() => $"{type} {name} = {defaultExpr}"; }
@@ -166,7 +197,6 @@ partial record DeclFuncAst
 
 partial record FuncAst
 {
-
 	public string realName => token.text;
 
 	public override string ToString() => $"{string.Join<string>(" @", metadata)} {visibility} {retType} {realName}({string.Join<ParamAst>(", ", paramz)}{PrintWithVaArgMaybeIHonestlyDontKnowWhatToCallThisFunction(vaArg)}): '{asmName}' {{\n{IncTab()}{string.Join<StmtAst>($"\n{GetTabs()}", body)}{DecTab()}\n{GetTabs()}}}";

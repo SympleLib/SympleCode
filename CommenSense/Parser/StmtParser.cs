@@ -1,4 +1,5 @@
-﻿using LLVMSharp.Interop;
+﻿using System.Text;
+using LLVMSharp.Interop;
 
 namespace CommenSense;
 
@@ -347,11 +348,22 @@ partial class Parser
 
 		if (asmName is null)
 		{
-			asmName = name.text;
 			if (current.kind is TokenKind.Colon)
 			{
 				Next();
 				asmName = Match(TokenKind.Str).text;
+			}
+			else
+			{
+				StringBuilder sb = new StringBuilder("Syf$");
+				sb.Append(name.text);
+				foreach (ParamAst param in paramz)
+				{
+					sb.Append(';');
+					sb.Append(param.type.name);
+				}
+				
+				asmName = sb.ToString();
 			}
 		}
 
@@ -384,11 +396,17 @@ partial class Parser
 	VarAst Var(string[] metadata, Visibility visibility, TypeAst type, Token name, string? asmName)
 	{
 		scope.DefineVar(name.text);
-		if (asmName is null && current.kind is TokenKind.Colon)
+		if (asmName is null)
 		{
-			Next();
-			asmName = Match(TokenKind.Str).text;
+			if (current.kind is TokenKind.Colon)
+			{
+				Next();
+				asmName = Match(TokenKind.Str).text;
+			}
+			else
+				asmName = $"Syv${name.text}";
 		}
+
 		ExprAst initializer = new ExprAst(Token.devault);
 		if (current.kind is TokenKind.Eql)
 		{
@@ -397,7 +415,7 @@ partial class Parser
 		}
 
 		EndLine();
-		return new VarAst(metadata, visibility, type, name, asmName?? name.text, initializer);
+		return new VarAst(metadata, visibility, type, name, asmName, initializer);
 	}
 
 	DeclFuncAst DeclFunc(string[] metadata, Visibility visibility, TypeAst retType, Token name)
@@ -423,11 +441,23 @@ partial class Parser
 
 		Match(TokenKind.RightParen);
 
-		string asmName = name.text;
+		string asmName;
 		if (current.kind is TokenKind.Colon)
 		{
 			Next();
 			asmName = Match(TokenKind.Str).text;
+		}
+		else
+		{
+			StringBuilder sb = new StringBuilder("Syf$");
+			sb.Append(name.text);
+			foreach (ParamAst param in paramz)
+			{
+				sb.Append(';');
+				sb.Append(param.type.name);
+			}
+				
+			asmName = sb.ToString();
 		}
 
 		MaybeEndLine();
@@ -438,7 +468,7 @@ partial class Parser
 	DeclVarAst DeclVar(string[] metadata, Visibility visibility, TypeAst type, Token name)
 	{
 		scope.DefineVar(name.text);
-		string asmName = name.text;
+		string asmName = $"Syv${name.text}";
 		if (current.kind is TokenKind.Colon)
 		{
 			Next();
