@@ -247,7 +247,8 @@ partial class Builder
 
 	void Build(FuncAst ast)
 	{
-		Value fn = scope.Find(ast.realName);
+		// Value fn = scope.Find(ast.realName);
+		Value fn = llModule.GetNamedFunction(ast.asmName);
 		Type[] paramTypes = fn.TypeOf.ElementType.ParamTypes;
 		Block entry = fn.AppendBasicBlock(string.Empty);
 		llBuilder.PositionAtEnd(entry);

@@ -23,7 +23,7 @@ partial class Builder
 		public readonly int depth;
 
 		readonly Dictionary<string, Container> ctnrs = new Dictionary<string, Container>();
-		readonly Dictionary<string, Value> symbols = new Dictionary<string, Value>();
+		readonly List<KeyValuePair<string, Value>> symbols = new List<KeyValuePair<string, Value>>();
 		readonly Dictionary<string, Type> typedefs = new Dictionary<string, Type>();
 
 		public Scope(Builder builder, Block? exit, Scope? parent = null)
@@ -67,14 +67,27 @@ partial class Builder
 
 		public Value Find(string name)
 		{
-			if (symbols.TryGetValue(name, out Value symbol))
-				return symbol;
+			KeyValuePair<string, Value> symbol = symbols.Find(item => item.Key == name);
+			if (symbol.Value != null)
+				return symbol.Value;
 			if (parent is not null)
-				return parent!.Find(name);
+				return parent.Find(name);
 			throw new Exception("symbol don't exist man");
 		}
 
+		public Value[] FindAll(string name)
+		{
+			var lookup = symbols.ToLookup(kvp => kvp.Key, kvp => kvp.Value);
+			List<Value> list = new List<Value>();
+			list.AddRange(lookup[name]);
+			if (parent is not null)
+				list.AddRange(parent.FindAll(name));
+			if (list.Count <= 0)
+				throw new Exception("symbol don't exist man");
+			return list.ToArray();
+		}
+
 		public void Define(string name, Value symbol) =>
-			symbols.TryAdd(name, symbol);
+			symbols.Add(new KeyValuePair<string, Value>(name, symbol));
 	}
 }

@@ -8,7 +8,8 @@ partial class Builder
 	Value BuildExpr(ExprAst ast)
 	{
 		if (ast is StrLiteralExprAst strLiteral)
-			return BuildCast(llBuilder.BuildGlobalString(strLiteral.value), Type.CreatePointer(Type.Int8, 0), strLiteral.token);
+			return BuildCast(llBuilder.BuildGlobalString(strLiteral.value), Type.CreatePointer(Type.Int8, 0),
+				strLiteral.token);
 		if (ast is CharLiteralExprAst charLiteral)
 		{
 			return Value.CreateConstInt(Type.CreateInt((uint) charLiteral.nBits), charLiteral.value);
@@ -18,11 +19,13 @@ partial class Builder
 		{
 			return Value.CreateConstNull(Type.CreatePointer(Type.Int8, 0));
 		}
+
 		if (ast is IntLiteralExprAst intLiteral)
 		{
 			Type type = (uint) intLiteral.value == intLiteral.value ? Type.Int32 : Type.Int64;
 			return Value.CreateConstInt(type, intLiteral.value);
 		}
+
 		if (ast is BoolLiteralExprAst boolLiteral)
 			return Value.CreateConstInt(Type.Int1, boolLiteral.value ? 1ul : 0ul);
 		if (ast is FloatLiteralExprAst floatLiteral)
@@ -62,8 +65,6 @@ partial class Builder
 	// Hacky Move
 	Value BuildExpr(CallExprAst ast)
 	{
-		Value ptr = BuildExpr(ast.ptr);
-
 		int add = 0;
 		if (ast.ptr is MemberExprAst)
 			add = 1;
@@ -72,16 +73,57 @@ partial class Builder
 			args[0] = BuildPtr(memAst.container);
 
 		for (int i = 0; i < ast.args.Length; i++)
+			args[i + add] = BuildExpr(ast.args[i]);
+
+		Value ptr = BuildCallPtr();
+
+		for (int i = 0; i < ast.args.Length; i++)
 		{
-			Value arg = BuildExpr(ast.args[i]);
 			if (ptr.IsAFunction != null && i < ptr.ParamsCount)
-				arg = BuildCast(arg, ptr.Params[i + add].TypeOf, ast.token);
+				args[i + add] = BuildCast(args[i + add], ptr.Params[i + add].TypeOf, ast.token);
 			if (ptr.TypeOf.ElementType != null && i < ptr.TypeOf.ElementType.ParamTypes.Length)
-				arg = BuildCast(arg, ptr.TypeOf.ElementType.ParamTypes[i + add], ast.token);
-			args[i + add] = arg;
+				args[i + add] = BuildCast(args[i + add], ptr.TypeOf.ElementType.ParamTypes[i + add], ast.token);
 		}
 
 		return llBuilder.BuildCall(ptr, args);
+
+		Value BuildCallPtr()
+		{
+			if (ast.ptr is not FuncPtrAst funcPtrAst)
+				return BuildExpr(ast.ptr);
+
+			Value[] funcs = scope.FindAll(funcPtrAst.funcName);
+			int highestPrecedence = 0;
+			int best = 0;
+
+			for (int j = 0; j < funcs.Length; j++)
+			{
+				if (args.Length < funcs[j].Params.Length)
+					continue;
+				
+				int precedence = 1;
+
+				for (int i = add; i < args.Length; i++)
+				{
+					if (i < funcs[j].Params.Length)
+					{
+						int castPrecedence =
+							CastVerifier.CastPrecedence(args[i].TypeOf, funcs[j].Params[i].TypeOf);
+						precedence += castPrecedence;
+					}
+					else if (!funcs[j].TypeOf.IsFunctionVarArg)
+						precedence = 0;
+				}
+
+				if (precedence > highestPrecedence)
+				{
+					highestPrecedence = precedence;
+					best = j;
+				}
+			}
+
+			return funcs[best];
+		}
 	}
 
 	Value BuildExpr(MemberExprAst ast)
