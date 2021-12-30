@@ -220,7 +220,7 @@ partial class Parser
 		while (current.kind is not TokenKind.Eof and not TokenKind.RightBrace)
 		{
 			int start = pos;
-			fields.Add(Field());
+			fields.Add(Field(fields));
 			if (start == pos)
 				break;
 
@@ -246,7 +246,7 @@ partial class Parser
 		while (current.kind is not TokenKind.Eof and not TokenKind.Semicol)
 		{
 			int start = pos;
-			fields.Add(Field());
+			fields.Add(Field(fields));
 			if (start == pos)
 				break;
 
@@ -265,7 +265,9 @@ partial class Parser
 
 		List<FuncAst> funcs = new List<FuncAst>();
 		while (current.kind is not TokenKind.Eof and not TokenKind.RightBrace)
+		{
 			funcs.Add(Func(name.text, fields.ToArray()));
+		}
 
 		Match(TokenKind.RightBrace);
 		MaybeEndLine();
@@ -348,6 +350,8 @@ partial class Parser
 				Next();
 				asmName = Match(TokenKind.Str).text;
 			}
+			else if (metadata.Contains("naked"))
+				asmName = name.text;
 			else
 			{
 				StringBuilder sb = new StringBuilder("Syf$");
@@ -442,6 +446,8 @@ partial class Parser
 			Next();
 			asmName = Match(TokenKind.Str).text;
 		}
+		else if (metadata.Contains("naked"))
+			asmName = name.text;
 		else
 		{
 			StringBuilder sb = new StringBuilder("Syf$");
@@ -451,7 +457,7 @@ partial class Parser
 				sb.Append(';');
 				sb.Append(param.type.name);
 			}
-				
+
 			asmName = sb.ToString();
 		}
 

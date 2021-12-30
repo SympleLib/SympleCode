@@ -89,7 +89,7 @@ partial class Builder
 		if (ast.metadata.Contains("dllimport"))
 			func.DLLStorageClass = LLVMDLLStorageClass.LLVMDLLImportStorageClass;
 		// func.FunctionCallConv = (uint) ast.conv;
-		scope.DefineFunc(ast.realName, func);
+		scope.DefineFunc(clsType.StructName + "." + ast.realName, func);
 	}
 
 	void Decl(VarAst ast)

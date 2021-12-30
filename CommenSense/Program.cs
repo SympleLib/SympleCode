@@ -297,6 +297,7 @@ Console.WriteLine($"compiling '{filename}' -> '{filename[..filename.LastIndexOf(
 Compile(filename);
 #elif DEBUG
 Lexer.PrintMatching();
+File.Delete("dbgout.txt");
 
 string filename = "samples/test.sy";
 LLVMExecutionEngineRef? _engine = Debug(filename);

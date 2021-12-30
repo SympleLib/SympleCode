@@ -131,7 +131,7 @@ partial class Parser
 		return new ParamAst(type, token, name, defaultExpr);
 	}
 
-	FieldAst Field()
+	FieldAst Field(List<FieldAst>? fields = null)
 	{
 		Visibility visibility;
 		switch (current.kind)
@@ -152,8 +152,12 @@ partial class Parser
 			visibility = LLVMDefaultVisibility;
 			break;
 		};
-
-		TypeAst type = Type();
+		
+		TypeAst type;
+		if (fields is not null && fields.Count > 0 && !IsType(current))
+			type = fields[^1].type;
+		else
+			type = Type();
 		Token name = Match(TokenKind.Identifier);
 		ExprAst initializer = new ExprAst(Token.devault);
 		if (current.kind is TokenKind.Eql)

@@ -104,13 +104,13 @@ partial class Builder
 		else
 			ptr = BuildExpr(ast.ptr);
 
-		// for (int i = 0; i < ast.args.Length; i++)
-		// {
-		// 	if (ptr.IsAFunction != null && i < ptr.ParamsCount)
-		// 		args[i + add] = BuildCast(args[i + add], ptr.Params[i + add].TypeOf, ast.token);
-		// 	if (ptr.TypeOf.ElementType != null && i < ptr.TypeOf.ElementType.ParamTypes.Length)
-		// 		args[i + add] = BuildCast(args[i + add], ptr.TypeOf.ElementType.ParamTypes[i + add], ast.token);
-		// }
+		for (int i = 0; i < ast.args.Length; i++)
+		{
+			if (ptr.IsAFunction != null && i < ptr.ParamsCount)
+				args[i + add] = BuildCast(args[i + add], ptr.Params[i + add].TypeOf, ast.token);
+			if (ptr.TypeOf.ElementType != null && i < ptr.TypeOf.ElementType.ParamTypes.Length)
+				args[i + add] = BuildCast(args[i + add], ptr.TypeOf.ElementType.ParamTypes[i + add], ast.token);
+		}
 
 		return llBuilder.BuildCall(ptr, args);
 	}

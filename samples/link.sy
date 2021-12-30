@@ -1,4 +1,4 @@
-public decl void puts(char*): 'puts';
+@naked public decl void puts(char*);
 
 void()* doTheThing;
 private char* strToPrintOut;
