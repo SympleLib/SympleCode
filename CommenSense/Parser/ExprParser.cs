@@ -104,7 +104,7 @@ partial class Parser
 			return new PreExprAst(PreOpcode(op.kind), op, PrimExpr());
 		case TokenKind.Identifier:
 		{
-			if (scope.FuncExists(current.text))
+			if (scope.FuncExists(current.text)) // fnptr overloads
 				return new FuncPtrAst(Next());
 			if (scope.VarExists(current.text))
 				return new VarExprAst(Next());

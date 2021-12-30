@@ -25,16 +25,21 @@ partial class Builder
 			Decl(uzing);
 	}
 
-	Value Decl(DeclVarAst ast)
+	void Decl(DeclVarAst ast)
 	{
+		if (llModule.GetNamedGlobal(ast.asmName) != null)
+			return;
+		
 		Type type = BuildType(ast.type);
 		Value var = llModule.AddGlobal(type, ast.asmName);
 		scope.DefineVar(ast.realName, var);
-		return var;
 	}
 
-	Value Decl(DeclFuncAst ast)
+	void Decl(DeclFuncAst ast)
 	{
+		if (llModule.GetNamedFunction(ast.asmName) != null)
+			return;
+
 		Type[] paramTypes = new Type[ast.paramz.Length];
 		for (int i = 0; i < ast.paramz.Length; i++)
 			paramTypes[i] = BuildType(ast.paramz[i].type);
@@ -45,12 +50,14 @@ partial class Builder
 		// fn.FunctionCallConv = (uint) ast.conv;
 		if (ast.metadata.Contains("dllimport"))
 			fn.DLLStorageClass = LLVMDLLStorageClass.LLVMDLLImportStorageClass;
-		scope.DefineFunc(ast.asmName, fn);
-		return fn;
+		scope.DefineFunc(ast.realName, fn);
 	}
 
-	Value Decl(FuncAst ast)
+	void Decl(FuncAst ast)
 	{
+		if (llModule.GetNamedFunction(ast.asmName) != null)
+			return;
+
 		Type[] paramTypes = new Type[ast.paramz.Length];
 		for (int i = 0; i < ast.paramz.Length; i++)
 			paramTypes[i] = BuildType(ast.paramz[i].type);
@@ -62,12 +69,14 @@ partial class Builder
 		if (ast.metadata.Contains("dllimport"))
 			func.DLLStorageClass = LLVMDLLStorageClass.LLVMDLLImportStorageClass;
 		// func.FunctionCallConv = (uint) ast.conv;
-		scope.DefineFunc(ast.asmName, func);
-		return func;
+		scope.DefineFunc(ast.realName, func);
 	}
 
-	Value Decl(FuncAst ast, Type clsType)
+	void Decl(FuncAst ast, Type clsType)
 	{
+		if (llModule.GetNamedFunction(ast.asmName) != null)
+			return;
+
 		Type[] paramTypes = new Type[ast.paramz.Length + 1];
 		paramTypes[0] = Type.CreatePointer(clsType, 0);
 		for (int i = 0; i < ast.paramz.Length; i++)
@@ -80,14 +89,15 @@ partial class Builder
 		if (ast.metadata.Contains("dllimport"))
 			func.DLLStorageClass = LLVMDLLStorageClass.LLVMDLLImportStorageClass;
 		// func.FunctionCallConv = (uint) ast.conv;
-		scope.DefineFunc(ast.asmName, func);
-		return func;
+		scope.DefineFunc(ast.realName, func);
 	}
 
-	Value Decl(VarAst ast)
+	void Decl(VarAst ast)
 	{
 		if (currentFunc != null)
-			return null;
+			return;
+		if (llModule.GetNamedGlobal(ast.asmName) != null)
+			return;
 
 		Type type = BuildType(ast.type);
 		Value var = llModule.AddGlobal(type, ast.asmName);
@@ -95,7 +105,6 @@ partial class Builder
 		if (ast.metadata.Contains("dllimport"))
 			var.DLLStorageClass = LLVMDLLStorageClass.LLVMDLLImportStorageClass;
 		scope.DefineVar(ast.realName, var);
-		return var;
 	}
 
 	void Decl(StructAst ast)

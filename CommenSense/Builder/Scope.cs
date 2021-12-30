@@ -24,7 +24,7 @@ partial class Builder
 
 		readonly Dictionary<string, Container> ctnrs = new Dictionary<string, Container>();
 		readonly Dictionary<string, Value> vars = new Dictionary<string, Value>();
-		readonly Dictionary<string, Value> funcs = new Dictionary<string, Value>();
+		readonly Dictionary<string, List<Value>> funcs = new Dictionary<string, List<Value>>();
 		readonly Dictionary<string, Type> typedefs = new Dictionary<string, Type>();
 
 		public Scope(Builder builder, Block? exit, Scope? parent = null)
@@ -77,17 +77,43 @@ partial class Builder
 
 		public Value FindFunc(string name)
 		{
-			if (funcs.TryGetValue(name, out Value func))
-				return func;
+			if (funcs.TryGetValue(name, out List<Value> func))
+				return func[0];
 			if (parent is not null)
 				return parent.FindFunc(name);
 			throw new Exception("symbol don't exist man");
 		}
 
-		public void DefineVar(string name, Value symbol) =>
-			vars.TryAdd(name, symbol);
+		public List<Value> FindFuncs(string name)
+		{
+			if (!funcs.TryGetValue(name, out List<Value> list))
+			{
+				if(parent is not null)
+					return parent.FindFuncs(name);
+				throw new Exception("symbol don't exist man");
+			}
+			
+			if (parent is not null)
+				list.AddRange(parent.FindFuncs(name));
+			return list;
+		}
 
-		public void DefineFunc(string name, Value func) =>
-			funcs.TryAdd(name, func);
+		public void DefineVar(string name, Value symbol)
+		{
+			if (vars.TryGetValue(name, out Value var) && var != symbol)
+				throw new Exception("another var was defined with same name");
+			vars.TryAdd(name, symbol);
+		}
+
+		public void DefineFunc(string name, Value symbol)
+		{
+			if (funcs.TryGetValue(name, out List<Value> overloads) && !overloads.Contains(symbol))
+			{
+				overloads.Add(symbol);
+				return;
+			}
+			
+			funcs.Add(name, new List<Value> { symbol });
+		}
 	}
 }

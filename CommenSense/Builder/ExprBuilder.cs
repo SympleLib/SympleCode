@@ -75,8 +75,34 @@ partial class Builder
 		for (int i = 0; i < ast.args.Length; i++)
 			args[i + add] = BuildExpr(ast.args[i]);
 
-		Value ptr;
-		ptr = ast.ptr is FuncPtrAst fnPtr ? scope.FindFunc(MangleFunc(fnPtr.funcName, args)) : BuildExpr(ast.ptr);
+		Value ptr = null;
+		if (ast.ptr is FuncPtrAst fnPtr)
+		{
+			List<Value> funcs = scope.FindFuncs(fnPtr.funcName);
+			if (funcs.Count <= 1)
+				ptr = funcs[0];
+			else
+				foreach (Value func in funcs)
+				{
+					if (func.ParamsCount > args.Length)
+						continue;
+					
+					if (func.ParamsCount < args.Length && !func.TypeOf.IsFunctionVarArg)
+						continue;
+
+					for (int i = 0; i < func.ParamsCount; i++)
+						if (args[i].TypeOf.Kind != func.TypeOf.Kind)
+							goto Retry;
+
+					ptr = func;
+					break;
+					
+				Retry:
+					continue;
+				}
+		}
+		else
+			ptr = BuildExpr(ast.ptr);
 
 		// for (int i = 0; i < ast.args.Length; i++)
 		// {
@@ -105,13 +131,13 @@ partial class Builder
 
 	Value BuildExpr(ArrayExprAst ast)
 	{
-		if (ast.elements.Length <= 0)
-			return null;
-
 		Value firstEle = BuildExpr(ast.elements[0]);
 		Type eleType = ast.eleType is null ? firstEle.TypeOf : BuildType(ast.eleType);
 		Value array = llBuilder.BuildAlloca(Type.CreateArray(eleType, (uint) ast.elements.Length));
 		Value ptr = llBuilder.BuildBitCast(array, Type.CreatePointer(eleType, 0));
+		if (ast.elements.Length <= 0)
+			return ptr;
+		
 		Value elePtr = llBuilder.BuildInBoundsGEP(ptr, new Value[] { Value.CreateConstInt(Type.Int64, 0) });
 		llBuilder.BuildStore(BuildCast(firstEle, eleType, ast.token), elePtr);
 
@@ -204,7 +230,7 @@ partial class Builder
 			switch (kind)
 			{
 			case TokenKind.Star2:
-				return llBuilder.BuildCall(llModule.GetNamedFunction("powi"), new Value[] { left, right });
+				return llBuilder.BuildCall(scope.FindFunc("powi"), new Value[] { left, right });
 
 			case TokenKind.And2:
 			case TokenKind.Pipe2:
