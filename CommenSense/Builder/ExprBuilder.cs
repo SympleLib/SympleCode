@@ -77,8 +77,25 @@ partial class Builder
 
 		Value ptr = null;
 		if (ast.ptr is FuncPtrAst fnPtr)
+			Func(fnPtr.funcName);
+		if (ast.ptr is MemberExprAst memExpr)
+			Func($"{BuildExpr(memExpr.container).TypeOf.StructName}.{memExpr.memberName}");
+		else
+			ptr = BuildExpr(ast.ptr);
+
+		for (int i = 0; i < ast.args.Length; i++)
 		{
-			List<Value> funcs = scope.FindFuncs(fnPtr.funcName);
+			if (ptr.IsAFunction != null && i < ptr.ParamsCount)
+				args[i + add] = BuildCast(args[i + add], ptr.Params[i + add].TypeOf, ast.token);
+			if (ptr.TypeOf.ElementType != null && i < ptr.TypeOf.ElementType.ParamTypes.Length)
+				args[i + add] = BuildCast(args[i + add], ptr.TypeOf.ElementType.ParamTypes[i + add], ast.token);
+		}
+
+		return llBuilder.BuildCall(ptr, args);
+
+		void Func(string name)
+		{
+			List<Value> funcs = scope.FindFuncs(name);
 			if (funcs.Count <= 1)
 				ptr = funcs[0];
 			else
@@ -97,22 +114,10 @@ partial class Builder
 					ptr = func;
 					break;
 					
-				Retry:
+					Retry:
 					continue;
 				}
 		}
-		else
-			ptr = BuildExpr(ast.ptr);
-
-		for (int i = 0; i < ast.args.Length; i++)
-		{
-			if (ptr.IsAFunction != null && i < ptr.ParamsCount)
-				args[i + add] = BuildCast(args[i + add], ptr.Params[i + add].TypeOf, ast.token);
-			if (ptr.TypeOf.ElementType != null && i < ptr.TypeOf.ElementType.ParamTypes.Length)
-				args[i + add] = BuildCast(args[i + add], ptr.TypeOf.ElementType.ParamTypes[i + add], ast.token);
-		}
-
-		return llBuilder.BuildCall(ptr, args);
 	}
 
 	Value BuildExpr(MemberExprAst ast)

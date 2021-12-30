@@ -23,5 +23,6 @@ void run() {
 	
 	MessageBox msg = MessageBox { 'class test', 'it works?', 1 };
 	msg.show(5);
+	msg.message = 'hell ya it does!';
 	msg.show();
 }
