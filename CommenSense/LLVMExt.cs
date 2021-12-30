@@ -25,4 +25,15 @@ static class LLVMExt
 			
 			_ => throw new NotImplementedException(),
 		};
+
+	public static bool SameAs(this Type t1, Type t2)
+	{
+		if (t1.Kind != t2.Kind)
+			return false;
+		if (t1 == t2)
+			return true;
+		if (t1.ElementType == t2.ElementType)
+			return true;
+		return SameAs(t1.ElementType, t2.ElementType);
+	}
 }

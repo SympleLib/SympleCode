@@ -91,7 +91,7 @@ partial class Builder
 						continue;
 
 					for (int i = 0; i < func.ParamsCount; i++)
-						if (args[i].TypeOf.Kind != func.TypeOf.Kind)
+						if (args[i].TypeOf.SameAs(func.TypeOf))
 							goto Retry;
 
 					ptr = func;
