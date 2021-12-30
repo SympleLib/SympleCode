@@ -303,22 +303,17 @@ partial class Parser
 		TypeAst retType = Type();
 		Token name = Match(TokenKind.Identifier);
 		string asmName = $"{className}.{name.text}";
-		if (current.kind is TokenKind.Colon)
-		{
-			Next();
-			asmName = Match(TokenKind.Str).text;
-		}
-		
+
 		EnterScope();
 		foreach (FieldAst field in fields)
 			scope.DefineVar(field.name);
 		scope.DefineVar("this");
-		FuncAst func = Func(metadata.ToArray(), visibility, retType, name, asmName);
+		FuncAst func = Func(metadata.ToArray(), visibility, retType, name, asmName, false);
 		ExitScope();
 		return func;
 	}
 
-	FuncAst Func(string[] metadata, Visibility visibility, TypeAst retType, Token name, string? asmName)
+	FuncAst Func(string[] metadata, Visibility visibility, TypeAst retType, Token name, string? asmName, bool asmNameFinal = true)
 	{
 		EnterScope();
 		bool vaArg = false;
@@ -346,7 +341,7 @@ partial class Parser
 
 		Match(TokenKind.RightParen);
 
-		if (asmName is null)
+		if (asmName is null || !asmNameFinal)
 		{
 			if (current.kind is TokenKind.Colon)
 			{

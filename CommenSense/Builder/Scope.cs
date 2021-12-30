@@ -23,7 +23,8 @@ partial class Builder
 		public readonly int depth;
 
 		readonly Dictionary<string, Container> ctnrs = new Dictionary<string, Container>();
-		readonly List<KeyValuePair<string, Value>> symbols = new List<KeyValuePair<string, Value>>();
+		readonly Dictionary<string, Value> vars = new Dictionary<string, Value>();
+		readonly Dictionary<string, Value> funcs = new Dictionary<string, Value>();
 		readonly Dictionary<string, Type> typedefs = new Dictionary<string, Type>();
 
 		public Scope(Builder builder, Block? exit, Scope? parent = null)
@@ -65,29 +66,28 @@ partial class Builder
 			throw new Exception("type don't exist man");
 		}
 
-		public Value Find(string name)
+		public Value FindVar(string name)
 		{
-			KeyValuePair<string, Value> symbol = symbols.Find(item => item.Key == name);
-			if (symbol.Value != null)
-				return symbol.Value;
+			if (vars.TryGetValue(name, out Value var))
+				return var;
 			if (parent is not null)
-				return parent.Find(name);
+				return parent.FindVar(name);
 			throw new Exception("symbol don't exist man");
 		}
 
-		public Value[] FindAll(string name)
+		public Value FindFunc(string name)
 		{
-			var lookup = symbols.ToLookup(kvp => kvp.Key, kvp => kvp.Value);
-			List<Value> list = new List<Value>();
-			list.AddRange(lookup[name]);
+			if (funcs.TryGetValue(name, out Value func))
+				return func;
 			if (parent is not null)
-				list.AddRange(parent.FindAll(name));
-			if (list.Count <= 0)
-				throw new Exception("symbol don't exist man");
-			return list.ToArray();
+				return parent.FindFunc(name);
+			throw new Exception("symbol don't exist man");
 		}
 
-		public void Define(string name, Value symbol) =>
-			symbols.Add(new KeyValuePair<string, Value>(name, symbol));
+		public void DefineVar(string name, Value symbol) =>
+			vars.TryAdd(name, symbol);
+
+		public void DefineFunc(string name, Value func) =>
+			funcs.TryAdd(name, func);
 	}
 }

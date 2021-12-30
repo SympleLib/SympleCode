@@ -32,9 +32,9 @@ partial class Builder
 			return Value.CreateConstReal(Type.Float, floatLiteral.value);
 
 		if (ast is FuncPtrAst funcExpr)
-			return scope.Find(funcExpr.funcName);
+			return scope.FindFunc(funcExpr.funcName);
 		if (ast is VarExprAst varExpr)
-			return llBuilder.BuildLoad(scope.Find(varExpr.varName));
+			return llBuilder.BuildLoad(scope.FindVar(varExpr.varName));
 		if (ast is CallExprAst callExpr)
 			return BuildExpr(callExpr);
 		if (ast is MemberExprAst memberExpr)
@@ -75,55 +75,18 @@ partial class Builder
 		for (int i = 0; i < ast.args.Length; i++)
 			args[i + add] = BuildExpr(ast.args[i]);
 
-		Value ptr = BuildCallPtr();
+		Value ptr;
+		ptr = ast.ptr is FuncPtrAst fnPtr ? scope.FindFunc(MangleFunc(fnPtr.funcName, args)) : BuildExpr(ast.ptr);
 
-		for (int i = 0; i < ast.args.Length; i++)
-		{
-			if (ptr.IsAFunction != null && i < ptr.ParamsCount)
-				args[i + add] = BuildCast(args[i + add], ptr.Params[i + add].TypeOf, ast.token);
-			if (ptr.TypeOf.ElementType != null && i < ptr.TypeOf.ElementType.ParamTypes.Length)
-				args[i + add] = BuildCast(args[i + add], ptr.TypeOf.ElementType.ParamTypes[i + add], ast.token);
-		}
+		// for (int i = 0; i < ast.args.Length; i++)
+		// {
+		// 	if (ptr.IsAFunction != null && i < ptr.ParamsCount)
+		// 		args[i + add] = BuildCast(args[i + add], ptr.Params[i + add].TypeOf, ast.token);
+		// 	if (ptr.TypeOf.ElementType != null && i < ptr.TypeOf.ElementType.ParamTypes.Length)
+		// 		args[i + add] = BuildCast(args[i + add], ptr.TypeOf.ElementType.ParamTypes[i + add], ast.token);
+		// }
 
 		return llBuilder.BuildCall(ptr, args);
-
-		Value BuildCallPtr()
-		{
-			if (ast.ptr is not FuncPtrAst funcPtrAst)
-				return BuildExpr(ast.ptr);
-
-			Value[] funcs = scope.FindAll(funcPtrAst.funcName);
-			int highestPrecedence = 0;
-			int best = 0;
-
-			for (int j = 0; j < funcs.Length; j++)
-			{
-				if (args.Length < funcs[j].Params.Length)
-					continue;
-				
-				int precedence = 1;
-
-				for (int i = add; i < args.Length; i++)
-				{
-					if (i < funcs[j].Params.Length)
-					{
-						int castPrecedence =
-							CastVerifier.CastPrecedence(args[i].TypeOf, funcs[j].Params[i].TypeOf);
-						precedence += castPrecedence;
-					}
-					else if (!funcs[j].TypeOf.IsFunctionVarArg)
-						precedence = 0;
-				}
-
-				if (precedence > highestPrecedence)
-				{
-					highestPrecedence = precedence;
-					best = j;
-				}
-			}
-
-			return funcs[best];
-		}
 	}
 
 	Value BuildExpr(MemberExprAst ast)
@@ -134,7 +97,7 @@ partial class Builder
 		if (i == ~0U)
 		{
 			if (ctnr is ClassAst clazz)
-				return scope.Find(clazz.name + "." + clazz.funcs[clazz.GetFuncWithLvl(ast.memberName, LLVMDefaultVisibility)].realName);
+				return scope.FindFunc(clazz.name + "." + clazz.funcs[clazz.GetFuncWithLvl(ast.memberName, LLVMDefaultVisibility)].realName);
 			throw new Exception("we ain't got dat field");
 		}
 		return llBuilder.BuildLoad(llBuilder.BuildStructGEP(container, i));

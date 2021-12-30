@@ -29,7 +29,7 @@ partial class Builder
 	{
 		Type type = BuildType(ast.type);
 		Value var = llModule.AddGlobal(type, ast.asmName);
-		scope.Define(ast.realName, var);
+		scope.DefineVar(ast.realName, var);
 		return var;
 	}
 
@@ -45,7 +45,7 @@ partial class Builder
 		// fn.FunctionCallConv = (uint) ast.conv;
 		if (ast.metadata.Contains("dllimport"))
 			fn.DLLStorageClass = LLVMDLLStorageClass.LLVMDLLImportStorageClass;
-		scope.Define(ast.realName, fn);
+		scope.DefineFunc(ast.asmName, fn);
 		return fn;
 	}
 
@@ -62,7 +62,7 @@ partial class Builder
 		if (ast.metadata.Contains("dllimport"))
 			func.DLLStorageClass = LLVMDLLStorageClass.LLVMDLLImportStorageClass;
 		// func.FunctionCallConv = (uint) ast.conv;
-		scope.Define(ast.realName, func);
+		scope.DefineFunc(ast.asmName, func);
 		return func;
 	}
 
@@ -80,7 +80,7 @@ partial class Builder
 		if (ast.metadata.Contains("dllimport"))
 			func.DLLStorageClass = LLVMDLLStorageClass.LLVMDLLImportStorageClass;
 		// func.FunctionCallConv = (uint) ast.conv;
-		scope.Define(clsType.StructName + "." + ast.realName, func);
+		scope.DefineFunc(ast.asmName, func);
 		return func;
 	}
 
@@ -94,7 +94,7 @@ partial class Builder
 		var.Visibility = ast.visibility;
 		if (ast.metadata.Contains("dllimport"))
 			var.DLLStorageClass = LLVMDLLStorageClass.LLVMDLLImportStorageClass;
-		scope.Define(ast.realName, var);
+		scope.DefineVar(ast.realName, var);
 		return var;
 	}
 

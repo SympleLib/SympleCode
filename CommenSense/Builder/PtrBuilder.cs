@@ -7,10 +7,10 @@ partial class Builder
 {
 	Value BuildPtr(ExprAst ast)
 	{
-		if (ast is FuncPtrAst funcExpr)
-			return scope.Find(funcExpr.funcName);
+		if (ast is FuncPtrAst funcExpr) // TODO: fix
+			return scope.FindFunc(funcExpr.funcName);
 		if (ast is VarExprAst varExpr)
-			return scope.Find(varExpr.varName);
+			return scope.FindVar(varExpr.varName);
 		if (ast is MemberExprAst memberExpr)
 			return BuildPtr(memberExpr);
 		if (ast is IndexExprAst idxExpr)

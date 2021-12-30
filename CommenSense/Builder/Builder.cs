@@ -1,4 +1,6 @@
-﻿namespace CommenSense;
+﻿using System.Text;
+
+namespace CommenSense;
 
 using System;
 
@@ -259,7 +261,7 @@ partial class Builder
 		{
 			Value ptr = llBuilder.BuildAlloca(paramTypes[i]);
 			llBuilder.BuildStore(fn.Params[i], ptr);
-			scope.Define(ast.paramz[i].name, ptr);
+			scope.DefineVar(ast.paramz[i].name, ptr);
 		}
 
 		foreach (StmtAst stmt in ast.body)
@@ -285,7 +287,8 @@ partial class Builder
 
 	void Build(FuncAst ast, ClassAst clazz, Type clsType)
 	{
-		Value fn = scope.Find(clsType.StructName + "." + ast.realName);
+		// Value fn = scope.Find(clsType.StructName + "." + ast.realName);
+		Value fn = llModule.GetNamedFunction(ast.asmName);
 		Type[] paramTypes = fn.TypeOf.ElementType.ParamTypes;
 		Block entry = fn.AppendBasicBlock(string.Empty);
 		llBuilder.PositionAtEnd(entry);
@@ -293,11 +296,11 @@ partial class Builder
 
 		EnterScope(null);
 		Value thiz = fn.Params[0];
-		scope.Define("this", thiz);
+		scope.DefineVar("this", thiz);
 		for (uint i = 0; i < clazz.fields.Length; i++)
 		{
 			Value ptr = llBuilder.BuildStructGEP(thiz, i);
-			scope.Define(clazz.fields[i].name, ptr);
+			scope.DefineVar(clazz.fields[i].name, ptr);
 		}
 
 		EnterScope(null);
@@ -305,7 +308,7 @@ partial class Builder
 		{
 			Value ptr = llBuilder.BuildAlloca(paramTypes[i + 1]);
 			llBuilder.BuildStore(fn.Params[i + 1], ptr);
-			scope.Define(ast.paramz[i].name, ptr);
+			scope.DefineVar(ast.paramz[i].name, ptr);
 		}
 
 		foreach (StmtAst stmt in ast.body)
@@ -332,14 +335,27 @@ partial class Builder
 
 		if (currentFunc == null)
 		{
-			Value var = scope.Find(ast.realName);
+			Value var = scope.FindVar(ast.realName);
 			var.Initializer = initializer;
 		}
 		else
 		{
 			Value var = llBuilder.BuildAlloca(type, ast.asmName);
 			llBuilder.BuildStore(initializer, var);
-			scope.Define(ast.realName, var);
+			scope.DefineVar(ast.realName, var);
 		}
+	}
+
+	string MangleFunc(string alias, Value[] args)
+	{
+		StringBuilder sb = new StringBuilder("Syf$");
+		sb.Append(alias);
+		foreach (Value arg in args)
+		{
+			sb.Append(';');
+			sb.Append(arg.TypeOf.StructName);
+		}
+				
+		return sb.ToString();
 	}
 }
