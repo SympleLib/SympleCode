@@ -4,7 +4,9 @@
 
 class MessageBox {
 	char* title, message,
-	int type;
+	int type,
+	
+	int(MessageBox*)* showFn;
 	
 	int show() {
 		ret MessageBoxA(null, message, title, type);
@@ -12,7 +14,7 @@ class MessageBox {
 	
 	void show(int nTimes) {
 		for (int i = 0; i < nTimes; i++)
-			MessageBoxA(null, message, title, type);
+			this.show();
 	}
 }
 
@@ -22,7 +24,10 @@ void run() {
 	// doTheThing();
 	
 	MessageBox msg = MessageBox { 'class test', 'it works?', 1 };
-	msg.show(5);
-	msg.message = 'hell ya it does!';
+	msg.show(3);
+	msg.message = 'does it?';
 	msg.show();
+	msg.showFn = msg.show;
+	msg.message = 'hell ya it does!';
+	msg.showFn();
 }

@@ -75,11 +75,11 @@ partial class Builder
 		for (int i = 0; i < ast.args.Length; i++)
 			args[i + add] = BuildExpr(ast.args[i]);
 
-		Value ptr = null;
+		Value ptr;
 		if (ast.ptr is FuncPtrAst fnPtr)
-			Func(fnPtr.funcName);
+			ptr = Func(fnPtr.funcName);
 		if (ast.ptr is MemberExprAst memExpr)
-			Func($"{BuildExpr(memExpr.container).TypeOf.StructName}.{memExpr.memberName}");
+			ptr = BuildExpr(memExpr, ast, Func);
 		else
 			ptr = BuildExpr(ast.ptr);
 
@@ -93,30 +93,28 @@ partial class Builder
 
 		return llBuilder.BuildCall(ptr, args);
 
-		void Func(string name)
+		Value Func(string name)
 		{
 			List<Value> funcs = scope.FindFuncs(name);
 			if (funcs.Count <= 1)
-				ptr = funcs[0];
-			else
-				foreach (Value func in funcs)
-				{
-					if (func.ParamsCount > args.Length)
-						continue;
-					
-					if (func.ParamsCount < args.Length && !func.TypeOf.IsFunctionVarArg)
-						continue;
-
-					for (int i = 0; i < func.ParamsCount; i++)
-						if (args[i].TypeOf.SameAs(func.TypeOf))
-							goto Retry;
-
-					ptr = func;
-					break;
-					
-					Retry:
+				return funcs[0];
+			
+			foreach (Value func in funcs)
+			{
+				if (func.ParamsCount > args.Length)
 					continue;
-				}
+				
+				if (func.ParamsCount < args.Length && !func.TypeOf.IsFunctionVarArg)
+					continue;
+
+				for (int i = 0; i < func.ParamsCount; i++)
+					if (args[i].TypeOf.SameAs(func.TypeOf))
+						break;
+
+				return func;
+			}
+
+			return null;
 		}
 	}
 
@@ -131,6 +129,21 @@ partial class Builder
 				return scope.FindFunc(clazz.name + "." + clazz.funcs[clazz.GetFuncWithLvl(ast.memberName, LLVMDefaultVisibility)].realName);
 			throw new Exception("we ain't got dat field");
 		}
+		return llBuilder.BuildLoad(llBuilder.BuildStructGEP(container, i));
+	}
+	
+	Value BuildExpr(MemberExprAst ast, CallExprAst callee, Func<string, Value> evalFunc)
+	{
+		Value container = BuildPtr(ast.container);
+		Container ctnr = scope.GetCtnr(container.TypeOf.ElementType.StructName);
+		uint i = ctnr.GetFieldWithLvl(ast.memberName, LLVMDefaultVisibility);
+		if (i == ~0U)
+		{
+			if (ctnr is ClassAst clazz)
+				return evalFunc.Invoke(clazz.name + "." + clazz.funcs[clazz.GetFuncWithLvl(ast.memberName, LLVMDefaultVisibility)].realName);
+			throw new Exception("we ain't got dat func");
+		}
+		
 		return llBuilder.BuildLoad(llBuilder.BuildStructGEP(container, i));
 	}
 
