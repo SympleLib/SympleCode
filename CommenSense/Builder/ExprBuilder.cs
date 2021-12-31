@@ -7,9 +7,11 @@ partial class Builder
 {
 	Value BuildExpr(ExprAst ast)
 	{
+		if (ast is CStrLiteralExprAst cstrLiteral)
+			return BuildCast(llBuilder.BuildGlobalString(cstrLiteral.value), Type.CreatePointer(Type.Int8, 0),
+				cstrLiteral.token);
 		if (ast is StrLiteralExprAst strLiteral)
-			return BuildCast(llBuilder.BuildGlobalString(strLiteral.value), Type.CreatePointer(Type.Int8, 0),
-				strLiteral.token);
+			return BuildExpr(strLiteral);
 		if (ast is CharLiteralExprAst charLiteral)
 		{
 			return Value.CreateConstInt(Type.CreateInt((uint) charLiteral.nBits), charLiteral.value);
@@ -60,6 +62,22 @@ partial class Builder
 		if (ast.GetType() == typeof(ExprAst))
 			return Value.CreateConstNull(Type.Int1);
 		throw new Exception("Bob the builder can't build this ◁[<");
+	}
+
+	Value BuildExpr(StrLiteralExprAst ast)
+	{
+		Value[] values = new Value[ast.value.Length + 1];
+		for (int i = 0; i < ast.value.Length; i++)
+			values[i] = Value.CreateConstInt(Type.Int16, ast.value[i]);
+		values[^1] = Value.CreateConstInt(Type.Int16, 0);
+		var arr = Value.CreateConstArray(Type.Int16, values);
+
+		var str = llModule.AddGlobal(arr.TypeOf, "..str");
+		str.Linkage = LLVMLinkage.LLVMPrivateLinkage;
+		str.IsGlobalConstant = true;
+		str.HasUnnamedAddr = true;
+		str.Initializer = arr;
+		return llBuilder.BuildBitCast(str, Type.CreatePointer(Type.Int16, 0));
 	}
 
 	// Hacky Move

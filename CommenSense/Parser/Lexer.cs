@@ -11,6 +11,7 @@ public enum TokenKind
 	Eof = 0,
 
 	Str,
+	CStr,
 	Int,
 	Char,
 	Float,
@@ -262,6 +263,8 @@ class Lexer
 			return Annotation();
 		if (current is '\'')
 			return Str();
+		if (current is '"')
+			return CStr();
 		if (current is '`')
 			return Char();
 		return Punctuator();
@@ -311,6 +314,60 @@ class Lexer
 				Next();
 				switch (Next())
 				{
+					case '0':
+						sb.Append('\0');
+						break;
+					case '\a':
+						sb.Append('\a');
+						break;
+					case 'b':
+						sb.Append('\b');
+						break;
+					case 'f':
+						sb.Append('\f');
+						break;
+					case 'n':
+						sb.Append('\n');
+						break;
+					case 'r':
+						sb.Append('\r');
+						break;
+					case 't':
+						sb.Append('\t');
+						break;
+					case 'v':
+						sb.Append('\v');
+						break;
+					case '\\':
+						sb.Append('\\');
+						break;
+					case '\'':
+						sb.Append('\'');
+						break;
+
+					default:
+						throw new Exception("Unrecognized escape sequence");
+				}
+			}
+			else
+				sb.Append(Next());
+		}
+
+		Next();
+		return new Token(TokenKind.Str, sb.ToString(), line, col);
+	}
+
+	Token CStr()
+	{
+		Next();
+		StringBuilder sb = new StringBuilder();
+		while (current is not '"' and not '\0')
+		{
+			if (current is '\\')
+			{
+				Next();
+				switch (Next())
+				{
 				case '0':
 					sb.Append('\0');
 					break;
@@ -351,7 +408,7 @@ class Lexer
 		}
 
 		Next();
-		return new Token(TokenKind.Str, sb.ToString(), line, col);
+		return new Token(TokenKind.CStr, sb.ToString(), line, col);
 	}
 
 	Token Char()

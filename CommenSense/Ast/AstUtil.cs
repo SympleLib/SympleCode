@@ -258,6 +258,9 @@ partial record BoolLiteralExprAst
 partial record StrLiteralExprAst
 { public override string ToString() => $"'{value}'"; }
 
+partial record CStrLiteralExprAst
+{ public override string ToString() => $"\"{value}\""; }
+
 partial record CharLiteralExprAst
 { public override string ToString() => $"`{value}`"; }
 

@@ -55,6 +55,7 @@ partial record IntLiteralExprAst(Token token, ulong value): LiteralExprAst(token
 partial record NullLiteralExprAst(Token token): LiteralExprAst(token);
 partial record BoolLiteralExprAst(Token token, bool value): LiteralExprAst(token);
 partial record StrLiteralExprAst(Token token, string value): LiteralExprAst(token);
+partial record CStrLiteralExprAst(Token token, string value): LiteralExprAst(token);
 partial record CharLiteralExprAst(Token token, ulong value, int nBits): LiteralExprAst(token);
 partial record FloatLiteralExprAst(Token token, double value): LiteralExprAst(token);
 

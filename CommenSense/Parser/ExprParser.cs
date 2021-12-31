@@ -183,6 +183,8 @@ partial class Parser
 		{
 		case TokenKind.Str:
 			return new StrLiteralExprAst(current, Next().text);
+		case TokenKind.CStr:
+			return new CStrLiteralExprAst(current, Next().text);
 		case TokenKind.Char:
 			return new CharLiteralExprAst(current, Next().text[0], 8);
 		case TokenKind.NullKeyword:

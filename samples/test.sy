@@ -1,33 +1,17 @@
 // link 'link.sy';
 
-@naked decl int MessageBoxA(byte*, char*, char*, int);
+@naked decl int MessageBoxW(byte*, char*, char*, int);
 
 class MessageBox {
 	char* title, message,
-	int type,
-	
-	int(MessageBox*)* showFn;
+	int type;
 	
 	int show() {
-		ret MessageBoxA(null, message, title, type);
-	}
-	
-	void show(int nTimes) {
-		for (int i = 0; i < nTimes; i++)
-			this.show();
+		ret MessageBoxW(null, message, title, type);
 	}
 }
 
 void run() {
-	// loadDoTheThing('this is the string to print out');
-	// loadDoTheThing();
-	// doTheThing();
-	
 	MessageBox msg = MessageBox { 'class test', 'it works?', 1 };
-	msg.show(3);
-	msg.message = 'does it?';
 	msg.show();
-	msg.showFn = msg.show;
-	msg.message = 'hell ya it does!';
-	msg.showFn();
 }
