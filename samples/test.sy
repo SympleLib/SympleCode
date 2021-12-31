@@ -2,6 +2,8 @@
 
 @naked decl int MessageBoxW(byte*, char*, char*, int);
 
+#define MB_ICONQUESTION 0x20
+
 class MessageBox {
 	char* title, message,
 	int type;
@@ -12,6 +14,6 @@ class MessageBox {
 }
 
 void run() {
-	MessageBox msg = MessageBox { 'Question', 'does it work? 🤔', 0x20 };
+	MessageBox msg = MessageBox { 'Question', 'does it work? 🤔', @MB_ICONQUESTION };
 	msg.show();
 }

@@ -497,11 +497,8 @@ class Lexer
 	Token Annotation()
 	{
 		Next();
-		int start = pos;
-		while (char.IsLetterOrDigit(current))
-			pos++;
-
-		return new Token(TokenKind.Annotation, src[start..pos], line, col);
+		Token identifier = Identifier();
+		return new Token(TokenKind.Annotation, identifier.text, identifier.line, identifier.col);
 	}
 
 	Token Punctuator()
