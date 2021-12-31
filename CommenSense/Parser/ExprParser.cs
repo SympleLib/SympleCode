@@ -1,4 +1,5 @@
-﻿using System.Security.AccessControl;
+﻿using System.Globalization;
+using System.Security.AccessControl;
 
 namespace CommenSense;
 
@@ -189,10 +190,14 @@ partial class Parser
 			return new CharLiteralExprAst(current, Next().text[0], 8);
 		case TokenKind.NullKeyword:
 			return new NullLiteralExprAst(Next());
+		case TokenKind.Hex:
+			return new IntLiteralExprAst(current, ulong.Parse(Next().text, NumberStyles.HexNumber));
+		case TokenKind.FHex:
+			return new FloatLiteralExprAst(current, double.Parse(Next().text, NumberStyles.HexNumber));
 		case TokenKind.Int:
-			return new IntLiteralExprAst(current, ulong.Parse(Next().text));
+			return new IntLiteralExprAst(current, ulong.Parse(Next().text, NumberStyles.Integer));
 		case TokenKind.Float:
-			return new FloatLiteralExprAst(current, double.Parse(Next().text));
+			return new FloatLiteralExprAst(current, double.Parse(Next().text, NumberStyles.Float));
 		case TokenKind.TrueKeyword:
 			Next();
 			return new BoolLiteralExprAst(current, true);

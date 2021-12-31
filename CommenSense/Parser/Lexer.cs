@@ -12,6 +12,8 @@ public enum TokenKind
 
 	Str,
 	CStr,
+	Hex,
+	FHex,
 	Int,
 	Char,
 	Float,
@@ -287,12 +289,26 @@ class Lexer
 	{
 		int start = pos;
 		TokenKind kind = TokenKind.Int;
-		while (char.IsDigit(current) || current is '.')
+
+		if (current is '0' && next is 'x')
+		{
+			Next();
+			Next();
+			start = pos;
+
+			kind = TokenKind.Hex;
+		}
+		
+		while (char.IsDigit(current) || current is '.' ||
+		       kind is TokenKind.Hex or TokenKind.FHex && current is 'a' or 'b' or 'c' or 'd' or 'e' or 'f'
+			       or 'A' or 'B' or 'C' or 'D' or 'E' or 'F')
 		{
 			if (current is '.')
 			{
 				if (kind == TokenKind.Int)
 					kind = TokenKind.Float;
+				if (kind == TokenKind.Hex)
+					kind = TokenKind.FHex;
 				else
 					throw new Exception("too many dots");
 			}

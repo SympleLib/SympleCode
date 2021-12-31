@@ -12,6 +12,6 @@ class MessageBox {
 }
 
 void run() {
-	MessageBox msg = MessageBox { 'class test', 'it works?', 1 };
+	MessageBox msg = MessageBox { 'Question', 'does it work? 🤔', 0x20 };
 	msg.show();
 }
