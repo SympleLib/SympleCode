@@ -87,8 +87,13 @@ partial class Builder
 		if (ast.ptr is MemberExprAst)
 			add = 1;
 		Value[] args = new Value[ast.args.Length + add];
+
+		int CtnrMutable = -1;
 		if (ast.ptr is MemberExprAst memAst)
+		{
 			args[0] = BuildPtr(memAst.container);
+			CtnrMutable = args[0].IsMutable() ? 1 : 0;
+		}
 
 		for (int i = 0; i < ast.args.Length; i++)
 			args[i + add] = BuildExpr(ast.args[i]);
@@ -114,11 +119,19 @@ partial class Builder
 		Value Func(string name)
 		{
 			List<Value> funcs = scope.FindFuncs(name);
+
 			if (funcs.Count <= 1)
+			{
+				if (CtnrMutable == 0 && funcs[0].IsMutable())
+					throw new Exception("cannot call mut func w/out mut ctnr");
 				return funcs[0];
-			
+			}
+
 			foreach (Value func in funcs)
 			{
+				if (CtnrMutable == 0 && func.IsMutable())
+					continue;
+					
 				if (func.ParamsCount > args.Length)
 					continue;
 				
@@ -132,6 +145,7 @@ partial class Builder
 				return func;
 			}
 
+			throw new Exception("cannot find func");
 			return null;
 		}
 	}
