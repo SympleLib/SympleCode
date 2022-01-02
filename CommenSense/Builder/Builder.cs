@@ -263,7 +263,7 @@ partial class Builder
 		{
 			Value ptr = llBuilder.BuildAlloca(paramTypes[i]);
 			llBuilder.BuildStore(fn.Params[i], ptr);
-			ptr.SetMutable(ast.paramz[i].metadata.Contains("mut"));
+			ptr.SetMutable(ast.paramz[i].mutable);
 			scope.DefineVar(ast.paramz[i].name, ptr);
 		}
 
@@ -297,7 +297,7 @@ partial class Builder
 		llBuilder.PositionAtEnd(entry);
 		currentFunc = fn;
 		
-		fn.SetMutable(ast.metadata.Contains("mut"));
+		fn.SetMutable(ast.mutable);
 
 		EnterScope(null);
 		Value thiz = fn.Params[0];
@@ -305,7 +305,7 @@ partial class Builder
 		for (uint i = 0; i < clazz.fields.Length; i++)
 		{
 			Value ptr = llBuilder.BuildStructGEP(thiz, i);
-			ptr.SetMutable(clazz.fields[i].metadata.Contains("mut") || ast.metadata.Contains("mut"));
+			ptr.SetMutable(clazz.fields[i].mutable || ast.mutable);
 			scope.DefineVar(clazz.fields[i].name, ptr);
 		}
 
@@ -314,7 +314,7 @@ partial class Builder
 		{
 			Value ptr = llBuilder.BuildAlloca(paramTypes[i + 1]);
 			llBuilder.BuildStore(fn.Params[i + 1], ptr);
-			ptr.SetMutable(ast.paramz[i].metadata.Contains("mut"));
+			ptr.SetMutable(ast.paramz[i].mutable);
 			scope.DefineVar(ast.paramz[i].name, ptr);
 		}
 
@@ -345,13 +345,13 @@ partial class Builder
 			Value var = scope.FindVar(ast.realName);
 			var.Initializer = initializer;
 			var.IsGlobalConstant = ast.metadata.Contains("mut");
-			var.SetMutable(ast.metadata.Contains("mut"));
+			var.SetMutable(ast.mutable);
 		}
 		else
 		{
 			Value var = llBuilder.BuildAlloca(type, ast.asmName);
 			llBuilder.BuildStore(initializer, var);
-			var.SetMutable(ast.metadata.Contains("mut"));
+			var.SetMutable(ast.mutable);
 			scope.DefineVar(ast.realName, var);
 		}
 	}

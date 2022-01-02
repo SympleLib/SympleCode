@@ -4,15 +4,15 @@ int MessageBox_IconQuestion = 0x20;
 
 class MessageBox {
 	char* title, message,
-	@mut int type;
+	mut int type;
 	
-	@mut int show() {
+	mut int show() {
 		ret MessageBoxW(null, message, title, type);
 	}
 }
 
 void run() {
-	@mut MessageBox msg = MessageBox { 'Question', 'does it work? 🤔', MessageBox_IconQuestion };
+	mut MessageBox msg = MessageBox { 'Question', 'does it work? 🤔', MessageBox_IconQuestion };
 	msg.show();
 	msg.type = 0;
 	msg.title = 'Not a Question Anymore';

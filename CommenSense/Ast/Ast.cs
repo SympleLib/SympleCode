@@ -9,8 +9,8 @@ abstract partial record TypeAst(int ptrCount, Token token): Ast(token);
 
 partial record BaseTypeAst(Token token, int ptrCount): TypeAst(ptrCount, token);
 partial record FuncTypeAst(TypeAst retType, Token token, TypeAst[] paramTypes, bool vaArg, int ptrCount): TypeAst(ptrCount, token);
-partial record ParamAst(string[] metadata, TypeAst type, Token token, string name, ExprAst defaultExpr): Ast(token);
-partial record FieldAst(string[] metadata, Visibility visibility, TypeAst type, Token token, ExprAst initializer): Ast(token);
+partial record ParamAst(string[] metadata, bool mutable, TypeAst type, Token token, string name, ExprAst defaultExpr): Ast(token);
+partial record FieldAst(string[] metadata, Visibility visibility, bool mutable, TypeAst type, Token token, ExprAst initializer): Ast(token);
 
 
 partial record StmtAst(Token token): Ast(token);
@@ -33,10 +33,10 @@ partial record ClassAst(string[] metadata, Visibility visibility, Token token, F
 partial record UsingAst(Visibility visibility, Token token, TypeAst realType, string alias): StmtAst(token);
 partial record LinkAst(Visibility visibility, Token token, string filename): StmtAst(token);
 
-partial record DeclFuncAst(string[] metadata, Visibility visibility, TypeAst retType, Token token, string asmName, ParamAst[] paramz, bool vaArg): StmtAst(token);
-partial record FuncAst(string[] metadata, Visibility visibility, TypeAst retType, Token token, string asmName, ParamAst[] paramz, bool vaArg, StmtAst[] body): StmtAst(token);
-partial record DeclVarAst(string[] metadata, Visibility visibility, TypeAst type, Token token, string asmName): StmtAst(token);
-partial record VarAst(string[] metadata, Visibility visibility, TypeAst type, Token token, string asmName, ExprAst initializer): StmtAst(token);
+partial record DeclFuncAst(string[] metadata, Visibility visibility, bool mutable, TypeAst retType, Token token, string asmName, ParamAst[] paramz, bool vaArg): StmtAst(token);
+partial record FuncAst(string[] metadata, Visibility visibility, bool mutable, TypeAst retType, Token token, string asmName, ParamAst[] paramz, bool vaArg, StmtAst[] body): StmtAst(token);
+partial record DeclVarAst(string[] metadata, Visibility visibility, bool mutable, TypeAst type, Token token, string asmName): StmtAst(token);
+partial record VarAst(string[] metadata, Visibility visibility, bool mutable, TypeAst type, Token token, string asmName, ExprAst initializer): StmtAst(token);
 
 partial record IfStmtAst(Token token, ExprAst cond, StmtAst then, StmtAst? elze): StmtAst(token);
 partial record WhileStmtAst(Token token, ExprAst cond, StmtAst then): StmtAst(token);

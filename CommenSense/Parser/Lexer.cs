@@ -103,6 +103,8 @@ public enum TokenKind
 	PublicKeyword,
 	PrivateKeyword,
 	ProtectedKeyword,
+	
+	MutableKeyword,
 
 	UsingKeyword,
 	LinkKeyword,
@@ -209,6 +211,8 @@ class Lexer
 			"public",
 			"private",
 			"protected",
+			
+			"mut",
 
 			"using",
 			"link",

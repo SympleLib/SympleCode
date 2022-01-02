@@ -101,6 +101,10 @@ partial class Parser
 	{
 		string[] metadata = MetaData();
 
+		bool mutable;
+		if (mutable = current.kind is TokenKind.MutableKeyword)
+			Next();
+
 		TypeAst type = Type();
 		Token token;
 		string name;
@@ -122,7 +126,7 @@ partial class Parser
 			defaultExpr = Expr();
 		}
 
-		return new ParamAst(metadata, type, token, name, defaultExpr);
+		return new ParamAst(metadata, mutable, type, token, name, defaultExpr);
 	}
 
 	FieldAst Field(List<FieldAst>? fields = null)
@@ -148,6 +152,10 @@ partial class Parser
 			visibility = LLVMDefaultVisibility;
 			break;
 		};
+
+		bool mutable;
+		if (mutable = current.kind is TokenKind.MutableKeyword)
+			Next();
 		
 		TypeAst type;
 		if (fields is not null && fields.Count > 0 && !IsType(current))
@@ -162,7 +170,7 @@ partial class Parser
 			initializer = Expr();
 		}
 
-		return new FieldAst(metadata, visibility, type, name, initializer);
+		return new FieldAst(metadata, visibility, mutable, type, name, initializer);
 	}
 
 	string[] MetaData()

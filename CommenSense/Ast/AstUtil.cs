@@ -6,6 +6,7 @@ using System;
 
 using static _;
 
+// TODO: mutable
 static class _
 {
 	public static int tabCount;
