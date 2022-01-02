@@ -32,6 +32,8 @@ partial class Builder
 		
 		Type type = BuildType(ast.type);
 		Value var = llModule.AddGlobal(type, ast.asmName);
+		if (ast.metadata.Contains("const"))
+			var.IsGlobalConstant = true;
 		scope.DefineVar(ast.realName, var);
 	}
 
@@ -96,6 +98,7 @@ partial class Builder
 	{
 		if (currentFunc != null)
 			return;
+		
 		if (llModule.GetNamedGlobal(ast.asmName) != null)
 			return;
 
@@ -104,6 +107,8 @@ partial class Builder
 		var.Visibility = ast.visibility;
 		if (ast.metadata.Contains("dllimport"))
 			var.DLLStorageClass = LLVMDLLStorageClass.LLVMDLLImportStorageClass;
+		if (ast.metadata.Contains("const"))
+			var.IsGlobalConstant = true;
 		scope.DefineVar(ast.realName, var);
 	}
 

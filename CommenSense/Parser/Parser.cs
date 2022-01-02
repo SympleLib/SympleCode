@@ -37,12 +37,7 @@ partial class Parser
 
 		List<StmtAst> members = new List<StmtAst>();
 		while (current.kind is not TokenKind.Eof)
-		{
-			int start = pos;
 			members.Add(Stmt());
-			if (start == pos)
-				break;
-		}
 
 		return new ModuleAst(filename, folder + "/" + filename, members.ToArray(), ctnrs.ToArray());
 	}
@@ -81,10 +76,7 @@ partial class Parser
 					break;
 				}
 
-				int start = pos;
 				paramTypes.Add(Type());
-				if (start == pos)
-					break;
 
 				if (current.kind is not TokenKind.RightParen)
 					Match(TokenKind.Comma);
@@ -107,6 +99,8 @@ partial class Parser
 
 	ParamAst Param()
 	{
+		string[] metadata = MetaData();
+
 		TypeAst type = Type();
 		Token token;
 		string name;
@@ -121,18 +115,20 @@ partial class Parser
 			name = string.Empty;
 		}
 
-			ExprAst defaultExpr = new ExprAst(Token.devault);
+		ExprAst defaultExpr = new ExprAst(Token.devault);
 		if (current.kind is TokenKind.Eql)
 		{
 			Next();
 			defaultExpr = Expr();
 		}
 
-		return new ParamAst(type, token, name, defaultExpr);
+		return new ParamAst(metadata, type, token, name, defaultExpr);
 	}
 
 	FieldAst Field(List<FieldAst>? fields = null)
 	{
+		string[] metadata = MetaData();
+		
 		Visibility visibility;
 		switch (current.kind)
 		{
@@ -166,7 +162,15 @@ partial class Parser
 			initializer = Expr();
 		}
 
-		return new FieldAst(visibility, type, name, initializer);
+		return new FieldAst(metadata, visibility, type, name, initializer);
+	}
+
+	string[] MetaData()
+	{
+		List<string> metadata = new List<string>();
+		while (current.kind is TokenKind.Annotation)
+			metadata.Add(Next().text);
+		return metadata.ToArray();
 	}
 
 	Token Peek(int offset = 0)
@@ -179,10 +183,9 @@ partial class Parser
 
 	Token Match(TokenKind kind)
 	{
-		if (current.kind == kind)
-			return Next();
-		BadCode.Report(new SyntaxError($"expected {kind}", current));
-		return current;
+		if (current.kind != kind)
+			BadCode.Report(new SyntaxError($"expected {kind}", current));
+		return Next();
 	}
 
 	Token Next()

@@ -36,7 +36,9 @@ partial class Builder
 	{
 		Value container = BuildPtr(ast.container);
 		Container ctnr = scope.GetCtnr(container.TypeOf.ElementType.StructName);
-		uint i = ctnr.GetField(ast.memberName);
-		return llBuilder.BuildStructGEP(container, i);
+		FieldInfo field = ctnr.GetField(ast.memberName);
+		Value ptr = llBuilder.BuildStructGEP(container, field.idx);
+		ptr.SetMutable(field.mutable || container.IsMutable());
+		return ptr;
 	}
 }

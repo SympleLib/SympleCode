@@ -25,9 +25,7 @@ partial class Parser
 			return Ret();
 		}
 
-		List<string> metadata = new List<string>();
-		while (current.kind is TokenKind.Annotation)
-			metadata.Add(Next().text);
+		string[] metadata = MetaData();
 
 		bool illegal = true;
 		Visibility visibility;
@@ -52,9 +50,9 @@ partial class Parser
 		};
 
 		if (current.kind is TokenKind.StructKeyword)
-			return Struct(visibility);
+			return Struct(metadata, visibility);
 		if (current.kind is TokenKind.ClassKeyword)
-			return Class(visibility);
+			return Class(metadata, visibility);
 		if (current.kind is TokenKind.UsingKeyword)
 			return Using(visibility);
 		if (current.kind is TokenKind.LinkKeyword)
@@ -65,8 +63,8 @@ partial class Parser
 			TypeAst type = Type();
 			Token name = Match(TokenKind.Identifier);
 			if (current.kind is TokenKind.LeftParen)
-				return DeclFunc(metadata.ToArray(), visibility, retType: type, name);
-			return DeclVar(metadata.ToArray(), visibility, type, name);
+				return DeclFunc(metadata, visibility, retType: type, name);
+			return DeclVar(metadata, visibility, type, name);
 		}
 		if (current.kind is TokenKind.Identifier && !(scope.VarExists(current.text) || scope.FuncExists(current.text)) && IsType(current))
 		{
@@ -79,8 +77,8 @@ partial class Parser
 				asmName = Match(TokenKind.Str).text;
 			}
 			if (current.kind is TokenKind.LeftParen or TokenKind.LeftBrace or TokenKind.Arrow)
-				return Func(metadata.ToArray(), visibility, retType: type, name, asmName);
-			return Var(metadata.ToArray(), visibility, type, name, asmName);
+				return Func(metadata, visibility, retType: type, name, asmName);
+			return Var(metadata, visibility, type, name, asmName);
 		}
 
 		if (!illegal)
@@ -210,7 +208,7 @@ partial class Parser
 		return new LinkAst(visibility, keywrd, filename);
 	}
 
-	StructAst Struct(Visibility visibility)
+	StructAst Struct(string[] metadata, Visibility visibility)
 	{
 		Match(TokenKind.StructKeyword);
 		Token name = Match(TokenKind.Identifier);
@@ -219,10 +217,7 @@ partial class Parser
 		List<FieldAst> fields = new List<FieldAst>();
 		while (current.kind is not TokenKind.Eof and not TokenKind.RightBrace)
 		{
-			int start = pos;
 			fields.Add(Field(fields));
-			if (start == pos)
-				break;
 
 			if (current.kind is not TokenKind.RightBrace)
 				Match(TokenKind.Comma);
@@ -231,12 +226,12 @@ partial class Parser
 		Match(TokenKind.RightBrace);
 
 		MaybeEndLine();
-		var ztruct = new StructAst(visibility, name, fields.ToArray());
+		var ztruct = new StructAst(metadata, visibility, name, fields.ToArray());
 		ctnrs.Add(ztruct);
 		return ztruct;
 	}
 
-	ClassAst Class(Visibility visibility)
+	ClassAst Class(string[] metadata, Visibility visibility)
 	{
 		Match(TokenKind.ClassKeyword);
 		Token name = Match(TokenKind.Identifier);
@@ -247,8 +242,6 @@ partial class Parser
 		{
 			int start = pos;
 			fields.Add(Field(fields));
-			if (start == pos)
-				break;
 
 			// maybe made function?
 			if (current.kind is TokenKind.LeftParen)
@@ -265,22 +258,18 @@ partial class Parser
 
 		List<FuncAst> funcs = new List<FuncAst>();
 		while (current.kind is not TokenKind.Eof and not TokenKind.RightBrace)
-		{
 			funcs.Add(Func(name.text, fields.ToArray()));
-		}
 
 		Match(TokenKind.RightBrace);
 		MaybeEndLine();
-		var clazz = new ClassAst(visibility, name, fields.ToArray(), funcs.ToArray());
+		var clazz = new ClassAst(metadata, visibility, name, fields.ToArray(), funcs.ToArray());
 		ctnrs.Add(clazz);
 		return clazz;
 	}
 
 	FuncAst Func(string className, FieldAst[] fields)
 	{
-		List<string> metadata = new List<string>();
-		while (current.kind is TokenKind.Annotation)
-			metadata.Add(Next().text);
+		string[] metadata = MetaData();
 		
 		Visibility visibility;
 		switch (current.kind)
@@ -310,7 +299,7 @@ partial class Parser
 		foreach (FieldAst field in fields)
 			scope.DefineVar(field.name);
 		scope.DefineVar("this");
-		FuncAst func = Func(metadata.ToArray(), visibility, retType, name, asmName, false);
+		FuncAst func = Func(metadata, visibility, retType, name, asmName, false);
 		ExitScope();
 		return func;
 	}
@@ -330,10 +319,7 @@ partial class Parser
 				break;
 			}
 
-			int start = pos;
 			ParamAst param = Param();
-			if (start == pos)
-				break;
 
 			paramz.Add(param);
 			scope.DefineVar(param.name);
@@ -378,12 +364,7 @@ partial class Parser
 		List<StmtAst> body = new List<StmtAst>();
 		Match(TokenKind.LeftBrace);
 		while (current.kind is not TokenKind.Eof and not TokenKind.RightBrace)
-		{
-			int start = pos;
 			body.Add(Stmt());
-			if (start == pos)
-				break;
-		}
 		ExitScope();
 		Match(TokenKind.RightBrace);
 

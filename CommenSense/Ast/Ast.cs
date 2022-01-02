@@ -9,25 +9,26 @@ abstract partial record TypeAst(int ptrCount, Token token): Ast(token);
 
 partial record BaseTypeAst(Token token, int ptrCount): TypeAst(ptrCount, token);
 partial record FuncTypeAst(TypeAst retType, Token token, TypeAst[] paramTypes, bool vaArg, int ptrCount): TypeAst(ptrCount, token);
-partial record ParamAst(TypeAst type, Token token, string name, ExprAst defaultExpr): Ast(token);
-partial record FieldAst(Visibility visibility, TypeAst type, Token token, ExprAst initializer): Ast(token);
+partial record ParamAst(string[] metadata, TypeAst type, Token token, string name, ExprAst defaultExpr): Ast(token);
+partial record FieldAst(string[] metadata, Visibility visibility, TypeAst type, Token token, ExprAst initializer): Ast(token);
 
 
 partial record StmtAst(Token token): Ast(token);
 
+readonly record struct FieldInfo(uint idx, bool mutable);
 interface Container
 {
 	public Token token { get; }
 	public string name { get; }
 	public FieldAst[] fields { get; }
 
-	public uint GetField(string name);
-	public uint GetFieldWithLvl(string name, Visibility accessVis);
+	public FieldInfo GetField(string name);
+	public FieldInfo GetFieldWithLvl(string name, Visibility accessVis);
 }
 
-partial record ImplAst(Visibility visibility, Token token, FuncAst[] funcs): StmtAst(token);
-partial record StructAst(Visibility visibility, Token token, FieldAst[] fields): StmtAst(token), Container;
-partial record ClassAst(Visibility visibility, Token token, FieldAst[] fields, FuncAst[] funcs): StmtAst(token), Container;
+partial record ImplAst(string[] metadata, Visibility visibility, Token token, FuncAst[] funcs): StmtAst(token);
+partial record StructAst(string[] metadata, Visibility visibility, Token token, FieldAst[] fields): StmtAst(token), Container;
+partial record ClassAst(string[] metadata, Visibility visibility, Token token, FieldAst[] fields, FuncAst[] funcs): StmtAst(token), Container;
 
 partial record UsingAst(Visibility visibility, Token token, TypeAst realType, string alias): StmtAst(token);
 partial record LinkAst(Visibility visibility, Token token, string filename): StmtAst(token);

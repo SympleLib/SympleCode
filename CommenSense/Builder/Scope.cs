@@ -101,7 +101,12 @@ partial class Builder
 		public void DefineVar(string name, Value symbol)
 		{
 			if (vars.TryGetValue(name, out Value var) && var != symbol)
-				throw new Exception("another var was defined with same name");
+			{
+				// let's try rust re-defining vars
+				vars[name] = symbol;
+				// throw new Exception("another var was defined with same name");
+			}
+
 			vars.TryAdd(name, symbol);
 		}
 

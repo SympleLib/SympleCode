@@ -1,7 +1,7 @@
 @naked public decl void puts(char*);
 
-void()* doTheThing;
-private char* strToPrintOut;
+@mut void()* doTheThing;
+@mut private char* strToPrintOut;
 
 private void doTheThingFn() {
 	puts(strToPrintOut);

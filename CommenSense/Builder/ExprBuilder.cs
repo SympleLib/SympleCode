@@ -140,29 +140,30 @@ partial class Builder
 	{
 		Value container = BuildPtr(ast.container);
 		Container ctnr = scope.GetCtnr(container.TypeOf.ElementType.StructName);
-		uint i = ctnr.GetFieldWithLvl(ast.memberName, LLVMDefaultVisibility);
-		if (i == ~0U)
+		FieldInfo field = ctnr.GetFieldWithLvl(ast.memberName, LLVMDefaultVisibility);
+		if (field.idx == ~0U)
 		{
 			if (ctnr is ClassAst clazz)
 				return scope.FindFunc(clazz.name + "." + clazz.funcs[clazz.GetFuncWithLvl(ast.memberName, LLVMDefaultVisibility)].realName);
 			throw new Exception("we ain't got dat field");
 		}
-		return llBuilder.BuildLoad(llBuilder.BuildStructGEP(container, i));
+		
+		return llBuilder.BuildLoad(llBuilder.BuildStructGEP(container, field.idx));
 	}
 	
 	Value BuildExpr(MemberExprAst ast, CallExprAst callee, Func<string, Value> evalFunc)
 	{
 		Value container = BuildPtr(ast.container);
 		Container ctnr = scope.GetCtnr(container.TypeOf.ElementType.StructName);
-		uint i = ctnr.GetFieldWithLvl(ast.memberName, LLVMDefaultVisibility);
-		if (i == ~0U)
+		FieldInfo field = ctnr.GetFieldWithLvl(ast.memberName, LLVMDefaultVisibility);
+		if (field.idx == ~0U)
 		{
 			if (ctnr is ClassAst clazz)
 				return evalFunc.Invoke(clazz.name + "." + clazz.funcs[clazz.GetFuncWithLvl(ast.memberName, LLVMDefaultVisibility)].realName);
 			throw new Exception("we ain't got dat func");
 		}
 		
-		return llBuilder.BuildLoad(llBuilder.BuildStructGEP(container, i));
+		return llBuilder.BuildLoad(llBuilder.BuildStructGEP(container, field.idx));
 	}
 
 	Value BuildExpr(ArrayExprAst ast)
@@ -338,6 +339,9 @@ partial class Builder
 
 	Value BuildAssign(Value ptr, Token tok, Value left, Value right)
 	{
+		if (!ptr.IsMutable())
+			throw new Exception("cannot modify const var");
+		
 		if (tok.kind is TokenKind.Eql)
 		{
 			llBuilder.BuildStore(right, ptr);

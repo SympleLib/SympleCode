@@ -88,13 +88,13 @@ partial record FuncTypeAst
 }
 
 partial record ParamAst
-{ public override string ToString() => $"{type} {name} = {defaultExpr}"; }
+{ public override string ToString() => $"{string.Join<string>(" @", metadata)} {type} {name} = {defaultExpr}"; }
 
 partial record FieldAst
 {
 	public string name => token.text;
 
-	public override string ToString() => $"{visibility} {type} {name} = {initializer}";
+	public override string ToString() => $"{string.Join<string>(" @", metadata)} {visibility} {type} {name} = {initializer}";
 }
 
 
@@ -103,25 +103,29 @@ partial record ClassAst
 	public string name => token.text;
 
 	// i can be ~0 (-1)
-	public uint GetField(string name)
+	public FieldInfo GetField(string name)
 	{
 		int i = Array.FindIndex(fields, field => field.name == name);
-		return (uint) i;
+		bool mutable = false;
+		if (i != -1)
+			mutable = fields[i].metadata.Contains("mut");
+		return new FieldInfo((uint) i, mutable);
 	}
 
 	// i can be ~0
-	public uint GetFieldWithLvl(string name, Visibility permLvl)
+	public FieldInfo GetFieldWithLvl(string name, Visibility permLvl)
 	{
-		uint i = GetField(name);
-		if (i == ~0U)
-			return i;
-		Visibility vis = fields[i].visibility;
+		FieldInfo field = GetField(name);
+		if (field.idx == ~0U)
+			return field;
+		
+		Visibility vis = fields[field.idx].visibility;
 		if (permLvl is Visibility.LLVMHiddenVisibility)
-			return i;
+			return field;
 		if (permLvl is Visibility.LLVMProtectedVisibility && vis is not Visibility.LLVMHiddenVisibility)
-			return i;
+			return field;
 		if (permLvl is Visibility.LLVMDefaultVisibility && vis is Visibility.LLVMDefaultVisibility)
-			return i;
+			return field;
 		throw new Exception("Ya ain't got perms");
 	}
 
@@ -149,35 +153,35 @@ partial record ClassAst
 		throw new Exception("Ya ain't got perms");
 	}
 
-	public override string ToString() => $"{visibility} class {name} {{\n{IncTab()}{string.Join<FieldAst>("\n" + GetTabs(), fields)}{"\n\n" + GetTabs()}{string.Join<FuncAst>("\n\n" + GetTabs(), funcs)}{DecTab()}\n{GetTabs()}}}";
+	public override string ToString() => $"{string.Join<string>(" @", metadata)} {visibility} class {name} {{\n{IncTab()}{string.Join<FieldAst>("\n" + GetTabs(), fields)}{"\n\n" + GetTabs()}{string.Join<FuncAst>("\n\n" + GetTabs(), funcs)}{DecTab()}\n{GetTabs()}}}";
 }
 
 partial record StructAst
 {
 	public string name => token.text;
 
-	public uint GetField(string name)
+	public FieldInfo GetField(string name)
 	{
 		int i = Array.FindIndex(fields, field => field.name == name);
-		if (i == -1)
+		if (i != -1)
 			throw new Exception("we ain't got dat field");
-		return (uint) i;
+		return new FieldInfo((uint) i, fields[i].metadata.Contains("mut"));
 	}
 
-	public uint GetFieldWithLvl(string name, Visibility permLvl)
+	public FieldInfo GetFieldWithLvl(string name, Visibility permLvl)
 	{
-		uint i = GetField(name);
-		Visibility vis = fields[i].visibility;
+		FieldInfo field = GetField(name);
+		Visibility vis = fields[field.idx].visibility;
 		if (permLvl is Visibility.LLVMHiddenVisibility)
-			return i;
+			return field;
 		if (permLvl is Visibility.LLVMProtectedVisibility && vis is not Visibility.LLVMHiddenVisibility)
-			return i;
+			return field;
 		if (permLvl is Visibility.LLVMDefaultVisibility && vis is Visibility.LLVMDefaultVisibility)
-			return i;
+			return field;
 		throw new Exception("Ya ain't got perms");
 	}
 
-	public override string ToString() => $"{visibility} struct {name} {{\n{IncTab()}{string.Join<FieldAst>("\n" + GetTabs(), fields)}{DecTab()}\n{GetTabs()}}}";
+	public override string ToString() => $"{string.Join<string>(" @", metadata)} {visibility} struct {name} {{\n{IncTab()}{string.Join<FieldAst>("\n" + GetTabs(), fields)}{DecTab()}\n{GetTabs()}}}";
 }
 
 
@@ -192,7 +196,7 @@ partial record DeclFuncAst
 {
 	public string realName => token.text;
 	
-	public override string ToString() => $"{visibility} decl {retType} {realName}({string.Join<ParamAst>(", ", paramz)}{PrintWithVaArgMaybeIHonestlyDontKnowWhatToCallThisFunction(vaArg)}): '{asmName}'";
+	public override string ToString() => $"{string.Join<string>(" @", metadata)} {visibility} decl {retType} {realName}({string.Join<ParamAst>(", ", paramz)}{PrintWithVaArgMaybeIHonestlyDontKnowWhatToCallThisFunction(vaArg)}): '{asmName}'";
 }
 
 partial record FuncAst
@@ -205,15 +209,16 @@ partial record FuncAst
 partial record DeclVarAst
 {
 	public string realName => token.text;
+	public bool mutable => metadata.Contains("const");
 	
-	public override string ToString() => $"{visibility} decl {type} {realName}: '{asmName}'";
+	public override string ToString() => $"{string.Join<string>(" @", metadata)} {visibility} decl {type} {realName}: '{asmName}'";
 }
 
 partial record VarAst
 {
 	public string realName => token.text;
 	
-	public override string ToString() => $"{visibility} {type} {realName}: '{asmName}' = {initializer}";
+	public override string ToString() => $"{string.Join<string>(" @", metadata)} {visibility} {type} {realName}: '{asmName}' = {initializer}";
 }
 
 

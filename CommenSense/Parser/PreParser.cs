@@ -78,8 +78,8 @@ partial class Parser
 			Next();
 			defVis = false;
 			break;
-		};
-
+		}
+		
 		if (current.kind is TokenKind.StructKeyword)
 			PreStruct(isPublic);
 		else if (current.kind is TokenKind.ClassKeyword)

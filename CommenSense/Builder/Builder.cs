@@ -13,6 +13,7 @@ partial class Builder
 	readonly ModuleAst module;
 	readonly LLVMModuleRef llModule;
 	readonly LLVMBuilderRef llBuilder;
+	readonly LLVMContextRef ctx;
 
 	static readonly Type uninitType = Type.CreateInt(1);
 
@@ -24,8 +25,9 @@ partial class Builder
 		module = modules[index];
 		links.AddRange(modules);
 
-		llModule = LLVMModuleRef.CreateWithName(module.name);
-		llBuilder = LLVMBuilderRef.Create(llModule.Context);
+		ctx = LLVMContextRef.Global;
+		llModule = ctx.CreateModuleWithName(module.name);
+		llBuilder = ctx.CreateBuilder();
 		globalScope = new Scope(this, null);
 		scope = globalScope;
 	}
@@ -261,6 +263,7 @@ partial class Builder
 		{
 			Value ptr = llBuilder.BuildAlloca(paramTypes[i]);
 			llBuilder.BuildStore(fn.Params[i], ptr);
+			ptr.SetMutable(ast.paramz[i].metadata.Contains("mut"));
 			scope.DefineVar(ast.paramz[i].name, ptr);
 		}
 
@@ -293,6 +296,8 @@ partial class Builder
 		Block entry = fn.AppendBasicBlock(string.Empty);
 		llBuilder.PositionAtEnd(entry);
 		currentFunc = fn;
+		
+		fn.SetMutable(ast.metadata.Contains("mut"));
 
 		EnterScope(null);
 		Value thiz = fn.Params[0];
@@ -300,6 +305,7 @@ partial class Builder
 		for (uint i = 0; i < clazz.fields.Length; i++)
 		{
 			Value ptr = llBuilder.BuildStructGEP(thiz, i);
+			ptr.SetMutable(clazz.fields[i].metadata.Contains("mut") || ast.metadata.Contains("mut"));
 			scope.DefineVar(clazz.fields[i].name, ptr);
 		}
 
@@ -308,6 +314,7 @@ partial class Builder
 		{
 			Value ptr = llBuilder.BuildAlloca(paramTypes[i + 1]);
 			llBuilder.BuildStore(fn.Params[i + 1], ptr);
+			ptr.SetMutable(ast.paramz[i].metadata.Contains("mut"));
 			scope.DefineVar(ast.paramz[i].name, ptr);
 		}
 
@@ -337,11 +344,14 @@ partial class Builder
 		{
 			Value var = scope.FindVar(ast.realName);
 			var.Initializer = initializer;
+			var.IsGlobalConstant = ast.metadata.Contains("mut");
+			var.SetMutable(ast.metadata.Contains("mut"));
 		}
 		else
 		{
 			Value var = llBuilder.BuildAlloca(type, ast.asmName);
 			llBuilder.BuildStore(initializer, var);
+			var.SetMutable(ast.metadata.Contains("mut"));
 			scope.DefineVar(ast.realName, var);
 		}
 	}
