@@ -304,15 +304,15 @@ partial class Parser
 		string asmName = $"{className}.{name.text}";
 
 		EnterScope();
+		scope.DefineVar("this");
 		foreach (FieldAst field in fields)
 			scope.DefineVar(field.name);
-		scope.DefineVar("this");
 		FuncAst func = Func(metadata, visibility, mutable, retType, name, asmName, false);
 		ExitScope();
 		return func;
 	}
 
-	FuncAst Func(string[] metadata, Visibility visibility, bool mutable, TypeAst retType, Token name, string? asmName, bool asmNameFinal = true)
+	FuncAst Func(string[] metadata, Visibility visibility, bool mutable, TypeAst retType, Token name, string? asmName, bool asmNameIsName = true)
 	{
 		EnterScope();
 		bool vaArg = false;
@@ -337,7 +337,7 @@ partial class Parser
 
 		Match(TokenKind.RightParen);
 
-		if (asmName is null || !asmNameFinal)
+		if (asmName is null || !asmNameIsName)
 		{
 			if (current.kind is TokenKind.Colon)
 			{
@@ -348,8 +348,8 @@ partial class Parser
 				asmName = name.text;
 			else
 			{
-				StringBuilder sb = new StringBuilder("Syf$");
-				sb.Append(name.text);
+				StringBuilder sb = new StringBuilder(mutable ? "Symf$" : "Syf$");
+				sb.Append(asmNameIsName ? name.text : asmName);
 				foreach (ParamAst param in paramz)
 				{
 					sb.Append(';');

@@ -6,12 +6,17 @@ class MessageBox {
 	char* title, message,
 	int type;
 	
+	mut int show() {
+		message = 'get haxed nerd';
+		ret MessageBoxW(null, message, title, type);
+	}
+	
 	int show() {
 		ret MessageBoxW(null, message, title, type);
 	}
 }
 
 void run() {
-	MessageBox msg = MessageBox { 'Question', 'does it work? 🤔', MessageBox_IconQuestion };
+	mut MessageBox msg = MessageBox { 'Question', 'does it work? 🤔', MessageBox_IconQuestion };
 	msg.show();
 }
