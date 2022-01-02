@@ -346,12 +346,14 @@ partial class Builder
 			var.Initializer = initializer;
 			var.IsGlobalConstant = ast.metadata.Contains("mut");
 			var.SetMutable(ast.mutable);
+			var.SetMetadata(ast.metadata);
 		}
 		else
 		{
 			Value var = llBuilder.BuildAlloca(type, ast.asmName);
 			llBuilder.BuildStore(initializer, var);
 			var.SetMutable(ast.mutable);
+			var.SetMetadata(ast.metadata);
 			scope.DefineVar(ast.realName, var);
 		}
 	}

@@ -32,8 +32,9 @@ partial class Builder
 		
 		Type type = BuildType(ast.type);
 		Value var = llModule.AddGlobal(type, ast.asmName);
-		if (ast.metadata.Contains("const"))
-			var.IsGlobalConstant = true;
+		var.IsGlobalConstant = ast.mutable;
+		var.SetMutable(ast.mutable);
+		var.SetMetadata(ast.metadata);
 		scope.DefineVar(ast.realName, var);
 	}
 
@@ -50,6 +51,7 @@ partial class Builder
 		Type ty = Type.CreateFunction(retType, paramTypes, ast.vaArg);
 		Value fn = llModule.AddFunction(ast.asmName, ty);
 		// fn.FunctionCallConv = (uint) ast.conv;
+		fn.SetMetadata(ast.metadata);
 		if (ast.metadata.Contains("dllimport"))
 			fn.DLLStorageClass = LLVMDLLStorageClass.LLVMDLLImportStorageClass;
 		scope.DefineFunc(ast.realName, fn);
@@ -68,6 +70,7 @@ partial class Builder
 		Type type = Type.CreateFunction(retType, paramTypes, ast.vaArg);
 		Value func = llModule.AddFunction(ast.asmName, type);
 		func.Visibility = ast.visibility;
+		func.SetMetadata(ast.metadata);
 		if (ast.metadata.Contains("dllimport"))
 			func.DLLStorageClass = LLVMDLLStorageClass.LLVMDLLImportStorageClass;
 		// func.FunctionCallConv = (uint) ast.conv;
@@ -88,6 +91,7 @@ partial class Builder
 		Type type = Type.CreateFunction(retType, paramTypes, ast.vaArg);
 		Value func = llModule.AddFunction(ast.asmName, type);
 		func.Visibility = ast.visibility;
+		func.SetMetadata(ast.metadata);
 		if (ast.metadata.Contains("dllimport"))
 			func.DLLStorageClass = LLVMDLLStorageClass.LLVMDLLImportStorageClass;
 		// func.FunctionCallConv = (uint) ast.conv;
@@ -107,8 +111,6 @@ partial class Builder
 		var.Visibility = ast.visibility;
 		if (ast.metadata.Contains("dllimport"))
 			var.DLLStorageClass = LLVMDLLStorageClass.LLVMDLLImportStorageClass;
-		if (ast.metadata.Contains("const"))
-			var.IsGlobalConstant = true;
 		scope.DefineVar(ast.realName, var);
 	}
 

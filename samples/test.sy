@@ -17,6 +17,6 @@ class MessageBox {
 }
 
 void run() {
-	mut MessageBox msg = MessageBox { 'Question', 'does it work? 🤔', MessageBox_IconQuestion };
+	@hamburger @cheeseburger @lemonburger @pinkburgler mut MessageBox msg = MessageBox { 'Question', 'does it work? 🤔', MessageBox_IconQuestion };
 	msg.show();
 }

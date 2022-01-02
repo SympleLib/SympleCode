@@ -37,6 +37,15 @@ static class LLVMExt
 		return SameAs(t1.ElementType, t2.ElementType);
 	}
 
+	public static void SetMetadata(this Value value, string[] metadata)
+	{
+		Value[] vals = new Value[metadata.Length];
+		for (int i = 0; i < vals.Length; i++)
+			vals[i] = LLVMContextRef.Global.GetMDString(metadata[i]);
+		Value mdnode = LLVMContextRef.Global.GetMDNode(vals);
+		value.SetMetadata(LLVMContextRef.Global.GetMDKindID("syc.md.metadata"), mdnode);
+	}
+
 	public static void SetMutable(this Value value, bool mutable)
 	{
 		Value mdnode = LLVMContextRef.Global.GetMDString(mutable ? "true" : "false");
