@@ -8,7 +8,12 @@ partial class Parser
 	readonly Dictionary<string, bool> preParse = new Dictionary<string, bool>();
 
 	readonly Dictionary<string, bool> varNames = new Dictionary<string, bool>();
-	readonly Dictionary<string, bool> funcNames = new Dictionary<string, bool>();
+
+	private readonly Dictionary<string, bool> funcNames = new Dictionary<string, bool>()
+	{
+		{ "stalloc" , false },
+	};
+	
 	readonly Dictionary<string, bool> typeNames = new Dictionary<string, bool>()
 	{
 		{ "void", false },

@@ -48,7 +48,7 @@ static class LLVMExt
 
 	public static void SetMutable(this Value value, bool mutable)
 	{
-		Value mdnode = LLVMContextRef.Global.GetMDString(mutable ? "true" : "false");
+		Value mdnode = LLVMContextRef.Global.GetMDNode(new Value[] { Value.CreateConstInt(Type.Int1, mutable ? 1UL : 0UL) });
 		value.SetMetadata(LLVMContextRef.Global.GetMDKindID("syc.md.mutable"), mdnode);
 	}
 
@@ -57,6 +57,6 @@ static class LLVMExt
 		Value mdnode = value.GetMetadata(LLVMContextRef.Global.GetMDKindID("syc.md.mutable"));
 		if (mdnode == null)
 			return false;
-		return mdnode.GetOperand(0).GetMDString(out uint len) == "true";
+		return mdnode.GetOperand(0).ConstIntZExt == 1UL;
 	}
 }

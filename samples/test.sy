@@ -1,4 +1,6 @@
 @naked decl int MessageBoxW(byte*, char*, char*, int);
+@naked decl byte* malloc(int size);
+@naked decl void printf(char* fmt, ...);
 
 int MessageBox_IconQuestion = 0x20;
 
@@ -17,6 +19,9 @@ class MessageBox {
 }
 
 @entry void asjdf083wjhjr5930() {
-	mut MessageBox msg = MessageBox { 'Question', 'does it work? 🤔', MessageBox_IconQuestion };
-	msg.show();
+	mut int* ptr = stalloc(3 * 4);
+	ptr[0] = 69;
+	ptr[1] = 420;
+	ptr[2] = 	1337;
+	printf("%i\n", %ptr);
 }

@@ -19,7 +19,7 @@ partial class Builder
 		{
 			//if (unExpr.op is TokenKind.And)
 			//	return BuildPtr(unExpr.operand);
-			if (preExpr.op is LLVMLoad)
+			if (preExpr.op is LLVMLoad) 
 				return BuildExpr(preExpr.operand);
 		}
 		throw new Exception("not a ptr D:{");
@@ -29,6 +29,7 @@ partial class Builder
 	{
 		Value ptr = BuildExpr(ast.ptr);
 		Value elePtr = llBuilder.BuildInBoundsGEP(ptr, new Value[] { BuildExpr(ast.index) });
+		elePtr.SetMutable(ptr.IsMutable());
 		return elePtr;
 	}
 

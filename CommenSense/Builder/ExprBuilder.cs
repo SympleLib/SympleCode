@@ -35,8 +35,14 @@ partial class Builder
 
 		if (ast is FuncPtrAst funcExpr)
 			return scope.FindFunc(funcExpr.funcName);
+
 		if (ast is VarExprAst varExpr)
-			return llBuilder.BuildLoad(scope.FindVar(varExpr.varName));
+		{
+			Value ptr = scope.FindVar(varExpr.varName);
+			Value val = llBuilder.BuildLoad(ptr);
+			val.SetMutable(ptr.IsMutable());
+			return val;
+		}
 		if (ast is CallExprAst callExpr)
 			return BuildExpr(callExpr);
 		if (ast is MemberExprAst memberExpr)
@@ -100,8 +106,12 @@ partial class Builder
 
 		Value ptr;
 		if (ast.ptr is FuncPtrAst fnPtr)
+		{
+			if (fnPtr.funcName == "stalloc")
+				return llBuilder.BuildArrayAlloca(Type.Int8, BuildCast(BuildExpr(ast.args[0]), Type.Int64, Token.devault));
 			ptr = Func(fnPtr.funcName);
-		if (ast.ptr is MemberExprAst memExpr)
+		}
+		else if (ast.ptr is MemberExprAst memExpr)
 			ptr = BuildExpr(memExpr, ast, Func);
 		else
 			ptr = BuildExpr(ast.ptr);
