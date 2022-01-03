@@ -54,7 +54,7 @@ static class CastVerifier
 				return 1;
 
 			if (from.IntWidth > to.IntWidth)
-				return 1;
+				return 2;
 		}
 
 		if (from.Kind is LLVMDoubleTypeKind && to.Kind is LLVMFloatTypeKind)

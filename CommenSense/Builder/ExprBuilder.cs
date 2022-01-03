@@ -33,9 +33,13 @@ partial class Builder
 		if (ast is FloatLiteralExprAst floatLiteral)
 			return Value.CreateConstReal(Type.Float, floatLiteral.value);
 
+		if (ast is StallocExprAst stallocExpr)
+			return llBuilder.BuildArrayAlloca(Type.Int8, BuildExpr(stallocExpr.size));
+		if (ast is SizeofExprAst sizeofExpr)
+			return BuildType(sizeofExpr.type).SizeOf;
+		
 		if (ast is FuncPtrAst funcExpr)
 			return scope.FindFunc(funcExpr.funcName);
-
 		if (ast is VarExprAst varExpr)
 		{
 			Value ptr = scope.FindVar(varExpr.varName);
@@ -106,11 +110,7 @@ partial class Builder
 
 		Value ptr;
 		if (ast.ptr is FuncPtrAst fnPtr)
-		{
-			if (fnPtr.funcName == "stalloc")
-				return llBuilder.BuildArrayAlloca(Type.Int8, BuildCast(BuildExpr(ast.args[0]), Type.Int64, Token.devault));
 			ptr = Func(fnPtr.funcName);
-		}
 		else if (ast.ptr is MemberExprAst memExpr)
 			ptr = BuildExpr(memExpr, ast, Func);
 		else
@@ -285,6 +285,9 @@ partial class Builder
 		Value right = BuildExpr(ast.right);
 
 		Type type = left.TypeOf;
+		if (CastVerifier.CastPrecedence(left.TypeOf, right.TypeOf) >
+		    CastVerifier.CastPrecedence(right.TypeOf, left.TypeOf))
+			type = right.TypeOf;
 
 		if (ast.op is TokenKind kind)
 		{
@@ -298,12 +301,15 @@ partial class Builder
 				return BuildLogic(kind, ast, left, right);
 
 			default:
+				left = BuildCast(left, type, ast.left.token);
 				right = BuildCast(right, type, ast.right.token);
+				
 				Value ptr = BuildPtr(ast.left);
 				return BuildAssign(ptr, ast.token, left, right);
 			}
 		}
 
+		left = BuildCast(left, type, ast.left.token);
 		right = BuildCast(right, type, ast.right.token);
 
 		if (ast.op is LLVMIntPredicate _op)

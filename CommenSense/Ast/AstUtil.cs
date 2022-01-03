@@ -274,6 +274,10 @@ partial record FloatLiteralExprAst
 { public override string ToString() => $"{value}"; }
 
 
+partial record StallocExprAst
+{ public override string ToString() => $"stalloc({size})"; }
+partial record SizeofExprAst
+{ public override string ToString() => $"sizeof({type})"; }
 partial record CallExprAst
 { public override string ToString() => $"{ptr}({string.Join<ExprAst>(", ", args)})"; }
 

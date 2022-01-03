@@ -19,9 +19,9 @@ class MessageBox {
 }
 
 @entry void asjdf083wjhjr5930() {
-	mut int* ptr = stalloc(3 * 4);
+	mut int* ptr = stalloc(3 * sizeof(int));
 	ptr[0] = 69;
 	ptr[1] = 420;
-	ptr[2] = 	1337;
-	printf("%i\n", %ptr);
+	ptr[2] = 1337;
+	printf("%i, %i, %i\n", ptr[0], ptr[1], ptr[2]);
 }

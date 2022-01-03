@@ -105,10 +105,16 @@ partial class Parser
 			return new PreExprAst(PreOpcode(op.kind), op, PrimExpr());
 		case TokenKind.Identifier:
 		{
-			if (scope.FuncExists(current.text)) // fnptr overloads
-				return new FuncPtrAst(Next());
 			if (scope.VarExists(current.text))
 				return new VarExprAst(Next());
+
+			if (current.text is "stalloc")
+				return StallocExpr();
+			if (current.text is "sizeof")
+				return SizeofExpr();
+			
+			if (scope.FuncExists(current.text)) // fnptr overloads
+				return new FuncPtrAst(Next());
 			if (!IsType(current))
 				BadCode.Report(new SyntaxError($"symbol '{current.text}' doesn't exist", current));
 			TypeAst type = Type();
@@ -143,6 +149,26 @@ partial class Parser
 		default:
 			return LiteralExpr();
 		}
+	}
+
+	StallocExprAst StallocExpr()
+	{
+		Token name = Match(TokenKind.Identifier);
+		Match(TokenKind.LeftParen);
+		ExprAst size = Expr();
+		Match(TokenKind.RightParen);
+
+		return new StallocExprAst(name, size);
+	}
+
+	SizeofExprAst SizeofExpr()
+	{
+		Token name = Match(TokenKind.Identifier);
+		Match(TokenKind.LeftParen);
+		TypeAst type = Type();
+		Match(TokenKind.RightParen);
+
+		return new SizeofExprAst(name, type);
 	}
 
 	ArrayExprAst ArrayExpr(TypeAst? eleType = null)

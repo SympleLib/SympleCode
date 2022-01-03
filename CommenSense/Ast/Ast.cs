@@ -60,6 +60,8 @@ partial record CStrLiteralExprAst(Token token, string value): LiteralExprAst(tok
 partial record CharLiteralExprAst(Token token, ulong value, int nBits): LiteralExprAst(token);
 partial record FloatLiteralExprAst(Token token, double value): LiteralExprAst(token);
 
+partial record StallocExprAst(Token token, ExprAst size): ExprAst(token);
+partial record SizeofExprAst(Token token, TypeAst type): ExprAst(token);
 partial record CallExprAst(ExprAst ptr, Token token, ExprAst[] args): ExprAst(token);
 partial record VarExprAst(Token token): ExprAst(token);
 partial record FuncPtrAst(Token token): ExprAst(token);
