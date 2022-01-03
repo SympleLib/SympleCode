@@ -2,6 +2,7 @@ dbgout.txt
 *.ll
 *.tree
 *.exe
+wiki/
 
 
 ## Ignore Visual Studio temporary files, build results, and
