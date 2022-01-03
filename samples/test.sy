@@ -16,7 +16,7 @@ class MessageBox {
 	}
 }
 
-void run() {
-	@hamburger @cheeseburger @lemonburger @pinkburgler mut MessageBox msg = MessageBox { 'Question', 'does it work? 🤔', MessageBox_IconQuestion };
+@entry void asjdf083wjhjr5930() {
+	mut MessageBox msg = MessageBox { 'Question', 'does it work? 🤔', MessageBox_IconQuestion };
 	msg.show();
 }

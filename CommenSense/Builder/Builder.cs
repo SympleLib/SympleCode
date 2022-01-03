@@ -253,6 +253,8 @@ partial class Builder
 	{
 		// Value fn = scope.Find(ast.realName);
 		Value fn = llModule.GetNamedFunction(ast.asmName);
+		if (ast.metadata.Contains("entry"))
+			fn.Name = "main";
 		Type[] paramTypes = fn.TypeOf.ElementType.ParamTypes;
 		Block entry = fn.AppendBasicBlock(string.Empty);
 		llBuilder.PositionAtEnd(entry);
