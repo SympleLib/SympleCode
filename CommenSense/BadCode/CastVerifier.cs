@@ -12,6 +12,9 @@ static class CastVerifier
 		
 		if (from == Type.Void)
 			return false;
+
+		if (!from.IsMutable() && to.IsMutable())
+			return false;
 		
 		if (from.Kind is LLVMIntegerTypeKind && to.Kind is LLVMIntegerTypeKind)
 		{
@@ -41,6 +44,9 @@ static class CastVerifier
 	public static int CastPrecedence(Type from, Type to)
 	{
 		if (from == Type.Void)
+			return 0;
+		
+		if (!from.IsMutable() && to.IsMutable())
 			return 0;
 		
 		if (from.Kind is LLVMIntegerTypeKind && to.Kind is LLVMIntegerTypeKind)

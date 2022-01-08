@@ -1,25 +1,12 @@
-@naked decl int MessageBoxW(byte*, char*, char*, int);
-@naked decl byte* malloc(int size);
 @naked decl void printf(char* fmt, ...);
+@naked decl byte mut* malloc(int size);
 
-int MessageBox_IconQuestion = 0x20;
-
-class MessageBox {
-	char* title, message,
-	int type;
-	
-	mut int show() {
-		message = 'get haxed nerd';
-		ret MessageBoxW(null, message, title, type);
-	}
-	
-	int show() {
-		ret MessageBoxW(null, message, title, type);
-	}
+int* mutTest() {
+	ret malloc(3 * sizeof(int) to int);
 }
 
 @entry void asjdf083wjhjr5930() {
-	mut int* ptr = stalloc(3 * sizeof(int));
+	int mut* ptr = mutTest();
 	ptr[0] = 69;
 	ptr[1] = 420;
 	ptr[2] = 1337;

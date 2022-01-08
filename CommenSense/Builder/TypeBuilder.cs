@@ -11,6 +11,13 @@ partial class Builder
 			return BuildType(baseType);
 		if (ast is FuncTypeAst funcType)
 			return BuildType(funcType);
+		if (ast is PtrTypeAst ptrType)
+		{
+			Type baze = BuildType(ptrType.baze);
+			Type type = Type.CreatePointer(baze, 0);
+			type.SetMutable(ptrType.mutable);
+			return type;
+		}
 
 		throw new Exception("type no exist");
 	}
@@ -31,9 +38,6 @@ partial class Builder
 			_ => scope.FindType(ast.typeBase),
 		};
 
-		for (int i = 0; i < ast.ptrCount; i++)
-			type = Type.CreatePointer(type, 0);
-
 		return type;
 	}
 
@@ -45,10 +49,6 @@ partial class Builder
 
 		Type retType = BuildType(ast.retType);
 		Type type = Type.CreateFunction(retType, paramTypes, ast.vaArg);
-
-		for (int i = 0; i < ast.ptrCount; i++)
-			type = Type.CreatePointer(type, 0);
-
 		return type;
 	}
 

@@ -29,7 +29,7 @@ partial class Builder
 	{
 		Value ptr = BuildExpr(ast.ptr);
 		Value elePtr = llBuilder.BuildInBoundsGEP(ptr, new Value[] { BuildExpr(ast.index) });
-		elePtr.SetMutable(ptr.IsMutable());
+		elePtr.SetMutable(ptr.TypeOf.IsMutable());
 		return elePtr;
 	}
 

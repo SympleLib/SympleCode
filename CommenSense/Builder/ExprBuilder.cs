@@ -8,8 +8,7 @@ partial class Builder
 	Value BuildExpr(ExprAst ast)
 	{
 		if (ast is CStrLiteralExprAst cstrLiteral)
-			return BuildCast(llBuilder.BuildGlobalString(cstrLiteral.value), Type.CreatePointer(Type.Int8, 0),
-				cstrLiteral.token);
+			return llBuilder.BuildGlobalString(cstrLiteral.value);
 		if (ast is StrLiteralExprAst strLiteral)
 			return BuildExpr(strLiteral);
 		if (ast is CharLiteralExprAst charLiteral)
@@ -34,7 +33,12 @@ partial class Builder
 			return Value.CreateConstReal(Type.Float, floatLiteral.value);
 
 		if (ast is StallocExprAst stallocExpr)
-			return llBuilder.BuildArrayAlloca(Type.Int8, BuildExpr(stallocExpr.size));
+		{
+			Value array = llBuilder.BuildArrayAlloca(Type.Int8, BuildExpr(stallocExpr.size));
+			array.TypeOf.SetMutable(true);
+			return array;
+		}
+
 		if (ast is SizeofExprAst sizeofExpr)
 			return BuildType(sizeofExpr.type).SizeOf;
 		
@@ -124,8 +128,10 @@ partial class Builder
 				args[i + add] = BuildCast(args[i + add], ptr.TypeOf.ElementType.ParamTypes[i + add], ast.token);
 		}
 
-		return llBuilder.BuildCall(ptr, args);
-
+		Value call = llBuilder.BuildCall(ptr, args);
+		call.TypeOf.IsMutable();
+		return call;
+		
 		Value Func(string name)
 		{
 			List<Value> funcs = scope.FindFuncs(name);

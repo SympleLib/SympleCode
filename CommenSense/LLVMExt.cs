@@ -59,4 +59,24 @@ static class LLVMExt
 			return false;
 		return mdnode.GetOperand(0).ConstIntZExt == 1UL;
 	}
+
+	private static Dictionary<IntPtr, bool> mutableness = new Dictionary<IntPtr, bool>();
+
+	public static void SetMutable(this Type type, bool mutable)
+	{
+		if (mutableness.ContainsKey(type.Handle))
+			mutableness[type.Handle] = mutable;
+		else
+			mutableness.Add(type.Handle, mutable);
+	}
+
+	public static bool IsMutable(this Type type)
+	{
+		if (mutableness.ContainsKey(type.Handle))
+		{
+			bool x= mutableness[type.Handle];
+			return x;
+		}
+		return false;
+	}
 }

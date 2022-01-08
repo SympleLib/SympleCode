@@ -1,14 +1,13 @@
-﻿using System.Text;
-
-namespace CommenSense;
+﻿namespace CommenSense;
 
 partial record Ast(Token token);
 partial record ModuleAst(string name, string srcFile, StmtAst[] members, Container[] ctnrs);
 
-abstract partial record TypeAst(int ptrCount, Token token): Ast(token);
+abstract partial record TypeAst(Token token): Ast(token);
 
-partial record BaseTypeAst(Token token, int ptrCount): TypeAst(ptrCount, token);
-partial record FuncTypeAst(TypeAst retType, Token token, TypeAst[] paramTypes, bool vaArg, int ptrCount): TypeAst(ptrCount, token);
+partial record PtrTypeAst(TypeAst baze, bool mutable, Token token): TypeAst(token);
+partial record BaseTypeAst(Token token): TypeAst(token);
+partial record FuncTypeAst(TypeAst retType, Token token, TypeAst[] paramTypes, bool vaArg): TypeAst(token);
 partial record ParamAst(string[] metadata, bool mutable, TypeAst type, Token token, string name, ExprAst defaultExpr): Ast(token);
 partial record FieldAst(string[] metadata, Visibility visibility, bool mutable, TypeAst type, Token token, ExprAst initializer): Ast(token);
 

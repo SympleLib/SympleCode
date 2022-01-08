@@ -6,7 +6,6 @@ using System;
 
 using static _;
 
-// TODO: mutable
 static class _
 {
 	public static int tabCount;
@@ -40,6 +39,13 @@ static class _
 			return string.Empty;
 		return $"\n{IncTab()}{elze}{DecTab()}";
 	}
+
+	public static string Mutableness(bool mutable)
+	{
+		if (mutable)
+			return "mut ";
+		return string.Empty;
+	}
 }
 
 partial record ModuleAst
@@ -53,39 +59,31 @@ partial record TypeAst
 	protected abstract string GenName();
 }
 
+partial record PtrTypeAst
+{
+	protected override string GenName() =>
+		$"{Mutableness(mutable)}{baze}*";
+	
+	public override string ToString() => name;
+}
+
 partial record BaseTypeAst
 {
 	public string typeBase => token.text;
 
-	protected override string GenName()
-	{
-		StringBuilder sb = new StringBuilder();
-		sb.Append('*', ptrCount);
-		sb.Append(typeBase);
-		return sb.ToString();
-	}
+	protected override string GenName() =>
+		typeBase;
 	
-	public override string ToString() => $"{typeBase}{new string('*', ptrCount)}";
+	public override string ToString() => name;
 }
 
 partial record FuncTypeAst
 {
-	protected override string GenName()
-	{
-		StringBuilder sb = new StringBuilder();
-		sb.Append('*', ptrCount);
-		sb.Append('(');
-		foreach (TypeAst paramType in paramTypes)
-		{
-			sb.Append(paramType);
-			sb.Append(',');
-		}
-		sb.Append(')');
-		return sb.ToString();
-	}
-	
+	protected override string GenName() =>
+		$"{retType} ({string.Join<TypeAst>(", ", paramTypes)}{PrintWithVaArgMaybeIHonestlyDontKnowWhatToCallThisFunction(vaArg)})";
+
 	public override string ToString() =>
-		$"{retType} ({string.Join<TypeAst>(", ", paramTypes)}{PrintWithVaArgMaybeIHonestlyDontKnowWhatToCallThisFunction(vaArg)}){new string('*', ptrCount)}";
+		name;
 }
 
 partial record ParamAst

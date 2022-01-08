@@ -53,14 +53,20 @@ partial class Parser
 	TypeAst Type()
 	{
 		Token typeBase = Match(TokenKind.Identifier);
-		int ptrCount = 0;
-		while (current.kind is TokenKind.Star)
-		{
-			ptrCount++;
-			Next();
-		}
+		TypeAst baseType = new BaseTypeAst(typeBase);
 		
-		TypeAst baseType = new BaseTypeAst(typeBase, ptrCount);
+		while (true)
+		{
+			if (current.kind is TokenKind.Star)
+				baseType = new PtrTypeAst(baseType, false, Next());
+			else if (current.kind is TokenKind.MutableKeyword)
+			{
+				Next();
+				baseType = new PtrTypeAst(baseType, true, Match(TokenKind.Star));
+			}
+			else
+				break;
+		}
 
 		if (current.kind == TokenKind.LeftParen)
 		{
@@ -83,15 +89,23 @@ partial class Parser
 			}
 
 			Match(TokenKind.RightParen);
-
-			ptrCount = 0;
-			while (current.kind is TokenKind.Star)
-			{
-				ptrCount++;
-				Next();
-			}
 			
-			return new FuncTypeAst(baseType, open, paramTypes.ToArray(), vaArg, ptrCount);
+			baseType = new FuncTypeAst(baseType, open, paramTypes.ToArray(), vaArg);
+
+			while (true)
+			{
+				if (current.kind is TokenKind.Star)
+					baseType = new PtrTypeAst(baseType, false, Next());
+				else if (current.kind is TokenKind.MutableKeyword)
+				{
+					Next();
+					baseType = new PtrTypeAst(baseType, true, Match(TokenKind.Star));
+				}
+				else
+					break;
+			}
+
+			return baseType;
 		}
 
 		return baseType;

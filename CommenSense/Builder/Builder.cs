@@ -141,7 +141,7 @@ partial class Builder
 			if (currentFunc.TypeOf.ElementType.ReturnType == Type.Void)
 				llBuilder.BuildRetVoid();
 			else
-				llBuilder.BuildRet(expr);
+				llBuilder.BuildRet(BuildCast(expr, currentFunc.TypeOf.ElementType.ReturnType, retStmt.token));
 		}
 		else if (ast is ExprStmtAst exprStmt)
 			BuildExpr(exprStmt.expr);
