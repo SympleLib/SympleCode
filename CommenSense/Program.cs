@@ -153,7 +153,7 @@ void Compile(string file)
 	//      👇 To insure COMPLETE optimization
 	while (true)
 #endif
-		// Optimize(llModule);
+		Optimize(llModule);
 
 		if (!llModule.TryVerify(LLVMVerifierFailureAction.LLVMPrintMessageAction, out string err))
 			return;
@@ -172,6 +172,8 @@ void Compile(string file)
 				LLVMCodeGenOptLevel.LLVMCodeGenLevelAggressive, LLVMRelocMode.LLVMRelocDefault, LLVMCodeModel.LLVMCodeModelDefault);
 	for (int i = 0; i < llModules.Count; i++)
 		machine.EmitToFile(llModules[i], modules[i].srcFile[..modules[i].srcFile.LastIndexOf('.')] + ".o", LLVMCodeGenFileType.LLVMObjectFile);
+	for (int i = 0; i < llModules.Count; i++)
+		machine.EmitToFile(llModules[i], modules[i].srcFile[..modules[i].srcFile.LastIndexOf('.')] + ".s", LLVMCodeGenFileType.LLVMAssemblyFile);
 }
 
 LLVMExecutionEngineRef? Debug(string file)
@@ -244,7 +246,7 @@ LLVMExecutionEngineRef? Debug(string file)
 	//      👇 To insure COMPLETE optimization
 	while (true)
 #endif
-		Optimize(llModule);
+		// Optimize(llModule);
 
 		dbgout.WriteLine(llModule);
 
