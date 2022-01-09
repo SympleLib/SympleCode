@@ -5,6 +5,8 @@ using Value = LLVMValueRef;
 
 partial class Builder
 {
+	private uint ptraddr = 0;
+	
 	Type BuildType(TypeAst ast)
 	{
 		if (ast is BaseTypeAst baseType)
@@ -14,7 +16,8 @@ partial class Builder
 		if (ast is PtrTypeAst ptrType)
 		{
 			Type baze = BuildType(ptrType.baze);
-			Type type = Type.CreatePointer(baze, 0);
+			Type type = Type.CreatePointer(baze, ptraddr++);
+			Console.WriteLine($"{type.Handle}: {type}");
 			type.SetMutable(ptrType.mutable);
 			return type;
 		}

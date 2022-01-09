@@ -244,7 +244,7 @@ LLVMExecutionEngineRef? Debug(string file)
 	//      👇 To insure COMPLETE optimization
 	while (true)
 #endif
-		// Optimize(llModule);
+		Optimize(llModule);
 
 		dbgout.WriteLine(llModule);
 

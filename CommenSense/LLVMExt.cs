@@ -74,9 +74,10 @@ static class LLVMExt
 	{
 		if (mutableness.ContainsKey(type.Handle))
 		{
-			bool x= mutableness[type.Handle];
+			bool x = mutableness[type.Handle];
 			return x;
 		}
+
 		return false;
 	}
 }

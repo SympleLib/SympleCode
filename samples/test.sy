@@ -1,7 +1,7 @@
 @naked decl void printf(char* fmt, ...);
 @naked decl byte mut* malloc(int size);
 
-int* mutTest() {
+int mut* mutTest() {
 	ret malloc(3 * sizeof(int) to int);
 }
 
