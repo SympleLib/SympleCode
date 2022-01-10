@@ -307,8 +307,6 @@ if (_engine is null)
 	return;
 
 var engine = _engine.Value;
-var runFn = (Run) Marshal.GetDelegateForFunctionPointer((IntPtr) engine.GetFunctionAddress("main"), typeof(Run));
-runFn();
-[UnmanagedFunctionPointer(CallingConvention.Cdecl)]
+engine.GetPointerToGlobal<Run>(engine.FindFunction("main"))();
 delegate void Run();
 #endif
