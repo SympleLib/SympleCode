@@ -143,6 +143,18 @@ partial class Parser
 		return new ParamAst(metadata, mutable, type, token, name, defaultExpr);
 	}
 
+	EnumValueAst EnumValue(string parent = "")
+	{
+		string[] metadata = MetaData();
+		Token name = Match(TokenKind.Identifier);
+		string asmName = $".enum!{parent}:{name.text}";
+		if (current.kind is not TokenKind.Eql)
+			return new EnumValueAst(metadata, name, asmName, new ExprAst(Token.devault));
+
+		Next();
+		return new EnumValueAst(metadata, name, asmName, Expr());
+	}
+
 	FieldAst Field(List<FieldAst>? fields = null)
 	{
 		string[] metadata = MetaData();

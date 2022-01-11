@@ -17,6 +17,8 @@ partial class Builder
 			Decl(func);
 		else if (ast is VarAst var)
 			Decl(var);
+		else if (ast is EnumAst enam)
+			Decl(enam);
 		else if (ast is StructAst ztruct)
 			Decl(ztruct);
 		else if (ast is ClassAst clazz)
@@ -112,6 +114,14 @@ partial class Builder
 		if (ast.metadata.Contains("dllimport"))
 			var.DLLStorageClass = LLVMDLLStorageClass.LLVMDLLImportStorageClass;
 		scope.DefineVar(ast.realName, var);
+	}
+
+	void Decl(EnumAst ast)
+	{
+		Type type = Type.Int32;
+		scope.Define(ast.name, type);
+		foreach (EnumValueAst value in ast.values)
+			scope.DefineVar(value.name, llModule.AddGlobal(type, value.asmName));
 	}
 
 	void Decl(StructAst ast)

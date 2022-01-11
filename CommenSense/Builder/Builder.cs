@@ -69,6 +69,8 @@ partial class Builder
 			Build(var);
 		else if (ast is DeclFuncAst) { }
 		else if (ast is DeclVarAst) { }
+		else if (ast is EnumAst enam)
+			Build(enam);
 		else if (ast is StructAst) { }
 		else if (ast is ClassAst clazz)
 			Build(clazz);
@@ -240,6 +242,26 @@ partial class Builder
 		foreach (StmtAst stmt in ast.stmts)
 			Build(stmt);
 		ExitScope();
+	}
+
+	void Build(EnumAst ast)
+	{
+		ulong init = 0;
+		foreach (EnumValueAst value in ast.values)
+		{
+			Value llval = llModule.GetNamedGlobal(value.asmName);
+			llval.IsGlobalConstant = true;
+			
+			if (value.initializer.GetType() == typeof(ExprAst))
+			{
+				llval.Initializer = Value.CreateConstInt(llval.TypeOf.ElementType, init++);
+			}
+			else
+			{
+				llval.Initializer = BuildCast(BuildExpr(value.initializer), llval.TypeOf.ElementType, null);
+				init = llval.Initializer.ConstIntZExt + 1;
+			}
+		}
 	}
 
 	void Build(ClassAst ast)

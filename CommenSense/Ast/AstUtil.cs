@@ -89,6 +89,13 @@ partial record FuncTypeAst
 partial record ParamAst
 { public override string ToString() => $"{string.Join<string>(" @", metadata)} {type} {name} = {defaultExpr}"; }
 
+partial record EnumValueAst
+{
+	public string name => token.text;
+
+	public override string ToString() => $"{string.Join<string>(" @", metadata)} {name} = {initializer}";
+}
+
 partial record FieldAst
 {
 	public string name => token.text;
@@ -96,6 +103,13 @@ partial record FieldAst
 	public override string ToString() => $"{string.Join<string>(" @", metadata)} {visibility} {type} {name} = {initializer}";
 }
 
+
+partial record EnumAst
+{
+	public string name => token.text;
+	public override string ToString() => $"{metadata} {visibility} enum {name} {{\n{IncTab()}{string.Join<EnumValueAst>("\n" + GetTabs(), values)}{DecTab()}\n{GetTabs()}}}";
+	
+}
 
 partial record ClassAst
 {

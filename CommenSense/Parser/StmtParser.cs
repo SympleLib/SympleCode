@@ -53,6 +53,8 @@ partial class Parser
 		if (mutable = current.kind is TokenKind.MutableKeyword)
 			Next();
 
+		if (current.kind is TokenKind.EnumKeyword)
+			return Enum(metadata, visibility);
 		if (current.kind is TokenKind.StructKeyword)
 			return Struct(metadata, visibility);
 		if (current.kind is TokenKind.ClassKeyword)
@@ -210,6 +212,26 @@ partial class Parser
 		EndLine();
 
 		return new LinkAst(visibility, keywrd, filename);
+	}
+	
+	EnumAst Enum(string[] metadata, Visibility visibility)
+	{
+		Match(TokenKind.EnumKeyword);
+		Token name = Match(TokenKind.Identifier);
+		Match(TokenKind.LeftBrace);
+		
+		List<EnumValueAst> values = new List<EnumValueAst>();
+		while (current.kind is not TokenKind.Eof and not TokenKind.RightBrace)
+		{
+			values.Add(EnumValue(name.text));
+
+			if (current.kind is not TokenKind.RightBrace)
+				Match(TokenKind.Comma);
+		}
+		
+		Match(TokenKind.RightBrace);
+
+		return new EnumAst(metadata, visibility, name, values.ToArray());
 	}
 
 	StructAst Struct(string[] metadata, Visibility visibility)

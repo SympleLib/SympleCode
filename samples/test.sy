@@ -1,14 +1,15 @@
 @naked decl void printf(char* fmt, ...);
 @naked decl byte mut* malloc(int size);
 
-int mut* mutTest() {
-	ret malloc(3 * sizeof(int) to int);
+enum Test {
+	One = 1,
+	Two,
+	Three,
+	Four,
+	Five,
 }
 
 @entry void asjdf083wjhjr5930() {
-	int mut* ptr = mutTest();
-	ptr[0] = 69;
-	ptr[1] = 420;
-	ptr[2] = 1337;
-	printf("%i, %i, %i\n", ptr[0], ptr[1], ptr[2]);
+	Test x = One + One;
+	printf("%i\n", x);
 }

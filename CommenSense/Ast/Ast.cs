@@ -10,6 +10,7 @@ partial record BaseTypeAst(Token token): TypeAst(token);
 partial record FuncTypeAst(TypeAst retType, Token token, TypeAst[] paramTypes, bool vaArg): TypeAst(token);
 partial record ParamAst(string[] metadata, bool mutable, TypeAst type, Token token, string name, ExprAst defaultExpr): Ast(token);
 partial record FieldAst(string[] metadata, Visibility visibility, bool mutable, TypeAst type, Token token, ExprAst initializer): Ast(token);
+partial record EnumValueAst(string[] metadata, Token token, string asmName, ExprAst initializer): Ast(token);
 
 
 partial record StmtAst(Token token): Ast(token);
@@ -26,6 +27,7 @@ interface Container
 }
 
 partial record ImplAst(string[] metadata, Visibility visibility, Token token, FuncAst[] funcs): StmtAst(token);
+partial record EnumAst(string[] metadata, Visibility visibility, Token token, EnumValueAst[] values): StmtAst(token);
 partial record StructAst(string[] metadata, Visibility visibility, Token token, FieldAst[] fields): StmtAst(token), Container;
 partial record ClassAst(string[] metadata, Visibility visibility, Token token, FieldAst[] fields, FuncAst[] funcs): StmtAst(token), Container;
 

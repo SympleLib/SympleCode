@@ -85,7 +85,9 @@ partial class Parser
 			break;
 		}
 		
-		if (current.kind is TokenKind.StructKeyword)
+		if (current.kind is TokenKind.EnumKeyword)
+			PreEnum(isPublic);
+		else if (current.kind is TokenKind.StructKeyword)
 			PreStruct(isPublic);
 		else if (current.kind is TokenKind.ClassKeyword)
 			PreClass(isPublic);
@@ -129,6 +131,20 @@ partial class Parser
 			else
 				PreVar(isPublic, name, asmified);
 		}
+	}
+
+	void PreEnum(bool isPublic)
+	{
+		Match(TokenKind.EnumKeyword);
+		typeNames.Add(Name(), isPublic);
+		while (current.kind is not TokenKind.Eof and not TokenKind.RightBrace)
+		{
+			varNames.Add(JumpTo(TokenKind.Identifier).text, isPublic);
+			JumpTo(TokenKind.Comma);
+		}
+
+		Match(TokenKind.RightBrace);
+		MaybeEndLine();
 	}
 
 	void PreStruct(bool isPublic)

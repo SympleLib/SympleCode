@@ -88,6 +88,7 @@ public enum TokenKind
 	DeclKeyword,
 	StructKeyword,
 	ClassKeyword,
+	EnumKeyword,
 
 	IfKeyword,
 	ElseKeyword,
@@ -196,6 +197,7 @@ class Lexer
 			"decl",
 			"struct",
 			"class",
+			"enum",
 
 			"if",
 			"else",
