@@ -27,7 +27,7 @@ interface Container
 }
 
 partial record ImplAst(string[] metadata, Visibility visibility, Token token, FuncAst[] funcs): StmtAst(token);
-partial record EnumAst(string[] metadata, Visibility visibility, Token token, EnumValueAst[] values): StmtAst(token);
+partial record EnumAst(string[] metadata, Visibility visibility, Token token, TypeAst type, EnumValueAst[] values): StmtAst(token);
 partial record StructAst(string[] metadata, Visibility visibility, Token token, FieldAst[] fields): StmtAst(token), Container;
 partial record ClassAst(string[] metadata, Visibility visibility, Token token, FieldAst[] fields, FuncAst[] funcs): StmtAst(token), Container;
 

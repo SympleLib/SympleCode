@@ -1,8 +1,8 @@
 @naked decl void printf(char* fmt, ...);
 @naked decl byte mut* malloc(int size);
 
-enum Test {
-	One = 1,
+enum Test: char {
+	One = `1`,
 	Two,
 	Three,
 	Four,
@@ -10,6 +10,6 @@ enum Test {
 }
 
 @entry void asjdf083wjhjr5930() {
-	Test x = One + One;
-	printf("%i\n", x);
+	Test x = Two;
+	printf("%c\n", x);
 }

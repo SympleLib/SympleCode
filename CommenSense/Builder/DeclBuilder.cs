@@ -118,7 +118,7 @@ partial class Builder
 
 	void Decl(EnumAst ast)
 	{
-		Type type = Type.Int32;
+		Type type = BuildType(ast.type);
 		scope.Define(ast.name, type);
 		foreach (EnumValueAst value in ast.values)
 			scope.DefineVar(value.name, llModule.AddGlobal(type, value.asmName));

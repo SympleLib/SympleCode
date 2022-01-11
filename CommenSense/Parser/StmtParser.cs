@@ -218,6 +218,14 @@ partial class Parser
 	{
 		Match(TokenKind.EnumKeyword);
 		Token name = Match(TokenKind.Identifier);
+		
+		TypeAst type = new BaseTypeAst(new Token(TokenKind.Identifier, "int", 0, 0));
+		if (current.kind is TokenKind.Colon)
+		{
+			Next();
+			type = Type();
+		}
+		
 		Match(TokenKind.LeftBrace);
 		
 		List<EnumValueAst> values = new List<EnumValueAst>();
@@ -231,7 +239,7 @@ partial class Parser
 		
 		Match(TokenKind.RightBrace);
 
-		return new EnumAst(metadata, visibility, name, values.ToArray());
+		return new EnumAst(metadata, visibility, name, type, values.ToArray());
 	}
 
 	StructAst Struct(string[] metadata, Visibility visibility)

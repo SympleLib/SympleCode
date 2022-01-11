@@ -100,14 +100,14 @@ partial record FieldAst
 {
 	public string name => token.text;
 
-	public override string ToString() => $"{string.Join<string>(" @", metadata)} {visibility} {type} {name} = {initializer}";
+	public override string ToString() => $"@{string.Join<string>(" @", metadata)} {visibility} {type} {name} = {initializer}";
 }
 
 
 partial record EnumAst
 {
 	public string name => token.text;
-	public override string ToString() => $"{metadata} {visibility} enum {name} {{\n{IncTab()}{string.Join<EnumValueAst>("\n" + GetTabs(), values)}{DecTab()}\n{GetTabs()}}}";
+	public override string ToString() => $"@{string.Join<string>(" @", metadata)} {visibility} enum {name}: {type} {{\n{IncTab()}{string.Join<EnumValueAst>("\n" + GetTabs(), values)}{DecTab()}\n{GetTabs()}}}";
 	
 }
 
@@ -166,7 +166,7 @@ partial record ClassAst
 		throw new Exception("Ya ain't got perms");
 	}
 
-	public override string ToString() => $"{string.Join<string>(" @", metadata)} {visibility} class {name} {{\n{IncTab()}{string.Join<FieldAst>("\n" + GetTabs(), fields)}{"\n\n" + GetTabs()}{string.Join<FuncAst>("\n\n" + GetTabs(), funcs)}{DecTab()}\n{GetTabs()}}}";
+	public override string ToString() => $"@{string.Join<string>(" @", metadata)} {visibility} class {name} {{\n{IncTab()}{string.Join<FieldAst>("\n" + GetTabs(), fields)}{"\n\n" + GetTabs()}{string.Join<FuncAst>("\n\n" + GetTabs(), funcs)}{DecTab()}\n{GetTabs()}}}";
 }
 
 partial record StructAst
@@ -194,7 +194,7 @@ partial record StructAst
 		throw new Exception("Ya ain't got perms");
 	}
 
-	public override string ToString() => $"{string.Join<string>(" @", metadata)} {visibility} struct {name} {{\n{IncTab()}{string.Join<FieldAst>("\n" + GetTabs(), fields)}{DecTab()}\n{GetTabs()}}}";
+	public override string ToString() => $"@{string.Join<string>(" @", metadata)} {visibility} struct {name} {{\n{IncTab()}{string.Join<FieldAst>("\n" + GetTabs(), fields)}{DecTab()}\n{GetTabs()}}}";
 }
 
 
@@ -209,14 +209,14 @@ partial record DeclFuncAst
 {
 	public string realName => token.text;
 	
-	public override string ToString() => $"{string.Join<string>(" @", metadata)} {visibility} decl {retType} {realName}({string.Join<ParamAst>(", ", paramz)}{PrintWithVaArgMaybeIHonestlyDontKnowWhatToCallThisFunction(vaArg)}): '{asmName}'";
+	public override string ToString() => $"@{string.Join<string>(" @", metadata)} {visibility} decl {retType} {realName}({string.Join<ParamAst>(", ", paramz)}{PrintWithVaArgMaybeIHonestlyDontKnowWhatToCallThisFunction(vaArg)}): '{asmName}'";
 }
 
 partial record FuncAst
 {
 	public string realName => token.text;
 
-	public override string ToString() => $"{string.Join<string>(" @", metadata)} {visibility} {retType} {realName}({string.Join<ParamAst>(", ", paramz)}{PrintWithVaArgMaybeIHonestlyDontKnowWhatToCallThisFunction(vaArg)}): '{asmName}' {{\n{IncTab()}{string.Join<StmtAst>($"\n{GetTabs()}", body)}{DecTab()}\n{GetTabs()}}}";
+	public override string ToString() => $"@{string.Join<string>(" @", metadata)} {visibility} {retType} {realName}({string.Join<ParamAst>(", ", paramz)}{PrintWithVaArgMaybeIHonestlyDontKnowWhatToCallThisFunction(vaArg)}): '{asmName}' {{\n{IncTab()}{string.Join<StmtAst>($"\n{GetTabs()}", body)}{DecTab()}\n{GetTabs()}}}";
 }
 
 partial record DeclVarAst
@@ -224,14 +224,14 @@ partial record DeclVarAst
 	public string realName => token.text;
 	public bool mutable => metadata.Contains("const");
 	
-	public override string ToString() => $"{string.Join<string>(" @", metadata)} {visibility} decl {type} {realName}: '{asmName}'";
+	public override string ToString() => $"@{string.Join<string>(" @", metadata)} {visibility} decl {type} {realName}: '{asmName}'";
 }
 
 partial record VarAst
 {
 	public string realName => token.text;
 	
-	public override string ToString() => $"{string.Join<string>(" @", metadata)} {visibility} {type} {realName}: '{asmName}' = {initializer}";
+	public override string ToString() => $"@{string.Join<string>(" @", metadata)} {visibility} {type} {realName}: '{asmName}' = {initializer}";
 }
 
 
