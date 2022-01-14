@@ -6,6 +6,7 @@ partial record ModuleAst(string name, string srcFile, StmtAst[] members, Contain
 abstract partial record TypeAst(Token token): Ast(token);
 
 partial record PtrTypeAst(TypeAst baze, bool mutable, Token token): TypeAst(token);
+partial record ArrayTypeAst(TypeAst baze, bool mutable,Token token, ExprAst length): TypeAst(token);
 partial record BaseTypeAst(Token token): TypeAst(token);
 partial record FuncTypeAst(TypeAst retType, Token token, TypeAst[] paramTypes, bool vaArg): TypeAst(token);
 partial record ParamAst(string[] metadata, bool mutable, TypeAst type, Token token, string name, ExprAst defaultExpr): Ast(token);

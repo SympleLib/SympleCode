@@ -1,15 +1,18 @@
-@naked decl void printf(char* fmt, ...);
-@naked decl byte mut* malloc(int size);
+@naked decl void wprintf(char* fmt, ...);
 
-enum Test: char {
-	One = `1`,
-	Two,
-	Three,
-	Four,
-	Five,
+class Test {
+	char** msg1, msg2, msg3;
+	
+	void printMe() {
+		wprintf('"%s" "%s" "%s"\n', msg1, msg2, msg3);
+	}
 }
 
-@entry void asjdf083wjhjr5930() {
-	int x = Two;
-	printf("%c\n", x);
+@entry void main() {
+	Test test = Test { 'helo', 'guys', 'hehe' };
+	testFn(test);
+}
+
+void testFn(Test test) {
+	test.printMe();
 }

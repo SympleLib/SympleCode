@@ -64,7 +64,6 @@ public enum TokenKind
 
 	Plus2,
 	Minus2,
-	Star2,
 	Bang2,
 	Tilde2,
 	And2,
@@ -72,7 +71,6 @@ public enum TokenKind
 	Left2,
 	Right2,
 
-	Star2Eql,
 	Left2Eql,
 	Right2Eql,
 
@@ -171,7 +169,6 @@ class Lexer
 
 			"++",
 			"--",
-			"**",
 			"!!",
 			"~~",
 			"&&",
@@ -179,7 +176,6 @@ class Lexer
 			"<<",
 			">>",
 
-			"**=",
 			"<<=",
 			">>=",
 

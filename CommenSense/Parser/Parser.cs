@@ -50,67 +50,6 @@ partial class Parser
 		return typeNames.ContainsKey(token.text);
 	}
 
-	TypeAst Type()
-	{
-		Token typeBase = Match(TokenKind.Identifier);
-		TypeAst baseType = new BaseTypeAst(typeBase);
-		
-		while (true)
-		{
-			if (current.kind is TokenKind.Star)
-				baseType = new PtrTypeAst(baseType, false, Next());
-			else if (current.kind is TokenKind.MutableKeyword)
-			{
-				Next();
-				baseType = new PtrTypeAst(baseType, true, Match(TokenKind.Star));
-			}
-			else
-				break;
-		}
-
-		if (current.kind == TokenKind.LeftParen)
-		{
-			Token open = Next();
-
-			bool vaArg = false;
-			List<TypeAst> paramTypes = new List<TypeAst>();
-			while (current.kind is not TokenKind.Eof and not TokenKind.RightParen)
-			{
-				if (current.kind is TokenKind.DotDotDot)
-				{
-					vaArg = true;
-					break;
-				}
-
-				paramTypes.Add(Type());
-
-				if (current.kind is not TokenKind.RightParen)
-					Match(TokenKind.Comma);
-			}
-
-			Match(TokenKind.RightParen);
-			
-			baseType = new FuncTypeAst(baseType, open, paramTypes.ToArray(), vaArg);
-
-			while (true)
-			{
-				if (current.kind is TokenKind.Star)
-					baseType = new PtrTypeAst(baseType, false, Next());
-				else if (current.kind is TokenKind.MutableKeyword)
-				{
-					Next();
-					baseType = new PtrTypeAst(baseType, true, Match(TokenKind.Star));
-				}
-				else
-					break;
-			}
-
-			return baseType;
-		}
-
-		return baseType;
-	}
-
 	ParamAst Param()
 	{
 		string[] metadata = MetaData();

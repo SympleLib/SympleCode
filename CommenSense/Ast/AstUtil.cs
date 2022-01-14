@@ -43,7 +43,7 @@ static class _
 	public static string Mutableness(bool mutable)
 	{
 		if (mutable)
-			return "mut ";
+			return "mut";
 		return string.Empty;
 	}
 }
@@ -62,7 +62,15 @@ partial record TypeAst
 partial record PtrTypeAst
 {
 	protected override string GenName() =>
-		$"{Mutableness(mutable)}{baze}*";
+		$"{baze} {Mutableness(mutable)}*";
+	
+	public override string ToString() => name;
+}
+
+partial record ArrayTypeAst
+{
+	protected override string GenName() =>
+		$"{Mutableness(mutable)}{baze}[{length}]";
 	
 	public override string ToString() => name;
 }

@@ -297,9 +297,6 @@ partial class Builder
 		{
 			switch (kind)
 			{
-			case TokenKind.Star2:
-				return llBuilder.BuildCall(scope.FindFunc("powi"), new Value[] { left, right });
-
 			case TokenKind.And2:
 			case TokenKind.Pipe2:
 				return BuildLogic(kind, ast, left, right);
@@ -326,6 +323,7 @@ partial class Builder
 		return llBuilder.BuildBinOp(op, left, right);
 	}
 
+	// TODO: fix
 	Value BuildBi(Enum op, Token tok, Value left, Value right)
 	{
 		Type type = left.TypeOf;
@@ -334,9 +332,6 @@ partial class Builder
 		{
 			switch (kind)
 			{
-			case TokenKind.Star2:
-				return llBuilder.BuildCall(llModule.GetNamedFunction("powi"), new Value[] { left, right });
-
 			default:
 				throw new NotImplementedException();
 			}
@@ -394,7 +389,6 @@ partial class Builder
 			TokenKind.PipeEql => LLVMOr,
 			TokenKind.CarotEql => LLVMXor,
 
-			TokenKind.Star2Eql => TokenKind.Star2,
 			TokenKind.Left2Eql => LLVMShl,
 			TokenKind.Right2Eql => LLVMAShr,
 
