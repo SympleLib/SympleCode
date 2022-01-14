@@ -128,8 +128,7 @@ partial class Builder
 				args[i + add] = BuildCast(args[i + add], ptr.TypeOf.ElementType.ParamTypes[i + add], ast.token);
 		}
 
-		Value call = llBuilder.BuildCall(ptr, args);
-		return call;
+		return llBuilder.BuildCall(ptr, args);
 		
 		Value Func(string name)
 		{
