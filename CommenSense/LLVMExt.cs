@@ -11,7 +11,7 @@ static class LLVMExt
 		type == Type.BFloat || type == Type.X86FP80;
 
 	public static bool IsPtr(this Type type) =>
-		type.ElementType != default;
+		type.ElementType != default && type.ArrayLength == 0 && type.VectorSize == 0;
 
 	public static LLVMRealPredicate ToRealPredicate(this LLVMIntPredicate ip) =>
 		ip switch

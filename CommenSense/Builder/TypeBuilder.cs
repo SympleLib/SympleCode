@@ -78,9 +78,9 @@ partial class Builder
 			{
 				Value srcEle = Value.CreateConstNull(to.ElementType);
 				if (i < from.ArrayLength)
-					srcEle = llBuilder.BuildLoad(llBuilder.BuildInBoundsGEP(val, new Value[] { Value.CreateConstInt(Type.Int32, i) }));
-				Value dstEle = llBuilder.BuildInBoundsGEP(val, new Value[] { Value.CreateConstInt(Type.Int32, i) });
-				llBuilder.BuildStore(srcEle, dstEle);
+					srcEle = llBuilder.BuildLoad(llBuilder.BuildInBoundsGEP(val, new Value[] { Value.CreateConstInt(Type.Int64, i) }));
+				Value elePtr = llBuilder.BuildInBoundsGEP(val, new Value[] { Value.CreateConstInt(Type.Int64, i) });
+				llBuilder.BuildStore(srcEle, elePtr);
 			}
 
 			return llBuilder.BuildLoad(dest);
