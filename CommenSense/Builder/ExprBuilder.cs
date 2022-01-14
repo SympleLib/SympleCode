@@ -129,7 +129,6 @@ partial class Builder
 		}
 
 		Value call = llBuilder.BuildCall(ptr, args);
-		call.TypeOf.IsMutable();
 		return call;
 		
 		Value Func(string name)

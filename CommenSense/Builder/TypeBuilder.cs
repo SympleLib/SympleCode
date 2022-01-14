@@ -17,7 +17,6 @@ partial class Builder
 		{
 			Type baze = BuildType(ptrType.baze);
 			Type type = Type.CreatePointer(baze, ptraddr++);
-			Console.WriteLine($"{type.Handle}: {type}");
 			type.SetMutable(ptrType.mutable);
 			return type;
 		}

@@ -10,6 +10,6 @@ enum Test: char {
 }
 
 @entry void asjdf083wjhjr5930() {
-	Test x = Two;
+	int x = Two;
 	printf("%c\n", x);
 }
