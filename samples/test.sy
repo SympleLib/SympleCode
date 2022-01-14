@@ -1,7 +1,7 @@
 @naked decl void wprintf(char* fmt, ...);
 
 class Test {
-	char** msg1, msg2, msg3;
+	char[32] msg1, msg2, msg3;
 	
 	void printMe() {
 		wprintf('"%s" "%s" "%s"\n', msg1, msg2, msg3);

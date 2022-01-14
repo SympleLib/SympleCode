@@ -20,6 +20,13 @@ partial class Builder
 			type.SetMutable(ptrType.mutable);
 			return type;
 		}
+		if (ast is ArrayTypeAst arrayType)
+		{
+			Type baze = BuildType(arrayType.baze);
+			Type type = Type.CreateArray(baze, (uint)BuildExpr(arrayType.length).ConstIntZExt);
+			type.SetMutable(arrayType.mutable);
+			return type;
+		}
 
 		throw new Exception("type no exist");
 	}
@@ -61,6 +68,23 @@ partial class Builder
 		bool signExt = false;
 		if (token is not null && !CastVerifier.CastWorks(from, to, out signExt))
 			BadCode.Report(new SyntaxError($"cant implicitly cast {from} to {to}", token!));
+
+		if (to.IsPtr() && from.ArrayLength > 0)
+			return llBuilder.BuildBitCast(val, to);
+		if (to.ArrayLength != from.ArrayLength)
+		{
+			Value dest = llBuilder.BuildAlloca(to);
+			for (uint i = 0; i < to.ArrayLength; i++)
+			{
+				Value srcEle = Value.CreateConstNull(to.ElementType);
+				if (i < from.ArrayLength)
+					srcEle = llBuilder.BuildLoad(llBuilder.BuildInBoundsGEP(val, new Value[] { Value.CreateConstInt(Type.Int32, i) }));
+				Value dstEle = llBuilder.BuildInBoundsGEP(val, new Value[] { Value.CreateConstInt(Type.Int32, i) });
+				llBuilder.BuildStore(srcEle, dstEle);
+			}
+
+			return llBuilder.BuildLoad(dest);
+		}
 
 		if (from.IsFloat() && to.IsFloat())
 			return llBuilder.BuildFPCast(val, to);

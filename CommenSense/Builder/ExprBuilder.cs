@@ -84,14 +84,8 @@ partial class Builder
 		for (int i = 0; i < ast.value.Length; i++)
 			values[i] = Value.CreateConstInt(Type.Int16, ast.value[i]);
 		values[^1] = Value.CreateConstInt(Type.Int16, 0);
-		var arr = Value.CreateConstArray(Type.Int16, values);
-
-		var str = llModule.AddGlobal(arr.TypeOf, "..str");
-		str.Linkage = LLVMLinkage.LLVMPrivateLinkage;
-		str.IsGlobalConstant = true;
-		str.HasUnnamedAddr = true;
-		str.Initializer = arr;
-		return llBuilder.BuildBitCast(str, Type.CreatePointer(Type.Int16, 0));
+		
+		return Value.CreateConstArray(Type.Int16, values);
 	}
 
 	// Hacky Move
