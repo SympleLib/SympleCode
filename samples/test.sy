@@ -1,18 +1,6 @@
 @naked decl void wprintf(char* fmt, ...);
 
-class Test {
-	char[32] msg1, msg2, msg3;
-	
-	void printMe() {
-		wprintf('"%s" "%s" "%s"\n', msg1, msg2, msg3);
-	}
-}
-
 @entry void main() {
-	Test test = Test { 'helo', 'guys', 'hehe' };
-	testFn(test);
-}
-
-void testFn(Test test) {
-	test.printMe();
+	char[10] test = 'hello sir';
+	wprintf(test);
 }

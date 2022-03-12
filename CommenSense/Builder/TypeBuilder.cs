@@ -70,7 +70,12 @@ partial class Builder
 			BadCode.Report(new SyntaxError($"cant implicitly cast {from} to {to}", token!));
 
 		if (to.IsPtr() && from.ArrayLength > 0)
-			return llBuilder.BuildBitCast(val, to);
+		{
+			Value tmp = llBuilder.BuildAlloca(from);
+			llBuilder.BuildStore(val, tmp);
+			return llBuilder.BuildBitCast(tmp, to);
+		}
+
 		if (to.ArrayLength != from.ArrayLength)
 		{
 			Value dest = llBuilder.BuildAlloca(to);
