@@ -1,8 +1,18 @@
 # Symple Code *(Syc)* [![License](https://img.shields.io/github/license/SympleLib/SympleCode?label=License)](LICENSE) ![Activity](https://img.shields.io/github/commit-activity/y/SympleLib/SympleCode?color=4&label=Commits)
 
-![Symple](https://symplelib.github.io/syc/icon.png "Symple")
+This repository contains the source code for SympleCode. <br />
+Anyone is welcome to contribute or use the source from SympleCode.
+
+## Contents
+
+- [About](#about)
+- [Getting Started](#getting-started)
+- [Contributing](#contributing)
+- [License](#license)
 
 ## About
+
+![Symple](https://symplelib.github.io/syc/icon.png "Symple")
 
 Syc is a low-level programming language based on the [C Family](https://en.wikipedia.org/wiki/List_of_C-family_programming_languages) meant to give high level programming at low level speeds. Syc uses an LLVM backend to produce code on any platform.
 
@@ -21,11 +31,48 @@ To see full heirachy, visit the [wiki](https://youtu.be/dQw4w9WgXcQ). Here is a 
    - Modular programming with `import` statements
    - Easy interface with c libraries, including libc
 
-## Getting the Source
+## Getting Started
 
+### Building
+
+1. Download the source code by using Git by cloning the repository, or
+   downloading it as an archive file.
+
+```shell
+git clone https://github.com/SympleLib/SympleCode/HyperLang
+cd SympleCode
 ```
-git clone https://github.com/SympleLib/SympleCode.git
+
+2. Create a folder for CMake to generate the project files.
+
+```shell
+mkdir build
+cd build
 ```
+
+3. Configure the project by using CMake.
+
+```shell
+cmake .. -D CMAKE_BUILD_TYPE=Release
+```
+
+4. Build the project with CMake.
+
+```shell
+cmake --build .
+```
+
+5. Run the compiler to check if everything was built successfully.
+
+## Contributing
+
+Pull requests are welcome. For major changes, please open an issue first to
+discuss what you would like to change.
+
+## License
+
+SympleCode is distributed under
+the [MIT license](https://github.com/SympleLib/SympleCode/blob/master/LICENSE).
   
 ## Remarks
 
