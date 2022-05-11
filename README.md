@@ -24,7 +24,7 @@ To see full heirachy, visit the [wiki](https://youtu.be/dQw4w9WgXcQ). Here is a 
 ## Getting the Source
 
 ```
-git clone --recursive https://github.com/SympleLib/SympleCode.git
+git clone https://github.com/SympleLib/SympleCode.git
 ```
   
 ## Remarks
