@@ -23,8 +23,9 @@ To see full heirachy, visit the [wiki](https://youtu.be/dQw4w9WgXcQ). Here is a 
 
 ## Getting the Source
 
-- Make sure [**Git**](https://git-scm.com/download) (Source control program) is installed on your device
-- Run `git clone --recursive https://github.com/SympleLib/SympleCode.git` in your terminal in a designated folder
+```
+git clone --recursive https://github.com/SympleLib/SympleCode.git
+```
   
 ## Remarks
 
