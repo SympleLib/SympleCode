@@ -1,9 +1,0 @@
-{
-  "profiles": {
-    "CommenSense": {
-      "commandName": "Project",
-      "workingDirectory": "$(SolutionDir)",
-      "nativeDebugging": false
-    }
-  }
-}

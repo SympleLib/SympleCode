@@ -1,6 +1,0 @@
-@naked decl void wprintf(char* fmt, ...);
-
-@entry void main() {
-	char[10] test = 'hello sir';
-	wprintf(test);
-}
