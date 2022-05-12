@@ -22,8 +22,8 @@ SourceFile::SourceFile(const std::string &fname): filename(fname) {
 		return;
 	}
 
-	fseeko(fs, 0, SEEK_END);
-	size_t alloc = (size_t) ftello64(fs);
+	fseek(fs, 0, SEEK_END);
+	size_t alloc = (size_t) _ftelli64(fs);
 	content.resize(alloc);
 	rewind(fs);
 	fread(content.data(), 1, alloc, fs);

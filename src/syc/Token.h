@@ -6,7 +6,7 @@
 
 #pragma once
 
-#include "syc/SourceRange.h"
+#include "syc/SourceLocation.h"
 #include "syc/TokenKind.h"
 
 #include <string>

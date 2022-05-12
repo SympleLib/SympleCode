@@ -16,7 +16,8 @@ int main() {
 
 	syc::Parser parser;
 	std::vector<syc::AstNode *> ast = parser.Parse(tokens);
-
+	for (const syc::AstNode *node: ast)
+		std::cout << ((syc::ExprAst *) node)->Eval() << '\n';
 
     return 0;
 }
