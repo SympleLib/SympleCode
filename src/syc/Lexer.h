@@ -6,11 +6,11 @@
 
 #pragma once
 
-#include "Symple/Token.h"
+#include "syc/Token.h"
 #include <string_view>
 #include <vector>
 
-namespace Symple {
+namespace syc {
     class Lexer {
 	private:
 		std::vector<Token> tokens;
@@ -18,13 +18,16 @@ namespace Symple {
 		size_t pos;
 		size_t line, column;
 
+		SourceFileId sourceFileId;
 		std::string_view source;
-		Position start;
+
 		size_t startPos;
+		SourceLocation start;
+		TokenFlags flags;
 
 	public:
 		Lexer() = default;
-		std::vector<Token> lex(std::string_view source);
+		std::vector<Token> lex(SourceFileId sourceFileId);
 
 	private:
 		void lexToken();
@@ -41,7 +44,7 @@ namespace Symple {
 		char next();
 		char peek(ssize_t offset = 0) const;
 
-		Position currentPosition() const;
+		SourceLocation currentLocation() const;
 		bool atEof() const;
 
 		void emplaceToken(TokenKind kind);

@@ -8,13 +8,20 @@
 
 #include <cstdint>
 
-namespace Symple {
+namespace syc {
     enum class TokenKind : uint8_t {
         Unknown,
 
+		// Unique
         Eof,
         Identifier,
         Integer,
+
+		// Punctuators
+		Equal,
+		Semicolon,
+		Plus,
+		Minus,
 
 		Count,
     };
@@ -25,6 +32,11 @@ namespace Symple {
 		"Eof",
 		"Identifier",
 		"Integer",
+
+		"Equal",
+		"Semicolon",
+		"Plus",
+		"Minus",
 	};
 
     inline constexpr const char *getTokenName(TokenKind kind) {

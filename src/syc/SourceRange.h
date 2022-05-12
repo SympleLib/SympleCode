@@ -8,14 +8,17 @@
 
 #include <cstddef>
 
-namespace Symple {
-    struct Position {
+#include "SourceFile.h"
+
+namespace syc {
+    struct SourceLocation {
+		SourceFileId fileId;
         size_t line;
         size_t column;
     };
 
     struct SourceRange {
-        Position start;
-        Position end;
+		SourceLocation start;
+		SourceLocation end;
     };
 }

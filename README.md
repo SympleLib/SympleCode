@@ -1,4 +1,4 @@
-# Symple Code *(Syc)* [![License](https://img.shields.io/github/license/SympleLib/SympleCode?label=License)](LICENSE) ![Activity](https://img.shields.io/github/commit-activity/y/SympleLib/SympleCode?color=4&label=Commits)
+# syc Code *(Syc)* [![License](https://img.shields.io/github/license/SympleLib/SympleCode?label=License)](LICENSE) ![Activity](https://img.shields.io/github/commit-activity/y/SympleLib/SympleCode?color=4&label=Commits)
 
 This repository contains the source code for SympleCode. <br />
 Anyone is welcome to contribute or use the source from SympleCode.
@@ -12,7 +12,7 @@ Anyone is welcome to contribute or use the source from SympleCode.
 
 ## About
 
-![Symple](https://symplelib.github.io/syc/icon.png "Symple")
+![syc](https://symplelib.github.io/syc/icon.png "syc")
 
 Syc is a low-level programming language based on the [C Family](https://en.wikipedia.org/wiki/List_of_C-family_programming_languages) meant to give high level programming at low level speeds. Syc uses an LLVM backend to produce code on any platform.
 
@@ -78,4 +78,5 @@ the [MIT license](https://github.com/SympleLib/SympleCode/blob/master/LICENSE).
 
   - [Minsk Compiler (C#)](https://github.com/terrajobst/minsk) and the [tutorial series](https://www.youtube.com/playlist?list=PLRAdsfhKI4OWNOSfS7EUu5GRAVmze1t2y) to go with it
   - [chibicc Compiler (C)](https://github.com/rui314/chibicc)
-  - [HyperLnage Compiler (C++)](https://github.com/SkillerRaptor/HyperLang)
+  - [HyperLang Compiler (C++)](https://github.com/SkillerRaptor/HyperLang)
+  - [LLVM Kaleidoscope Tutorial (C++)](https://llvm.org/docs/tutorial/)
