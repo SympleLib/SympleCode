@@ -136,7 +136,7 @@ char Lexer::next() {
 	return source[pos++];
 }
 
-char Lexer::peek(ssize_t offset) const {
+char Lexer::peek(int64_t offset) const {
 	size_t idx = pos + offset;
 	if (idx >= source.length())
 		return '\0';

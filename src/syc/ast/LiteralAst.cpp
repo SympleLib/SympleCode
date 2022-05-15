@@ -4,4 +4,6 @@
  * MIT License
  */
 
-#include "LiteralAst.h"
+#include "syc/ast/LiteralAst.h"
+
+using namespace syc;

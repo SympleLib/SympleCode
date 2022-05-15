@@ -4,7 +4,10 @@
 #include "syc/Parser.h"
 #include "syc/SourceFile.h"
 
+
 int main() {
+	static_assert(sizeof(size_t) == sizeof(uint64_t), "x64 only, buddy");
+
 	syc::SourceFileId file = syc::SourceFile::ReadFile("../samples/test.sy");
 
 	syc::Lexer lexer;
@@ -16,8 +19,6 @@ int main() {
 
 	syc::Parser parser;
 	std::vector<syc::AstNode *> ast = parser.Parse(tokens);
-	for (const syc::AstNode *node: ast)
-		std::cout << ((syc::ExprAst *) node)->Eval() << '\n';
 
     return 0;
 }

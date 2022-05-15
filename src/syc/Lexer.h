@@ -42,7 +42,7 @@ namespace syc {
 		void lexHexLiteral();
 
 		char next();
-		char peek(ssize_t offset = 0) const;
+		char peek(int64_t offset = 0) const;
 
 		SourceLocation currentLocation() const;
 		bool atEof() const;

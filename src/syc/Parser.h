@@ -31,6 +31,6 @@ namespace syc {
 		static BinaryOperator getBinaryOperator(TokenKind kind);
 
 		Token next();
-		Token peek(ssize_t offset = 0) const;
+		Token peek(int64_t offset = 0) const;
 	};
 } // syc

@@ -6,18 +6,13 @@
 
 #pragma once
 
-#if defined(_MSC_VER)
-#include <BaseTsd.h>
-typedef SSIZE_T ssize_t;
-#endif
-
 #include "SourceFile.h"
 
 namespace syc {
     struct SourceLocation {
 		SourceFileId fileId;
-        size_t line;
-        size_t column;
+        uint64_t line;
+		uint64_t column;
     };
 
     struct SourceRange {

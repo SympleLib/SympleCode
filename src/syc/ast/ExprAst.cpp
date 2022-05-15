@@ -4,4 +4,6 @@
  * MIT License
  */
 
-#include "ExprAst.h"
+#include "syc/ast/ExprAst.h"
+
+using namespace syc;

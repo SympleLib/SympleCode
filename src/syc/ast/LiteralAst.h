@@ -22,9 +22,5 @@ namespace syc {
 			value(value) {
 			kind = AstKind::IntLiteral;
 		}
-
-		int Eval() override {
-			return value;
-		}
 	};
 } // syc

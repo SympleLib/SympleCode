@@ -71,7 +71,7 @@ Token Parser::next() {
 	return tokens.back();
 }
 
-Token Parser::peek(ssize_t offset) const {
+Token Parser::peek(int64_t offset) const {
 	size_t idx = pos + offset;
 	if (idx >= tokens.size())
 		return tokens.back();
