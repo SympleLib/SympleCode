@@ -7,7 +7,7 @@
 #pragma once
 
 #include <vector>
-#include "syc/Token.h"
+#include "Token.h"
 #include "syc/ast/Ast.h"
 
 namespace syc {
@@ -28,7 +28,7 @@ namespace syc {
 		ExprAst *ParseBinExpr(ExprAst *left = nullptr);
 		LiteralAst *ParseLiteral();
 
-		static BinaryOperator getBinaryOperator(TokenKind kind);
+		static BinaryOp getBinaryOperator(TokenKind kind);
 
 		Token next();
 		Token peek(int64_t offset = 0) const;

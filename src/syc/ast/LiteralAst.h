@@ -19,8 +19,12 @@ namespace syc {
 
 	public:
 		IntLiteralAst(int64_t value):
-			value(value) {
-			kind = AstKind::IntLiteral;
+			value(value) {}
+
+		AstKind getKind() const override {
+			return AstKind::IntLiteral;
 		}
+
+		void print(std::ostream &os, std::string indent = "", std::string_view label = "", bool last = true) const override;
 	};
 } // syc

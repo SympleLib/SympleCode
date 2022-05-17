@@ -6,17 +6,51 @@
 
 #pragma once
 
+#include <ostream>
+
+#include "syc/FunEnum.h"
+
 namespace syc {
-	enum class AstKind {
-		None,
+	enum class AstKind: uint8_t {
+#define ASTKIND(x) x,
+#include "syc/ast/AstKind.h"
+#undef ASTKIND
 
-		BinaryExpr,
-
-		IntLiteral,
+		Count,
 	};
+
+	constexpr const char *AstKindNames[(uint8_t)AstKind::Count] {
+#define ASTKIND(x) #x,
+#include "syc/ast/AstKind.h"
+#undef ASTKIND
+	};
+
+	ENUM_NAME_FUNC(AstKind);
 
 	class AstNode {
 	public:
-		AstKind kind = AstKind::None;
+		friend std::ostream &operator <<(std::ostream &, const AstNode &);
+
+		virtual void print(std::ostream &os, std::string indent = "", std::string_view label = "", bool last = true) const = 0;
+		virtual AstKind getKind() const {
+			return AstKind::None;
+		}
+
+		const char *getName() const {
+			return getAstKindName(getKind());
+		}
+
+	protected:
+		void printIndent(std::ostream &os, std::string_view indent, std::string_view label, bool last) const {
+			os << indent << (last ? "L--" : "|--");
+			if (!label.empty())
+				os << label << ": ";
+			os << getName() << ' ';
+		}
+
+		void endPrint(std::ostream &os, std::string *indent, bool last) const {
+			os << '\n';
+			*indent += last ? "   " : "|  ";
+		}
 	};
 } // syc

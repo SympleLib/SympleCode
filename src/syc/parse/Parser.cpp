@@ -27,8 +27,8 @@ ExprAst *Parser::ParseExpr() {
 
 ExprAst *Parser::ParseBinExpr(ExprAst *left) {
 	while (true) {
-		BinaryOperator op = getBinaryOperator(peek().kind);
-		if (op == BinaryOperator::None)
+		BinaryOp op = getBinaryOperator(peek().kind);
+		if (op == BinaryOp::None)
 			break;
 
 		next();
@@ -52,15 +52,15 @@ LiteralAst *Parser::ParseLiteral() {
 	}
 }
 
-BinaryOperator Parser::getBinaryOperator(TokenKind kind) {
+BinaryOp Parser::getBinaryOperator(TokenKind kind) {
 	switch (kind) {
 	case TokenKind::Plus:
-		return BinaryOperator::Add;
+		return BinaryOp::Add;
 	case TokenKind::Minus:
-		return BinaryOperator::Sub;
+		return BinaryOp::Sub;
 
 	default:
-		return BinaryOperator::None;
+		return BinaryOp::None;
 	}
 }
 

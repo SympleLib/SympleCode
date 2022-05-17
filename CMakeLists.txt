@@ -12,11 +12,11 @@ set(CMAKE_CXX_STANDARD 23)
 #separate_arguments(LLVM_DEFINITIONS_LIST NATIVE_COMMAND ${LLVM_DEFINITIONS})
 #add_definitions(${LLVM_DEFINITIONS_LIST})
 
+add_executable(SympleCode src/main.cpp src/syc/parse/Lexer.cpp src/syc/parse/Lexer.h src/syc/parse/Token.cpp src/syc/parse/Token.h src/syc/SourceLocation.h src/syc/parse/TokenKind.h src/syc/SourceFile.cpp src/syc/SourceFile.h src/syc/ast/ExprAst.cpp src/syc/ast/ExprAst.h src/syc/ast/LiteralAst.cpp src/syc/ast/LiteralAst.h src/syc/ast/AstNode.cpp src/syc/ast/AstNode.h src/syc/parse/Parser.cpp src/syc/parse/Parser.h src/syc/ast/Ast.h src/syc/ast/AstKind.h src/syc/ast/Operator.h src/syc/FunEnum.h)
 target_include_directories(
         SympleCode
         PUBLIC
         src)
-add_executable(SympleCode src/main.cpp src/syc/Lexer.cpp src/syc/Lexer.h src/syc/Token.cpp src/syc/Token.h src/syc/SourceLocation.h src/syc/TokenKind.h src/syc/SourceFile.cpp src/syc/SourceFile.h src/syc/ast/ExprAst.cpp src/syc/ast/ExprAst.h src/syc/ast/LiteralAst.cpp src/syc/ast/LiteralAst.h src/syc/ast/AstNode.cpp src/syc/ast/AstNode.h src/syc/Parser.cpp src/syc/Parser.h src/syc/ast/Ast.h src/syc/emit/Emitter.cpp src/syc/emit/Emitter.h)
 
 #llvm_map_components_to_libnames(llvm_libs support core irreader)
 #target_link_libraries(SympleCode ${llvm_libs})

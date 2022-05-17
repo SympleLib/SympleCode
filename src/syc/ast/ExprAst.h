@@ -6,29 +6,44 @@
 
 #pragma once
 
-#include "syc/Token.h"
+#include "syc/parse/Token.h"
 #include "syc/ast/AstNode.h"
 
 namespace syc {
 	class ExprAst: public AstNode {
 	};
 
-	enum class BinaryOperator: uint8_t {
+	enum class BinaryOp: uint8_t {
 		None,
 
-		Add,
-		Sub,
+#define BINOP(x, y) x,
+#include "syc/ast/Operator.h"
+
+		Count,
 	};
 
-	class BinaryExprAst: public ExprAst {
+	constexpr const char *BinaryOpNames[(uint8_t) BinaryOp::Count] {
+		"None",
+
+#define BINOP(x, y) y,
+#include "syc/ast/Operator.h"
+	};
+
+	ENUM_NAME_FUNC(BinaryOp);
+
+	class BinaryExprAst final: public ExprAst {
 	public:
-		BinaryOperator op;
+		BinaryOp op;
 		ExprAst *left, *right;
 
 	public:
-		BinaryExprAst(BinaryOperator op, ExprAst *left, ExprAst *right):
-			op(op), left(left), right(right) {
-			kind = AstKind::BinaryExpr;
+		BinaryExprAst(BinaryOp op, ExprAst *left, ExprAst *right):
+			op(op), left(left), right(right) {}
+
+		AstKind getKind() const override {
+			return AstKind::BinaryExpr;
 		}
+
+		void print(std::ostream &os, std::string indent = "", std::string_view label = "", bool last = true) const override;
 	};
 } // syc

@@ -4,4 +4,11 @@
  * MIT License
  */
 
-#include "AstNode.h"
+#include "syc/ast/AstNode.h"
+
+using namespace syc;
+
+std::ostream &syc::operator <<(std::ostream &os, const AstNode &node) {
+	node.print(os);
+	return os;
+}

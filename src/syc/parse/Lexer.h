@@ -6,7 +6,7 @@
 
 #pragma once
 
-#include "syc/Token.h"
+#include "Token.h"
 #include <string_view>
 #include <vector>
 
