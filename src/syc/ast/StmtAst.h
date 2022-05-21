@@ -6,26 +6,25 @@
 
 #pragma once
 
-#include "syc/ast/ExprAst.h"
+#include "syc/parse/Token.h"
+#include "syc/ast/AstNode.h"
 
 namespace syc {
-	class LiteralAst: public ExprAst {
-	public:
-		bool isMutable() const final override {
-			return false;
-		}
+	class ExprAst;
+
+	class StmtAst: public AstNode {
 	};
 
-	class IntLiteralAst: public LiteralAst {
+	class ReturnStmtAst final: public StmtAst {
 	public:
-		int64_t value;
+		ExprAst *value;
 
 	public:
-		IntLiteralAst(int64_t value):
+		ReturnStmtAst(ExprAst *value):
 			value(value) {}
 
 		AstKind getKind() const override {
-			return AstKind::IntLiteral;
+			return AstKind::ReturnStmt;
 		}
 
 		void print(std::ostream &os, std::string indent = "", std::string_view label = "", bool last = true) const override;

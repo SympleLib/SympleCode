@@ -11,9 +11,11 @@
 ASTKIND(None)
 
 // Stmt
+ASTKIND(ReturnStmt)
 
 // Expr
 ASTKIND(BinaryExpr)
+ASTKIND(VariableExpr)
 
 // Literal
 ASTKIND(IntLiteral)

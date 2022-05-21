@@ -27,15 +27,38 @@ Module *Emitter::Emit(const std::vector<AstNode *> &ast, StringRef moduleName) {
 }
 
 void Emitter::Emit(AstNode *node) {
-	Value *expr = Emit((ExprAst *) node);
-	Value *ptr = builder.CreateAlloca(builder.getInt32Ty());
-	builder.CreateStore(expr, ptr, true);
+	ExprAst *expr = dynamic_cast<ExprAst *>(node);
+	if (expr) {
+		Emit(expr);
+		return;
+	}
+
+	Emit((StmtAst *) node);
+}
+
+void Emitter::Emit(StmtAst *node) {
+	switch (node->getKind()) {
+	case AstKind::ReturnStmt:
+		Emit((ReturnStmtAst *) node);
+		break;
+	}
+}
+
+void Emitter::Emit(ReturnStmtAst *node) {
+	if (node->value) {
+		builder.CreateRet(Emit(node->value));
+		return;
+	}
+
+	builder.CreateRetVoid();
 }
 
 Value *Emitter::Emit(ExprAst *node) {
 	switch (node->getKind()) {
 	case AstKind::BinaryExpr:
 		return Emit((BinaryExprAst *) node);
+	case AstKind::VariableExpr:
+		return Emit((VariableExprAst *) node);
 	case AstKind::IntLiteral:
 		return Emit((LiteralAst *) node);
 	default:
@@ -45,17 +68,52 @@ Value *Emitter::Emit(ExprAst *node) {
 
 Value *Emitter::Emit(BinaryExprAst *node) {
 	Value *left, *right;
-	left = Emit(node->left);
 	right = Emit(node->right);
 
 	switch (node->op) {
 	case BinaryOp::Add:
+		left = Emit(node->left);
 		return builder.CreateAdd(left, right);
 	case BinaryOp::Sub:
+		left = Emit(node->left);
 		return builder.CreateSub(left, right);
+
+	case BinaryOp::Assign:
+		left = EmitRef(node->left);
+		return builder.CreateStore(right, left);
+
 	default:
 		return nullptr;
 	}
+}
+
+Value *Emitter::Emit(VariableExprAst *node) {
+	if (vars.contains(node->name))
+		return builder.CreateLoad(builder.getInt32Ty(), vars[node->name]);
+
+	Value *var = builder.CreateAlloca(builder.getInt32Ty());
+	vars[node->name] = var;
+	return builder.CreateLoad(builder.getInt32Ty(), var);
+}
+
+
+Value *Emitter::EmitRef(ExprAst *node) {
+	switch (node->getKind()) {
+	case AstKind::VariableExpr:
+		return EmitRef((VariableExprAst *) node);
+
+	default:
+		return nullptr;
+	}
+}
+
+Value *Emitter::EmitRef(VariableExprAst *node) {
+	if (vars.contains(node->name))
+		return vars[node->name];
+
+	Value *var = builder.CreateAlloca(builder.getInt32Ty());
+	vars[node->name] = var;
+	return var;
 }
 
 

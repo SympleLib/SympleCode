@@ -10,6 +10,11 @@
 
 using namespace syc;
 
+const std::unordered_map<std::string_view, TokenKind> syc::tokenKeywords = {
+#define KEYWORD(x, y) { #y, TokenKind::x },
+#include "syc/parse/TokenKind.h"
+};
+
 std::vector<Token> Lexer::lex(SourceFileId srcFileId) {
 	sourceFileId = srcFileId;
 	source = SourceFile::getContent(sourceFileId);
@@ -83,7 +88,12 @@ void Lexer::lexIdentifierOrKeyword() {
 	while (std::isalnum(peek()))
 		next();
 
-	emplaceToken(TokenKind::Identifier);
+	TokenKind kind = TokenKind::Identifier;
+	std::string_view text = source.substr(startPos, pos - startPos);
+	if (tokenKeywords.contains(text))
+		kind = tokenKeywords.at(text);
+
+	emplaceToken(kind);
 }
 
 void Lexer::lexNumberLiteral() {

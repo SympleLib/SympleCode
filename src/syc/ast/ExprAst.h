@@ -11,6 +11,8 @@
 
 namespace syc {
 	class ExprAst: public AstNode {
+	public:
+		virtual bool isMutable() const = 0;
 	};
 
 	enum class BinaryOp: uint8_t {
@@ -42,6 +44,28 @@ namespace syc {
 
 		AstKind getKind() const override {
 			return AstKind::BinaryExpr;
+		}
+
+		bool isMutable() const override {
+			return false;
+		}
+
+		void print(std::ostream &os, std::string indent = "", std::string_view label = "", bool last = true) const override;
+	};
+
+	class VariableExprAst final: public ExprAst {
+	public:
+		std::string name;
+
+	public:
+		VariableExprAst(std::string_view name): name(name) {}
+
+		AstKind getKind() const override {
+			return AstKind::VariableExpr;
+		}
+
+		bool isMutable() const override {
+			return true; // TODO: auto const
 		}
 
 		void print(std::ostream &os, std::string indent = "", std::string_view label = "", bool last = true) const override;

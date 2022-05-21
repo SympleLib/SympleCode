@@ -24,13 +24,20 @@ namespace syc {
 		std::vector<AstNode *> Parse(const std::vector<Token> &tokens);
 
 	private:
+		AstNode *ParseNode();
+
+		StmtAst *ParseStmt();
+		ReturnStmtAst *ParseReturnStmt();
+
 		ExprAst *ParseExpr();
-		ExprAst *ParseBinExpr(ExprAst *left = nullptr);
-		LiteralAst *ParseLiteral();
+		ExprAst *ParseBinaryExpr(ExprAst *left = nullptr);
+
+		ExprAst *ParsePrimaryExpr();
 
 		static BinaryOp getBinaryOperator(TokenKind kind);
 
 		Token next();
+		Token match(TokenKind);
 		Token peek(int64_t offset = 0) const;
 	};
 } // syc

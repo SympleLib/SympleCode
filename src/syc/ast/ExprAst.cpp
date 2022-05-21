@@ -17,3 +17,10 @@ void BinaryExprAst::print(std::ostream &os, std::string indent, std::string_view
 	left->print(os, indent, "left", false);
 	right->print(os, indent, "right", true);
 }
+
+void VariableExprAst::print(std::ostream &os, std::string indent, std::string_view label, bool last) const {
+	printIndent(os, indent, label, last);
+	os << name;
+
+	endPrint(os, &indent, last);
+}

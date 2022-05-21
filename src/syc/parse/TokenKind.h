@@ -8,6 +8,10 @@
 #define TOKEN(x)
 #endif
 
+#ifndef KEYWORD
+#define KEYWORD(x, y) TOKEN(x)
+#endif
+
 #ifndef PUNCTUATOR
 #define PUNCTUATOR(x,y) TOKEN(x)
 #endif
@@ -23,6 +27,8 @@ PUNCTUATOR(Semicolon, ";")
 PUNCTUATOR(Plus, "+")
 PUNCTUATOR(Minus, "-")
 
+KEYWORD(Return, ret)
 
 #undef TOKEN
 #undef PUNCTUATOR
+#undef KEYWORD

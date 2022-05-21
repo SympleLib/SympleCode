@@ -21,6 +21,8 @@ namespace syc {
 			Function *mainFunc;
 			IRBuilder<> builder;
 
+			std::unordered_map<std::string_view, Value *> vars;
+
 		public:
 			Emitter(LLVMContext &ctx);
 
@@ -29,8 +31,16 @@ namespace syc {
 		private:
 			// should be const *, but I'm too lazy
 			void Emit(AstNode *);
+
+			void Emit(StmtAst *);
+			void Emit(ReturnStmtAst *);
+
 			Value *Emit(ExprAst *);
 			Value *Emit(BinaryExprAst *);
+			Value *Emit(VariableExprAst *);
+
+			Value *EmitRef(ExprAst *);
+			Value *EmitRef(VariableExprAst *);
 
 			Value *Emit(LiteralAst *);
 		};

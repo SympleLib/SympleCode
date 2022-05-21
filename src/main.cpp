@@ -13,7 +13,7 @@ int main() {
 	syc::Lexer lexer;
 	std::vector<syc::Token> tokens = lexer.lex(file);
 
-	if (false)
+	if (true)
 		for (const syc::Token &token: tokens)
 			std::cout << "[" << token.sourceRange.start.line << ":" << token.sourceRange.start.column << "] \"" << token.text << "\" " << token.getName() << " | " << token.getFlagsAsString() << "\n";
 
@@ -24,13 +24,13 @@ int main() {
 			node->print(std::cout, "", "", node == ast.back());
 		}
 
-	llvm::LLVMContext ctx;
-	syc::emit::Emitter emitter(ctx);
-	llvm::Module *module = emitter.Emit(ast, "samples/test.sy");
-	std::string str;
-	llvm::raw_string_ostream os(str);
-	module->print(os, nullptr);
-	std::cout << str;
-
-    return 0;
+	if (true) {
+		llvm::LLVMContext ctx;
+		syc::emit::Emitter emitter(ctx);
+		llvm::Module *module = emitter.Emit(ast, "samples/test.sy");
+		std::string str;
+		llvm::raw_string_ostream os(str);
+		module->print(os, nullptr);
+		std::cout << str;
+	}
 }

@@ -11,4 +11,6 @@
 BINOP(Add, "+")
 BINOP(Sub, "-")
 
+BINOP(Assign, "=")
+
 #undef BINOP

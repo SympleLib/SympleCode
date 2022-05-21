@@ -11,6 +11,7 @@
 
 #include <string>
 #include <string_view>
+#include <unordered_map>
 
 namespace syc {
 	using TokenFlags = uint8_t;
@@ -26,8 +27,11 @@ namespace syc {
 	inline constexpr const char *TokenKindNames[(uint64_t) TokenKind::Count] = {
 #define TOKEN(x) #x " ",
 #define PUNCTUATOR(x, y) #x " '" y "'",
+#define KEYWORD(x, y) #x " '" #y "'",
 #include "syc/parse/TokenKind.h"
 	};
+
+	extern const std::unordered_map<std::string_view, TokenKind> tokenKeywords;
 
 	ENUM_NAME_FUNC(TokenKind);
 
