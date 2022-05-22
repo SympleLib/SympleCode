@@ -74,6 +74,10 @@ void Lexer::lexToken() {
 		next();
 		emplaceToken(TokenKind::Minus);
 		break;
+	case ':':
+		next();
+		emplaceToken(TokenKind::Colon);
+		break;
 	case '\0':
 		break;
 

@@ -25,7 +25,7 @@ namespace syc {
 
 		void defineType(std::string_view name, TypeKind typeKind) {
 			if (types.contains(name))
-				printf("type '%.*s' already defined in scope", name.size(), name.data());
+				printf("type '%.*s' already defined in scope", (int) name.size(), name.data());
 			types[name] = typeKind;
 		}
 

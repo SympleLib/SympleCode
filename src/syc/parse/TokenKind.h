@@ -26,8 +26,10 @@ PUNCTUATOR(Equal, "=")
 PUNCTUATOR(Semicolon, ";")
 PUNCTUATOR(Plus, "+")
 PUNCTUATOR(Minus, "-")
+PUNCTUATOR(Colon, ":")
 
 KEYWORD(Return, ret)
+KEYWORD(Mutable, mut)
 
 #undef TOKEN
 #undef PUNCTUATOR

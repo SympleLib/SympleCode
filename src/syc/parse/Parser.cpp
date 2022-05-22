@@ -19,12 +19,17 @@ std::vector<AstNode *> Parser::Parse(const std::vector<Token> &tokens) {
 	globalScope.defineType("float", TypeKind::Float);
 	scope = &globalScope;
 
-	while (peek().kind != TokenKind::Eof) {
+	while (!peek().is(TokenKind::Eof)) {
 		uint64_t start = pos;
 		AstNode *node = ParseNode();
 		if (node)
 			ast.push_back(node);
-		while (peek().kind == TokenKind::Semicolon)
+
+		// TODO: maybe be crazy??
+		if (!(peek().flags & TokenFlag::StartOfLine) && !peek().is(TokenKind::Eof))
+			match(TokenKind::Semicolon);
+
+		while (peek().is(TokenKind::Semicolon))
 			next();
 
 		if (start == pos)
@@ -43,7 +48,7 @@ AstNode *Parser::ParseNode() {
 
 
 TypeAst *Parser::ParseType() {
-	if (peek().kind != TokenKind::Identifier)
+	if (!peek().is(TokenKind::Identifier))
 		return nullptr;
 
 	return ParsePrimitiveType();
@@ -51,8 +56,12 @@ TypeAst *Parser::ParseType() {
 
 PrimitiveTypeAst *Parser::ParsePrimitiveType() {
 	std::string_view name = next().text;
+	uint64_t size = 32;
 	TypeKind typeKind = scope->getType(name);
-	uint64_t size = std::stoull(match(TokenKind::Integer).text);
+	if (peek().is(TokenKind::Colon)) {
+		next();
+		size = std::stoull(match(TokenKind::Integer).text);
+	}
 	return new PrimitiveTypeAst(false, typeKind, size);
 }
 
@@ -72,7 +81,7 @@ StmtAst *Parser::ParseStmt() {
 
 ReturnStmtAst *Parser::ParseReturnStmt() {
 	match(TokenKind::Return);
-	if (peek().kind == TokenKind::Semicolon)
+	if (peek().is(TokenKind::Semicolon))
 		return new ReturnStmtAst(nullptr);
 	ExprAst *value = ParseExpr();
 	return new ReturnStmtAst(value);
@@ -82,7 +91,7 @@ VariableStmtAst *Parser::ParseVariableStmt() {
 	TypeAst *type = ParseType();
 	std::string name = match(TokenKind::Identifier).text;
 	ExprAst *init = nullptr;
-	if (peek().kind == TokenKind::Equal) {
+	if (peek().is(TokenKind::Equal)) {
 		next();
 		init = ParseExpr();
 	}
@@ -149,10 +158,10 @@ Token Parser::next() {
 }
 
 Token Parser::match(TokenKind kind) {
-	if (peek().kind == kind)
+	if (peek().is(kind))
 		return next();
 	SourceLocation srcLoc = peek().sourceRange.start;
-	printf("[%llu:%llu]: expected %s, found %s", srcLoc.line, srcLoc.column, peek().getName(), getTokenKindName(kind));
+	std::cerr << SourceFile::getFilename(srcLoc.fileId) << "(" << srcLoc.line << "," << srcLoc.column << "): expected " << getTokenKindName(kind) << ", got " << peek().getName() << "\n";
 	return next();
 }
 

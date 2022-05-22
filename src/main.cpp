@@ -18,7 +18,8 @@
 int main() {
 	static_assert(sizeof(size_t) == sizeof(uint64_t), "x64 only, buddy");
 
-	syc::SourceFileId file = syc::SourceFile::ReadFile("../samples/test.sy");
+	syc::SourceFileId rawFile = syc::SourceFile::ReadFile("../samples/test.sy");
+	syc::SourceFileId file = syc::SourceFile::MakeFile("samples/test.sy", syc::SourceFile::getContent(rawFile));
 
 	syc::Lexer lexer;
 	std::vector<syc::Token> tokens = lexer.lex(file);
@@ -29,7 +30,7 @@ int main() {
 //					  << token.text << "\" " << token.getName() << " | " << token.getFlagsAsString() << "\n";
 
 			// because intellisense
-			std::cout << "samples/test.sy(" << token.sourceRange.start.line << "," << token.sourceRange.start.column << "): \""
+			std::cout << syc::SourceFile::getFilename(file) << "(" << token.sourceRange.start.line << "," << token.sourceRange.start.column << "): \""
 				  << token.text << "\" " << token.getName() << " | " << token.getFlagsAsString() << "\n";
 		std::cout << '\n';
 	}
@@ -46,7 +47,7 @@ int main() {
 	if (true) {
 		llvm::LLVMContext ctx;
 		syc::emit::Emitter emitter(ctx);
-		std::unique_ptr<llvm::Module> module = emitter.Emit(ast, "samples/test.sy");
+		std::unique_ptr<llvm::Module> module = emitter.Emit(ast, syc::SourceFile::getFilename(file));
 		if (true) {
 			std::string str;
 			llvm::raw_string_ostream os(str);
@@ -54,7 +55,7 @@ int main() {
 			std::cout << str << '\n';
 		}
 
-		if (false) {
+		if (true) {
 			llvm::InitializeAllTargetInfos();
 			llvm::InitializeAllTargets();
 			llvm::InitializeAllTargetMCs();
@@ -79,7 +80,7 @@ int main() {
 			module->setTargetTriple(targetTriple);
 
 			std::error_code ec;
-			llvm::raw_fd_ostream dest("../samples/test.o", ec, llvm::sys::fs::OF_None);
+			llvm::raw_fd_ostream dest("../samples/out.o", ec, llvm::sys::fs::OF_None);
 
 			if (ec) {
 				std::cerr << "can't open obj file: " << ec.message();

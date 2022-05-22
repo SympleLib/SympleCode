@@ -130,7 +130,7 @@ Value *Emitter::Emit(BinaryExprAst *node) {
 Value *Emitter::Emit(VariableExprAst *node) {
 	// TODO: goodify this
 	if (vars.contains(node->var->name))
-		return builder.CreateLoad(builder.getInt32Ty(), vars[node->var->name]);
+		return builder.CreateLoad(vars[node->var->name]->getType()->getArrayElementType(), vars[node->var->name]);
 	return nullptr;
 }
 
