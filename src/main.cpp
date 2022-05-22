@@ -4,6 +4,10 @@
 #include "syc/parse/Parser.h"
 #include "syc/emit/Emitter.h"
 #include "syc/SourceFile.h"
+#include "syc/emit/SycJIT.h"
+
+#include <llvm/Support/TargetSelect.h>
+#include <llvm/Target/TargetMachine.h>
 
 int main() {
 	static_assert(sizeof(size_t) == sizeof(uint64_t), "x64 only, buddy");
@@ -28,9 +32,20 @@ int main() {
 		llvm::LLVMContext ctx;
 		syc::emit::Emitter emitter(ctx);
 		llvm::Module *module = emitter.Emit(ast, "samples/test.sy");
-		std::string str;
-		llvm::raw_string_ostream os(str);
-		module->print(os, nullptr);
-		std::cout << str;
+		if (true) {
+			std::string str;
+			llvm::raw_string_ostream os(str);
+			module->print(os, nullptr);
+			std::cout << str;
+		}
+
+		if (true) {
+			llvm::InitializeNativeTarget();
+			llvm::InitializeNativeTargetAsmParser();
+			llvm::InitializeNativeTargetAsmParser();
+
+			std::unique_ptr<syc::emit::SycJIT> jit = std::move(*syc::emit::SycJIT::Create());
+
+		}
 	}
 }
