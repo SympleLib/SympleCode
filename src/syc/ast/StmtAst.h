@@ -11,6 +11,7 @@
 
 namespace syc {
 	class ExprAst;
+	class TypeAst;
 
 	class StmtAst: public AstNode {
 	};
@@ -25,6 +26,23 @@ namespace syc {
 
 		AstKind getKind() const override {
 			return AstKind::ReturnStmt;
+		}
+
+		void print(std::ostream &os, std::string indent = "", std::string_view label = "", bool last = true) const override;
+	};
+
+	class VariableStmtAst final: public StmtAst {
+	public:
+		TypeAst *type;
+		std::string name;
+		ExprAst *init;
+
+	public:
+		VariableStmtAst(TypeAst *type, std::string_view name, ExprAst *init):
+				type(type), name(name), init(init) {}
+
+		AstKind getKind() const override {
+			return AstKind::VariableStmt;
 		}
 
 		void print(std::ostream &os, std::string indent = "", std::string_view label = "", bool last = true) const override;

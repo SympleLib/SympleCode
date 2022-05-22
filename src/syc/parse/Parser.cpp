@@ -4,13 +4,20 @@
  * MIT License
  */
 
-#include "Parser.h"
+#include "syc/parse/Parser.h"
+
+#include <iostream>
 
 using namespace syc;
 
 std::vector<AstNode *> Parser::Parse(const std::vector<Token> &tokens) {
 	this->tokens = tokens;
 	pos = 0;
+
+	globalScope = ParseScope();
+	globalScope.defineType("int", TypeKind::Int);
+	globalScope.defineType("float", TypeKind::Float);
+	scope = &globalScope;
 
 	while (peek().kind != TokenKind::Eof) {
 		uint64_t start = pos;
@@ -34,10 +41,30 @@ AstNode *Parser::ParseNode() {
 	return node;
 }
 
+
+TypeAst *Parser::ParseType() {
+	if (peek().kind != TokenKind::Identifier)
+		return nullptr;
+
+	return ParsePrimitiveType();
+}
+
+PrimitiveTypeAst *Parser::ParsePrimitiveType() {
+	std::string_view name = next().text;
+	TypeKind typeKind = scope->getType(name);
+	uint64_t size = std::stoull(match(TokenKind::Integer).text);
+	return new PrimitiveTypeAst(false, typeKind, size);
+}
+
+
 StmtAst *Parser::ParseStmt() {
-	switch (peek().kind) {
+	Token tok = peek();
+	switch (tok.kind) {
 	case TokenKind::Return:
 		return ParseReturnStmt();
+	case TokenKind::Identifier:
+		if (scope->hasType(tok.text))
+			return ParseVariableStmt();
 	default:
 		return nullptr;
 	}
@@ -50,6 +77,21 @@ ReturnStmtAst *Parser::ParseReturnStmt() {
 	ExprAst *value = ParseExpr();
 	return new ReturnStmtAst(value);
 }
+
+VariableStmtAst *Parser::ParseVariableStmt() {
+	TypeAst *type = ParseType();
+	std::string name = match(TokenKind::Identifier).text;
+	ExprAst *init = nullptr;
+	if (peek().kind == TokenKind::Equal) {
+		next();
+		init = ParseExpr();
+	}
+
+	VariableStmtAst *var = new VariableStmtAst(type, name, init);
+	scope->defineVar(var);
+	return var;
+}
+
 
 ExprAst *Parser::ParseExpr() {
 	return ParseBinaryExpr(ParsePrimaryExpr());
@@ -78,7 +120,7 @@ ExprAst *Parser::ParsePrimaryExpr() {
 		return new IntLiteralAst(std::stoll(tok.text));
 	case TokenKind::Identifier:
 		next();
-		return new VariableExprAst(tok.text);
+		return new VariableExprAst(scope->findVar(tok.text));
 
 	default:
 		return nullptr;
@@ -111,7 +153,7 @@ Token Parser::match(TokenKind kind) {
 		return next();
 	SourceLocation srcLoc = peek().sourceRange.start;
 	printf("[%llu:%llu]: expected %s, found %s", srcLoc.line, srcLoc.column, peek().getName(), getTokenKindName(kind));
-	return peek();
+	return next();
 }
 
 Token Parser::peek(int64_t offset) const {

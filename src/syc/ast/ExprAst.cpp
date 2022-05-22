@@ -6,6 +6,8 @@
 
 #include "syc/ast/ExprAst.h"
 
+#include "syc/ast/Ast.h"
+
 using namespace syc;
 
 void BinaryExprAst::print(std::ostream &os, std::string indent, std::string_view label, bool last) const {
@@ -20,7 +22,7 @@ void BinaryExprAst::print(std::ostream &os, std::string indent, std::string_view
 
 void VariableExprAst::print(std::ostream &os, std::string indent, std::string_view label, bool last) const {
 	printIndent(os, indent, label, last);
-	os << name;
+	os << getVariableUsageName(usage) << " " << var->name;
 
 	endPrint(os, &indent, last);
 }

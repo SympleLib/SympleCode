@@ -10,6 +10,8 @@
 #include "syc/ast/AstNode.h"
 
 namespace syc {
+	class VariableStmtAst;
+
 	class ExprAst: public AstNode {
 	public:
 		virtual bool isMutable() const = 0;
@@ -53,12 +55,29 @@ namespace syc {
 		void print(std::ostream &os, std::string indent = "", std::string_view label = "", bool last = true) const override;
 	};
 
+	enum class VariableUsage: uint8_t {
+#define VARIABLE_USAGE(x, y) x,
+#include "syc/ast/VariableUsage.h"
+
+		Count,
+	};
+
+	constexpr const char *VariableUsageNames[(uint8_t) VariableUsage::Count] {
+#define VARIABLE_USAGE(x, y) #x " '" #y "'",
+#include "syc/ast/VariableUsage.h"
+	};
+
+	ENUM_NAME_FUNC(VariableUsage);
+
 	class VariableExprAst final: public ExprAst {
 	public:
-		std::string name;
+		VariableStmtAst *var;
+		// changed during parsing :)
+		VariableUsage usage;
 
 	public:
-		VariableExprAst(std::string_view name): name(name) {}
+		VariableExprAst(VariableStmtAst *var):
+			var(var), usage(VariableUsage::Copying) {}
 
 		AstKind getKind() const override {
 			return AstKind::VariableExpr;

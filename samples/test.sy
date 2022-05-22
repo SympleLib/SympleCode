@@ -1,2 +1,3 @@
-var = 60 + 9;
-ret var - 5;
+int 32 foo = 60 + 9;
+int 32 bar = 400 + 20;
+ret foo + bar;

@@ -7,7 +7,8 @@
 #pragma once
 
 #include <vector>
-#include "Token.h"
+#include "syc/parse/Token.h"
+#include "syc/parse/ParseScope.h"
 #include "syc/ast/Ast.h"
 
 namespace syc {
@@ -18,6 +19,9 @@ namespace syc {
 
 		std::vector<AstNode *> ast;
 
+		ParseScope globalScope;
+		ParseScope *scope;
+
 	public:
 		Parser() = default;
 
@@ -26,8 +30,12 @@ namespace syc {
 	private:
 		AstNode *ParseNode();
 
+		TypeAst *ParseType();
+		PrimitiveTypeAst *ParsePrimitiveType();
+
 		StmtAst *ParseStmt();
 		ReturnStmtAst *ParseReturnStmt();
+		VariableStmtAst *ParseVariableStmt();
 
 		ExprAst *ParseExpr();
 		ExprAst *ParseBinaryExpr(ExprAst *left = nullptr);

@@ -17,7 +17,7 @@ namespace syc {
 		class Emitter {
 		public:
 			LLVMContext &ctx;
-			Module *module;
+			std::unique_ptr<Module> module;
 			Function *mainFunc;
 			IRBuilder<> builder;
 
@@ -26,14 +26,18 @@ namespace syc {
 		public:
 			Emitter(LLVMContext &ctx);
 
-			Module *Emit(const std::vector<AstNode *> &ast, StringRef moduleName);
+			std::unique_ptr<Module> Emit(const std::vector<AstNode *> &ast, StringRef moduleName);
 
 		private:
 			// should be const *, but I'm too lazy
 			void Emit(AstNode *);
 
+			Type *Emit(TypeAst *);
+			Type *Emit(PrimitiveTypeAst *);
+
 			void Emit(StmtAst *);
 			void Emit(ReturnStmtAst *);
+			void Emit(VariableStmtAst *);
 
 			Value *Emit(ExprAst *);
 			Value *Emit(BinaryExprAst *);

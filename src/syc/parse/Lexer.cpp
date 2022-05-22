@@ -44,6 +44,15 @@ void Lexer::lexToken() {
 		flags = TokenFlag::StartOfLine;
 	skipWhitespace();
 
+	// comments
+	if (peek() == '/' && peek(1) == '/') {
+		while (peek() != '\n' && peek() != '\0') {
+			next();
+		}
+	}
+
+	skipWhitespace();
+
 	start = currentLocation();
 	startPos = pos;
 
@@ -64,6 +73,8 @@ void Lexer::lexToken() {
 	case '-':
 		next();
 		emplaceToken(TokenKind::Minus);
+		break;
+	case '\0':
 		break;
 
 	default:

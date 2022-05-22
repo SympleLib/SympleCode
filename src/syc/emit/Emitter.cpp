@@ -11,11 +11,11 @@ using namespace syc::emit;
 
 Emitter::Emitter(LLVMContext &ctx): ctx(ctx), builder(ctx) {}
 
-Module *Emitter::Emit(const std::vector<AstNode *> &ast, StringRef moduleName) {
-	module = new Module(moduleName, ctx);
+std::unique_ptr<Module> Emitter::Emit(const std::vector<AstNode *> &ast, StringRef moduleName) {
+	module = std::make_unique<Module>(moduleName, ctx);
 
 	FunctionType *mainFuncType = FunctionType::get(builder.getInt32Ty(), ArrayRef<Type *> { builder.getInt32Ty(), builder.getInt8PtrTy(), }, false);
-	mainFunc = Function::Create(mainFuncType, GlobalValue::ExternalLinkage, 0, "main", module);
+	mainFunc = Function::Create(mainFuncType, GlobalValue::ExternalLinkage, 0, "main", module.get());
 
 	BasicBlock *entry = BasicBlock::Create(ctx, "entry", mainFunc);
 	builder.SetInsertPoint(entry);
@@ -23,7 +23,7 @@ Module *Emitter::Emit(const std::vector<AstNode *> &ast, StringRef moduleName) {
 	for (AstNode *node: ast)
 		Emit(node);
 
-	return module;
+	return std::move(module);
 }
 
 void Emitter::Emit(AstNode *node) {
@@ -36,10 +36,37 @@ void Emitter::Emit(AstNode *node) {
 	Emit((StmtAst *) node);
 }
 
+
+Type *Emitter::Emit(TypeAst *node) {
+	switch (node->getKind()) {
+	case AstKind::PrimitiveType:
+		return Emit((PrimitiveTypeAst *) node);
+
+	default:
+		return nullptr;
+	}
+}
+
+Type *Emitter::Emit(PrimitiveTypeAst *node) {
+	switch (node->getTypeKind()) {
+	case TypeKind::Int:
+		return builder.getIntNTy(node->size);
+	case TypeKind::Float:
+		return node->size > 32 ? builder.getDoubleTy() : builder.getFloatTy();
+
+	default:
+		return nullptr;
+	}
+}
+
+
 void Emitter::Emit(StmtAst *node) {
 	switch (node->getKind()) {
 	case AstKind::ReturnStmt:
 		Emit((ReturnStmtAst *) node);
+		break;
+	case AstKind::VariableStmt:
+		Emit((VariableStmtAst *) node);
 		break;
 	}
 }
@@ -52,6 +79,19 @@ void Emitter::Emit(ReturnStmtAst *node) {
 
 	builder.CreateRetVoid();
 }
+
+void Emitter::Emit(VariableStmtAst *node) {
+	Type *type = Emit(node->type);
+	Value *ptr = builder.CreateAlloca(type);
+	ptr->setName(node->name);
+	Value *init = Emit(node->init);
+	builder.CreateStore(init, ptr);
+
+	// TODO: store var in scope
+	vars[node->name] = ptr;
+	// TODO: static/global vars
+}
+
 
 Value *Emitter::Emit(ExprAst *node) {
 	switch (node->getKind()) {
@@ -88,12 +128,10 @@ Value *Emitter::Emit(BinaryExprAst *node) {
 }
 
 Value *Emitter::Emit(VariableExprAst *node) {
-	if (vars.contains(node->name))
-		return builder.CreateLoad(builder.getInt32Ty(), vars[node->name]);
-
-	Value *var = builder.CreateAlloca(builder.getInt32Ty());
-	vars[node->name] = var;
-	return builder.CreateLoad(builder.getInt32Ty(), var);
+	// TODO: goodify this
+	if (vars.contains(node->var->name))
+		return builder.CreateLoad(builder.getInt32Ty(), vars[node->var->name]);
+	return nullptr;
 }
 
 
@@ -108,11 +146,12 @@ Value *Emitter::EmitRef(ExprAst *node) {
 }
 
 Value *Emitter::EmitRef(VariableExprAst *node) {
-	if (vars.contains(node->name))
-		return vars[node->name];
+	if (vars.contains(node->var->name))
+		return vars[node->var->name];
 
+	// TODO: maybe be crazy??
 	Value *var = builder.CreateAlloca(builder.getInt32Ty());
-	vars[node->name] = var;
+	vars[node->var->name] = var;
 	return var;
 }
 

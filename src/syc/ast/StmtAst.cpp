@@ -17,3 +17,15 @@ void ReturnStmtAst::print(std::ostream &os, std::string indent, std::string_view
 	if (value)
 		value->print(os, indent, "value", true);
 }
+
+void VariableStmtAst::print(std::ostream &os, std::string indent, std::string_view label, bool last) const {
+	printIndent(os, indent, label, last);
+
+	os << name;
+
+	endPrint(os, &indent, last);
+
+	type->print(os, indent, "type", !init);
+	if (init)
+		init->print(os, indent, "init", true);
+}

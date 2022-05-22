@@ -5,6 +5,8 @@
 #include "syc/emit/Emitter.h"
 #include "syc/SourceFile.h"
 
+#include <llvm/ExecutionEngine/GenericValue.h>
+#include <llvm/ExecutionEngine/MCJIT.h>
 #include <llvm/IR/LegacyPassManager.h>
 #include <llvm/MC/TargetRegistry.h>
 #include <llvm/Support/TargetSelect.h>
@@ -21,21 +23,30 @@ int main() {
 	syc::Lexer lexer;
 	std::vector<syc::Token> tokens = lexer.lex(file);
 
-	if (true)
+	if (true) {
 		for (const syc::Token &token: tokens)
-			std::cout << "[" << token.sourceRange.start.line << ":" << token.sourceRange.start.column << "] \"" << token.text << "\" " << token.getName() << " | " << token.getFlagsAsString() << "\n";
+//			std::cout << "[" << token.sourceRange.start.line << ":" << token.sourceRange.start.column << "] \""
+//					  << token.text << "\" " << token.getName() << " | " << token.getFlagsAsString() << "\n";
+
+			// because intellisense
+			std::cout << "samples/test.sy(" << token.sourceRange.start.line << "," << token.sourceRange.start.column << "): \""
+				  << token.text << "\" " << token.getName() << " | " << token.getFlagsAsString() << "\n";
+		std::cout << '\n';
+	}
 
 	syc::Parser parser;
 	std::vector<syc::AstNode *> ast = parser.Parse(tokens);
-	if (true)
+	if (true) {
 		for (const syc::AstNode *node: ast) {
 			node->print(std::cout, "", "", node == ast.back());
 		}
+		std::cout << '\n';
+	}
 
 	if (true) {
 		llvm::LLVMContext ctx;
 		syc::emit::Emitter emitter(ctx);
-		llvm::Module *module = emitter.Emit(ast, "samples/test.sy");
+		std::unique_ptr<llvm::Module> module = emitter.Emit(ast, "samples/test.sy");
 		if (true) {
 			std::string str;
 			llvm::raw_string_ostream os(str);
@@ -43,7 +54,7 @@ int main() {
 			std::cout << str << '\n';
 		}
 
-		if (true) {
+		if (false) {
 			llvm::InitializeAllTargetInfos();
 			llvm::InitializeAllTargets();
 			llvm::InitializeAllTargetMCs();
@@ -80,12 +91,9 @@ int main() {
 			pass.run(*module);
 			dest.flush();
 
-			if (true) {
-				if (!system("clang \"../samples/test.o\" -o \"../samples/test.exe\"")) {
-					int result = system("\"../samples/test.exe\"");
-					std::cout << "we got: " << result << '\n';
-				}
-			}
+			llvm::ExecutionEngine *engine = llvm::EngineBuilder(std::move(module)).create(machine);
+			llvm::GenericValue result = engine->runFunction(engine->FindFunctionNamed("main"), {});
+			std::cout << "we got: " << result.IntVal.getSExtValue() << '\n';
 		}
 	}
 }

@@ -1,4 +1,4 @@
-# syc Code *(Syc)* [![License](https://img.shields.io/github/license/SympleLib/SympleCode?label=License)](LICENSE) ![Activity](https://img.shields.io/github/commit-activity/y/SympleLib/SympleCode?color=4&label=Commits)
+# Symple Code *(Syc)* [![License](https://img.shields.io/github/license/SympleLib/SympleCode?label=License)](LICENSE) ![Activity](https://img.shields.io/github/commit-activity/y/SympleLib/SympleCode?color=4&label=Commits)
 
 This repository contains the source code for SympleCode. <br />
 Anyone is welcome to contribute or use the source from SympleCode.
@@ -24,8 +24,8 @@ To see full heirachy, visit the [wiki](https://youtu.be/dQw4w9WgXcQ). Here is a 
 
    - C# style syntax for familiarity
    - No undefined behavior
-     - No uninitialized data
-     - Memory objects are automatically allocated either on the stack or the heap with reference counting depending on the use
+     - No uninitialized data (null by default)
+     - Variables can either be copied, passed, referenced, lended, or shared. Syc chooses the optimal memory management depending on variable use.
    - Variables are immutable by default
    - You can use variables, functions, classes & structs from anywhere in the file
    - Modular programming with `import` statements

@@ -10,8 +10,12 @@
 
 ASTKIND(None)
 
+// Type
+ASTKIND(PrimitiveType)
+
 // Stmt
 ASTKIND(ReturnStmt)
+ASTKIND(VariableStmt)
 
 // Expr
 ASTKIND(BinaryExpr)
@@ -19,3 +23,5 @@ ASTKIND(VariableExpr)
 
 // Literal
 ASTKIND(IntLiteral)
+
+#undef ASTKind
