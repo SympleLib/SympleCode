@@ -1,2 +1,2 @@
 var = 60 + 9;
-ret var + 5;
+ret var - 5;

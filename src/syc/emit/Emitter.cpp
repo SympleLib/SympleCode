@@ -15,7 +15,7 @@ Module *Emitter::Emit(const std::vector<AstNode *> &ast, StringRef moduleName) {
 	module = new Module(moduleName, ctx);
 
 	FunctionType *mainFuncType = FunctionType::get(builder.getInt32Ty(), ArrayRef<Type *> { builder.getInt32Ty(), builder.getInt8PtrTy(), }, false);
-	mainFunc = Function::Create(mainFuncType, GlobalValue::ExternalLinkage, 0, "Main", module);
+	mainFunc = Function::Create(mainFuncType, GlobalValue::ExternalLinkage, 0, "main", module);
 
 	BasicBlock *entry = BasicBlock::Create(ctx, "entry", mainFunc);
 	builder.SetInsertPoint(entry);
