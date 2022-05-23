@@ -11,7 +11,7 @@
 using namespace syc;
 
 void BinaryExprAst::print(std::ostream &os, std::string indent, std::string_view label, bool last) const {
-	printIndent(os, indent, label, last);
+	printExprIndent(os, indent, label, last);
 	os << getBinaryOpName(op);
 
 	endPrint(os, &indent, last);
@@ -21,8 +21,8 @@ void BinaryExprAst::print(std::ostream &os, std::string indent, std::string_view
 }
 
 void VariableExprAst::print(std::ostream &os, std::string indent, std::string_view label, bool last) const {
-	printIndent(os, indent, label, last);
-	os << getVariableUsageName(usage) << " " << var->name;
+	printExprIndent(os, indent, label, last);
+	os << var->name;
 
 	endPrint(os, &indent, last);
 }

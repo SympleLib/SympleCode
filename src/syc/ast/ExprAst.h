@@ -11,10 +11,35 @@
 
 namespace syc {
 	class VariableStmtAst;
+	class TypeAst;
+
+	enum class ExprUsage: uint8_t {
+#define EXPR_USAGE(x, y) x,
+#include "syc/ast/ExprUsage.h"
+
+		Count,
+	};
+
+	constexpr const char *ExprUsageNames[(uint8_t) ExprUsage::Count] {
+#define EXPR_USAGE(x, y) #x " '" #y "'",
+#include "syc/ast/ExprUsage.h"
+	};
+
+	ENUM_NAME_FUNC(ExprUsage);
 
 	class ExprAst: public AstNode {
 	public:
+		// changed in parsing :)
+		ExprUsage usage = ExprUsage::Copying;
+
+	public:
 		virtual bool isMutable() const = 0;
+
+	protected:
+		void printExprIndent(std::ostream &os, std::string_view indent, std::string_view label, bool last) const {
+			printIndent(os, indent, label, last);
+			os << getExprUsageName(usage) << ' ';
+		}
 	};
 
 	enum class BinaryOp: uint8_t {
@@ -55,29 +80,13 @@ namespace syc {
 		void print(std::ostream &os, std::string indent = "", std::string_view label = "", bool last = true) const override;
 	};
 
-	enum class VariableUsage: uint8_t {
-#define VARIABLE_USAGE(x, y) x,
-#include "syc/ast/VariableUsage.h"
-
-		Count,
-	};
-
-	constexpr const char *VariableUsageNames[(uint8_t) VariableUsage::Count] {
-#define VARIABLE_USAGE(x, y) #x " '" #y "'",
-#include "syc/ast/VariableUsage.h"
-	};
-
-	ENUM_NAME_FUNC(VariableUsage);
-
 	class VariableExprAst final: public ExprAst {
 	public:
 		VariableStmtAst *var;
-		// changed during parsing :)
-		VariableUsage usage;
 
 	public:
 		VariableExprAst(VariableStmtAst *var):
-			var(var), usage(VariableUsage::Copying) {}
+			var(var) {}
 
 		AstKind getKind() const override {
 			return AstKind::VariableExpr;

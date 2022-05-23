@@ -43,9 +43,6 @@ namespace syc {
 			Value *Emit(BinaryExprAst *);
 			Value *Emit(VariableExprAst *);
 
-			Value *EmitRef(ExprAst *);
-			Value *EmitRef(VariableExprAst *);
-
 			Value *Emit(LiteralAst *);
 		};
 	}

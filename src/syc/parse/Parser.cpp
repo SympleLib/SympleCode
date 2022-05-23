@@ -112,6 +112,12 @@ ExprAst *Parser::ParseBinaryExpr(ExprAst *left) {
 		if (op == BinaryOp::None)
 			break;
 
+		switch (op) {
+		case BinaryOp::Assign:
+			left->usage = ExprUsage::Lending;
+			break;
+		}
+
 		next();
 
 		ExprAst *right = ParseExpr();

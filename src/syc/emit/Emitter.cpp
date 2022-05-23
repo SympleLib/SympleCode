@@ -108,18 +108,16 @@ Value *Emitter::Emit(ExprAst *node) {
 
 Value *Emitter::Emit(BinaryExprAst *node) {
 	Value *left, *right;
+	left = Emit(node->left);
 	right = Emit(node->right);
 
 	switch (node->op) {
 	case BinaryOp::Add:
-		left = Emit(node->left);
 		return builder.CreateAdd(left, right);
 	case BinaryOp::Sub:
-		left = Emit(node->left);
 		return builder.CreateSub(left, right);
 
 	case BinaryOp::Assign:
-		left = EmitRef(node->left);
 		return builder.CreateStore(right, left);
 
 	default:
@@ -129,30 +127,14 @@ Value *Emitter::Emit(BinaryExprAst *node) {
 
 Value *Emitter::Emit(VariableExprAst *node) {
 	// TODO: goodify this
-	if (vars.contains(node->var->name))
-		return builder.CreateLoad(vars[node->var->name]->getType()->getArrayElementType(), vars[node->var->name]);
-	return nullptr;
-}
-
-
-Value *Emitter::EmitRef(ExprAst *node) {
-	switch (node->getKind()) {
-	case AstKind::VariableExpr:
-		return EmitRef((VariableExprAst *) node);
+	Value *ptr = vars[node->var->name];
+	switch (node->usage) {
+	case ExprUsage::Copying:
+		return builder.CreateLoad(ptr->getType()->getArrayElementType(), ptr);
 
 	default:
-		return nullptr;
+		return ptr;
 	}
-}
-
-Value *Emitter::EmitRef(VariableExprAst *node) {
-	if (vars.contains(node->var->name))
-		return vars[node->var->name];
-
-	// TODO: maybe be crazy??
-	Value *var = builder.CreateAlloca(builder.getInt32Ty());
-	vars[node->var->name] = var;
-	return var;
 }
 
 
