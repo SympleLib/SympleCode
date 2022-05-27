@@ -41,16 +41,8 @@ namespace syc {
 		}
 
 	protected:
-		void printIndent(std::ostream &os, std::string_view indent, std::string_view label, bool last) const {
-			os << indent << (last ? "L--" : "|--");
-			if (!label.empty())
-				os << label << ":";
-			os << " (" << getName() << ") ";
-		}
+		void printIndent(std::ostream &os, std::string_view indent, std::string_view label, bool last) const;
 
-		void endPrint(std::ostream &os, std::string *indent, bool last) const {
-			os << '\n';
-			*indent += last ? "   " : "|  ";
-		}
+		void endPrint(std::ostream &os, std::string *indent, bool last) const;
 	};
 } // syc

@@ -1,4 +1,4 @@
-int:23 foo = 60 + 9
-mut int:23 bar = 400 + 20
-bar = bar - 20
+int foo = 60 + 9
+int bar = 400 + 20
+&bar = bar - 20
 ret foo + bar

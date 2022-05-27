@@ -55,14 +55,15 @@ TypeAst *Parser::ParseType() {
 }
 
 PrimitiveTypeAst *Parser::ParsePrimitiveType() {
-	std::string_view name = next().text;
+	std::string name = next().text;
 	uint64_t size = 32;
 	TypeKind typeKind = scope->getType(name);
 	if (peek().is(TokenKind::Colon)) {
 		next();
 		size = std::stoull(match(TokenKind::Integer).text);
 	}
-	return new PrimitiveTypeAst(false, typeKind, size);
+
+	return new PrimitiveTypeAst(TypeFlag::None, RefTypeKind::Value, typeKind, size);
 }
 
 
@@ -103,28 +104,43 @@ VariableStmtAst *Parser::ParseVariableStmt() {
 
 
 ExprAst *Parser::ParseExpr() {
-	return ParseBinaryExpr(ParsePrimaryExpr());
+	return ParseBinaryExpr(ParsePrefixExpr());
+}
+
+ExprAst *Parser::ParsePrefixExpr() {
+	switch (peek().kind) {
+	case TokenKind::Dollar:
+		next();
+		return new VariableExprAst(RefTypeKind::Value, scope->findVar(match(TokenKind::Identifier).text));
+	case TokenKind::Identifier:
+		return new VariableExprAst(RefTypeKind::Value, scope->findVar(match(TokenKind::Identifier).text));
+	case TokenKind::Star:
+		next();
+		return new VariableExprAst(RefTypeKind::Weak, scope->findVar(match(TokenKind::Identifier).text));
+	case TokenKind::Carot:
+		next();
+		return new VariableExprAst(RefTypeKind::Owned, scope->findVar(match(TokenKind::Identifier).text));
+	case TokenKind::And:
+		next();
+		return new VariableExprAst(RefTypeKind::Temp, scope->findVar(match(TokenKind::Identifier).text));
+	case TokenKind::Percent:
+		next();
+		return new VariableExprAst(RefTypeKind::Shared, scope->findVar(match(TokenKind::Identifier).text));
+
+	default:
+		return ParsePrimaryExpr();
+	}
 }
 
 ExprAst *Parser::ParseBinaryExpr(ExprAst *left) {
-	while (true) {
-		BinaryOp op = getBinaryOperator(peek().kind);
-		if (op == BinaryOp::None)
-			break;
+	BinaryOp op = getBinaryOperator(peek().kind);
+	if (op == BinaryOp::None)
+		return left;
 
-		switch (op) {
-		case BinaryOp::Assign:
-			left->usage = ExprUsage::Lending;
-			break;
-		}
+	next();
 
-		next();
-
-		ExprAst *right = ParseExpr();
-		left = new BinaryExprAst(op, left, right);
-	}
-
-	return left;
+	ExprAst *right = ParseBinaryExpr(ParsePrefixExpr());
+	return new BinaryExprAst(op, left, right);
 }
 
 ExprAst *Parser::ParsePrimaryExpr() {
@@ -135,7 +151,8 @@ ExprAst *Parser::ParsePrimaryExpr() {
 		return new IntLiteralAst(std::stoll(tok.text));
 	case TokenKind::Identifier:
 		next();
-		return new VariableExprAst(scope->findVar(tok.text));
+		std::cout << tok.text << ": " << scope->vars.size() << '\n';
+		return new VariableExprAst(RefTypeKind::Value, scope->findVar(tok.text));
 
 	default:
 		return nullptr;

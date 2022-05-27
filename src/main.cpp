@@ -93,7 +93,7 @@ int main() {
 			dest.flush();
 
 			llvm::ExecutionEngine *engine = llvm::EngineBuilder(std::move(module)).create(machine);
-			llvm::GenericValue result = engine->runFunction(engine->FindFunctionNamed("main"), {});
+			llvm::GenericValue result = engine->runFunction(engine->FindFunctionNamed("main"), { llvm::GenericValue(nullptr), llvm::GenericValue(nullptr) });
 			std::cout << "we got: " << result.IntVal.getSExtValue() << '\n';
 		}
 	}

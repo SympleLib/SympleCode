@@ -78,6 +78,27 @@ void Lexer::lexToken() {
 		next();
 		emplaceToken(TokenKind::Colon);
 		break;
+	case '$':
+		next();
+		emplaceToken(TokenKind::Dollar);
+		break;
+	case '*':
+		next();
+		emplaceToken(TokenKind::Star);
+		break;
+	case '^':
+		next();
+		emplaceToken(TokenKind::Carot);
+		break;
+	case '&':
+		next();
+		emplaceToken(TokenKind::And);
+		break;
+	case '%':
+		next();
+		emplaceToken(TokenKind::Percent);
+		break;
+
 	case '\0':
 		break;
 

@@ -28,6 +28,12 @@ PUNCTUATOR(Plus, "+")
 PUNCTUATOR(Minus, "-")
 PUNCTUATOR(Colon, ":")
 
+PUNCTUATOR(Dollar, "$")
+PUNCTUATOR(Star, "*")
+PUNCTUATOR(Carot, "^")
+PUNCTUATOR(And, "&")
+PUNCTUATOR(Percent, "%")
+
 KEYWORD(Return, ret)
 KEYWORD(Mutable, mut)
 

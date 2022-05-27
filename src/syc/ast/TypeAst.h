@@ -7,12 +7,21 @@
 #pragma once
 
 #include "syc/ast/AstNode.h"
+#include "syc/ast/RefTypeKind.h"
 
 namespace syc {
+	using TypeFlags = uint8_t;
+	namespace TypeFlag {
+		enum: TypeFlags {
+			None,
+
+			Mutable = 1 << 0,
+		};
+	}
+
 	enum class TypeKind: uint8_t {
 #define TYPEKIND(x) x,
 #include "syc/ast/TypeKind.h"
-#undef TYPEKIND
 
 		Count,
 	};
@@ -20,18 +29,18 @@ namespace syc {
 	constexpr const char *TypeKindNames[(uint8_t)TypeKind::Count] {
 #define TYPEKIND(x) #x,
 #include "syc/ast/TypeKind.h"
-#undef TYPEKIND
 	};
 
 	ENUM_NAME_FUNC(TypeKind);
 
 	class TypeAst: public AstNode {
 	public:
-		bool isMutable;
+		TypeFlags flags;
+		RefTypeKind refKind;
 
 	public:
-		TypeAst(bool isMutable):
-			isMutable(isMutable) {}
+		TypeAst(TypeFlags flags, RefTypeKind refKind):
+				flags(flags), refKind(refKind) {}
 
 		virtual TypeKind getTypeKind() const = 0;
 		virtual uint64_t getSize() const = 0;
@@ -39,7 +48,7 @@ namespace syc {
 	protected:
 		void printTypeIndent(std::ostream &os, std::string_view indent, std::string_view label, bool last) const {
 			printIndent(os, indent, label, last);
-			os << (isMutable ? "mut " : "const ") << getTypeKindName(getTypeKind()) << ':' << getSize() << ' ';
+			os << (flags & TypeFlag::Mutable ? "mut " : "const ") << getTypeKindName(getTypeKind()) << ':' << getSize() << ' ' << getRefTypeKindName(refKind);
 		}
 	};
 
@@ -49,8 +58,8 @@ namespace syc {
 		uint64_t size;
 
 	public:
-		PrimitiveTypeAst(bool isMutable, TypeKind typeKind, uint64_t size):
-			TypeAst(isMutable), typeKind(typeKind), size(size) {}
+		PrimitiveTypeAst(TypeFlags flags, RefTypeKind refKind, TypeKind typeKind, uint64_t size):
+			TypeAst(flags, refKind), typeKind(typeKind), size(size) {}
 
 		AstKind getKind() const override {
 			return AstKind::PrimitiveType;

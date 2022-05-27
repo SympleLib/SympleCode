@@ -14,6 +14,10 @@ namespace syc {
 		bool isMutable() const final override {
 			return false;
 		}
+
+		RefTypeKind getRefKind() const final override {
+			return RefTypeKind::Value;
+		}
 	};
 
 	class IntLiteralAst: public LiteralAst {

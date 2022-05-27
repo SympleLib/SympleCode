@@ -38,7 +38,8 @@ namespace syc {
 		VariableStmtAst *ParseVariableStmt();
 
 		ExprAst *ParseExpr();
-		ExprAst *ParseBinaryExpr(ExprAst *left = nullptr);
+		ExprAst *ParsePrefixExpr();
+		ExprAst *ParseBinaryExpr(ExprAst *);
 
 		ExprAst *ParsePrimaryExpr();
 

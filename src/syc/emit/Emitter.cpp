@@ -128,9 +128,9 @@ Value *Emitter::Emit(BinaryExprAst *node) {
 Value *Emitter::Emit(VariableExprAst *node) {
 	// TODO: goodify this
 	Value *ptr = vars[node->var->name];
-	switch (node->usage) {
-	case ExprUsage::Copying:
-		return builder.CreateLoad(ptr->getType()->getArrayElementType(), ptr);
+	switch (node->refKind) {
+	case RefTypeKind::Value:
+		return builder.CreateLoad(ptr->getType()->getNonOpaquePointerElementType(), ptr);
 
 	default:
 		return ptr;

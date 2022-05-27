@@ -8,37 +8,21 @@
 
 #include "syc/parse/Token.h"
 #include "syc/ast/AstNode.h"
+#include "syc/ast/RefTypeKind.h"
 
 namespace syc {
 	class VariableStmtAst;
 	class TypeAst;
 
-	enum class ExprUsage: uint8_t {
-#define EXPR_USAGE(x, y) x,
-#include "syc/ast/ExprUsage.h"
-
-		Count,
-	};
-
-	constexpr const char *ExprUsageNames[(uint8_t) ExprUsage::Count] {
-#define EXPR_USAGE(x, y) #x " '" #y "'",
-#include "syc/ast/ExprUsage.h"
-	};
-
-	ENUM_NAME_FUNC(ExprUsage);
-
 	class ExprAst: public AstNode {
 	public:
-		// changed in parsing :)
-		ExprUsage usage = ExprUsage::Copying;
-
-	public:
 		virtual bool isMutable() const = 0;
+		virtual RefTypeKind getRefKind() const = 0;
 
 	protected:
 		void printExprIndent(std::ostream &os, std::string_view indent, std::string_view label, bool last) const {
 			printIndent(os, indent, label, last);
-			os << getExprUsageName(usage) << ' ';
+			os << getRefTypeKindName(getRefKind());
 		}
 	};
 
@@ -54,7 +38,7 @@ namespace syc {
 	constexpr const char *BinaryOpNames[(uint8_t) BinaryOp::Count] {
 		"None",
 
-#define BINOP(x, y) y,
+#define BINOP(x, y) #x " '" y "'",
 #include "syc/ast/Operator.h"
 	};
 
@@ -77,16 +61,21 @@ namespace syc {
 			return false;
 		}
 
+		RefTypeKind getRefKind() const override {
+			return RefTypeKind::Value;
+		}
+
 		void print(std::ostream &os, std::string indent = "", std::string_view label = "", bool last = true) const override;
 	};
 
 	class VariableExprAst final: public ExprAst {
 	public:
+		RefTypeKind refKind;
 		VariableStmtAst *var;
 
 	public:
-		VariableExprAst(VariableStmtAst *var):
-			var(var) {}
+		VariableExprAst(RefTypeKind refKind, VariableStmtAst *var):
+			refKind(refKind), var(var) {}
 
 		AstKind getKind() const override {
 			return AstKind::VariableExpr;
@@ -94,6 +83,10 @@ namespace syc {
 
 		bool isMutable() const override {
 			return true; // TODO: auto const
+		}
+
+		RefTypeKind getRefKind() const override {
+			return refKind;
 		}
 
 		void print(std::ostream &os, std::string indent = "", std::string_view label = "", bool last = true) const override;

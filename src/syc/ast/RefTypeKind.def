@@ -1,0 +1,17 @@
+/*
+ * Copyright (c) 2022-present, Treidex <treidexy@gmail.com>
+ *
+ * MIT License
+ */
+
+#ifndef REFTYPE
+#define REFTYPE(x, y)
+#endif
+
+REFTYPE(Value, "$")
+REFTYPE(Weak, "*")
+REFTYPE(Owned, "^")
+REFTYPE(Temp, "&")
+REFTYPE(Shared, "%")
+
+#undef REFTYPE

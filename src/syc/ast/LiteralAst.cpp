@@ -9,7 +9,7 @@
 using namespace syc;
 
 void IntLiteralAst::print(std::ostream &os, std::string indent, std::string_view label, bool last) const {
-	printIndent(os, indent, label, last);
+	printExprIndent(os, indent, label, last);
 	os << "[int] " << value;
 
 	endPrint(os, &indent, last);
