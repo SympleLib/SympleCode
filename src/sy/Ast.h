@@ -9,29 +9,48 @@
 #include "sy/Token.h"
 
 namespace sy::ast {
-	enum Kind {
+	enum class Kind {
 		Unknown,
+		BinOp,
 		Num,
 	};
 
 	struct Stmt {
-		Span span;
+		Span span = {};
 
-		virtual Kind getKind() const;
+		Stmt() = default;
+		virtual Kind getKind() const = 0;
 	};
 
 	struct Type {
 	};
 
 	struct Expr: Stmt {
-		std::unique_ptr<Type> type = nullptr;
+		Expr() = default;
+	};
+
+	struct BinOp: Expr {
+		enum OpKind {
+			Add,
+			Sub,
+			Mul,
+			Div,
+		} opKind = Add;
+		std::unique_ptr<Expr> left = nullptr;
+		std::unique_ptr<Expr> right = nullptr;
+
+		BinOp() = default;
+		Kind getKind() const override {
+			return Kind::BinOp;
+		}
 	};
 
 	struct Num: Expr {
-		uint64_t asU64;
+		NumConstant numConstant = {};
 
-		Num(uint64_t asU64, std::unique_ptr<Type> type, Span span);
-
-		Kind getKind() const override;
+		Num() = default;
+		Kind getKind() const override {
+			return Kind::Num;
+		}
 	};
 }

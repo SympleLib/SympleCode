@@ -10,15 +10,16 @@ namespace sy {
 	using FileId = uint64_t;
 
 	struct Span {
-		FileId fileId;
-		uint64_t start, end;
+		FileId fileId = 0;
+		uint64_t start = 0, end = 0;
 
+		Span() = default;
 		Span(FileId fileId, uint64_t start, uint64_t end): fileId(fileId), start(start), end(end) {}
 	};
 
 	struct NumConstant {
 		union {
-			int64_t signedVal;
+			int64_t signedVal = 0;
 			uint64_t unsignedVal;
 			double floatVal;
 		};
@@ -27,7 +28,7 @@ namespace sy {
 			Signed,
 			Unsigned,
 			Float,
-		} kind;
+		} kind = Signed;
 	};
 
 	struct Token {
