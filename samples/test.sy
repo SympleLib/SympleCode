@@ -1,4 +1,6 @@
 int foo = 60 + 9
 int bar = 400 + 20
 &bar = bar - 20
+&foo = bar - bar
+//&foo = &bar - bar // should errorize
 ret foo + bar

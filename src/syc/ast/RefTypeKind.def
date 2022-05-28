@@ -8,10 +8,10 @@
 #define REFTYPE(x, y)
 #endif
 
-REFTYPE(Value, "$")
-REFTYPE(Weak, "*")
-REFTYPE(Owned, "^")
-REFTYPE(Temp, "&")
-REFTYPE(Shared, "%")
+REFTYPE(Value, "$") // copy
+REFTYPE(Weak, "*") // readonly ref (default)
+REFTYPE(Owned, "^") // pass ownership
+REFTYPE(Temp, "&") // ref
+REFTYPE(Shared, "%") // share ownership
 
 #undef REFTYPE
