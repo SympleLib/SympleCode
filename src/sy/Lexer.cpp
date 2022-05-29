@@ -30,7 +30,7 @@ std::vector<Token> sy::lex(FileId fileId, std::string_view src) {
 				idx++;
 			}
 
-			out.emplace_back(Token::Number, NumConstant { .unsignedVal = std::stoull(std::string(src.substr(start, idx - start))), .kind = NumConstant::Unsigned }, Span(fileId, start, idx));
+			out.emplace_back(Token::Number, NumConstant { .unsignedVal = std::stoull(std::string(src.substr(start, idx - start))), .kind = NumConstant::UInt }, Span(fileId, start, idx));
 		} else if (std::isalpha(c)) {
 			while (idx < src.length() && std::isalnum(src[idx])) {
 				idx++;
@@ -47,5 +47,5 @@ std::vector<Token> sy::lex(FileId fileId, std::string_view src) {
 
 	out.emplace_back(Token::Eof, Span(fileId, idx, idx + 1));
 
-	return out;
+	return std::move(out);
 }

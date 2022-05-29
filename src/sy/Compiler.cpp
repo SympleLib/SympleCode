@@ -11,6 +11,8 @@
 
 #include "sy/Lexer.h"
 #include "sy/Parser.h"
+#include "sy/Sema.h"
+#include "sy/Emitter.h"
 
 using namespace sy;
 
@@ -31,9 +33,10 @@ void Compiler::Compile(std::string filename) {
 
 	File &file = files.emplace_back(std::move(filename), ss.str());
 	FileId fileId = files.size() - 1;
-	// std::cout << file.filename << "\n" << file.source << '\n';
+	std::cout << file.filename << "\n" << file.source << '\n';
 
 	std::vector<Token> tokens = lex(fileId, file.source);
+	std::cout << "lexed " << tokens.size() << " tokens\n";
 	// if (tokens.size() > 0) {
 	// 	uint64_t idx = 0;
 	// 	Token *curr = &tokens[idx];
@@ -70,4 +73,17 @@ void Compiler::Compile(std::string filename) {
 	Parser parser(fileId, std::move(tokens));
 	std::vector<std::unique_ptr<ast::Stmt>> parsedStmts = parser.parse();
 	std::cout << "parsed " << parsedStmts.size() << " statements\n";
+
+	Sema sema(std::move(parsedStmts));
+	air::Project project = sema.check();
+	std::cout << "checked " << project.stmts.size() << " statements\n";
+
+	llvm::LLVMContext ctx;
+	emit::Emitter emitter(std::move(project), ctx);
+	std::unique_ptr<llvm::Module> module = emitter.emit();
+
+	std::string str;
+	llvm::raw_string_ostream os(str);
+	module->print(os, nullptr);
+	std::cout << str << '\n';
 }

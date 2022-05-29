@@ -18,28 +18,22 @@ namespace sy::ast {
 	struct Stmt {
 		Span span = {};
 
-		Stmt() = default;
-		virtual Kind getKind() const = 0;
+		virtual Kind getKind() const {
+			return Kind::Unknown;
+		}
 	};
 
 	struct Type {
 	};
 
 	struct Expr: Stmt {
-		Expr() = default;
 	};
 
 	struct BinOp: Expr {
-		enum OpKind {
-			Add,
-			Sub,
-			Mul,
-			Div,
-		} opKind = Add;
+		Token::Kind op = Token::Kind::Unknown;
 		std::unique_ptr<Expr> left = nullptr;
 		std::unique_ptr<Expr> right = nullptr;
 
-		BinOp() = default;
 		Kind getKind() const override {
 			return Kind::BinOp;
 		}
@@ -48,7 +42,6 @@ namespace sy::ast {
 	struct Num: Expr {
 		NumConstant numConstant = {};
 
-		Num() = default;
 		Kind getKind() const override {
 			return Kind::Num;
 		}

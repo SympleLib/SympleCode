@@ -23,23 +23,6 @@ uint8_t Parser::getBinOpPrecedence(Token::Kind kind) {
 	}
 }
 
-ast::BinOp::OpKind Parser::toBinOpKind(Token::Kind kind) {
-	switch (kind) {
-	case Token::Kind::Plus:
-		return ast::BinOp::OpKind::Add;
-	case Token::Kind::Minus:
-		return ast::BinOp::OpKind::Sub;
-	case Token::Kind::Star:
-		return ast::BinOp::OpKind::Mul;
-	case Token::Kind::Slash:
-		return ast::BinOp::OpKind::Div;
-
-	default:
-		assert(false && "invalid token kind");
-		abort();
-	}
-}
-
 Parser::Parser(FileId fileId, std::vector<Token> &&tokens)
 	: fileId(fileId), tokens(std::move(tokens)) {}
 
@@ -81,6 +64,7 @@ std::unique_ptr<ast::Expr> Parser::parseBinOp(uint8_t precedence) {
 		expr->span = Span(fileId, left->span.start, right->span.end);
 		expr->left = std::move(left);
 		expr->right = std::move(right);
+		expr->op = op;
 
 		left = std::move(expr);
 	}

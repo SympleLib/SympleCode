@@ -3,7 +3,7 @@
  *
  * MIT License
  * 
- * As opposed to the Abstract Syntax Tree, this is an Abstract Checked Tree
+ * As opposed to the Abstract Syntax Tree, this is an Abstract Intermediate Representation
  * ie: this tree has been checked through sema
  */
 
@@ -13,7 +13,10 @@
 
 #include "sy/Ast.h"
 
-namespace sy::act {
+namespace sy::air {
+	using TypeId = uint64_t;
+	using ScopeId = uint64_t;
+
 	enum class Kind {
 		BinOp,
 		Num,
@@ -23,16 +26,8 @@ namespace sy::act {
 		virtual Kind getKind() const = 0;
 	};
 
-	struct Type {
-		enum Id {
-			SInt,
-			UInt,
-			Float,
-		};
-	};
-
 	struct Expr: Stmt {
-		std::unique_ptr<Type> type;
+		TypeId typeId;
 	};
 
 	struct BinOp: Expr {
@@ -55,6 +50,42 @@ namespace sy::act {
 
 		Kind getKind() const override {
 			return Kind::Num;
+		}
+	};
+
+	struct Type {
+		enum Kind {
+			SInt,
+			UInt,
+			Float,
+		} kind;
+	};
+
+	struct Scope {
+		Scope *parent;
+	};
+
+	struct Project {
+		std::vector<Type> types = { Type { Type::SInt }, Type { Type::UInt }, Type { Type::Float } };
+		std::vector<Scope> scopes;
+		std::vector<std::unique_ptr<Stmt>> stmts;
+
+		TypeId findOrAddTypeId(Type &&type) {
+			for (size_t i = 0; i < types.size(); i++) {
+				if (types[i].kind == type.kind) {
+					return i;
+				}
+			}
+
+			types.emplace_back(std::move(type));
+			return types.size() - 1;
+		}
+
+		ScopeId createScope(ScopeId parent) {
+			Scope scope;
+			scope.parent = &scopes[parent];
+			scopes.push_back(scope);
+			return scopes.size() - 1;
 		}
 	};
 }

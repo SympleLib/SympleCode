@@ -8,8 +8,34 @@
 
 #include "sy/Air.h"
 
+#include <llvm/IR/IRBuilder.h>
+
 namespace sy::emit {
+	using namespace llvm;
+
 	class Emitter {
+	private:
 		air::Project project;
+		LLVMContext &ctx;
+		IRBuilder<> builder;
+
+		std::vector<Type *> types;
+
+	public:
+		Emitter(air::Project &&project, LLVMContext &ctx);
+
+		std::unique_ptr<Module> emit();
+
+	private:
+		// we own the unique_ptrs, so this is 'safe'
+		Value *emit(air::Stmt *node);
+
+		Type *emit(air::TypeId node);
+
+		Value *emit(air::Expr *node);
+		Value *emit(air::BinOp *node);
+		Value *emit(air::Num *node);
+
+		Type *findType(air::TypeId node);
 	};
 } // sy

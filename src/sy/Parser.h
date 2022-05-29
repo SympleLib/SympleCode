@@ -33,7 +33,6 @@ namespace sy {
 		std::unique_ptr<ast::Num> parseNum();
 
 		uint8_t getBinOpPrecedence(Token::Kind kind);
-		ast::BinOp::OpKind toBinOpKind(Token::Kind kind);
 
 		bool atEof();
 	};

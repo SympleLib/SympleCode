@@ -25,10 +25,10 @@ namespace sy {
 		};
 
 		enum Kind {
-			Signed,
-			Unsigned,
+			SInt,
+			UInt,
 			Float,
-		} kind = Signed;
+		} kind = SInt;
 	};
 
 	struct Token {

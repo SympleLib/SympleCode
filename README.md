@@ -24,12 +24,19 @@ To see full heirachy, visit the [wiki](https://youtu.be/dQw4w9WgXcQ). Here is a 
 
    - C# style syntax for familiarity
    - No undefined behavior
-     - No uninitialized data (null by default)
-     - Variables can either be copied, passed, referenced, lended, or shared. Syc chooses the optimal memory management depending on variable use.
+     - Variables can either be copied, passed, borrowed, or referenced to function calls (referenced by default). Syc chooses the optimal memory management depending on variable use.
    - Variables are immutable by default
-   - You can use variables, functions, classes & structs from anywhere in the file
+   - You can use symbols from anywhere in the file
    - Modular programming with `import` statements
-   - Easy interface with c libraries, including libc
+
+Rust is a well-designed language. So we (I) copied them.
+
+#### System similar to borrow checker
+- All variables must be initialized before use
+- You cannot pass the same value more than once
+- You cannot pass a value whilst borrowing/referenced it
+- You may not read/write to a value while it is being borrowed (by another owner)
+- 
 
 ## Getting Started
 
