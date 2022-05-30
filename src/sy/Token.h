@@ -51,6 +51,13 @@ namespace sy {
 			Minus,
 			Star,
 			Slash,
+
+			LParen,
+			RParen,
+			Comma,
+			Equal,
+			LBrace,
+			RBrace,
 		} kind = Unknown;
 
 		Token(Kind kind, Span span): kind(kind), span(span) {}
@@ -63,6 +70,15 @@ namespace sy {
 			text[textView.length()] = '\0';
 			assert(kind == Identifier && "token kind must be `Identifier` when passing text");
 		}
+		Token(Token &&other): kind(other.kind), span(other.span) {
+			if (kind == Identifier) {
+				text = other.text;
+				other.text = nullptr;
+			} else if (kind == Number) {
+				numConstant = other.numConstant;
+			}
+		}
+		
 		~Token() {
 			if (kind == Identifier)
 				delete[] text;

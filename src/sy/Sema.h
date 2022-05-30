@@ -19,10 +19,15 @@ namespace sy {
 		air::Project check();
 
 	private:
-		std::unique_ptr<air::Stmt> checkStmt(std::unique_ptr<ast::Stmt>);
+		// we own the unique_ptrs, so this is 'safe'
+		std::unique_ptr<air::Stmt> check(ast::Stmt *);
 
-		std::unique_ptr<air::Expr> checkExpr(std::unique_ptr<ast::Expr>);
-		std::unique_ptr<air::BinOp> checkBinOp(std::unique_ptr<ast::BinOp>);
-		std::unique_ptr<air::Num> checkNum(std::unique_ptr<ast::Num>);
+		air::TypeId check(ast::Type *);
+
+		std::unique_ptr<air::Func> check(ast::Func *);
+
+		std::unique_ptr<air::Expr> check(ast::Expr *);
+		std::unique_ptr<air::BinOp> check(ast::BinOp *);
+		std::unique_ptr<air::Num> check(ast::Num *);
 	};
 }

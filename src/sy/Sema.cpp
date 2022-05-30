@@ -13,22 +13,67 @@ Sema::Sema(std::vector<std::unique_ptr<ast::Stmt>> &&parsedStmts)
 
 air::Project Sema::check() {
 	for (std::unique_ptr<ast::Stmt> &parsedStmt : parsedStmts) {
-		project.stmts.emplace_back(std::move(checkStmt(std::move(parsedStmt))));
+		project.stmts.emplace_back(check(parsedStmt.get()));
 	}
 
 	return std::move(project);
 }
 
-std::unique_ptr<air::Stmt> Sema::checkStmt(std::unique_ptr<ast::Stmt> parsed) {
-	return checkExpr(std::move(cast<ast::Expr>(std::move(parsed))));
+std::unique_ptr<air::Stmt> Sema::check(ast::Stmt *parsed) {
+	switch (parsed->getKind()) {
+	case ast::Kind::Func:
+		return check((ast::Func *) parsed);
+
+	default:
+		return check((ast::Expr *) parsed);
+	}
 }
 
-std::unique_ptr<air::Expr> Sema::checkExpr(std::unique_ptr<ast::Expr> parsed) {
+air::TypeId Sema::check(ast::Type *parsed) {
+	air::Type type;
+	switch (parsed->getKind()) {
+	case ast::Type::Name: {
+		ast::NameType *parsedName = (ast::NameType *) parsed;
+		if (parsedName->name == "i32") {
+			type.kind = air::Type::SInt;
+		} else if (parsedName->name == "u32") {
+			type.kind = air::Type::UInt;
+		} else if (parsedName->name == "f32") {
+			type.kind = air::Type::Float;
+		} else {
+			abort();
+		}
+		break;
+	}
+
+	default:
+		abort();
+	}
+
+	return project.findOrAddTypeId(std::move(type));
+}
+
+std::unique_ptr<air::Func> Sema::check(ast::Func *parsed) {
+	std::unique_ptr<air::Func> func = std::make_unique<air::Func>();
+	func->typeId = check(parsed->type.get());
+	func->name = parsed->name;
+
+	std::vector<std::unique_ptr<air::Stmt>> stmts;
+	for (std::unique_ptr<ast::Stmt> &parsedStmt : parsed->stmts) {
+		stmts.emplace_back(check(parsedStmt.get()));
+	}
+
+	func->stmts = std::move(stmts);
+
+	return std::move(func);
+}
+
+std::unique_ptr<air::Expr> Sema::check(ast::Expr *parsed) {
 	switch (parsed->getKind()) {
 	case ast::Kind::BinOp:
-		return checkBinOp(std::move(cast<ast::BinOp>(std::move(parsed))));
+		return check((ast::BinOp *) parsed);
 	case ast::Kind::Num:
-		return checkNum(std::move(cast<ast::Num>(std::move(parsed))));
+		return check((ast::Num *) parsed);
 
 	default:
 		abort();
@@ -36,9 +81,9 @@ std::unique_ptr<air::Expr> Sema::checkExpr(std::unique_ptr<ast::Expr> parsed) {
 }
 
 
-std::unique_ptr<air::BinOp> Sema::checkBinOp(std::unique_ptr<ast::BinOp> parsed) {
-	std::unique_ptr<air::Expr> left = checkExpr(std::move(parsed->left));
-	std::unique_ptr<air::Expr> right = checkExpr(std::move(parsed->right));
+std::unique_ptr<air::BinOp> Sema::check(ast::BinOp *parsed) {
+	std::unique_ptr<air::Expr> left = check(parsed->left.get());
+	std::unique_ptr<air::Expr> right = check(parsed->right.get());
 	air::TypeId typeId = left->typeId;
 	assert(left->typeId == right->typeId && "BinOp: left and right types must be the same");
 
@@ -66,7 +111,7 @@ std::unique_ptr<air::BinOp> Sema::checkBinOp(std::unique_ptr<ast::BinOp> parsed)
 	return std::move(expr);
 }
 
-std::unique_ptr<air::Num> Sema::checkNum(std::unique_ptr<ast::Num> parsed) {
+std::unique_ptr<air::Num> Sema::check(ast::Num *parsed) {
 	std::unique_ptr<air::Num> expr = std::make_unique<air::Num>();
 	expr->numConstant = parsed->numConstant;
 	air::Type type;

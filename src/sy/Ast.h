@@ -11,9 +11,16 @@
 namespace sy::ast {
 	enum class Kind {
 		Unknown,
+
+		Func,
+
 		BinOp,
 		Num,
 	};
+
+	struct Stmt;
+	struct Type;
+	struct Expr;
 
 	struct Stmt {
 		Span span = {};
@@ -24,6 +31,41 @@ namespace sy::ast {
 	};
 
 	struct Type {
+		Span span = {};
+
+		enum Kind {
+			Name,
+			// Array,
+		};
+
+		virtual Kind getKind() const = 0;
+	};
+
+	struct NameType: Type {
+		std::string name;
+
+		Kind getKind() const override {
+			return Kind::Name;
+		}
+	};
+
+	struct Param {
+		Span span = {};
+
+		std::unique_ptr<Type> type = nullptr;
+		std::string name = {};
+		std::unique_ptr<Expr> init = nullptr;
+	};
+
+	struct Func: Stmt {
+		std::unique_ptr<Type> type;
+		std::string name;
+		// std::vector<Param> params;
+		std::vector<std::unique_ptr<Stmt>> stmts;
+
+		virtual Kind getKind() const {
+			return Kind::Func;
+		}
 	};
 
 	struct Expr: Stmt {

@@ -18,12 +18,27 @@ namespace sy::air {
 	using ScopeId = uint64_t;
 
 	enum class Kind {
+		Func,
+
 		BinOp,
 		Num,
 	};
 
+	struct Stmt;
+	struct Expr;
+
 	struct Stmt {
 		virtual Kind getKind() const = 0;
+	};
+
+	struct Func: Stmt {
+		TypeId typeId;
+		std::string name;
+		std::vector<std::unique_ptr<Stmt>> stmts;
+
+		Kind getKind() const override {
+			return Kind::Func;
+		}
 	};
 
 	struct Expr: Stmt {

@@ -12,7 +12,7 @@ Emitter::Emitter(air::Project &&project, LLVMContext &ctx)
 	: project(std::move(project)), ctx(ctx), builder(ctx) {}
 
 std::unique_ptr<Module> Emitter::emit() {
-	std::unique_ptr<Module> module = std::make_unique<Module>("sy", ctx);
+	module = std::make_unique<Module>("sy", ctx);
 
 	FunctionType *mainFuncType = FunctionType::get(Type::getVoidTy(ctx), {}, false);
 	Function *mainFunc = Function::Create(mainFuncType, Function::ExternalLinkage, "main", module.get());
@@ -20,14 +20,21 @@ std::unique_ptr<Module> Emitter::emit() {
 	builder.SetInsertPoint(entry);
 
 	for (std::unique_ptr<air::Stmt> &node : project.stmts) {
-		builder.CreateStore(emit(node.get()), builder.CreateAlloca(Type::getInt32Ty(ctx)));
+		Value *expr = emit(node.get());
+		builder.CreateStore(expr, builder.CreateAlloca(expr->getType()));
 	}
 
 	return std::move(module);
 }
 
 Value *Emitter::emit(air::Stmt *node) {
-	return emit((air::Expr *) node);
+	switch (node->getKind()) {
+	case air::Kind::Func:
+		return emit((air::Func *) node);
+
+	default:
+		return emit((air::Expr *) node);
+	}
 }
 
 Type *Emitter::emit(air::TypeId node) {
@@ -41,6 +48,21 @@ Type *Emitter::emit(air::TypeId node) {
 	} else {
 		abort();
 	}
+}
+
+Function *Emitter::emit(air::Func *node) {
+	Type *type = emit(node->typeId);
+	FunctionType *funcType = FunctionType::get(type, {}, false);
+	Function *func = Function::Create(funcType, Function::ExternalLinkage, node->name, module.get());
+	BasicBlock *entry = BasicBlock::Create(ctx, "entry", func);
+	builder.SetInsertPoint(entry);
+
+	for (std::unique_ptr<air::Stmt> &stmt : node->stmts) {
+		Value *expr = emit(stmt.get());
+		builder.CreateStore(expr, builder.CreateAlloca(expr->getType()));
+	}
+
+	return func;
 }
 
 Value *Emitter::emit(air::Expr *node) {

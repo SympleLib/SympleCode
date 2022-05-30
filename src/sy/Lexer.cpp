@@ -25,6 +25,18 @@ std::vector<Token> sy::lex(FileId fileId, std::string_view src) {
 			out.emplace_back(Token::Star, Span(fileId, start, ++idx));
 		} else if (c == '/') {
 			out.emplace_back(Token::Slash, Span(fileId, start, ++idx));
+		} else if (c == '(') {
+			out.emplace_back(Token::LParen, Span(fileId, start, ++idx));
+		} else if (c == ')') {
+			out.emplace_back(Token::RParen, Span(fileId, start, ++idx));
+		} else if (c == ',') {
+			out.emplace_back(Token::Comma, Span(fileId, start, ++idx));
+		} else if (c == '=') {
+			out.emplace_back(Token::Equal, Span(fileId, start, ++idx));
+		} else if (c == '{') {
+			out.emplace_back(Token::LBrace, Span(fileId, start, ++idx));
+		} else if (c == '}') {
+			out.emplace_back(Token::RBrace, Span(fileId, start, ++idx));
 		} else if (std::isdigit(c)) {
 			while (idx < src.length() && std::isdigit(src[idx])) {
 				idx++;

@@ -35,12 +35,95 @@ std::vector<std::unique_ptr<ast::Stmt>> Parser::parse() {
 }
 
 std::unique_ptr<ast::Stmt> Parser::parseStmt() {
-	return parseExpr();
+	if (tokens[idx].kind == Token::Identifier) {
+		return parseFunc();
+	} else {
+		return parseExpr();
+	}
 }
 
-std::unique_ptr<ast::Type> parseType() {
-	return nullptr;
+std::unique_ptr<ast::Type> Parser::parseType() {
+	// just parsing a name type at this point
+	Token &tok = tokens[idx++];
+	if (tok.kind != Token::Identifier) {
+		abort();
+	}
+
+	std::unique_ptr<ast::NameType> nameType = std::make_unique<ast::NameType>();
+	nameType->span = tok.span;
+	nameType->name = tok.text;
+
+	return std::move(nameType);
 }
+
+std::unique_ptr<ast::Func> Parser::parseFunc() {
+	std::unique_ptr<ast::Type> type = parseType();
+	Token &nameTok = tokens[idx++];
+	if (nameTok.kind != Token::Identifier) {
+		abort();
+	}
+
+	if (tokens[idx++].kind != Token::LParen) {
+		abort();
+	}
+
+	// std::vector<ast::Param> params;
+	// if (tokens[idx].kind != Token::RParen) {
+	// 	params.push_back(parseParam());
+	// 	while (tokens[idx].kind == Token::Comma) {
+	// 		idx++;
+	// 		params.push_back(parseParam());
+	// 	}
+	// }
+
+	if (tokens[idx++].kind != Token::RParen) {
+		abort();
+	}
+
+	if (tokens[idx++].kind != Token::LBrace) {
+		abort();
+	}
+
+	std::vector<std::unique_ptr<ast::Stmt>> stmts;
+	while (tokens[idx].kind != Token::RBrace) {
+		stmts.push_back(std::move(parseStmt()));
+	}
+
+	if (tokens[idx++].kind != Token::RBrace) {
+		abort();
+	}
+
+	std::unique_ptr<ast::Func> func = std::make_unique<ast::Func>();
+	func->span = Span(fileId, type->span.start, tokens[idx - 1].span.end);
+	func->type = std::move(type);
+	func->name = nameTok.text;
+	// func->params = std::move(params);
+	func->stmts = std::move(stmts);
+
+	return std::move(func);
+}
+
+// ast::Param Parser::parseParam() {
+// 	std::unique_ptr<ast::Type> type = parseType();
+// 	Token &nameTok = tokens[idx++];
+// 	if (nameTok.kind != Token::Identifier) {
+// 		abort();
+// 	}
+
+// 	std::unique_ptr<ast::Expr> init;
+// 	if (tokens[idx].kind == Token::Equal) {
+// 		idx++;
+// 		init = parseExpr();
+// 	}
+
+// 	ast::Param param;
+// 	param.span = nameTok.span;
+// 	param.name = nameTok.text;
+// 	param.type = std::move(type);
+// 	param.init = std::move(init);
+
+// 	return param;
+// }
 
 std::unique_ptr<ast::Expr> Parser::parseExpr() {
 	return parseBinOp();
@@ -74,7 +157,7 @@ std::unique_ptr<ast::Expr> Parser::parseBinOp(uint8_t precedence) {
 
 std::unique_ptr<ast::Expr> Parser::parsePrimary() {
 	switch (tokens[idx].kind) {
-	case Token::Kind::Number:
+	case Token::Number:
 		return parseNum();
 
 	default:
