@@ -26,8 +26,10 @@ namespace sy {
 
 		std::unique_ptr<ast::Type> parseType();
 
-		std::unique_ptr<ast::Func> parseFunc();
-		// ast::Param parseParam();
+		std::unique_ptr<ast::Stmt> parseVarOrFunc();
+		std::unique_ptr<ast::Var> parseVar(std::unique_ptr<ast::Type> type, Token &name);
+		std::unique_ptr<ast::Func> parseFunc(std::unique_ptr<ast::Type> type, Token &name);
+		ast::Param parseParam();
 
 		std::unique_ptr<ast::Expr> parseExpr();
 		std::unique_ptr<ast::Expr> parseBinOp(uint8_t precedence = 0);

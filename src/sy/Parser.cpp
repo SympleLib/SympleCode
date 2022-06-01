@@ -36,7 +36,7 @@ std::vector<std::unique_ptr<ast::Stmt>> Parser::parse() {
 
 std::unique_ptr<ast::Stmt> Parser::parseStmt() {
 	if (tokens[idx].kind == Token::Identifier) {
-		return parseFunc();
+		return parseVarOrFunc();
 	} else {
 		return parseExpr();
 	}
@@ -56,25 +56,50 @@ std::unique_ptr<ast::Type> Parser::parseType() {
 	return std::move(nameType);
 }
 
-std::unique_ptr<ast::Func> Parser::parseFunc() {
+std::unique_ptr<ast::Stmt> Parser::parseVarOrFunc() {
 	std::unique_ptr<ast::Type> type = parseType();
 	Token &nameTok = tokens[idx++];
 	if (nameTok.kind != Token::Identifier) {
 		abort();
 	}
 
+	if (tokens[idx].kind == Token::LParen) {
+		return parseFunc(std::move(type), nameTok);
+	} else {
+		return parseVar(std::move(type), nameTok);
+	}
+}
+
+std::unique_ptr<ast::Var> Parser::parseVar(std::unique_ptr<ast::Type> type, Token &name) {
+	std::unique_ptr<ast::Var> var = std::make_unique<ast::Var>();
+	var->type = std::move(type);
+	var->name = name.text;
+
+	if (tokens[idx].kind == Token::Equal) {
+		idx++;
+		var->init = std::move(parseExpr());
+	}
+
+	var->span = Span(fileId, var->type->span.start, var->init ? var->init->span.end : name.span.end);
+	return std::move(var);
+}
+
+std::unique_ptr<ast::Func> Parser::parseFunc(std::unique_ptr<ast::Type> type, Token &name) {
+	std::unique_ptr<ast::Func> func = std::make_unique<ast::Func>();
+	func->type = std::move(type);
+	func->name = name.text;
+
 	if (tokens[idx++].kind != Token::LParen) {
 		abort();
 	}
 
-	// std::vector<ast::Param> params;
-	// if (tokens[idx].kind != Token::RParen) {
-	// 	params.push_back(parseParam());
-	// 	while (tokens[idx].kind == Token::Comma) {
-	// 		idx++;
-	// 		params.push_back(parseParam());
-	// 	}
-	// }
+	if (tokens[idx].kind != Token::RParen) {
+		func->params.emplace_back(parseParam());
+		while (tokens[idx].kind == Token::Comma) {
+			idx++;
+			func->params.emplace_back(parseParam());
+		}
+	}
 
 	if (tokens[idx++].kind != Token::RParen) {
 		abort();
@@ -84,46 +109,48 @@ std::unique_ptr<ast::Func> Parser::parseFunc() {
 		abort();
 	}
 
-	std::vector<std::unique_ptr<ast::Stmt>> stmts;
 	while (tokens[idx].kind != Token::RBrace) {
-		stmts.push_back(std::move(parseStmt()));
+		func->stmts.push_back(std::move(parseStmt()));
 	}
 
-	if (tokens[idx++].kind != Token::RBrace) {
+	Token &rbraceTok = tokens[idx++];
+	if (rbraceTok.kind != Token::RBrace) {
 		abort();
 	}
 
-	std::unique_ptr<ast::Func> func = std::make_unique<ast::Func>();
-	func->span = Span(fileId, type->span.start, tokens[idx - 1].span.end);
-	func->type = std::move(type);
-	func->name = nameTok.text;
-	// func->params = std::move(params);
-	func->stmts = std::move(stmts);
-
+	func->span = Span(fileId, func->type->span.start, rbraceTok.span.end);
 	return std::move(func);
 }
 
-// ast::Param Parser::parseParam() {
-// 	std::unique_ptr<ast::Type> type = parseType();
-// 	Token &nameTok = tokens[idx++];
-// 	if (nameTok.kind != Token::Identifier) {
-// 		abort();
-// 	}
+ast::Param Parser::parseParam() {
+	ast::Param param;
+	param.type = parseType();
 
-// 	std::unique_ptr<ast::Expr> init;
-// 	if (tokens[idx].kind == Token::Equal) {
-// 		idx++;
-// 		init = parseExpr();
-// 	}
+	Token &usageTok = tokens[idx];
+	param.usage = Token::Percent;
+	switch (usageTok.kind) {
+	case Token::Carot:
+	case Token::Ampersand:
+	case Token::Percent:
+		param.usage = usageTok.kind;
+		idx++;
+		break;
+	}
 
-// 	ast::Param param;
-// 	param.span = nameTok.span;
-// 	param.name = nameTok.text;
-// 	param.type = std::move(type);
-// 	param.init = std::move(init);
+	Token &nameTok = tokens[idx++];
+	if (nameTok.kind != Token::Identifier) {
+		abort();
+	}
+	param.name = nameTok.text;
 
-// 	return param;
-// }
+	if (tokens[idx].kind == Token::Equal) {
+		idx++;
+		param.init = parseExpr();
+	}
+
+	param.span = Span(fileId, param.type->span.start, param.init ? param.init->span.end : nameTok.span.end);
+	return std::move(param);
+}
 
 std::unique_ptr<ast::Expr> Parser::parseExpr() {
 	return parseBinOp();

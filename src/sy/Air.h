@@ -15,13 +15,20 @@
 
 namespace sy::air {
 	using TypeId = uint64_t;
+	using VarId = struct { uint64_t idInScope; ScopeId scopeId; };
+	using GlobalId = uint64_t;
+	using FuncId = uint64_t;
 	using ScopeId = uint64_t;
 
 	enum class Kind {
+		Var,
+		VarInit,
+		Param,
 		Func,
 
 		BinOp,
 		Num,
+		Null,
 	};
 
 	struct Stmt;
@@ -31,9 +38,41 @@ namespace sy::air {
 		virtual Kind getKind() const = 0;
 	};
 
+	struct Var: Stmt {
+		TypeId typeId;
+		std::string name;
+
+		Kind getKind() const override {
+			return Kind::Var;
+		}
+	};
+
+	struct VarInit: Stmt {
+		VarId varId;
+		std::unique_ptr<Expr> expr;
+
+		Kind getKind() const override {
+			return Kind::VarInit;
+		}
+	};
+	
+	struct Param: Var {
+		enum Usage {
+			Move,
+			Borrow,
+			Ref,
+		} usage = Ref;
+		std::unique_ptr<Expr> init;
+
+		Kind getKind() const override {
+			return Kind::Param;
+		}
+	};
+
 	struct Func: Stmt {
 		TypeId typeId;
 		std::string name;
+		std::vector<VarId> params;
 		std::vector<std::unique_ptr<Stmt>> stmts;
 
 		Kind getKind() const override {
@@ -68,6 +107,12 @@ namespace sy::air {
 		}
 	};
 
+	struct Null: Expr {
+		Kind getKind() const override {
+			return Kind::Null;
+		}
+	};
+
 	struct Type {
 		enum Kind {
 			SInt,
@@ -77,12 +122,18 @@ namespace sy::air {
 	};
 
 	struct Scope {
-		Scope *parent;
+		ScopeId parent;
+
+		std::vector<VarId> varIds;
+		std::vector<FuncId> funcIds;
 	};
 
 	struct Project {
 		std::vector<Type> types = { Type { Type::SInt }, Type { Type::UInt }, Type { Type::Float } };
-		std::vector<Scope> scopes;
+		std::vector<Var> globals;
+		std::vector<Func> funcs;
+		std::vector<Scope> scopes = { Scope { 0 } };
+		// no globals should be included in this list
 		std::vector<std::unique_ptr<Stmt>> stmts;
 
 		TypeId findOrAddTypeId(Type &&type) {
@@ -96,9 +147,19 @@ namespace sy::air {
 			return types.size() - 1;
 		}
 
+		VarId addGlobal(Var &&global) {
+			globals.emplace_back(std::move(global));
+			return globals.size() - 1;
+		}
+
+		FuncId addFunc(Func &&func) {
+			funcs.emplace_back(std::move(func));
+			return funcs.size() - 1;
+		}
+
 		ScopeId createScope(ScopeId parent) {
 			Scope scope;
-			scope.parent = &scopes[parent];
+			scope.parent = parent;
 			scopes.push_back(scope);
 			return scopes.size() - 1;
 		}

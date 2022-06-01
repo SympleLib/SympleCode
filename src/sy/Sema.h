@@ -24,7 +24,9 @@ namespace sy {
 
 		air::TypeId check(ast::Type *);
 
+		std::unique_ptr<air::VarInit> check(ast::Var *);
 		std::unique_ptr<air::Func> check(ast::Func *);
+		air::VarId check(ast::Param &);
 
 		std::unique_ptr<air::Expr> check(ast::Expr *);
 		std::unique_ptr<air::BinOp> check(ast::BinOp *);

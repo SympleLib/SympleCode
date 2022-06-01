@@ -20,6 +20,8 @@ namespace sy::emit {
 		IRBuilder<> builder;
 
 		std::vector<Type *> types;
+		std::vector<Value *> vars;
+		std::vector<Value *> funcs;
 		std::unique_ptr<Module> module;
 
 	public:
@@ -33,7 +35,8 @@ namespace sy::emit {
 
 		Type *emit(air::TypeId node);
 
-		Function *emit(air::Func *func);
+		Value *emit(air::VarInit *node);
+		Function *emit(air::Func *node);
 
 		Value *emit(air::Expr *node);
 		Value *emit(air::BinOp *node);

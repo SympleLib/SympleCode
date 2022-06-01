@@ -12,6 +12,7 @@ namespace sy::ast {
 	enum class Kind {
 		Unknown,
 
+		Var,
 		Func,
 
 		BinOp,
@@ -49,10 +50,21 @@ namespace sy::ast {
 		}
 	};
 
+	struct Var: Stmt {
+		std::unique_ptr<Type> type;
+		std::string name;
+		std::unique_ptr<Expr> init;
+
+		Kind getKind() const override {
+			return Kind::Var;
+		}
+	};
+
 	struct Param {
 		Span span = {};
 
 		std::unique_ptr<Type> type = nullptr;
+		Token::Kind usage = Token::Percent;
 		std::string name = {};
 		std::unique_ptr<Expr> init = nullptr;
 	};
@@ -60,7 +72,7 @@ namespace sy::ast {
 	struct Func: Stmt {
 		std::unique_ptr<Type> type;
 		std::string name;
-		// std::vector<Param> params;
+		std::vector<Param> params;
 		std::vector<std::unique_ptr<Stmt>> stmts;
 
 		virtual Kind getKind() const {

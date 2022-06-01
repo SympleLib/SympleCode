@@ -58,6 +58,10 @@ namespace sy {
 			Equal,
 			LBrace,
 			RBrace,
+
+			Carot,
+			Ampersand,
+			Percent,
 		} kind = Unknown;
 
 		Token(Kind kind, Span span): kind(kind), span(span) {}

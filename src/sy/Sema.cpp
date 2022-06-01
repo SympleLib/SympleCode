@@ -13,7 +13,7 @@ Sema::Sema(std::vector<std::unique_ptr<ast::Stmt>> &&parsedStmts)
 
 air::Project Sema::check() {
 	for (std::unique_ptr<ast::Stmt> &parsedStmt : parsedStmts) {
-		project.stmts.emplace_back(check(parsedStmt.get()));
+		check(parsedStmt.get());
 	}
 
 	return std::move(project);
@@ -21,6 +21,8 @@ air::Project Sema::check() {
 
 std::unique_ptr<air::Stmt> Sema::check(ast::Stmt *parsed) {
 	switch (parsed->getKind()) {
+	case ast::Kind::Var:
+		return check((ast::Var *) parsed);
 	case ast::Kind::Func:
 		return check((ast::Func *) parsed);
 
@@ -53,22 +55,49 @@ air::TypeId Sema::check(ast::Type *parsed) {
 	return project.findOrAddTypeId(std::move(type));
 }
 
+std::unique_ptr<air::VarInit> Sema::check(ast::Var *parsed) {
+	std::unique_ptr<air::Var> var = std::make_unique<air::Var>();
+	var->typeId = check(parsed->type.get());
+	var->name = parsed->name;
+
+	air::VarId varId = project.addVar(std::move(var));
+
+	std::unique_ptr<air::VarInit> varInit = std::make_unique<air::VarInit>();
+	varInit->varId = varId;
+	varInit->expr = std::move(check(parsed->init.get()));
+	
+	return std::move(varInit);
+}
+
 std::unique_ptr<air::Func> Sema::check(ast::Func *parsed) {
 	std::unique_ptr<air::Func> func = std::make_unique<air::Func>();
 	func->typeId = check(parsed->type.get());
 	func->name = parsed->name;
 
-	std::vector<std::unique_ptr<air::Stmt>> stmts;
-	for (std::unique_ptr<ast::Stmt> &parsedStmt : parsed->stmts) {
-		stmts.emplace_back(check(parsedStmt.get()));
+	for (ast::Param &param : parsed->params) {
+		func->params.emplace_back(check(param));
 	}
 
-	func->stmts = std::move(stmts);
+	for (std::unique_ptr<ast::Stmt> &parsedStmt : parsed->stmts) {
+		func->stmts.emplace_back(check(parsedStmt.get()));
+	}
 
 	return std::move(func);
 }
 
+air::VarId Sema::check(ast::Param &parsed) {
+	std::unique_ptr<air::Param> param = std::make_unique<air::Param>();
+	param->typeId = check(parsed.type.get());
+	param->name = parsed.name;
+	param->init = check(parsed.init.get());
+
+	return project.addVar(std::move(param));
+}
+
 std::unique_ptr<air::Expr> Sema::check(ast::Expr *parsed) {
+	if (parsed == nullptr)
+		return std::make_unique<air::Null>();
+
 	switch (parsed->getKind()) {
 	case ast::Kind::BinOp:
 		return check((ast::BinOp *) parsed);

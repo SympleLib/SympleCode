@@ -29,6 +29,8 @@ std::unique_ptr<Module> Emitter::emit() {
 
 Value *Emitter::emit(air::Stmt *node) {
 	switch (node->getKind()) {
+	case air::Kind::Var:
+		return emit((air::Var *) node);
 	case air::Kind::Func:
 		return emit((air::Func *) node);
 
@@ -50,12 +52,27 @@ Type *Emitter::emit(air::TypeId node) {
 	}
 }
 
+Value *Emitter::emit(air::VarInit *node) {
+	air::Var *var = project.vars[node->varId].get();
+	Type *type = findType(var->typeId);
+	Value *ptr = builder.CreateAlloca(type);
+	Value *val = emit(node->expr.get());
+	builder.CreateStore(val, ptr);
+
+	vars.push_back(ptr);
+	return ptr;
+}
+
 Function *Emitter::emit(air::Func *node) {
-	Type *type = emit(node->typeId);
+	Type *type = findType(node->typeId);
 	FunctionType *funcType = FunctionType::get(type, {}, false);
 	Function *func = Function::Create(funcType, Function::ExternalLinkage, node->name, module.get());
 	BasicBlock *entry = BasicBlock::Create(ctx, "entry", func);
 	builder.SetInsertPoint(entry);
+
+	for (uint64_t i = 0; i < node->params.size(); i++) {
+		vars.push_back(func->getArg(i));
+	}
 
 	for (std::unique_ptr<air::Stmt> &stmt : node->stmts) {
 		Value *expr = emit(stmt.get());
