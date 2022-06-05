@@ -12,7 +12,7 @@ include_directories(${LLVM_INCLUDE_DIRS})
 separate_arguments(LLVM_DEFINITIONS_LIST NATIVE_COMMAND ${LLVM_DEFINITIONS})
 add_definitions(${LLVM_DEFINITIONS_LIST})
 
-add_executable(SympleCode src/main.cpp src/sy/Token.h src/pch.h src/sy/Lexer.cpp src/sy/Lexer.h src/sy/Compiler.cpp src/sy/Compiler.h src/sy/Parser.cpp src/sy/Parser.h src/sy/Ast.h src/sy/Sema.h src/sy/Sema.cpp src/sy/Air.h src/sy/Project.cpp src/sy/Emitter.cpp src/sy/Emitter.h)
+add_executable(SympleCode src/main.cpp src/sy/Token.h src/pch.h src/sy/Lexer.cpp src/sy/Lexer.h src/sy/Compiler.cpp src/sy/Compiler.h src/sy/Parser.cpp src/sy/Parser.h src/sy/Ast.h src/sy/Sema.h src/sy/Sema.cpp src/sy/Air.h src/sy/Emitter.cpp src/sy/Emitter.h)
 target_precompile_headers(
         SympleCode
     PUBLIC

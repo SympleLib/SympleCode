@@ -8,7 +8,7 @@
 
 using namespace sy::emit;
 
-Emitter::Emitter(air::Project &&project, LLVMContext &ctx)
+Emitter::Emitter(air::Project project, LLVMContext &ctx)
 	: project(std::move(project)), ctx(ctx), builder(ctx) {}
 
 std::unique_ptr<Module> Emitter::emit() {
@@ -19,9 +19,8 @@ std::unique_ptr<Module> Emitter::emit() {
 	BasicBlock *entry = BasicBlock::Create(ctx, "entry", mainFunc);
 	builder.SetInsertPoint(entry);
 
-	for (std::unique_ptr<air::Stmt> &node : project.stmts) {
-		Value *expr = emit(node.get());
-		builder.CreateStore(expr, builder.CreateAlloca(expr->getType()));
+	for (std::unique_ptr<air::Func> &func : project.funcs) {
+		emit(func.get());
 	}
 
 	return std::move(module);
@@ -52,14 +51,12 @@ Type *Emitter::emit(air::TypeId node) {
 	}
 }
 
-Value *Emitter::emit(air::VarInit *node) {
-	air::Var *var = project.vars[node->varId].get();
-	Type *type = findType(var->typeId);
+Value *Emitter::emit(air::Var *node) {
+	Type *type = findType(node->typeId);
 	Value *ptr = builder.CreateAlloca(type);
-	Value *val = emit(node->expr.get());
-	builder.CreateStore(val, ptr);
+	Value *init = emit(node->init.get());
 
-	vars.push_back(ptr);
+	vars[node->id] = ptr;
 	return ptr;
 }
 
@@ -71,7 +68,7 @@ Function *Emitter::emit(air::Func *node) {
 	builder.SetInsertPoint(entry);
 
 	for (uint64_t i = 0; i < node->params.size(); i++) {
-		vars.push_back(func->getArg(i));
+		vars[node->params[i]] = func->getArg(i);
 	}
 
 	for (std::unique_ptr<air::Stmt> &stmt : node->stmts) {

@@ -26,12 +26,34 @@ uint8_t Parser::getBinOpPrecedence(Token::Kind kind) {
 Parser::Parser(FileId fileId, std::vector<Token> &&tokens)
 	: fileId(fileId), tokens(std::move(tokens)) {}
 
-std::vector<std::unique_ptr<ast::Stmt>> Parser::parse() {
+ast::Module Parser::parseModule() {
+	ast::Module module;
+	bool opened = false;
+
 	while (!atEof()) {
-		stmts.push_back(std::move(parseStmt()));
+		Token &tok = tokens[idx];
+		switch (tok.kind) {
+		case Token::RBrace:
+			assert(opened && "unexpected `}`");
+			goto Return;
+			
+		default: {
+			std::unique_ptr<ast::Stmt> stmt = parseVarOrFunc();
+			if (stmt->getKind() == ast::Kind::Var) {
+				std::unique_ptr<ast::Var> var = cast<ast::Var, ast::Stmt>(std::move(stmt));
+				module.vars.emplace_back(std::move(var));
+			} else if (stmt->getKind() == ast::Kind::Func) {
+				std::unique_ptr<ast::Func> func = cast<ast::Func>(std::move(stmt));
+				module.funcs.emplace_back(std::move(func));
+			} else {
+				assert(false && "unexpected statement");
+			}
+		}
+		}
 	}
 
-	return std::move(stmts);
+Return:
+	return std::move(module);
 }
 
 std::unique_ptr<ast::Stmt> Parser::parseStmt() {
@@ -57,6 +79,13 @@ std::unique_ptr<ast::Type> Parser::parseType() {
 }
 
 std::unique_ptr<ast::Stmt> Parser::parseVarOrFunc() {
+	bool isPub = false;
+	Token &maybeQual = tokens[idx];
+	if (maybeQual.kind == Token::Identifier && maybeQual.text == "pub") {
+		isPub = true;
+		idx++;
+	}
+
 	std::unique_ptr<ast::Type> type = parseType();
 	Token &nameTok = tokens[idx++];
 	if (nameTok.kind != Token::Identifier) {
@@ -64,9 +93,19 @@ std::unique_ptr<ast::Stmt> Parser::parseVarOrFunc() {
 	}
 
 	if (tokens[idx].kind == Token::LParen) {
-		return parseFunc(std::move(type), nameTok);
+		std::unique_ptr<ast::Func> func = parseFunc(std::move(type), nameTok);
+		if (isPub) {
+			func->visibility = ast::Visibility::Public;
+		}
+
+		return func;
 	} else {
-		return parseVar(std::move(type), nameTok);
+		std::unique_ptr<ast::Var> var = parseVar(std::move(type), nameTok);
+		if (isPub) {
+			var->visibility = ast::Visibility::Public;
+		}
+
+		return var;
 	}
 }
 

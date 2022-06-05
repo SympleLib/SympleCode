@@ -9,12 +9,13 @@
 namespace sy {
 	class Sema {
 	private:
-		std::vector<std::unique_ptr<ast::Stmt>> parsedStmts;
+		ast::Module module;
 
 		air::Project project;
+		air::ScopeId currentScopeId = 0;
 
 	public:
-		Sema(std::vector<std::unique_ptr<ast::Stmt>> &&parsedStmts);
+		Sema(ast::Module module);
 
 		air::Project check();
 
@@ -24,12 +25,14 @@ namespace sy {
 
 		air::TypeId check(ast::Type *);
 
-		std::unique_ptr<air::VarInit> check(ast::Var *);
+		air::VarId check(ast::Var *);
 		std::unique_ptr<air::Func> check(ast::Func *);
 		air::VarId check(ast::Param &);
 
 		std::unique_ptr<air::Expr> check(ast::Expr *);
 		std::unique_ptr<air::BinOp> check(ast::BinOp *);
 		std::unique_ptr<air::Num> check(ast::Num *);
+
+		air::VarId addVarToCurrentScope(std::unique_ptr<air::Var>);
 	};
 }

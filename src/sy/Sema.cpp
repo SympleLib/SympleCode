@@ -8,12 +8,12 @@
 
 using namespace sy;
 
-Sema::Sema(std::vector<std::unique_ptr<ast::Stmt>> &&parsedStmts)
-	: parsedStmts(std::move(parsedStmts)) {}
+Sema::Sema(ast::Module module)
+	: module(std::move(module)) {}
 
 air::Project Sema::check() {
-	for (std::unique_ptr<ast::Stmt> &parsedStmt : parsedStmts) {
-		check(parsedStmt.get());
+	for (std::unique_ptr<ast::Func> &parsedFunc : module.funcs) {
+		project.addFunc(check(parsedFunc.get()));
 	}
 
 	return std::move(project);
@@ -22,7 +22,8 @@ air::Project Sema::check() {
 std::unique_ptr<air::Stmt> Sema::check(ast::Stmt *parsed) {
 	switch (parsed->getKind()) {
 	case ast::Kind::Var:
-		return check((ast::Var *) parsed);
+		check((ast::Var *) parsed);
+		return nullptr;
 	case ast::Kind::Func:
 		return check((ast::Func *) parsed);
 
@@ -55,18 +56,13 @@ air::TypeId Sema::check(ast::Type *parsed) {
 	return project.findOrAddTypeId(std::move(type));
 }
 
-std::unique_ptr<air::VarInit> Sema::check(ast::Var *parsed) {
+air::VarId Sema::check(ast::Var *parsed) {
 	std::unique_ptr<air::Var> var = std::make_unique<air::Var>();
 	var->typeId = check(parsed->type.get());
 	var->name = parsed->name;
+	var->init = check(parsed->init.get());
 
-	air::VarId varId = project.addVar(std::move(var));
-
-	std::unique_ptr<air::VarInit> varInit = std::make_unique<air::VarInit>();
-	varInit->varId = varId;
-	varInit->expr = std::move(check(parsed->init.get()));
-	
-	return std::move(varInit);
+	return addVarToCurrentScope(std::move(var));
 }
 
 std::unique_ptr<air::Func> Sema::check(ast::Func *parsed) {
@@ -74,15 +70,20 @@ std::unique_ptr<air::Func> Sema::check(ast::Func *parsed) {
 	func->typeId = check(parsed->type.get());
 	func->name = parsed->name;
 
+	air::ScopeId prev = currentScopeId;
+	currentScopeId = project.createScope(prev);
 	for (ast::Param &param : parsed->params) {
 		func->params.emplace_back(check(param));
 	}
 
 	for (std::unique_ptr<ast::Stmt> &parsedStmt : parsed->stmts) {
-		func->stmts.emplace_back(check(parsedStmt.get()));
+		std::unique_ptr<air::Stmt> stmt = check(parsedStmt.get());
+		if (stmt)
+			func->stmts.emplace_back(std::move(stmt));
 	}
+	currentScopeId = prev;
 
-	return std::move(func);
+	return func;
 }
 
 air::VarId Sema::check(ast::Param &parsed) {
@@ -91,7 +92,7 @@ air::VarId Sema::check(ast::Param &parsed) {
 	param->name = parsed.name;
 	param->init = check(parsed.init.get());
 
-	return project.addVar(std::move(param));
+	return addVarToCurrentScope(std::move(param));
 }
 
 std::unique_ptr<air::Expr> Sema::check(ast::Expr *parsed) {
@@ -137,7 +138,7 @@ std::unique_ptr<air::BinOp> Sema::check(ast::BinOp *parsed) {
 	expr->typeId = typeId;
 	expr->left = std::move(left);
 	expr->right = std::move(right);
-	return std::move(expr);
+	return expr;
 }
 
 std::unique_ptr<air::Num> Sema::check(ast::Num *parsed) {
@@ -158,5 +159,10 @@ std::unique_ptr<air::Num> Sema::check(ast::Num *parsed) {
 
 	expr->typeId = project.findOrAddTypeId(std::move(type));
 
-	return std::move(expr);
+	return expr;
+}
+
+
+air::VarId Sema::addVarToCurrentScope(std::unique_ptr<air::Var> var) {
+	return project.scopes[currentScopeId].addVar(std::move(var));
 }

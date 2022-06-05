@@ -14,12 +14,11 @@ namespace sy {
 		FileId fileId;
 		std::vector<Token> tokens;
 		size_t idx = 0;
-		std::vector<std::unique_ptr<ast::Stmt>> stmts;
 
 	public:
 		Parser(FileId fileId, std::vector<Token> &&tokens);
 
-		std::vector<std::unique_ptr<ast::Stmt>> parse();
+		ast::Module parseModule();
 
 	private:
 		std::unique_ptr<ast::Stmt> parseStmt();

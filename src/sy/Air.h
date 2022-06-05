@@ -15,14 +15,20 @@
 
 namespace sy::air {
 	using TypeId = uint64_t;
-	using VarId = struct { uint64_t idInScope; ScopeId scopeId; };
 	using GlobalId = uint64_t;
 	using FuncId = uint64_t;
 	using ScopeId = uint64_t;
+	struct VarId {
+		ScopeId scopeId;
+		uint64_t id;
+
+		bool operator==(const VarId &other) const {
+			return scopeId == other.scopeId && id == other.id;
+		}
+	};
 
 	enum class Kind {
 		Var,
-		VarInit,
 		Param,
 		Func,
 
@@ -39,20 +45,13 @@ namespace sy::air {
 	};
 
 	struct Var: Stmt {
+		VarId id;
 		TypeId typeId;
 		std::string name;
+		std::unique_ptr<Expr> init;
 
 		Kind getKind() const override {
 			return Kind::Var;
-		}
-	};
-
-	struct VarInit: Stmt {
-		VarId varId;
-		std::unique_ptr<Expr> expr;
-
-		Kind getKind() const override {
-			return Kind::VarInit;
 		}
 	};
 	
@@ -62,7 +61,6 @@ namespace sy::air {
 			Borrow,
 			Ref,
 		} usage = Ref;
-		std::unique_ptr<Expr> init;
 
 		Kind getKind() const override {
 			return Kind::Param;
@@ -123,18 +121,22 @@ namespace sy::air {
 
 	struct Scope {
 		ScopeId parent;
+		ScopeId id;
 
-		std::vector<VarId> varIds;
-		std::vector<FuncId> funcIds;
+		std::vector<std::unique_ptr<Var>> vars = {};
+		std::unordered_map<std::string_view, FuncId> funcs = {};
+
+		VarId addVar(std::unique_ptr<Var> var) {
+			var->id = { id, vars.size() };
+			vars.push_back(std::move(var));
+			return vars.back()->id;
+		}
 	};
 
 	struct Project {
 		std::vector<Type> types = { Type { Type::SInt }, Type { Type::UInt }, Type { Type::Float } };
-		std::vector<Var> globals;
-		std::vector<Func> funcs;
-		std::vector<Scope> scopes = { Scope { 0 } };
-		// no globals should be included in this list
-		std::vector<std::unique_ptr<Stmt>> stmts;
+		std::vector<std::unique_ptr<Func>> funcs;
+		std::vector<Scope> scopes = { Scope { 0, 0, } };
 
 		TypeId findOrAddTypeId(Type &&type) {
 			for (size_t i = 0; i < types.size(); i++) {
@@ -147,12 +149,7 @@ namespace sy::air {
 			return types.size() - 1;
 		}
 
-		VarId addGlobal(Var &&global) {
-			globals.emplace_back(std::move(global));
-			return globals.size() - 1;
-		}
-
-		FuncId addFunc(Func &&func) {
+		FuncId addFunc(std::unique_ptr<Func> func) {
 			funcs.emplace_back(std::move(func));
 			return funcs.size() - 1;
 		}
@@ -160,8 +157,19 @@ namespace sy::air {
 		ScopeId createScope(ScopeId parent) {
 			Scope scope;
 			scope.parent = parent;
+			scope.id = scopes.size();
 			scopes.push_back(scope);
-			return scopes.size() - 1;
+			return scope.id;
+		}
+	};
+}
+
+
+namespace std {
+	template <>
+	struct hash<sy::air::VarId> {
+		size_t operator()(const sy::air::VarId &var) const {
+			return hash<sy::air::ScopeId>()(var.scopeId) * 31 + hash<uint64_t>()(var.id);
 		}
 	};
 }

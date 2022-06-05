@@ -20,12 +20,12 @@ namespace sy::emit {
 		IRBuilder<> builder;
 
 		std::vector<Type *> types;
-		std::vector<Value *> vars;
 		std::vector<Value *> funcs;
+		std::unordered_map<air::VarId, Value *> vars;
 		std::unique_ptr<Module> module;
 
 	public:
-		Emitter(air::Project &&project, LLVMContext &ctx);
+		Emitter(air::Project project, LLVMContext &ctx);
 
 		std::unique_ptr<Module> emit();
 
@@ -35,7 +35,7 @@ namespace sy::emit {
 
 		Type *emit(air::TypeId node);
 
-		Value *emit(air::VarInit *node);
+		Value *emit(air::Var *node);
 		Function *emit(air::Func *node);
 
 		Value *emit(air::Expr *node);

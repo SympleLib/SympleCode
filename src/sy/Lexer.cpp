@@ -53,7 +53,7 @@ std::vector<Token> sy::lex(FileId fileId, std::string_view src) {
 			while (idx < src.length() && std::isalnum(src[idx])) {
 				idx++;
 			}
-
+			
 			out.emplace_back(Token::Identifier, src.substr(start, idx - start), Span(fileId, start, idx));
 		} else if (std::isspace(c)) {
 			idx++;

@@ -71,12 +71,10 @@ void Compiler::Compile(std::string filename) {
 	// }
 
 	Parser parser(fileId, std::move(tokens));
-	std::vector<std::unique_ptr<ast::Stmt>> parsedStmts = parser.parse();
-	std::cout << "parsed " << parsedStmts.size() << " statements\n";
+	ast::Module astModule = parser.parseModule();
 
-	Sema sema(std::move(parsedStmts));
+	Sema sema(std::move(astModule));
 	air::Project project = sema.check();
-	std::cout << "checked " << project.stmts.size() << " statements\n";
 
 	llvm::LLVMContext ctx;
 	emit::Emitter emitter(std::move(project), ctx);
